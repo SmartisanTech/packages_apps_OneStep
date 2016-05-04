@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.smartisanos.sidebar.view.ContentView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+    android:descendantFocusability="afterDescendants"
+    android:fitsSystemWindows="true"
+    android:background="@color/dim_color"
+    android:focusable="true" >
+    <include layout="@layout/photo_content"
+        android:id="@+id/photo_container"
+        android:visibility="invisible"/>
+    <include layout="@layout/file_content"
+        android:id="@+id/file_container"
+        android:visibility="invisible"/>
+    <include layout="@layout/clipboard_content"
+        android:id="@+id/clipboard_container"
+        android:visibility="invisible"/>
+    <include layout="@layout/addtosidebar_content"
+        android:id="@+id/addtosidebar_container"
+        android:visibility="invisible"/>
+</com.smartisanos.sidebar.view.ContentView>

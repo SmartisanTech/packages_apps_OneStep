@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.smartisanos.sidebar.view.TopView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+    android:descendantFocusability="afterDescendants"
+    android:fitsSystemWindows="true"
+    android:gravity="center_vertical"
+    android:background="@drawable/topbar_bg"
+    android:orientation="horizontal" >
+
+    <include layout="@layout/top_item_view"
+        android:id="@+id/photo"/>
+    <include layout="@layout/top_item_view"
+        android:id="@+id/file"/>
+    <include layout="@layout/top_item_view"
+        android:id="@+id/clipboard"/>
+    <View
+        android:id="@+id/dim_view"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:visibility="gone"
+        android:background="@color/dim_color"/>
+</com.smartisanos.sidebar.view.TopView>

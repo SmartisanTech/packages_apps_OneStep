@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <declare-styleable name="TopItemView">
+        <attr name="icon_content_paddingTop" format="dimension" />
+    </declare-styleable>
+</resources>
+

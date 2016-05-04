@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.smartisanos.sidebar.view.SidebarView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+    android:id="@+id/sidebar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="afterDescendants"
+    android:fitsSystemWindows="true"
+    android:focusable="true" >
+
+    <LinearLayout
+        android:id="@+id/topbar"
+        android:layout_width="312dp"
+        android:layout_height="85.3dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/topbar_bg"
+        android:orientation="horizontal" >
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/photo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/writing"
+                android:layout_centerInParent="true"
+                android:gravity="center"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/files"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/writing"
+                android:layout_centerInParent="true"
+                android:gravity="center"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/clipboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/writing"
+                android:layout_centerInParent="true"
+                android:gravity="center"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <com.smartisanos.sidebar.view.SideView
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/sidebar_bg"
+        android:orientation="vertical"
+        android:layout_alignParentRight="true" >
+        <Button
+            android:id="@+id/add"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/add"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/divider"/>
+        <ListView
+            android:id="@+id/sharelist"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/exit"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/exit_icon_right"
+            />
+    </com.smartisanos.sidebar.view.SideView>
+
+    <com.smartisanos.sidebar.view.ContentView
+        android:id="@+id/sidebar"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/topbar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp" >
+                <com.smartisanos.sidebar.view.RecentPhotoGridView
+                    android:id="@+id/gridview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:numColumns="3" />
+                <ListView
+                    android:id="@+id/listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:visibility="invisible"
+                    android:layout_alignParentTop="true" />
+            </FrameLayout>
+            <Button
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true" />
+    </com.smartisanos.sidebar.view.ContentView>
+
+</com.smartisanos.sidebar.view.SidebarView>
