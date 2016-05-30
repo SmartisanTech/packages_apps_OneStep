@@ -21,6 +21,10 @@ public class BitmapUtils {
         options.inJustDecodeBounds = false;
         bitmap = BitmapFactory.decodeFile(filePath, options);
 
+        if(bitmap == null){
+            return null;
+        }
+
         if (bitmap.getWidth() != bitmap.getHeight()) {
             int minSize = bitmap.getWidth() < bitmap.getHeight() ? bitmap.getWidth() : bitmap.getHeight();
             Bitmap newBp = Bitmap.createBitmap(bitmap, (bitmap.getWidth() - minSize) / 2, (bitmap.getHeight() - minSize) / 2, minSize, minSize);

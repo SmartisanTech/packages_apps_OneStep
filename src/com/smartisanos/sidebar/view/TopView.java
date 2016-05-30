@@ -15,6 +15,7 @@ import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -140,7 +141,10 @@ public class TopView extends LinearLayout {
     private void updatePhotoIconContent() {
         List<ImageInfo> mList = mPhotoManager.getImageList();
         if (mList.size() > 0) {
-            mPhotos.setIconContent(BitmapUtils.getBitmap(mList.get(0).filePath, mTopbarPhotoIconContentSize));
+            Bitmap bmp = BitmapUtils.getBitmap(mList.get(0).filePath, mTopbarPhotoIconContentSize);
+            if (bmp != null) {
+                mPhotos.setIconContent(bmp);
+            }
         }else{
             mPhotos.resetIconContent();
         }

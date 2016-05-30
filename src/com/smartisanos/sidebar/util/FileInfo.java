@@ -31,7 +31,15 @@ public class FileInfo {
     }
 
     public int getIconId() {
-        return R.drawable.file_icon_text_plain;
+        String suffix = null;
+        String name = new File(filePath).getName();
+        if (!TextUtils.isEmpty(name)) {
+            String[] sp = name.split("\\.");
+            if (sp.length > 1) {
+                suffix = sp[sp.length - 1];
+            }
+        }
+        return MimeUtils.getResId(mimeType, suffix);
     }
 
     public static final String[] MIMETYPE_BLACKLIST = new String[] { "image/*" };
