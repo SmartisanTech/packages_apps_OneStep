@@ -5,27 +5,11 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/content_bg">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="30dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/add_application_shortcut"
-            android:textColor="#4cffffff"
-            android:textSize="13.5sp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="12dp"/>
-    </RelativeLayout>
-    <!-- divider -->
+    <include layout="@layout/add_contact"
+        />
     <View
         android:layout_width="match_parent"
-        android:layout_height="2px"
-        android:background="#14ffffff"/>
-    <com.smartisanos.sidebar.view.ToAddResolveInfoGridView
-        android:id="@+id/resolveinfo_gridview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:numColumns="3"/>
+        android:layout_height="24dp"/>
+    <include layout="@layout/add_resolve"
+        />
 </LinearLayout>

@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="topbar_photo" msgid="8095131950334945205">图片</string>
-    <string name="topbar_file" msgid="8095131950334945205">文件</string>
-    <string name="topbar_clipboard" msgid="8095131950334945205">剪贴板</string>
-    <string name="title_photo" msgid="8095131950334945205">最近图片</string>
-    <string name="title_file" msgid="8095131950334945205">最近文件</string>
-    <string name="title_clipboard" msgid="8095131950334945205">最近剪贴板</string>
+    <string name="topbar_photo">图片</string>
+    <string name="topbar_file">文件</string>
+    <string name="topbar_clipboard">剪贴板</string>
+    <string name="title_photo">最近图片</string>
+    <string name="title_file">最近文件</string>
+    <string name="title_clipboard">最近剪贴板</string>
+    <string name="add_contact_shortcut">添加联系人快捷方式</string>
+    <string name="add_application_shortcut">添加应用快捷方式</string>
+    <string name="add_contact_dingding">钉钉联系人</string>
+    <string name="add_contact_wechat">微信联系人</string>
+    <string name="add_contact_mail">邮件联系人</string>
 </resources>

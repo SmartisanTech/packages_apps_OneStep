@@ -5,6 +5,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -19,8 +20,9 @@ public class SideView extends LinearLayout {
 
     private Button mExit;
     private Button mAdd;
-    private ListView mShareList;
-    private ResolveInfoListAdapter mAdapter;
+    private ListView mShareList, mContactList;
+    private BaseAdapter mResolveAdapter;
+    private BaseAdapter mContactAdapter;
     public SideView(Context context) {
         this(context, null);
     }
@@ -70,9 +72,15 @@ public class SideView extends LinearLayout {
             }
         });
 
+        //contact
+        mContactList = (ListView) findViewById(R.id.contactlist);
+        mContactAdapter = new ContactListAdapter(mContext);
+        mContactList.setAdapter(mContactAdapter);
+
+        //resolve
         mShareList = (ListView) findViewById(R.id.sharelist);
-        mAdapter = new ResolveInfoListAdapter(mContext);
-        mShareList.setAdapter(mAdapter);
+        mResolveAdapter = new ResolveInfoListAdapter(mContext);
+        mShareList.setAdapter(mResolveAdapter);
     }
 
     private void updateExitButtonBackground() {
@@ -85,7 +93,7 @@ public class SideView extends LinearLayout {
 
     public void onSidebarModeChanged(){
         updateExitButtonBackground();
-        mAdapter.notifyDataSetChanged();
+        mResolveAdapter.notifyDataSetChanged();
     }
 
     public void disable(){

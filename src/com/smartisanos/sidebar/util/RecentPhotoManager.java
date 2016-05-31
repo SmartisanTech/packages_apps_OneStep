@@ -12,7 +12,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-public class RecentPhotoManager implements IClear{
+public class RecentPhotoManager extends DataManager implements IClear{
 
     private volatile static RecentPhotoManager sInstance;
     public synchronized static RecentPhotoManager getInstance(Context context){
@@ -36,7 +36,6 @@ public class RecentPhotoManager implements IClear{
     private Context mContext;
     private Handler mHandler;
     private List<ImageInfo> mList = new ArrayList<ImageInfo>();
-    private List<RecentUpdateListener> mListeners = new ArrayList<RecentUpdateListener>();
 
     private ClearDatabaseHelper mDatabaseHelper;
     private RecentPhotoManager(Context context) {
@@ -72,21 +71,8 @@ public class RecentPhotoManager implements IClear{
                     }
                 }
             }
+            cursor.close();
             Collections.reverse(mList);
-        }
-    }
-
-    public void addListener(RecentUpdateListener recentUpdateListener){
-        mListeners.add(recentUpdateListener);
-    }
-
-    public void removeListener(RecentUpdateListener listener){
-        mListeners.remove(listener);
-    }
-
-    private void notifyListener(){
-        for(RecentUpdateListener lis : mListeners){
-            lis.onUpdate();
         }
     }
 

@@ -151,5 +151,17 @@
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
+        <receiver android:name="com.smartisanos.sidebar.DingDingReceiver">
+            <intent-filter>
+                <action android:name="com.alibaba.android.rimet.ShortCutSelectResult"/>
+            </intent-filter>
+        </receiver>
+        <activity
+            android:name=".SelectContactActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:finishOnCloseSystemDialogs="true"
+            android:launchMode="singleTop"
+            android:excludeFromRecents="true" />
     </application>
 </manifest>

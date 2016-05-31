@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_contact_shortcut"
+        android:textColor="#4cffffff"
+        android:textSize="13.5sp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:paddingLeft="12dp"
+        android:paddingBottom="6dp"/>
+    <!-- divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="#14ffffff"/>
+    <com.smartisanos.sidebar.view.ToAddContactGridView
+        android:id="@+id/contact_gridview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="3"/>
+</LinearLayout>

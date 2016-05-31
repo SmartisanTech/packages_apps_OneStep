@@ -12,7 +12,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-public class RecentFileManager implements IClear{
+public class RecentFileManager extends DataManager implements IClear{
 
     private volatile static RecentFileManager sInstance;
     public synchronized static RecentFileManager getInstance(Context context){
@@ -36,8 +36,6 @@ public class RecentFileManager implements IClear{
     private Context mContext;
     private Handler mHandler;
     private List<FileInfo> mList = new ArrayList<FileInfo>();
-    private List<RecentUpdateListener> mListeners = new ArrayList<RecentUpdateListener>();
-
     private ClearDatabaseHelper mDatabaseHelper;
     private RecentFileManager(Context context) {
         mContext = context;
@@ -58,36 +56,18 @@ public class RecentFileManager implements IClear{
         synchronized (RecentFileManager.class) {
             mList.clear();
             Set<Integer> useless = mDatabaseHelper.getSet();
-            Cursor cursor = mContext.getContentResolver().query(
-                    MediaStore.Files.getContentUri("external"), thumbCols,
-                    null, null, null);
+            Cursor cursor = mContext.getContentResolver().query(MediaStore.Files.getContentUri("external"), thumbCols, null, null, null);
             while (cursor.moveToNext()) {
                 FileInfo info = new FileInfo();
-                info.filePath = cursor.getString(cursor
-                                .getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
-                info.mimeType = cursor.getString(cursor
-                                .getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
-                info.id = cursor.getInt(cursor
-                                .getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
+                info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+                info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
+                info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
                 if (info.valid() && !useless.contains(info.id)) {
                     mList.add(info);
                 }
             }
+            cursor.close();
             Collections.reverse(mList);
-        }
-    }
-
-    public void addListener(RecentUpdateListener listener){
-        mListeners.add(listener);
-    }
-
-    public void removeListener(RecentUpdateListener listener){
-        mListeners.remove(listener);
-    }
-
-    private void notifyListener(){
-        for(RecentUpdateListener lis : mListeners){
-            lis.onUpdate();
         }
     }
 

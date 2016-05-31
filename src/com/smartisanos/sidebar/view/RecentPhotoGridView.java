@@ -10,7 +10,6 @@ import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -111,6 +110,7 @@ public class RecentPhotoGridView extends GridView{
                         SidebarController.getInstance(mContext).resumeTopView();
                         SidebarController.getInstance(mContext).dismissContent();
                         Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setPackage("com.android.gallery3d");
                         intent.setDataAndType(Uri.fromFile(new File(mList.get(position).filePath)), mList.get(position).mimeType);
                         intent.addCategory(Intent.CATEGORY_DEFAULT);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

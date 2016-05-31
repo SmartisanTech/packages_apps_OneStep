@@ -20,12 +20,12 @@ public class ClearDatabaseHelper extends SQLiteOpenHelper {
     public ClearDatabaseHelper(Context context, String name) {
         super(context, name, null, DB_VERSION);
         // get set
-        Cursor cursor = getReadableDatabase().query(TABLE_USELESS, null,
-                null, null, null, null, null);
+        Cursor cursor = getReadableDatabase().query(TABLE_USELESS, null, null, null, null, null, null);
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex(UselessColumns.USELESS_ID));
             mSet.add(id);
         }
+        cursor.close();
     }
 
     @Override

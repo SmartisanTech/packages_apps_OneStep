@@ -139,6 +139,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
                 getWritableDatabase().delete(TABLE_RESOLVEINFO, "packagename=? and names=?", new String[]{pkgName, componentNames});
             }
         }
+        cursor.close();
         mList.addAll(map.values());
         Collections.reverse(mList);
     }

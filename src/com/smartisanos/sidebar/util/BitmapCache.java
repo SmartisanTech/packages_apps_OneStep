@@ -2,6 +2,7 @@ package com.smartisanos.sidebar.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.util.LruCache;
 
 public class BitmapCache {
@@ -29,7 +30,10 @@ public class BitmapCache {
                 : options.outWidth / mSize;
         options.inJustDecodeBounds = false;
         bitmap = BitmapFactory.decodeFile(filepath, options);
-
+        if(bitmap == null){
+            //TODO remove this item
+            return null;
+        }
         if (bitmap.getWidth() != bitmap.getHeight()) {
             int size = bitmap.getWidth() < bitmap.getHeight() ? bitmap.getWidth() : bitmap.getHeight();
             Bitmap newBp = Bitmap.createBitmap(bitmap, (bitmap.getWidth() - size) / 2, (bitmap.getHeight() - size) / 2, size, size);

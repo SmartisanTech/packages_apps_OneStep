@@ -119,7 +119,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo>{
         }
 
         String mimeType = event.getClipDescription().getMimeType(0);
-        if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
+        if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType) && !TextUtils.isEmpty(event.getClipData().getItemAt(0).getText())) {
             for (String action : ResolveInfoManager.ACTIONS) {
                 Intent intent = new Intent(action);
                 intent.addCategory(Intent.CATEGORY_DEFAULT);
