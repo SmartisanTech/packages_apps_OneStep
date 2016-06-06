@@ -201,6 +201,10 @@ public class SidebarController {
         mContentView.dismiss(mContentView.getCurrentContent(), true);
     }
 
+    public void dimTopView(){
+        mTopView.dimAll();
+    }
+
     public void resumeTopView(){
         mTopView.resumeToNormal();
     }

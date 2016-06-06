@@ -70,8 +70,10 @@ public class SideView extends LinearLayout {
             public void onClick(View v) {
                 SidebarController sc = SidebarController.getInstance(mContext);
                 if(sc.getCurrentContentType() == ContentType.NONE){
+                    sc.dimTopView();
                     sc.showContent(ContentType.ADDTOSIDEBAR);
                 }else if(sc.getCurrentContentType() == ContentType.ADDTOSIDEBAR){
+                    sc.resumeTopView();
                     sc.dismissContent();
                 }
             }

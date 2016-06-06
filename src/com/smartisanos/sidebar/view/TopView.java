@@ -163,6 +163,13 @@ public class TopView extends LinearLayout {
         }
     }
 
+    public void dimAll(){
+        for (TopItemView view : mViewToType.keySet()) {
+            view.dim();
+        }
+        mDimView.setVisibility(View.VISIBLE);
+    }
+
     public void resumeToNormal(){
         for (TopItemView view : mViewToType.keySet()) {
             view.resume();
