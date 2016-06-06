@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.util.Utils;
 
 public class ToAddContactGridView extends GridView {
     private static final String TAG = ToAddContactGridView.class.getName();
@@ -108,8 +109,7 @@ public class ToAddContactGridView extends GridView {
                 Intent intent = new Intent("com.alibaba.android.rimet.ShortCutSelect");
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 try{
-                    SidebarController.getInstance(mContext).resumeTopView();
-                    SidebarController.getInstance(mContext).dismissContent();
+                    Utils.dismissAllDialog(mContext);
                     mContext.startActivity(intent);
                 }catch(ActivityNotFoundException e){
                     // TODO show dialog
@@ -124,8 +124,7 @@ public class ToAddContactGridView extends GridView {
                 intent.setComponent(new ComponentName("com.smartisanos.sidebar", "com.smartisanos.sidebar.SelectContactActivity"));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 try{
-                    SidebarController.getInstance(mContext).resumeTopView();
-                    SidebarController.getInstance(mContext).dismissContent();
+                    Utils.dismissAllDialog(mContext);
                     mContext.startActivity(intent);
                 }catch(ActivityNotFoundException e){
                     // NA

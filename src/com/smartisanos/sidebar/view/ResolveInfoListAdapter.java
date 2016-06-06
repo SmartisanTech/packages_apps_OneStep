@@ -26,6 +26,7 @@ import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
+import com.smartisanos.sidebar.util.Utils;
 
 import smartisanos.util.SidebarUtils;
 
@@ -112,8 +113,7 @@ public class ResolveInfoListAdapter extends BaseAdapter {
                 case DragEvent.ACTION_DROP:
                     boolean ret =  mResolveInfos.get(position).handleEvent(mContext, event);
                     if(ret){
-                        SidebarController.getInstance(mContext).resumeTopView();
-                        SidebarController.getInstance(mContext).dismissContent();
+                        Utils.dismissAllDialog(mContext);
                     }
                     return ret;
                 case DragEvent.ACTION_DRAG_ENDED:

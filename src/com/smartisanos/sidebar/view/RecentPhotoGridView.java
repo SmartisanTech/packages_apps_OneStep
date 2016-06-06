@@ -28,6 +28,7 @@ import com.smartisanos.sidebar.util.BitmapCache;
 import com.smartisanos.sidebar.util.ImageInfo;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
+import com.smartisanos.sidebar.util.Utils;
 
 public class RecentPhotoGridView extends GridView{
 
@@ -80,12 +81,12 @@ public class RecentPhotoGridView extends GridView{
 
         @Override
         public int getCount() {
-            return mList.size();
+            return mList.size() + 1;
         }
 
         @Override
         public Object getItem(int position) {
-            return mList.get(position);
+            return null;
         }
 
         @Override
@@ -96,22 +97,38 @@ public class RecentPhotoGridView extends GridView{
         @Override
         public View getView(final int position, View convertView,
                 ViewGroup parent) {
-            View ret = convertView;
-            if (ret == null) {
-                ret = LayoutInflater.from(mContext).inflate(R.layout.recentphotoitem, null);
+            if(position == 0){
+                View ret = LayoutInflater.from(mContext).inflate(R.layout.open_gallery_item, null); 
+                ret.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try{
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            intent.setPackage("com.android.gallery3d");
+                            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(intent);
+                            Utils.dismissAllDialog(mContext);
+                        }catch (ActivityNotFoundException e) {
+                            // NA
+                        }
+                    }
+                });
+                return ret;
             }
+            final ImageInfo ii = mList.get(position - 1);
+            View ret = LayoutInflater.from(mContext).inflate(R.layout.recentphotoitem, null);
             ImageView iv = (ImageView) ret.findViewById(R.id.image);
-            Bitmap bm = mCache.getBitmap(mList.get(position).filePath);
+            Bitmap bm = mCache.getBitmap(ii.filePath);
             iv.setImageBitmap(bm);
             iv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Utils.dismissAllDialog(mContext);
                     try {
-                        SidebarController.getInstance(mContext).resumeTopView();
-                        SidebarController.getInstance(mContext).dismissContent();
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setPackage("com.android.gallery3d");
-                        intent.setDataAndType(Uri.fromFile(new File(mList.get(position).filePath)), mList.get(position).mimeType);
+                        intent.setDataAndType(Uri.fromFile(new File(ii.filePath)), ii.mimeType);
                         intent.addCategory(Intent.CATEGORY_DEFAULT);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         mContext.startActivity(intent);
@@ -122,10 +139,9 @@ public class RecentPhotoGridView extends GridView{
             });
 
             iv.setOnLongClickListener(new View.OnLongClickListener() {
-
                 @Override
                 public boolean onLongClick(View v) {
-                    SidebarUtils.dragImage(v, mContext, new File(mList.get(position).filePath), mList.get(position).mimeType);
+                    SidebarUtils.dragImage(v, mContext, new File(ii.filePath), ii.mimeType);
                     return true;
                 }
             });

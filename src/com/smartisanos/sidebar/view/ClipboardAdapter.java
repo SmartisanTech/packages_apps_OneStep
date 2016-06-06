@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.RecentClipManager;
+import com.smartisanos.sidebar.util.Utils;
 
 import java.util.List;
 
@@ -56,8 +57,7 @@ public class ClipboardAdapter extends BaseAdapter{
         tv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                SidebarController.getInstance(mContext).resumeTopView();
-                SidebarController.getInstance(mContext).dismissContent();
+                Utils.dismissAllDialog(mContext);
                 SidebarUtils.dragText(v, mContext, ((TextView)v).getText());
                 return false;
             }

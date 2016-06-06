@@ -12,4 +12,5 @@
     <string name="add_contact_dingding">钉钉联系人</string>
     <string name="add_contact_wechat">微信联系人</string>
     <string name="add_contact_mail">邮件联系人</string>
+    <string name="open_gallery">打开相册</string>
 </resources>

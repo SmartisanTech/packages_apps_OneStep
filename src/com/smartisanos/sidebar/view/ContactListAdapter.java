@@ -6,6 +6,7 @@ import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.ContactManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
+import com.smartisanos.sidebar.util.Utils;
 
 import android.content.Context;
 import android.content.pm.ResolveInfo;
@@ -93,8 +94,7 @@ public class ContactListAdapter extends BaseAdapter {
                 case DragEvent.ACTION_DROP:
                     boolean ret =  ri.handleDragEvent(event);
                     if(ret){
-                        SidebarController.getInstance(mContext).resumeTopView();
-                        SidebarController.getInstance(mContext).dismissContent();
+                        Utils.dismissAllDialog(mContext);
                     }
                     return ret;
                 case DragEvent.ACTION_DRAG_ENDED:

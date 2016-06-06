@@ -19,6 +19,7 @@ import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
+import com.smartisanos.sidebar.util.Utils;
 
 import smartisanos.util.SidebarUtils;
 public class RecentFileAdapter extends BaseAdapter {
@@ -65,9 +66,8 @@ public class RecentFileAdapter extends BaseAdapter {
         res.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Utils.dismissAllDialog(mContext);
                 try {
-                    SidebarController.getInstance(mContext).resumeTopView();
-                    SidebarController.getInstance(mContext).dismissContent();
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
                     intent.setDataAndType(Uri.fromFile(new File(mList.get(position).filePath)), mList.get(position).mimeType);

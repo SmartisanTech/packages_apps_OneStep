@@ -21,8 +21,6 @@ public class SelectContactActivity extends Activity {
         intent.setPackage("com.android.contacts");
         intent.setType("vnd.android.cursor.dir/phone_v2");
         try{
-            SidebarController.getInstance(this).resumeTopView();
-            SidebarController.getInstance(this).dismissContent();
             startActivityForResult(intent, REQUEST_Code);
         }catch(ActivityNotFoundException e){
             // TODO show dialog
