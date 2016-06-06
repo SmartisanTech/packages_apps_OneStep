@@ -115,7 +115,11 @@ public class ContentView extends RelativeLayout {
             return;
         }
         mCurType = ContentType.NONE;
-        this.animate().alpha(0.0f).setDuration(ANIMATION_DURA).start();
+        if(anim){
+            this.animate().alpha(0.0f).setDuration(ANIMATION_DURA).start();
+        }else{
+            this.setAlpha(0.0f);
+        }
         switch (ct) {
         case PHOTO:
             if (anim) {
@@ -328,7 +332,8 @@ public class ContentView extends RelativeLayout {
                 }
             }
             setVisibility(View.INVISIBLE);
-            Utils.resumeSidebar(mContext);
+            SidebarController.getInstance(mContext).resumeTopView();
+            SidebarController.getInstance(mContext).removeContentView();
         }
     }
 
