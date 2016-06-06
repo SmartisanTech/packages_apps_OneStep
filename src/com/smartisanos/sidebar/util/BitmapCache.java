@@ -2,19 +2,22 @@ package com.smartisanos.sidebar.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.util.LruCache;
 
 public class BitmapCache {
 
     private int mSize = 0;
-    private LruCache<String, Bitmap> mImageCache = new LruCache<String, Bitmap>(40);
+    private LruCache<String, Bitmap> mImageCache = new LruCache<String, Bitmap>(400);
 
     public BitmapCache(int size) {
         if (size <= 0) {
             size = 1;
         }
         mSize = size;
+    }
+
+    public Bitmap getBitmapDirectly(String filepath){
+        return mImageCache.get(filepath);
     }
 
     public synchronized Bitmap getBitmap(String filepath) {

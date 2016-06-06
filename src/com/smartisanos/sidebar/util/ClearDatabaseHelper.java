@@ -8,17 +8,22 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.provider.BaseColumns;
 
 public class ClearDatabaseHelper extends SQLiteOpenHelper {
 
     private static final int DB_VERSION =  1;
     private static final String TABLE_USELESS = "useless";
-
+    private Handler mHandler;
     private Set<Integer> mSet = new HashSet<Integer>();
 
     public ClearDatabaseHelper(Context context, String name) {
         super(context, name, null, DB_VERSION);
+        HandlerThread thread = new HandlerThread("ClearDatabaseHelper");
+        thread.start();
+        mHandler = new Handler(thread.getLooper());
         // get set
         Cursor cursor = getReadableDatabase().query(TABLE_USELESS, null, null, null, null, null, null);
         while (cursor.moveToNext()) {
@@ -42,12 +47,17 @@ public class ClearDatabaseHelper extends SQLiteOpenHelper {
         return mSet;
     }
 
-    public void addUselessId(int id){
+    public void addUselessId(final int id){
         if(!mSet.contains(id)){
             mSet.add(id);
-            ContentValues cv = new ContentValues();
-            cv.put(UselessColumns.USELESS_ID, id);
-            getWritableDatabase().insert(TABLE_USELESS, null, cv);
+            mHandler.post(new Runnable(){
+                @Override
+                public void run() {
+                    ContentValues cv = new ContentValues();
+                    cv.put(UselessColumns.USELESS_ID, id);
+                    getWritableDatabase().insert(TABLE_USELESS, null, cv);
+                }
+            });
         }
     }
 

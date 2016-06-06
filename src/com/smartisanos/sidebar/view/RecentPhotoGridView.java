@@ -12,6 +12,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -26,6 +30,7 @@ import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.BitmapCache;
 import com.smartisanos.sidebar.util.ImageInfo;
+import com.smartisanos.sidebar.util.ImageLoader;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
@@ -62,13 +67,12 @@ public class RecentPhotoGridView extends GridView{
         private RecentPhotoManager mPhotoManager;
         private List<ImageInfo> mList = new ArrayList<ImageInfo>();
 
-        private int mPhotoSize = 0;
         private BitmapCache mCache;
+        private ImageLoader mImageLoader;
         public RecentPhotoAdapter(Context context) {
             mContext = context;
             mPhotoManager = RecentPhotoManager.getInstance(mContext);
-            mPhotoSize = mContext.getResources().getDimensionPixelSize(R.dimen.recent_photo_size);
-            mCache = new BitmapCache(mPhotoSize);
+            mImageLoader = new ImageLoader(mContext.getResources().getDimensionPixelSize(R.dimen.recent_photo_size));
             mList = mPhotoManager.getImageList();
             mPhotoManager.addListener(new RecentUpdateListener() {
                 @Override
@@ -117,10 +121,34 @@ public class RecentPhotoGridView extends GridView{
                 return ret;
             }
             final ImageInfo ii = mList.get(position - 1);
-            View ret = LayoutInflater.from(mContext).inflate(R.layout.recentphotoitem, null);
-            ImageView iv = (ImageView) ret.findViewById(R.id.image);
-            Bitmap bm = mCache.getBitmap(ii.filePath);
-            iv.setImageBitmap(bm);
+            View ret = null;
+            final ImageView iv;
+            if(convertView.getTag() != null){
+                ret = convertView;
+                iv = (ImageView) convertView.getTag();
+            }else{
+                ret = LayoutInflater.from(mContext).inflate(R.layout.recentphotoitem, null);
+                iv = (ImageView) ret.findViewById(R.id.image);
+                ret.setTag(iv);
+            }
+            iv.setImageBitmap(null);
+            iv.setTag(ii.filePath);
+            mImageLoader.loadImage(ii.filePath, iv, new ImageLoader.Callback() {
+                @Override
+                public void onLoadComplete(final Bitmap bitmap) {
+                    if(ii.filePath != null && ii.filePath.equals(iv.getTag())){
+                        iv.post(new Runnable(){
+                            @Override
+                            public void run() {
+                                if(ii.filePath != null && ii.filePath.equals(iv.getTag())){
+                                    iv.setImageBitmap(bitmap);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
             iv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
