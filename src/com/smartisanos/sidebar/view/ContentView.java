@@ -180,7 +180,7 @@ public class ContentView extends RelativeLayout {
             public void onClick(View v) {
                 mPhotos.setLayoutAnimation(getClearLayoutAnimationForListView());
                 mPhotos.startLayoutAnimation();
-                mPhotoContainer.startAnimation(getClearAnimationForContainer(mClearPhoto, RecentPhotoManager.getInstance(mContext)));
+                mPhotoContainer.startAnimation(getClearAnimationForContainer(mPhotoContainer, RecentPhotoManager.getInstance(mContext)));
                 SidebarController.getInstance(mContext).resumeTopView();
                 mCurType = ContentType.NONE;
             }

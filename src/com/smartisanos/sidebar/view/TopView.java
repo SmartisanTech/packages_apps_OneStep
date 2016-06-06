@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 public class TopView extends LinearLayout {
+    private static final String TAG = TopView.class.getName();
 
     private SidebarController mController;
 
@@ -183,6 +184,7 @@ public class TopView extends LinearLayout {
         case MotionEvent.ACTION_DOWN:
             if (mController.getCurrentContentType() != ContentType.NONE) {
                 Utils.resumeSidebar(mContext);
+                Log.d(TAG, "content not none ! resume sidebar...");
                 return true;
             }
         }
