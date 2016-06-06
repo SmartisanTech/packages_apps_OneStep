@@ -3,6 +3,8 @@ package com.smartisanos.sidebar.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -20,6 +22,7 @@ import com.smartisanos.sidebar.util.IClear;
 import com.smartisanos.sidebar.util.RecentClipManager;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
+import com.smartisanos.sidebar.util.Utils;
 
 public class ContentView extends RelativeLayout {
 
@@ -68,7 +71,6 @@ public class ContentView extends RelativeLayout {
         }
         setVisibility(View.VISIBLE);
         SidebarController.getInstance(mContext).addContentView();
-        SidebarController.getInstance(mContext).disableSideView();
         mCurType = ct;
         this.animate().alpha(1.0f).setDuration(ANIMATION_DURA).start();
         switch (ct) {
@@ -326,8 +328,34 @@ public class ContentView extends RelativeLayout {
                 }
             }
             setVisibility(View.INVISIBLE);
-            SidebarController.getInstance(mContext).removeContentView();
-            SidebarController.getInstance(mContext).resumeSideView();
+            Utils.resumeSidebar(mContext);
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            Utils.resumeSidebar(mContext);
+            return true;
+        default:
+            break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        switch (event.getKeyCode()) {
+        case KeyEvent.KEYCODE_BACK:
+            boolean isUp = event.getAction() == KeyEvent.ACTION_UP;
+            if (isUp && getCurrentContent() != ContentType.NONE) {
+                Utils.resumeSidebar(mContext);
+            }
+            break;
+        default:
+            break;
+        }
+        return super.dispatchKeyEvent(event);
     }
 }

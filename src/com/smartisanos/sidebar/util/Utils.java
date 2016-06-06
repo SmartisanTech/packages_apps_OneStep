@@ -16,9 +16,13 @@ public class Utils {
         }
     }
 
-    public static void dismissAllDialog(Context context) {
+    public static void resumeSidebar(Context context){
         SidebarController.getInstance(context).resumeTopView();
         SidebarController.getInstance(context).dismissContent();
+    }
+
+    public static void dismissAllDialog(Context context) {
+        resumeSidebar(context);
         sendCloseSystemWindows(context, null);
     }
 }

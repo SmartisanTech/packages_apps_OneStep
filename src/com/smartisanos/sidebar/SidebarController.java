@@ -97,7 +97,6 @@ public class SidebarController {
 
         if(mTopView == null){
             mTopView = (TopView) View.inflate(mContext, R.layout.topbar_view, null);
-            mTopView.setController(this);
         }
 
         if(mContentView == null){
@@ -204,14 +203,6 @@ public class SidebarController {
 
     public void resumeTopView(){
         mTopView.resumeToNormal();
-    }
-
-    public void disableSideView(){
-        mSideView.disable();
-    }
-
-    public void resumeSideView(){
-        mSideView.resume();
     }
 
     private final ISidebar.Stub mBinder = new ISidebar.Stub() {

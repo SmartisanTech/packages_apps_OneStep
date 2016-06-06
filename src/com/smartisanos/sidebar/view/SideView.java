@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -14,9 +15,12 @@ import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
+import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 public class SideView extends LinearLayout {
+
+    private SidebarController mController;
 
     private Button mExit;
     private Button mAdd;
@@ -38,6 +42,7 @@ public class SideView extends LinearLayout {
     public SideView(Context context, AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        mController = SidebarController.getInstance(mContext);
     }
 
     @Override
@@ -96,11 +101,15 @@ public class SideView extends LinearLayout {
         mResolveAdapter.notifyDataSetChanged();
     }
 
-    public void disable(){
-        mExit.setClickable(false);
-    }
-
-    public void resume(){
-        mExit.setClickable(true);
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            if (mController.getCurrentContentType() != ContentType.NONE) {
+                Utils.resumeSidebar(mContext);
+                return true;
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }

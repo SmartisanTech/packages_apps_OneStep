@@ -12,11 +12,14 @@ import com.smartisanos.sidebar.util.ImageInfo;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
+import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -51,6 +54,7 @@ public class TopView extends LinearLayout {
     public TopView(Context context, AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        mController = SidebarController.getInstance(mContext);
         mTopbarPhotoIconContentSize = context.getResources().getDimensionPixelSize(R.dimen.topbar_photo_icon_content_size);
         mTopbarPhotoIconContentPaddingTop = context.getResources().getDimensionPixelSize(R.dimen.topbar_photo_icon_content_paddingTop);
         mTopbarFileIconContentPaddingTop = context.getResources().getDimensionPixelSize(R.dimen.topbar_file_icon_content_paddingTop);
@@ -166,7 +170,15 @@ public class TopView extends LinearLayout {
         mDimView.setVisibility(View.GONE);
     }
 
-    public void setController(SidebarController controller) {
-        mController = controller;
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            if (mController.getCurrentContentType() != ContentType.NONE) {
+                Utils.resumeSidebar(mContext);
+                return true;
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }
