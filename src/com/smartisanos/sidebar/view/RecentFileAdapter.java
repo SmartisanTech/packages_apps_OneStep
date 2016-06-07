@@ -8,6 +8,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -27,16 +29,23 @@ public class RecentFileAdapter extends BaseAdapter {
     private Context mContext;
     private RecentFileManager mFileManager;
     private List<FileInfo> mList = new ArrayList<FileInfo>();
+    private Handler mHandler;
 
     public RecentFileAdapter(Context context) {
         mContext = context;
         mFileManager = RecentFileManager.getInstance(mContext);
         mList = mFileManager.getFileList();
+        mHandler = new Handler(Looper.getMainLooper());
         mFileManager.addListener(new RecentUpdateListener() {
             @Override
             public void onUpdate() {
                 mList = mFileManager.getFileList();
-                RecentFileAdapter.this.notifyDataSetChanged();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        RecentFileAdapter.this.notifyDataSetChanged();
+                    }
+                });
             }
         });
     }

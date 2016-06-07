@@ -25,6 +25,13 @@ public class ToAddResolveInfoGridView extends GridView {
     }
 
     @Override
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int expandSpec = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
+        super.onMeasure(widthMeasureSpec, expandSpec);
+        getLayoutParams().height = getMeasuredHeight();
+    }
+
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         setAdapter(new ToAddResolveInfoGroupAdapter(mContext));

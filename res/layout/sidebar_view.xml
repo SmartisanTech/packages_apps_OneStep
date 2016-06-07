@@ -15,21 +15,31 @@
         android:layout_width="48dp"
         android:layout_height="43dp"
         android:background="@drawable/add"/>
-    <ImageView
+    <ScrollView
+        android:scrollbars="none"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/divider"/>
-    <com.smartisanos.sidebar.view.SidebarListView
-        android:id="@+id/contactlist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/divider"/>
-    <com.smartisanos.sidebar.view.SidebarListView
-        android:id="@+id/sharelist"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/divider"/>
+        <com.smartisanos.sidebar.view.SidebarListView
+            android:id="@+id/contactlist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/divider"/>
+        <com.smartisanos.sidebar.view.SidebarListView
+            android:id="@+id/sharelist"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
 </com.smartisanos.sidebar.view.SideView>

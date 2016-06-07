@@ -14,7 +14,9 @@
     <include layout="@layout/clipboard_content"
         android:id="@+id/clipboard_container"
         android:visibility="invisible"/>
-    <include layout="@layout/addtosidebar_content"
-        android:id="@+id/addtosidebar_container"
-        android:visibility="invisible"/>
+    <ViewStub
+        android:id="@+id/viewstub_addtosidebar"
+        android:layout="@layout/addtosidebar_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </com.smartisanos.sidebar.view.ContentView>

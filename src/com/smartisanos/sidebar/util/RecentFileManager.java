@@ -9,8 +9,10 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 
 public class RecentFileManager extends DataManager implements IClear{
 
@@ -34,16 +36,18 @@ public class RecentFileManager extends DataManager implements IClear{
     private static final String DATABASE_NAME = "recent_file";
 
     private Context mContext;
-    private Handler mHandler;
     private List<FileInfo> mList = new ArrayList<FileInfo>();
     private ClearDatabaseHelper mDatabaseHelper;
+    private Handler mHandler;
     private RecentFileManager(Context context) {
         mContext = context;
-        mHandler = new Handler();
         mDatabaseHelper = new ClearDatabaseHelper(mContext, DATABASE_NAME);
-        updateFileList();
-        mContext.getContentResolver().registerContentObserver(MediaStore.Files.getContentUri("external"),
-                true, new FileObserver(mHandler));
+
+        HandlerThread thread = new HandlerThread(RecentFileManager.class.getName());
+        thread.start();
+        mHandler = new FileManagerHandler(thread.getLooper());
+        mContext.getContentResolver().registerContentObserver(MediaStore.Files.getContentUri("external"), true, new FileObserver(mHandler));
+        mHandler.obtainMessage(MSG_UPDATE_FILE_LIST).sendToTarget();
     }
 
     public List<FileInfo> getFileList(){
@@ -53,22 +57,27 @@ public class RecentFileManager extends DataManager implements IClear{
     }
 
     private void updateFileList() {
-        synchronized (RecentFileManager.class) {
-            mList.clear();
-            Set<Integer> useless = mDatabaseHelper.getSet();
-            Cursor cursor = mContext.getContentResolver().query(MediaStore.Files.getContentUri("external"), thumbCols, null, null, null);
-            while (cursor.moveToNext()) {
-                FileInfo info = new FileInfo();
-                info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
-                info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
-                info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
-                if (info.valid() && !useless.contains(info.id)) {
-                    mList.add(info);
-                }
+        List<FileInfo> filelist = new ArrayList<FileInfo>();
+        Set<Integer> useless = mDatabaseHelper.getSet();
+        Cursor cursor = mContext.getContentResolver().query(
+                MediaStore.Files.getContentUri("external"), thumbCols, null,
+                null, null);
+        while (cursor.moveToNext()) {
+            FileInfo info = new FileInfo();
+            info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+            info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
+            info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
+            if (info.valid() && !useless.contains(info.id)) {
+                filelist.add(info);
             }
-            cursor.close();
-            Collections.reverse(mList);
         }
+        cursor.close();
+        Collections.reverse(filelist);
+
+        synchronized(RecentFileManager.class){
+            mList = filelist;
+        }
+        notifyListener();
     }
 
     private class FileObserver extends ContentObserver{
@@ -79,8 +88,7 @@ public class RecentFileManager extends DataManager implements IClear{
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            updateFileList();
-            notifyListener();
+            mHandler.obtainMessage(MSG_UPDATE_FILE_LIST).sendToTarget();
         }
     }
 
@@ -90,8 +98,24 @@ public class RecentFileManager extends DataManager implements IClear{
             for(FileInfo fi : mList){
                 mDatabaseHelper.addUselessId(fi.id);
             }
-            updateFileList();
-            notifyListener();
+            mHandler.obtainMessage(MSG_UPDATE_FILE_LIST).sendToTarget();
+        }
+    }
+
+    private static final int MSG_UPDATE_FILE_LIST = 0;
+
+    private class FileManagerHandler extends Handler {
+        public FileManagerHandler(Looper looper) {
+            super(looper, null, false);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+            case MSG_UPDATE_FILE_LIST:
+                updateFileList();
+                break;
+            }
         }
     }
 }

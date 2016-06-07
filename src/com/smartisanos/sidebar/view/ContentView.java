@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewStub;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -33,6 +34,8 @@ public class ContentView extends RelativeLayout {
         CLIPBOARD,
         ADDTOSIDEBAR
     }
+
+    private ViewStub mViewStubAddToSidebar;
 
     private View mPhotoContainer, mFileContainer, mClipboardContainner;
     private RecentPhotoGridView mPhotos;
@@ -103,6 +106,9 @@ public class ContentView extends RelativeLayout {
             }
             break;
         case ADDTOSIDEBAR:
+            if(mAddContainner == null){
+                initAddToSidebar();
+            }
             mAddContainner.setVisibility(View.VISIBLE);
             break;
         default:
@@ -149,6 +155,9 @@ public class ContentView extends RelativeLayout {
             }
             break;
         case ADDTOSIDEBAR:
+            if(mAddContainner == null){
+                initAddToSidebar();
+            }
             mAddContainner.setVisibility(View.INVISIBLE);
             break;
         case NONE:
@@ -158,9 +167,18 @@ public class ContentView extends RelativeLayout {
         }
     }
 
+    private void initAddToSidebar(){
+        if(mAddContainner == null){
+            mViewStubAddToSidebar.inflate();
+            mAddContainner = findViewById(R.id.addtosidebar_container);
+        }
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mViewStubAddToSidebar = (ViewStub)findViewById(R.id.viewstub_addtosidebar);
+
         // view container
         mPhotoContainer = findViewById(R.id.photo_container);
         mFileContainer = findViewById(R.id.file_container);
@@ -211,8 +229,6 @@ public class ContentView extends RelativeLayout {
                 mCurType = ContentType.NONE;
             }
         });
-
-        mAddContainner = findViewById(R.id.addtosidebar_container);
     }
 
     private static final int ANIMATION_DURA = 314;

@@ -69,8 +69,10 @@ public class RecentPhotoGridView extends GridView{
 
         private BitmapCache mCache;
         private ImageLoader mImageLoader;
+        private Handler mHandler;
         public RecentPhotoAdapter(Context context) {
             mContext = context;
+            mHandler = new Handler(Looper.getMainLooper());
             mPhotoManager = RecentPhotoManager.getInstance(mContext);
             mImageLoader = new ImageLoader(mContext.getResources().getDimensionPixelSize(R.dimen.recent_photo_size));
             mList = mPhotoManager.getImageList();
@@ -78,7 +80,12 @@ public class RecentPhotoGridView extends GridView{
                 @Override
                 public void onUpdate() {
                     mList = mPhotoManager.getImageList();
-                    RecentPhotoAdapter.this.notifyDataSetChanged();
+                    mHandler.post(new Runnable(){
+                        @Override
+                        public void run() {
+                            RecentPhotoAdapter.this.notifyDataSetChanged();
+                        }
+                    });
                 }
             });
         }

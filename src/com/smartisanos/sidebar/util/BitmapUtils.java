@@ -54,7 +54,6 @@ public class BitmapUtils {
         drawable.setBounds(0, 0, width, height);
         drawable.draw(canvas);
         return bitmap;
-
     }
 
     public static Bitmap convertToBlackWhite(Bitmap bmp) {

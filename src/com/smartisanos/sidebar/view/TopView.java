@@ -121,7 +121,12 @@ public class TopView extends LinearLayout {
         mPhotoManager.addListener(new RecentUpdateListener() {
             @Override
             public void onUpdate() {
-                updatePhotoIconContent();
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        updatePhotoIconContent();
+                    }
+                });
             }
         });
 
@@ -130,7 +135,12 @@ public class TopView extends LinearLayout {
         mFileManager.addListener(new RecentUpdateListener() {
             @Override
             public void onUpdate() {
-                updateFileIconContent();
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateFileIconContent();
+                    }
+                });
             }
         });
 

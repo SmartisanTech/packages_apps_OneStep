@@ -43,6 +43,12 @@ public class ToAddContactGridView extends GridView {
     }
 
     @Override
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int expandSpec = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
+        super.onMeasure(widthMeasureSpec, expandSpec);
+    }
+
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         setAdapter(new AddContactAdapter(mContext));
