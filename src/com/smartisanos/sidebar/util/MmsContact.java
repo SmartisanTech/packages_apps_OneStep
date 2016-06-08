@@ -22,6 +22,12 @@ public class MmsContact extends ContactItem {
     }
 
     @Override
+    public CharSequence getDisplayName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public boolean accptDragEvent(DragEvent event) {
         //TODO
         return true;
@@ -61,5 +67,4 @@ public class MmsContact extends ContactItem {
         // TODO Auto-generated method stub
         return false;
     }
-
 }

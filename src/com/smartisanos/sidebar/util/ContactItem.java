@@ -14,6 +14,7 @@ public abstract class ContactItem {
     }
 
     public abstract Bitmap getAvatar();
+    public abstract CharSequence getDisplayName();
     public abstract boolean accptDragEvent(DragEvent event);
     public abstract boolean handleDragEvent(DragEvent event);
     public abstract void save();

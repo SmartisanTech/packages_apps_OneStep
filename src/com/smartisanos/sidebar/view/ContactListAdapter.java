@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
@@ -59,17 +60,25 @@ public class ContactListAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        View ret = convertView;
-        if (ret == null) {
+        View ret;
+        final ViewHolder holder;
+        if (convertView == null) {
             ret = LayoutInflater.from(mContext).inflate(R.layout.contact_item, null);
+            holder = new ViewHolder();
+            holder.contactIcon = (ImageView) ret.findViewById(R.id.contact_icon);
+            holder.typeIcon = (ImageView) ret.findViewById(R.id.type_icon);
+            holder.displayName = (TextView) ret.findViewById(R.id.display_name);
+            ret.setTag(holder);
+        }else{
+            ret = convertView;
+            holder = (ViewHolder) ret.getTag();
         }
         final Bitmap avatar = mContacts.get(position).getAvatar();
-        final ImageView iv = (ImageView) ret.findViewById(R.id.contact_icon);
-        iv.setImageBitmap(BitmapUtils.convertToBlackWhite(avatar));
-        ImageView type = (ImageView) ret.findViewById(R.id.type_icon);
-        type.setImageResource(mContacts.get(position).getTypeIcon());
+        holder.contactIcon.setImageBitmap(BitmapUtils.convertToBlackWhite(avatar));
+        holder.typeIcon.setImageResource(mContacts.get(position).getTypeIcon());
+        holder.displayName.setText(mContacts.get(position).getDisplayName());
 
-        iv.setOnDragListener(new View.OnDragListener() {
+        ret.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
                 final int action = event.getAction();
@@ -78,15 +87,17 @@ public class ContactListAdapter extends BaseAdapter {
                 case DragEvent.ACTION_DRAG_STARTED:
                     boolean accept = ri.accptDragEvent(event);
                     if(accept){
-                        iv.setImageBitmap(avatar);
+                        holder.contactIcon.setImageBitmap(avatar);
                     }
                     Log.d(TAG, "ACTION_DRAG_ENTERED");
                     return accept;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     Log.d(TAG, "ACTION_DRAG_ENTERED");
+                    holder.displayName.setVisibility(View.VISIBLE);
                     return true;
                 case DragEvent.ACTION_DRAG_EXITED:
                     Log.d(TAG, "ACTION_DRAG_EXITED");
+                    holder.displayName.setVisibility(View.GONE);
                     return true;
                 case DragEvent.ACTION_DRAG_LOCATION:
                     Log.d(TAG, "ACTION_DRAG_LOCATION");
@@ -98,12 +109,18 @@ public class ContactListAdapter extends BaseAdapter {
                     }
                     return ret;
                 case DragEvent.ACTION_DRAG_ENDED:
-                    iv.setImageBitmap(BitmapUtils.convertToBlackWhite(avatar));
+                    holder.contactIcon.setImageBitmap(BitmapUtils.convertToBlackWhite(avatar));
                     return true;
                 }
                 return false;
             }
         });
         return ret;
+    }
+
+    class ViewHolder {
+        public ImageView contactIcon;
+        public ImageView typeIcon;
+        public TextView displayName;
     }
 }

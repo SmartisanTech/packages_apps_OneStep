@@ -39,6 +39,11 @@ public class DingDingContact extends ContactItem {
     }
 
     @Override
+    public CharSequence getDisplayName() {
+        return displayName;
+    }
+
+    @Override
     public boolean accptDragEvent(DragEvent event) {
         return true;
     }
