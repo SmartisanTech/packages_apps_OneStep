@@ -19,6 +19,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
+import android.util.Pair;
 
 public class ResolveInfoManager extends SQLiteOpenHelper {
     private volatile static ResolveInfoManager sInstance;
@@ -35,6 +37,20 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
 
     private static final String DB_NAME ="resolveinfo";
     private static final int DB_VERSION = 1;
+
+    private static final Set<String> sBlackList;
+    private static final Set<Pair<String, String>> sBlackCompList;
+    static {
+        sBlackList = new HashSet<String>();
+        sBlackList.add("com.android.phone");
+        sBlackList.add("com.android.contacts");
+        sBlackList.add("com.android.settings");
+        sBlackList.add("com.android.gallery3d");
+
+        sBlackCompList = new HashSet<Pair<String, String>>();
+        sBlackCompList.add(new Pair<String, String>("com.tencent.mobileqq", "com.tencent.mobileqq.activity.ContactSyncJumpActivity"));
+        sBlackCompList.add(new Pair<String, String>("com.tencent.mm", "com.tencent.mm.plugin.accountsync.ui.ContactsSyncUI"));
+    }
 
     private static final String[] sPrePackages= new String[]{
         "com.android.email",
@@ -186,41 +202,24 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         List<ResolveInfo> ret = new ArrayList<ResolveInfo>();
         for (String action : ACTIONS) {
             Intent intent = new Intent(action);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
             intent.setType("*/*");
             intent.setPackage(packageName);
             List<ResolveInfo> infos = mContext.getPackageManager().queryIntentActivities(intent, 0);
-            if (infos != null) {
-                ret.addAll(infos);
+            for (ResolveInfo ri : infos) {
+                if (sBlackList.contains(ri.activityInfo.packageName)) {
+                    // NA
+                } else {
+                    Pair<String, String> comp = new Pair<String, String>(ri.activityInfo.packageName, ri.activityInfo.name);
+                    if (sBlackCompList.contains(comp)) {
+                        // NA
+                    } else {
+                        ret.add(ri);
+                    }
+                }
             }
         }
         ListUtils.getDistinctList(ret, new MyComparator());
-        return ret;
-    }
-
-    public List<ComponentName> getAllComponent() {
-        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-        intent.setType("*/*");
-        List<ResolveInfo> send_infos = mContext.getPackageManager().queryIntentActivities(intent, 0);
-        intent.setAction(Intent.ACTION_VIEW);
-        List<ResolveInfo> view_infos = mContext.getPackageManager().queryIntentActivities(intent, 0);
-
-        Set<ComponentName> set = new HashSet<ComponentName>();
-        if (send_infos != null) {
-            for(ResolveInfo ri : send_infos){
-                set.add(new ComponentName(ri.activityInfo.packageName, ri.activityInfo.name));
-            }
-        }
-
-        if (view_infos != null) {
-            for(ResolveInfo ri : view_infos){
-                set.add(new ComponentName(ri.activityInfo.packageName, ri.activityInfo.name));
-            }
-        }
-
-        List<ComponentName> ret = new ArrayList<ComponentName>();
-        for (ComponentName cn : set) {
-            ret.add(cn);
-        }
         return ret;
     }
 

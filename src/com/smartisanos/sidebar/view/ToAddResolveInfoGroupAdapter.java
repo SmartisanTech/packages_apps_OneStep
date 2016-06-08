@@ -7,6 +7,7 @@ import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,8 +63,6 @@ public class ToAddResolveInfoGroupAdapter extends BaseAdapter{
             @Override
             public void onClick(View v) {
                 ResolveInfoManager.getInstance(mContext).addResolveInfo(mInfos.get(position));
-                mInfos.remove(position);
-                notifyDataSetChanged();
             }
         });
         return ret;

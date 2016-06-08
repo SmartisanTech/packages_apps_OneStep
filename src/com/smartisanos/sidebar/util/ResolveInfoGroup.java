@@ -89,6 +89,9 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo>{
     }
 
     public boolean accpetDragEvent(Context context, DragEvent event){
+        if (event == null) {
+            return true;
+        }
         if(event.getClipDescription().getMimeTypeCount() <= 0 || size() <= 0){
             return false;
         }

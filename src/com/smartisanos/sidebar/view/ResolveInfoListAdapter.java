@@ -12,6 +12,9 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.Transformation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
@@ -26,37 +29,56 @@ import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
+import com.smartisanos.sidebar.util.SidebarAdapter;
 import com.smartisanos.sidebar.util.Utils;
 
 import smartisanos.util.SidebarUtils;
 
-public class ResolveInfoListAdapter extends BaseAdapter {
+public class ResolveInfoListAdapter extends SidebarAdapter {
     private static final String TAG = ResolveInfoListAdapter.class.getName();
 
     private Context mContext;
     private List<ResolveInfoGroup> mResolveInfos;
+    private List<ResolveInfoGroup> mAcceptableResolveInfos = new ArrayList<ResolveInfoGroup>();
     private ResolveInfoManager mManager;
     public ResolveInfoListAdapter(Context context) {
         mContext = context;
         mManager = ResolveInfoManager.getInstance(context);
         mResolveInfos = mManager.getAddedResolveInfoGroup();
+        mAcceptableResolveInfos.addAll(mResolveInfos);
         mManager.addListener(new ResolveInfoManager.ResolveInfoUpdateListener() {
             @Override
             public void onUpdate() {
                 mResolveInfos = mManager.getAddedResolveInfoGroup();
-                notifyDataSetChanged();
+                updateAcceptableResolveInfos();
             }
         });
     }
 
+    private void updateAcceptableResolveInfos() {
+        mAcceptableResolveInfos.clear();
+        for (ResolveInfoGroup rig : mResolveInfos) {
+            if (rig.accpetDragEvent(mContext, getDragEvent())) {
+                mAcceptableResolveInfos.add(rig);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void setDragEvent(DragEvent event) {
+        super.setDragEvent(event);
+        updateAcceptableResolveInfos();
+    }
+
     @Override
     public int getCount() {
-        return mResolveInfos.size();
+        return mAcceptableResolveInfos.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mResolveInfos.get(position);
+        return mAcceptableResolveInfos.get(position);
     }
 
     @Override
@@ -67,12 +89,15 @@ public class ResolveInfoListAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView,
             ViewGroup parent) {
-        View ret = convertView;
-        if (ret == null) {
+        final View ret;
+        if (convertView == null) {
             ret = LayoutInflater.from(mContext).inflate(R.layout.shareitem, null);
+        }else{
+            ret = convertView;
         }
+        final ResolveInfoGroup rig = mAcceptableResolveInfos.get(position);
         final ImageView iv = (ImageView) ret.findViewById(R.id.shareitemimageview);
-        final Drawable icon = mResolveInfos.get(position).loadIcon(mContext.getPackageManager());
+        final Drawable icon = rig.loadIcon(mContext.getPackageManager());
         iv.setImageBitmap(BitmapUtils.convertToBlackWhite(icon));
         if(SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT){
             ret.findViewById(R.id.icon_input_left).setVisibility(View.INVISIBLE);
@@ -81,21 +106,20 @@ public class ResolveInfoListAdapter extends BaseAdapter {
             ret.findViewById(R.id.icon_input_left).setVisibility(View.VISIBLE);
             ret.findViewById(R.id.icon_input_right).setVisibility(View.INVISIBLE);
         }
-        iv.setOnLongClickListener(new View.OnLongClickListener() {
+        ret.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 return true;
             }
         });
 
-        iv.setOnDragListener(new View.OnDragListener() {
+        ret.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
                 final int action = event.getAction();
-                ResolveInfo ri = mResolveInfos.get(position).get(0);
                 switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    boolean accept = mResolveInfos.get(position).accpetDragEvent(mContext, event);
+                    boolean accept = rig.accpetDragEvent(mContext, event);
                     if(accept){
                         iv.setImageDrawable(icon);
                     }
@@ -103,15 +127,19 @@ public class ResolveInfoListAdapter extends BaseAdapter {
                     return accept;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     Log.d(TAG, "ACTION_DRAG_ENTERED");
+                    ret.animate().scaleX(1.1f).scaleY(1.1f).setDuration(100).start();
                     return true;
                 case DragEvent.ACTION_DRAG_EXITED:
                     Log.d(TAG, "ACTION_DRAG_EXITED");
+                    ret.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
                     return true;
                 case DragEvent.ACTION_DRAG_LOCATION:
                     Log.d(TAG, "ACTION_DRAG_LOCATION");
                     return true;
                 case DragEvent.ACTION_DROP:
-                    boolean ret =  mResolveInfos.get(position).handleEvent(mContext, event);
+                    Log.d(TAG, "ACTION_DRAG_DROP");
+                    ret.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
+                    boolean ret =  rig.handleEvent(mContext, event);
                     if(ret){
                         Utils.dismissAllDialog(mContext);
                     }
@@ -123,19 +151,6 @@ public class ResolveInfoListAdapter extends BaseAdapter {
                 return false;
             }
         });
-        return ret;
-    }
-
-    public Set<ResolveInfo> getAllPackages(Context context) {
-        Set<ResolveInfo> ret = new HashSet<ResolveInfo>();
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("*/*");
-        List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
-        for (ResolveInfo info : infos) {
-            if (info.activityInfo != null) {
-                ret.add(info);
-            }
-        }
         return ret;
     }
 }

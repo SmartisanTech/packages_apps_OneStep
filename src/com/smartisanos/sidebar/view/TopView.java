@@ -19,12 +19,10 @@ import com.smartisanos.sidebar.view.ContentView.ContentType;
 import android.content.Context;
 import android.content.CopyHistoryItem;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnAttachStateChangeListener;
 import android.widget.LinearLayout;
 
 public class TopView extends LinearLayout {
@@ -44,6 +42,8 @@ public class TopView extends LinearLayout {
     private int mTopbarPhotoIconContentSize ;
     private int mTopbarPhotoIconContentPaddingTop;
     private int mTopbarFileIconContentPaddingTop;
+
+    private boolean mFinishInflated = false;
 
     public TopView(Context context) {
         this(context, null);
@@ -74,9 +74,11 @@ public class TopView extends LinearLayout {
 
             @Override
             public void onViewAttachedToWindow(View v) {
-                updatePhotoIconContent();
-                updateFileIconContent();
-                updateClipIconContent();
+                if (mFinishInflated) {
+                    updatePhotoIconContent();
+                    updateFileIconContent();
+                    updateClipIconContent();
+                }
             }
         });
     }
@@ -84,6 +86,8 @@ public class TopView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+
+        mFinishInflated = true;
 
         mDimView = findViewById(R.id.dim_view);
         mPhotos = (TopItemView) findViewById(R.id.photo);
@@ -171,6 +175,15 @@ public class TopView extends LinearLayout {
                         updateClipIconContent();
                     }
                 });
+            }
+        });
+
+        post(new Runnable() {
+            @Override
+            public void run() {
+                updatePhotoIconContent();
+                updateFileIconContent();
+                updateClipIconContent();
             }
         });
     }
