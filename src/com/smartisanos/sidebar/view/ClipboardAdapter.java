@@ -2,6 +2,8 @@ package com.smartisanos.sidebar.view;
 
 import android.content.Context;
 import android.content.CopyHistoryItem;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.RecentClipManager;
+import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 
 import java.util.List;
@@ -21,15 +24,24 @@ public class ClipboardAdapter extends BaseAdapter{
     private Context mContext;
     private RecentClipManager mClipManager;
     private List<CopyHistoryItem> mList;
+    private Handler mHandler;
     public ClipboardAdapter(Context context){
         mContext = context;
         mClipManager = RecentClipManager.getInstance(mContext);
         mList = mClipManager.getCopyList();
-    }
-
-    public void updateData(){
-        mList = mClipManager.getCopyList();
-        notifyDataSetChanged();
+        mHandler = new Handler(Looper.getMainLooper());
+        mClipManager.addListener(new RecentUpdateListener(){
+            @Override
+            public void onUpdate() {
+                mList = mClipManager.getCopyList();
+                mHandler.post(new Runnable(){
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+                });
+            }
+        });
     }
 
     @Override

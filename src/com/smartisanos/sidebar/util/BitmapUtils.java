@@ -17,7 +17,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
 public class BitmapUtils {
-    public static Bitmap getBitmap(String filePath, int size){
+    public static Bitmap getSquareBitmap(String filePath, int size){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         Bitmap bitmap = null;
@@ -31,15 +31,29 @@ public class BitmapUtils {
             return null;
         }
 
-        if (bitmap.getWidth() != bitmap.getHeight()) {
-            int minSize = bitmap.getWidth() < bitmap.getHeight() ? bitmap.getWidth() : bitmap.getHeight();
-            Bitmap newBp = Bitmap.createBitmap(bitmap, (bitmap.getWidth() - minSize) / 2, (bitmap.getHeight() - minSize) / 2, minSize, minSize);
+        return getSquareBitmap(bitmap, size);
+    }
+
+    public static Bitmap getSquareBitmap(Bitmap bitmap, int size) {
+        if (bitmap == null) {
+            return null;
+        }
+        bitmap = getSquareBitmap(bitmap);
+        if (bitmap.getWidth() != size) {
+            Bitmap newBp = Bitmap.createScaledBitmap(bitmap, size, size, true);
             bitmap.recycle();
             bitmap = newBp;
         }
+        return bitmap;
+    }
 
-        if(bitmap.getWidth() != size){
-            Bitmap newBp = Bitmap.createScaledBitmap(bitmap, size, size, true);
+    public static Bitmap getSquareBitmap(Bitmap bitmap) {
+        if (bitmap == null) {
+            return null;
+        }
+        if (bitmap.getWidth() != bitmap.getHeight()) {
+            int minSize = bitmap.getWidth() < bitmap.getHeight() ? bitmap.getWidth() : bitmap.getHeight();
+            Bitmap newBp = Bitmap.createBitmap(bitmap, (bitmap.getWidth() - minSize) / 2, (bitmap.getHeight() - minSize) / 2, minSize, minSize);
             bitmap.recycle();
             bitmap = newBp;
         }

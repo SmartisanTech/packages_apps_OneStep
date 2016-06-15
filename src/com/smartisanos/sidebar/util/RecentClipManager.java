@@ -5,6 +5,8 @@ import java.util.List;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.CopyHistoryItem;
+import android.content.IClipboardListener;
+import android.os.RemoteException;
 
 public class RecentClipManager extends DataManager implements IClear{
 
@@ -26,6 +28,7 @@ public class RecentClipManager extends DataManager implements IClear{
     private RecentClipManager(Context context){
         mContext = context;
         mClipboard = (ClipboardManager)mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+        mClipboard.registerListener(mListener);
     }
 
     public List<CopyHistoryItem> getCopyList(){
@@ -36,7 +39,14 @@ public class RecentClipManager extends DataManager implements IClear{
     public void clear() {
         synchronized(RecentClipManager.class){
             mClipboard.clearCopyHistory();
-            notifyListener();
         }
     }
+
+    private IClipboardListener mListener = new IClipboardListener.Stub() {
+
+        @Override
+        public void onCopyHistoryChanged() throws RemoteException {
+            notifyListener();
+        }
+    };
 }

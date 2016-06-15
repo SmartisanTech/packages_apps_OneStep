@@ -96,7 +96,6 @@ public class ContentView extends RelativeLayout {
             }
             break;
         case CLIPBOARD:
-            mClipboardAdapter.updateData();
             if (anim) {
                 mClipList.setLayoutAnimation(getEnterLayoutAnimationForListView());
                 mClipList.startLayoutAnimation();
