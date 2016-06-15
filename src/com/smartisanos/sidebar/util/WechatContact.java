@@ -85,7 +85,7 @@ public class WechatContact extends ContactItem {
 
     private static final String METHOD_QUERY_SHORTCUT = "query_shortcut";
 
-    private static final String AUTHORITIES = "com.smartisanos.expandservice.launcher";
+    private static final String AUTHORITIES = "content://com.smartisanos.expandservice.launcher";
 
     public static List<ContactItem> getContacts(Context context){
         List<ContactItem> list = new ArrayList<ContactItem>();
