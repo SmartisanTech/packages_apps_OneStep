@@ -3,6 +3,8 @@
     android:sharedUserId="android.uid.system"
     coreApp="true">
 
+    <uses-sdk android:minSdkVersion="19" />
+
     <uses-permission android:name="android.permission.SIDEBAR_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -129,6 +131,9 @@
 
     <!-- Fingerprint-->
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+    <!-- load shortcut from com.smartisanos.expandservice -->
+    <uses-permission android:name="com.smartisanos.expandservice.launcher.ACCESS_CALL_METHOD" />
 
     <application
         android:persistent="true"
