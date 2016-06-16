@@ -17,5 +17,6 @@
     <string name="add_contact_wechat">wechat contact</string>
     <string name="add_contact_mail">mail contact</string>
     <string name="open_gallery">open gallery</string>
-
+    <string name="title_confirm_delete_history">确认要清空最近记录？</string>
+    <string name="delete">清空</string>
 </resources>

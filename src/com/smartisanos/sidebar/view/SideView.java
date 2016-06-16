@@ -8,8 +8,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.R;
@@ -18,13 +18,13 @@ import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
-public class SideView extends LinearLayout {
+public class SideView extends RelativeLayout {
 
     private SidebarController mController;
 
     private Button mExit;
     private Button mAdd;
-    private ListView mShareList, mContactList;
+    private SidebarListView mShareList, mContactList;
     private BaseAdapter mResolveAdapter;
     private BaseAdapter mContactAdapter;
     public SideView(Context context) {
@@ -80,12 +80,13 @@ public class SideView extends LinearLayout {
         });
 
         //contact
-        mContactList = (ListView) findViewById(R.id.contactlist);
+        mContactList = (SidebarListView) findViewById(R.id.contactlist);
+        mContactList.setNeedFootView(true);
         mContactAdapter = new ContactListAdapter(mContext);
         mContactList.setAdapter(mContactAdapter);
 
         //resolve
-        mShareList = (ListView) findViewById(R.id.sharelist);
+        mShareList = (SidebarListView) findViewById(R.id.sharelist);
         mResolveAdapter = new ResolveInfoListAdapter(mContext);
         mShareList.setAdapter(mResolveAdapter);
     }

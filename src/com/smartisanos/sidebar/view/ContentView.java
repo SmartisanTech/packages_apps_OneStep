@@ -1,5 +1,7 @@
 package com.smartisanos.sidebar.view;
 
+import smartisanos.app.MenuDialog;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -7,6 +9,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.WindowManager;
+import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -196,38 +200,38 @@ public class ContentView extends RelativeLayout {
         mClipboardAdapter = new ClipboardAdapter(this.mContext);
         mClipList.setAdapter(mClipboardAdapter);
 
-        mClearPhoto.setOnClickListener(new View.OnClickListener() {
+        mClearPhoto.setOnClickListener(new ClearListener(new Runnable(){
             @Override
-            public void onClick(View v) {
+            public void run() {
                 mPhotos.setLayoutAnimation(getClearLayoutAnimationForListView());
                 mPhotos.startLayoutAnimation();
                 mPhotoContainer.startAnimation(getClearAnimationForContainer(mPhotoContainer, RecentPhotoManager.getInstance(mContext)));
                 SidebarController.getInstance(mContext).resumeTopView();
                 mCurType = ContentType.NONE;
             }
-        });
+        }));
 
-        mClearFile.setOnClickListener(new View.OnClickListener() {
+        mClearFile.setOnClickListener(new ClearListener(new Runnable() {
             @Override
-            public void onClick(View v) {
+            public void run() {
                 mRecentFileList.setLayoutAnimation(getClearLayoutAnimationForListView());
                 mRecentFileList.startLayoutAnimation();
                 mFileContainer.startAnimation(getClearAnimationForContainer(mFileContainer, RecentFileManager.getInstance(mContext)));
                 SidebarController.getInstance(mContext).resumeTopView();
                 mCurType = ContentType.NONE;
             }
-        });
+        }));
 
-        mClearClipboard.setOnClickListener(new View.OnClickListener() {
+        mClearClipboard.setOnClickListener(new ClearListener(new Runnable() {
             @Override
-            public void onClick(View v) {
+            public void run() {
                 mClipList.setLayoutAnimation(getClearLayoutAnimationForListView());
                 mClipList.startLayoutAnimation();
                 mClipboardContainner.startAnimation(getClearAnimationForContainer(mClipboardContainner, RecentClipManager.getInstance(mContext)));
                 SidebarController.getInstance(mContext).resumeTopView();
                 mCurType = ContentType.NONE;
             }
-        });
+        }));
     }
 
     private static final int ANIMATION_DURA = 314;
@@ -377,5 +381,27 @@ public class ContentView extends RelativeLayout {
             break;
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    class ClearListener implements View.OnClickListener {
+        private Runnable action;
+        public ClearListener(Runnable action) {
+            this.action = action;
+        }
+
+        @Override
+        public void onClick(View v) {
+            MenuDialog dialog = new MenuDialog(mContext);
+            dialog.setTitle(R.string.title_confirm_delete_history);
+            dialog.setPositiveButton(R.string.delete, new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    action.run();
+                }
+            });
+            dialog.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
+            dialog.getWindow().getAttributes().token = getWindowToken();
+            dialog.show();
+        }
     }
 }

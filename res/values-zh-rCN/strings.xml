@@ -13,4 +13,6 @@
     <string name="add_contact_wechat">微信联系人</string>
     <string name="add_contact_mail">邮件联系人</string>
     <string name="open_gallery">打开相册</string>
+    <string name="title_confirm_delete_history">确认要清空最近记录？</string>
+    <string name="delete">清空</string>
 </resources>

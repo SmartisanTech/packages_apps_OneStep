@@ -4,7 +4,7 @@
     android:descendantFocusability="afterDescendants"
     android:fitsSystemWindows="true"
     android:gravity="center_vertical"
-    android:background="@drawable/topbar_bg"
+    android:background="@drawable/background"
     android:orientation="horizontal" >
 
     <include layout="@layout/top_item_view"

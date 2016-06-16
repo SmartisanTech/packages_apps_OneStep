@@ -3,43 +3,44 @@
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
     android:layout_width="48dp"
     android:layout_height="match_parent"
-    android:background="@drawable/sidebar_bg"
-    android:orientation="vertical"
+    android:background="@drawable/background"
     android:layout_alignParentRight="true" >
-    <Button
-        android:id="@+id/exit"
-        android:layout_width="48dp"
-        android:layout_height="43dp"/>
-    <Button
-        android:id="@+id/add"
-        android:layout_width="48dp"
-        android:layout_height="43dp"
-        android:background="@drawable/add"/>
     <ScrollView
         android:scrollbars="none"
+        android:layout_marginTop="86dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/divider"/>
-        <com.smartisanos.sidebar.view.SidebarListView
-            android:id="@+id/contactlist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/divider"/>
-        <com.smartisanos.sidebar.view.SidebarListView
-            android:id="@+id/sharelist"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <com.smartisanos.sidebar.view.SidebarListView
+                android:id="@+id/contactlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <com.smartisanos.sidebar.view.SidebarListView
+                android:id="@+id/sharelist"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </ScrollView>
+    <View
+        android:layout_width="48dp"
+        android:layout_height="90dp"
+        android:background="@drawable/exitandadd_bg"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/exit"
+            android:layout_width="48dp"
+            android:layout_height="43dp"/>
+        <Button
+            android:id="@+id/add"
+            android:layout_width="48dp"
+            android:layout_height="43dp"
+            android:background="@drawable/add"/>
+    </LinearLayout>
 </com.smartisanos.sidebar.view.SideView>
