@@ -62,14 +62,16 @@ public class RecentFileManager extends DataManager implements IClear{
         Cursor cursor = mContext.getContentResolver().query(
                 MediaStore.Files.getContentUri("external"), thumbCols, null,
                 null, null);
-        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            FileInfo info = new FileInfo();
-            info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
-            info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
-            info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
-            if (info.valid() && !useless.contains(info.id)) {
-                filelist.add(info);
-            }
+        if (cursor.moveToFirst()) {
+            do {
+                FileInfo info = new FileInfo();
+                info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+                info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
+                info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
+                if (info.valid() && !useless.contains(info.id)) {
+                    filelist.add(info);
+                }
+            } while (cursor.moveToNext());
         }
         cursor.close();
         Collections.reverse(filelist);
