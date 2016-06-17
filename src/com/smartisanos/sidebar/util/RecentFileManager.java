@@ -62,19 +62,21 @@ public class RecentFileManager extends DataManager implements IClear{
         Cursor cursor = mContext.getContentResolver().query(
                 MediaStore.Files.getContentUri("external"), thumbCols, null,
                 null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                FileInfo info = new FileInfo();
-                info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
-                info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
-                info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
-                if (info.valid() && !useless.contains(info.id)) {
-                    filelist.add(info);
-                }
-            } while (cursor.moveToNext());
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    FileInfo info = new FileInfo();
+                    info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+                    info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
+                    info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
+                    if (info.valid() && !useless.contains(info.id)) {
+                        filelist.add(info);
+                    }
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            Collections.reverse(filelist);
         }
-        cursor.close();
-        Collections.reverse(filelist);
 
         synchronized(RecentFileManager.class){
             mList = filelist;

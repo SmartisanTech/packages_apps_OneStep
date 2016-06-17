@@ -63,20 +63,23 @@ public class RecentPhotoManager extends DataManager implements IClear{
         Cursor cursor = mContext.getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, thumbCols, null,
                 null, null);
-        while (cursor.moveToNext()) {
-            ImageInfo info = new ImageInfo();
-            info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
-            info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
-            info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
-            if (!TextUtils.isEmpty(info.filePath)
-                    && !TextUtils.isEmpty(info.mimeType)) {
-                if (!useless.contains(info.id)) {
-                    imageList.add(info);
-                }
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    ImageInfo info = new ImageInfo();
+                    info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+                    info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
+                    info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
+                    if (!TextUtils.isEmpty(info.filePath)&& !TextUtils.isEmpty(info.mimeType)) {
+                        if (!useless.contains(info.id)) {
+                            imageList.add(info);
+                        }
+                    }
+                } while (cursor.moveToNext());
             }
+            cursor.close();
+            Collections.reverse(imageList);
         }
-        cursor.close();
-        Collections.reverse(imageList);
 
         synchronized (RecentPhotoManager.class) {
             mList = imageList;
