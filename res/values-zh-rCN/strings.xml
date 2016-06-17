@@ -12,7 +12,9 @@
     <string name="add_contact_dingding">钉钉联系人</string>
     <string name="add_contact_wechat">微信联系人</string>
     <string name="add_contact_mail">邮件联系人</string>
+    <string name="add_contact_mms">短信联系人</string>
     <string name="open_gallery">打开相册</string>
     <string name="title_confirm_delete_history">确认要清空最近记录？</string>
     <string name="delete">清空</string>
+    <string name="add_wechat_hint">进入微信，在微信好友详细资料界面点击右上角的三个点图标，选择将好友“添加到桌面”</string>
 </resources>

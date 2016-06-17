@@ -3,15 +3,18 @@ package com.smartisanos.sidebar.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -65,9 +68,10 @@ public class ToAddContactGridView extends GridView {
         private void initData(){
             mItemList.clear();
             mItemList.add(new AddContactItem(R.drawable.icon_dingding, R.string.add_contact_dingding, mDingDingListener));
-            mItemList.add(new AddContactItem(R.drawable.icon_wechat, R.string.add_contact_wechat, mMmsContactListener));
-            mItemList.add(new AddContactItem(R.drawable.icon_mail, R.string.add_contact_mail, null));
+            mItemList.add(new AddContactItem(R.drawable.icon_wechat, R.string.add_contact_wechat, mWechatListener));
+            mItemList.add(new AddContactItem(R.drawable.icon_mms, R.string.add_contact_mms, mMmsListener));
         }
+
         @Override
         public int getCount() {
             return mItemList.size();
@@ -123,7 +127,38 @@ public class ToAddContactGridView extends GridView {
             }
         };
 
-        private View.OnClickListener mMmsContactListener = new View.OnClickListener() {
+        private View.OnClickListener mWechatListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+                builder.setMessage(R.string.add_wechat_hint)
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        try {
+                                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                                            ComponentName cmp = new ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+                                            intent.setComponent(cmp);
+                                            //intent.setPackage("com.tencent.mm");
+                                            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            mContext.startActivity(intent);
+                                            Utils.dismissAllDialog(mContext);
+                                        } catch (ActivityNotFoundException e) {
+                                            Log.d(TAG, "wechat not installed !", e);
+                                        }
+                                    }
+                                });
+                AlertDialog dialog = builder.create();
+                dialog.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
+                dialog.getWindow().getAttributes().token = getWindowToken();
+                dialog.show();
+            }
+        };
+
+        private View.OnClickListener mMmsListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
