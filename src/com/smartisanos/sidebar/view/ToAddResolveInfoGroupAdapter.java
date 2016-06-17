@@ -50,21 +50,32 @@ public class ToAddResolveInfoGroupAdapter extends BaseAdapter{
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         View ret = convertView;
-        if(ret == null){
+        ViewHolder vh;
+        if (ret == null) {
             ret = LayoutInflater.from(mContext).inflate(R.layout.toadd_resolveinfo_group_item, null);
+            vh = new ViewHolder();
+            vh.iv = (ImageView) ret.findViewById(R.id.icon);
+            vh.tv = (TextView) ret.findViewById(R.id.label);
+            ret.setTag(vh);
+        } else {
+            vh = (ViewHolder) ret.getTag();
         }
-        ImageView iv = (ImageView) ret.findViewById(R.id.icon);
-        TextView tv = (TextView) ret.findViewById(R.id.label);
-        iv.setImageDrawable(mInfos.get(position).loadIcon(mContext.getPackageManager()));
-        tv.setText(mInfos.get(position).loadLabel(mContext.getPackageManager()));
+        final ResolveInfoGroup rig = mInfos.get(position);
+        vh.iv.setImageDrawable(rig.loadIcon(mContext.getPackageManager()));
+        vh.tv.setText(rig.loadLabel(mContext.getPackageManager()));
         ret.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ResolveInfoManager.getInstance(mContext).addResolveInfo(mInfos.get(position));
+                ResolveInfoManager.getInstance(mContext).addResolveInfo(rig);
             }
         });
         return ret;
+    }
+
+    class ViewHolder {
+        public ImageView iv;
+        public TextView tv;
     }
 }
