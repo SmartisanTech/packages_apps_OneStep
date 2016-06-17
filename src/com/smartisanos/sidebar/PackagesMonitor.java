@@ -17,7 +17,7 @@ public class PackagesMonitor extends BroadcastReceiver {
         Log.d(TAG, "action -> " + action + " , packageName -> " + packageName);
         if(Intent.ACTION_PACKAGE_REMOVED.equals(action)){
             ResolveInfoManager.getInstance(context).onPackageRemoved(packageName);
-        }else if(Intent.ACTION_PACKAGE_ADDED.equals(packageName)){
+        }else if(Intent.ACTION_PACKAGE_ADDED.equals(action)){
             ResolveInfoManager.getInstance(context).onPackageAdded(packageName);
         }
     }
