@@ -112,7 +112,11 @@ public class ContentView extends RelativeLayout {
             if(mAddContainner == null){
                 initAddToSidebar();
             }
-            mAddContainner.setVisibility(View.VISIBLE);
+            if(anim){
+                mAddContainner.startAnimation(getEnterAnimationForContainer(mAddContainner));
+            }else{
+                mAddContainner.setVisibility(View.VISIBLE);
+            }
             break;
         default:
             break;
@@ -161,7 +165,11 @@ public class ContentView extends RelativeLayout {
             if(mAddContainner == null){
                 initAddToSidebar();
             }
-            mAddContainner.setVisibility(View.INVISIBLE);
+            if (anim) {
+                mAddContainner.startAnimation(getExitAnimationForContainer(mAddContainner));
+            } else {
+                mAddContainner.setVisibility(View.INVISIBLE);
+            }
             break;
         case NONE:
             break;
