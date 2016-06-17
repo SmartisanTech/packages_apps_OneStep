@@ -1,14 +1,21 @@
 package com.smartisanos.sidebar.util;
 
+import android.content.ActivityNotFoundException;
+import android.content.ClipDescription;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.DragEvent;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.smartisanos.sidebar.R;
 
 public class WechatContact extends ContactItem {
 
@@ -38,11 +45,34 @@ public class WechatContact extends ContactItem {
 
     @Override
     public boolean accptDragEvent(DragEvent event) {
-        return true;
+        if (event.getClipDescription().getMimeTypeCount() <= 0) {
+            return false;
+        }
+        String mimeType = event.getClipDescription().getMimeType(0);
+        if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)
+                || ClipDescription.compareMimeTypes(mimeType, "image/*")) {
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean handleDragEvent(DragEvent event) {
+        Intent intent = null;
+        try {
+            intent = Intent.parseUri(mIntent, 0);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        try {
+            mContext.startActivity(intent);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            // NA
+        }
         return false;
     }
 
@@ -63,7 +93,7 @@ public class WechatContact extends ContactItem {
 
     @Override
     public int getTypeIcon() {
-        return 0;
+        return R.drawable.contact_icon_wechat;
     }
 
     @Override
@@ -95,10 +125,10 @@ public class WechatContact extends ContactItem {
             Bundle extras = new Bundle();
             extras.putString("pkg", WECHAT);
             Bundle bundle = contentResolver.call(uri, METHOD_QUERY_SHORTCUT, null, extras);
-            Bundle[] dataArr = (Bundle[]) bundle.getParcelableArray("shortcut");
+            Parcelable[] dataArr = bundle.getParcelableArray("shortcut");
             if (dataArr != null) {
                 for (int i = 0; i < dataArr.length; i++) {
-                    Bundle b = dataArr[i];
+                    Bundle b = (Bundle)dataArr[i];
                     if (b == null) {
                         continue;
                     }

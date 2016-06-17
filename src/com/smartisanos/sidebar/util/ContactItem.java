@@ -1,5 +1,6 @@
 package com.smartisanos.sidebar.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -23,6 +24,9 @@ public abstract class ContactItem {
     public abstract int getTypeIcon();
     public abstract boolean sameContact(ContactItem ci);
     public static List<ContactItem> getContactList(Context context){
-        return DingDingContact.getContacts(context);
+        List<ContactItem> all = new ArrayList<ContactItem>();
+        all.addAll(DingDingContact.getContacts(context));
+        all.addAll(WechatContact.getContacts(context));
+        return all;
     }
 }
