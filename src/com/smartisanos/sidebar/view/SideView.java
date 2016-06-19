@@ -1,32 +1,42 @@
 package com.smartisanos.sidebar.view;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
-import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.util.LOG;
+import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 public class SideView extends RelativeLayout {
+    private static final LOG log = LOG.getInstance(SideView.class);
 
     private SidebarController mController;
 
     private Button mExit;
     private Button mAdd;
+
     private SidebarListView mShareList, mContactList;
-    private BaseAdapter mResolveAdapter;
+    private ResolveInfoListAdapter mResolveAdapter;
+
     private BaseAdapter mContactAdapter;
+
+    private Context mContext;
+
     public SideView(Context context) {
         this(context, null);
     }
@@ -42,8 +52,16 @@ public class SideView extends RelativeLayout {
     public SideView(Context context, AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        mController = SidebarController.getInstance(mContext);
+        mContext = context;
     }
+
+    private SideView mSideView;
+    private SidebarRootView mRootView;
+
+    public void setRootView(SidebarRootView view) {
+        mRootView = view;
+    }
+
 
     @Override
     protected void onFinishInflate() {
@@ -79,6 +97,8 @@ public class SideView extends RelativeLayout {
             }
         });
 
+        mSideView = this;
+
         //contact
         mContactList = (SidebarListView) findViewById(R.id.contactlist);
         mContactList.setNeedFootView(true);
@@ -89,6 +109,7 @@ public class SideView extends RelativeLayout {
         mShareList = (SidebarListView) findViewById(R.id.sharelist);
         mResolveAdapter = new ResolveInfoListAdapter(mContext);
         mShareList.setAdapter(mResolveAdapter);
+        mShareList.setOnItemLongClickListener(mShareItemOnLongClickListener);
     }
 
     private void updateExitButtonBackground() {
@@ -104,15 +125,48 @@ public class SideView extends RelativeLayout {
         mResolveAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        switch (ev.getAction()) {
-        case MotionEvent.ACTION_DOWN:
-            if (mController.getCurrentContentType() != ContentType.NONE) {
-                Utils.resumeSidebar(mContext);
-                return true;
+    private static final boolean DEV_FLAG = true;
+
+    private AdapterView.OnItemLongClickListener mShareItemOnLongClickListener = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+            if (DEV_FLAG) {
+                return false;
             }
+            if (view == null) {
+                log.error("onItemLongClick return by view is null");
+                return false;
+            }
+
+            if (view.getTag() == null) {
+                log.error("onItemLongClick return by tag is null");
+                return false;
+            }
+            ResolveInfoListAdapter.ViewHolder holder = (ResolveInfoListAdapter.ViewHolder) view.getTag();
+            int width = holder.iconImageView.getWidth();
+            int height = holder.iconImageView.getHeight();
+            log.error("onItemLongClick size ["+width+"], ["+height+"]");
+            PackageManager pm = mContext.getPackageManager();
+            ResolveInfoGroup data = holder.resolveInfoGroup;
+            Drawable iconDrawable = data.loadIcon(pm);
+            Bitmap icon = drawableToBitmap(iconDrawable, width, height);
+
+            int index = mResolveAdapter.objectIndex(data);
+            SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(
+                    SidebarRootView.DragItem.TYPE_APPLICATION, icon, data, index);
+            mRootView.startDrag(dragItem);
+            return false;
         }
-        return super.dispatchTouchEvent(ev);
+    };
+
+    private Bitmap drawableToBitmap(Drawable drawable, int width, int height) {
+        if (drawable == null) {
+            return null;
+        }
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, width, height);
+        drawable.draw(canvas);
+        return bitmap;
     }
 }

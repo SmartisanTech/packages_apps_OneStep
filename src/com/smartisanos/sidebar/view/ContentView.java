@@ -3,6 +3,7 @@ package com.smartisanos.sidebar.view;
 import smartisanos.app.MenuDialog;
 
 import android.content.Context;
+import android.content.CopyHistoryItem;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -17,9 +18,11 @@ import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
@@ -28,6 +31,7 @@ import com.smartisanos.sidebar.util.RecentClipManager;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.Utils;
+import smartisanos.util.SidebarUtils;
 
 public class ContentView extends RelativeLayout {
 
@@ -48,9 +52,10 @@ public class ContentView extends RelativeLayout {
 
     private View mClearPhoto, mClearFile, mClearClipboard;
     private ClipboardAdapter mClipboardAdapter;
+    private TextView mClipboardFullText;
+    private Context mViewContext;
 
     private ContentType mCurType = ContentType.NONE;
-
 
     // add content related
     private View mAddContainner;
@@ -153,6 +158,7 @@ public class ContentView extends RelativeLayout {
             }
             break;
         case CLIPBOARD:
+            setClipboardFullTextVisible(View.GONE);
             if (anim) {
                 mClipList.setLayoutAnimation(getExitLayoutAnimationForListView());
                 mClipList.startLayoutAnimation();
@@ -207,6 +213,9 @@ public class ContentView extends RelativeLayout {
         mClipList = (ListView)findViewById(R.id.clipboard_listview);
         mClipboardAdapter = new ClipboardAdapter(this.mContext);
         mClipList.setAdapter(mClipboardAdapter);
+//        mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
+//        mClipList.setOnItemLongClickListener(mOnClipBoardItemLongClickListener);
+        mClipboardFullText = (TextView) findViewById(R.id.clipboard_full_content);
 
         mClearPhoto.setOnClickListener(new ClearListener(new Runnable(){
             @Override
@@ -410,6 +419,17 @@ public class ContentView extends RelativeLayout {
             dialog.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
             dialog.getWindow().getAttributes().token = getWindowToken();
             dialog.show();
+        }
+    }
+
+    private void setClipboardFullTextVisible(int visible) {
+        if (visible == View.VISIBLE) {
+            mClipList.setVisibility(View.GONE);
+            mClipboardFullText.setVisibility(View.VISIBLE);
+        } else {
+            mClipboardFullText.setText("");
+            mClipList.setVisibility(View.VISIBLE);
+            mClipboardFullText.setVisibility(View.GONE);
         }
     }
 }

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentClipManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
@@ -20,6 +21,7 @@ import java.util.List;
 import smartisanos.util.SidebarUtils;
 
 public class ClipboardAdapter extends BaseAdapter{
+    private static LOG log = LOG.getInstance(ClipboardAdapter.class);
 
     private Context mContext;
     private RecentClipManager mClipManager;
@@ -61,19 +63,12 @@ public class ClipboardAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent){
+        log.error("getView position ["+position+"]");
         View res = convertView;
         if(res == null){
             res =  View.inflate(mContext,R.layout.copyhistoryitem, null);
         }
         TextView tv = (TextView)res.findViewById(R.id.text);
-        tv.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Utils.dismissAllDialog(mContext);
-                SidebarUtils.dragText(v, mContext, ((TextView)v).getText());
-                return false;
-            }
-        });
         tv.setText(mList.get(position).mContent);
         return res;
     }

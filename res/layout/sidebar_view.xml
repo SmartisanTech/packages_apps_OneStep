@@ -1,46 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.smartisanos.sidebar.view.SideView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
-    android:layout_width="48dp"
+<com.smartisanos.sidebar.view.SidebarRootView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:smartisanos="http://schemas.android.com/apk/res/smartisanos"
+    android:id="@+id/sidebar_root"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
-    android:layout_alignParentRight="true" >
-    <ScrollView
-        android:scrollbars="none"
-        android:layout_marginTop="86dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="vertical"
+    android:layout_alignParentRight="true"
+    android:background="#cc000000"
+    >
+    <com.smartisanos.sidebar.view.SideView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+        android:id="@+id/sidebar"
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/background"
+        android:orientation="vertical"
+        android:layout_gravity="right|top"
+        android:layout_alignParentRight="true" >
+        <ScrollView
+            android:scrollbars="none"
+            android:layout_marginTop="86dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            <com.smartisanos.sidebar.view.SidebarListView
-                android:id="@+id/contactlist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <com.smartisanos.sidebar.view.SidebarListView
-                android:id="@+id/sharelist"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <com.smartisanos.sidebar.view.SidebarListView
+                    android:id="@+id/contactlist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <com.smartisanos.sidebar.view.SidebarListView
+                    android:id="@+id/sharelist"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </ScrollView>
+        <View
+            android:layout_width="48dp"
+            android:layout_height="90dp"
+            android:background="@drawable/exitandadd_bg"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/exit"
+                android:layout_width="48dp"
+                android:layout_height="43dp"/>
+            <Button
+                android:id="@+id/add"
+                android:layout_width="48dp"
+                android:layout_height="43dp"
+                android:background="@drawable/add"/>
         </LinearLayout>
-    </ScrollView>
-    <View
-        android:layout_width="48dp"
-        android:layout_height="90dp"
-        android:background="@drawable/exitandadd_bg"/>
-    <LinearLayout
+    </com.smartisanos.sidebar.view.SideView>
+    <FrameLayout
+        android:id="@+id/trash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <Button
-            android:id="@+id/exit"
-            android:layout_width="48dp"
-            android:layout_height="43dp"/>
-        <Button
-            android:id="@+id/add"
-            android:layout_width="48dp"
-            android:layout_height="43dp"
-            android:background="@drawable/add"/>
-    </LinearLayout>
-</com.smartisanos.sidebar.view.SideView>
+        android:visibility="gone"
+        android:gravity="center_horizontal|bottom"
+        >
+        <ImageView
+            android:id="@+id/trash_shadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/trash_shadow"
+            />
+        <ImageView
+            android:id="@+id/icon_on_trash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+        <ImageView
+            android:id="@+id/trash_foreground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/trash_foreground"
+            />
+    </FrameLayout>
+</com.smartisanos.sidebar.view.SidebarRootView>
