@@ -21,26 +21,11 @@ import com.smartisanos.sidebar.R;
 public class DingDingContact extends ContactItem {
     public final long uid;
     public final String encodedUid;
-    public Bitmap avatar;
-    public CharSequence displayName;
-    private int index;
 
     public DingDingContact(Context context, long uid, String encodedUid, Bitmap avatar, CharSequence displayName) {
-        super(context);
+        super(context, avatar, displayName);
         this.uid = uid;
         this.encodedUid = encodedUid;
-        this.avatar = avatar;
-        this.displayName = displayName;
-    }
-
-    @Override
-    public Bitmap getAvatar() {
-        return avatar;
-    }
-
-    @Override
-    public CharSequence getDisplayName() {
-        return displayName;
     }
 
     @Override
@@ -79,16 +64,6 @@ public class DingDingContact extends ContactItem {
     @Override
     public void save() {
         DatabaseHelper.getInstance(mContext).update(this);
-    }
-
-    @Override
-    public int getIndex() {
-        return index;
-    }
-
-    @Override
-    public void setIndex(int index) {
-        this.index = index;
     }
 
     @Override
@@ -180,9 +155,9 @@ public class DingDingContact extends ContactItem {
             cv.put(ContactColumns.UID, ddc.uid + "");
             cv.put(ContactColumns.ENCODED_UID, ddc.encodedUid);
             cv.put(ContactColumns.AVATAR, BitmapUtils.Bitmap2Bytes(ddc.getAvatar()));
-            cv.put(ContactColumns.DISPLAY_NAME, ddc.displayName.toString());
+            cv.put(ContactColumns.DISPLAY_NAME, ddc.getDisplayName().toString());
             cv.put(ContactColumns.WEIGHT, ddc.getIndex());
-            if (getId(ddc) != 0) {
+            if (id != 0) {
                 // update database;
                 getWritableDatabase().update(TABLE_CONTACTS, cv,
                         ContactColumns._ID + "=?", new String[] { id + "" });

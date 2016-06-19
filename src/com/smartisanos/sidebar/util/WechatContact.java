@@ -19,30 +19,14 @@ import com.smartisanos.sidebar.R;
 
 public class WechatContact extends ContactItem {
 
-    private String mName;
     private String mIntent;
-    private Bitmap mIcon;
-    private int mIndex;
 
     public static final String WECHAT = "com.tencent.mm";
 
     public WechatContact(Context context, String name, String intent, Bitmap icon) {
-        super(context);
-        mName = name;
+        super(context, icon, name);
         mIntent = intent;
-        mIcon = icon;
     }
-
-    @Override
-    public Bitmap getAvatar() {
-        return mIcon;
-    }
-
-    @Override
-    public CharSequence getDisplayName() {
-        return mName;
-    }
-
     @Override
     public boolean accptDragEvent(DragEvent event) {
         if (event.getClipDescription().getMimeTypeCount() <= 0) {
@@ -79,16 +63,6 @@ public class WechatContact extends ContactItem {
     @Override
     public void save() {
 
-    }
-
-    @Override
-    public int getIndex() {
-        return mIndex;
-    }
-
-    @Override
-    public void setIndex(int index) {
-        mIndex = index;
     }
 
     @Override

@@ -7,26 +7,44 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.DragEvent;
 
-public abstract class ContactItem {
+public abstract class ContactItem{
     protected Context mContext;
+    protected Bitmap mAvatar;
+    protected CharSequence mDisplayName;
+    protected int mIndex;
 
-    public ContactItem(Context context) {
+    public ContactItem(Context context, Bitmap avatar, CharSequence displayName) {
         mContext = context;
+        mAvatar = avatar;
+        mDisplayName = displayName;
     }
 
-    public abstract Bitmap getAvatar();
-    public abstract CharSequence getDisplayName();
+    public Bitmap getAvatar() {
+        return mAvatar;
+    }
+
+    public CharSequence getDisplayName() {
+        return mDisplayName;
+    }
+
+    public int getIndex() {
+        return mIndex;
+    }
+
+    public void setIndex(int index) {
+        mIndex = index;
+    }
+
     public abstract boolean accptDragEvent(DragEvent event);
     public abstract boolean handleDragEvent(DragEvent event);
     public abstract void save();
-    public abstract int getIndex();
-    public abstract void setIndex(int index);
     public abstract int getTypeIcon();
     public abstract boolean sameContact(ContactItem ci);
     public static List<ContactItem> getContactList(Context context){
         List<ContactItem> all = new ArrayList<ContactItem>();
         all.addAll(DingDingContact.getContacts(context));
         all.addAll(WechatContact.getContacts(context));
+        all.addAll(MmsContact.getContacts(context));
         return all;
     }
 }

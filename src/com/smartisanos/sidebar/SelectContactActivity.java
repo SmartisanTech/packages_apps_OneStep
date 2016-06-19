@@ -1,10 +1,21 @@
 package com.smartisanos.sidebar;
 
+import com.smartisanos.sidebar.util.BitmapUtils;
+import com.smartisanos.sidebar.util.ContactManager;
+import com.smartisanos.sidebar.util.MmsContact;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class SelectContactActivity extends Activity {
@@ -35,8 +46,56 @@ public class SelectContactActivity extends Activity {
             if(data != null && data.getData() != null){
                 Uri uri = data.getData();
                 Log.d(TAG, "uri -> " + uri);
+                new PickContactNumberAsyncTask().execute(uri);
             }
             finish();
+        }
+    }
+
+    class PickContactNumberAsyncTask extends AsyncTask<Uri, Integer, MmsContact> {
+        @Override
+        protected void onPostExecute(MmsContact contact) {
+            if (contact != null) {
+                ContactManager.getInstance(getApplicationContext()).addContact(contact);
+            }
+        }
+
+        private Bitmap getAvatarById(long id){
+            Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
+            return BitmapFactory.decodeStream(ContactsContract.Contacts.openContactPhotoInputStream(getContentResolver(), uri));
+        }
+
+        @Override
+        protected MmsContact doInBackground(Uri... params) {
+            Uri uri = params[0];
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    do {
+                        int mimeTypeIndex = cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE);
+                        final String mimeType = cursor.getString(mimeTypeIndex);
+                        if (TextUtils.equals(mimeType, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
+                            String number = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            if (!TextUtils.isEmpty(number)) {
+                                number = number.replace("-", "");
+                                number = number.replace(" ", "");
+                            }
+                            String displayName = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                            int contactId = cursor.getInt(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+                            if (contactId > 0 && !TextUtils.isEmpty(number)) {
+                                return new MmsContact(getApplicationContext(), contactId, number, BitmapUtils.getRoundedCornerBitmap(getAvatarById(contactId)), displayName);
+                            }
+                        }
+                    } while (cursor.moveToNext());
+                }
+            } catch (Exception ex){
+                ex.printStackTrace();
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+            return null;
         }
     }
 }

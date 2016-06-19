@@ -1,9 +1,12 @@
 package com.smartisanos.sidebar.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 public class ContactManager extends DataManager{
     private volatile static ContactManager sInstance;
@@ -23,6 +26,7 @@ public class ContactManager extends DataManager{
     private ContactManager(Context context){
         mContext = context;
         mContacts = ContactItem.getContactList(mContext);
+        Collections.sort(mContacts, new ContactComparator());
     }
 
     public List<ContactItem> getContactList(){
@@ -34,14 +38,40 @@ public class ContactManager extends DataManager{
             if(ci.sameContact(mContacts.get(i))){
                 ci.setIndex(mContacts.get(i).getIndex());
                 mContacts.set(i, ci);
-                ci.save();
+                saveContact(ci);
                 notifyListener();
                 return ;
             }
         }
         ci.setIndex(mContacts.size());
-        ci.save();
+        saveContact(ci);
         mContacts.add(0, ci);
         notifyListener();
+    }
+
+    private void saveContact(ContactItem ci){
+        new SaveContactTask().execute(ci);
+    }
+
+    class SaveContactTask extends AsyncTask<ContactItem, Integer, Void> {
+        @Override
+        protected Void doInBackground(ContactItem... params) {
+            ContactItem ci = params[0];
+            ci.save();
+            return null;
+        }
+    }
+
+    public static final class ContactComparator implements Comparator<ContactItem> {
+        @Override
+        public int compare(ContactItem lhs, ContactItem rhs) {
+            if (lhs.getIndex() > rhs.getIndex()) {
+                return -1;
+            } else if (lhs.getIndex() < rhs.getIndex()) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
     }
 }
