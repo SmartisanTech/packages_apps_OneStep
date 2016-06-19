@@ -213,8 +213,9 @@ public class ContentView extends RelativeLayout {
         mClipList = (ListView)findViewById(R.id.clipboard_listview);
         mClipboardAdapter = new ClipboardAdapter(this.mContext);
         mClipList.setAdapter(mClipboardAdapter);
-//        mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
-//        mClipList.setOnItemLongClickListener(mOnClipBoardItemLongClickListener);
+
+        mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
+        mClipList.setOnItemLongClickListener(mOnClipBoardItemLongClickListener);
         mClipboardFullText = (TextView) findViewById(R.id.clipboard_full_content);
 
         mClearPhoto.setOnClickListener(new ClearListener(new Runnable(){
@@ -432,4 +433,34 @@ public class ContentView extends RelativeLayout {
             mClipboardFullText.setVisibility(View.GONE);
         }
     }
+
+    private AdapterView.OnItemClickListener mOnClipBoardItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            Log.i("Sidebar", "onItemClick ["+position+"] ["+id+"]");
+            CopyHistoryItem item = (CopyHistoryItem) mClipboardAdapter.getItem(position);
+            if (item == null) {
+                Log.i("Sidebar", "onItemClick lose CopyHistoryItem at ["+position+"]");
+                return;
+            }
+            String content = item.mContent;
+            mClipboardFullText.setText(content);
+            setClipboardFullTextVisible(View.VISIBLE);
+        }
+    };
+
+    private AdapterView.OnItemLongClickListener mOnClipBoardItemLongClickListener = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+            Log.i("Sidebar", "onItemLongClick ["+position+"] ["+id+"]");
+            if (view == null) {
+                Log.i("Sidebar", "onItemLongClick view is null ["+position+"] ["+id+"]");
+                return false;
+            }
+            TextView textView = (TextView) view.findViewById(R.id.text);
+            Utils.dismissAllDialog(mContext);
+            SidebarUtils.dragText(textView, mContext, textView.getText());
+            return false;
+        }
+    };
 }
