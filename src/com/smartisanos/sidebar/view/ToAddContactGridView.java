@@ -70,6 +70,7 @@ public class ToAddContactGridView extends GridView {
             mItemList.add(new AddContactItem(R.drawable.icon_dingding, R.string.add_contact_dingding, mDingDingListener));
             mItemList.add(new AddContactItem(R.drawable.icon_wechat, R.string.add_contact_wechat, mWechatListener));
             mItemList.add(new AddContactItem(R.drawable.icon_mms, R.string.add_contact_mms, mMmsListener));
+            mItemList.add(new AddContactItem(R.drawable.icon_mail, R.string.add_contact_mail, mMailListener));
         }
 
         @Override
@@ -163,6 +164,22 @@ public class ToAddContactGridView extends GridView {
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setComponent(new ComponentName("com.smartisanos.sidebar", "com.smartisanos.sidebar.SelectContactActivity"));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                try{
+                    Utils.dismissAllDialog(mContext);
+                    mContext.startActivity(intent);
+                }catch(ActivityNotFoundException e){
+                    // NA
+                    Log.d(TAG, "not found !", e);
+                }
+            }
+        };
+
+        private View.OnClickListener mMailListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName("com.smartisanos.sidebar", "com.smartisanos.sidebar.SelectMailContactActivity"));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 try{
                     Utils.dismissAllDialog(mContext);

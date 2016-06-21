@@ -136,6 +136,7 @@
     <uses-permission android:name="com.smartisanos.expandservice.launcher.ACCESS_CALL_METHOD" />
 
     <application
+        android:name="com.smartisanos.sidebar.SidebarApplication"
         android:persistent="true"
         android:supportsRtl="true"
         android:allowClearUserData="false"
@@ -163,6 +164,13 @@
         </receiver>
         <activity
             android:name=".SelectContactActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:finishOnCloseSystemDialogs="true"
+            android:launchMode="singleTop"
+            android:excludeFromRecents="true" />
+        <activity
+            android:name=".SelectMailContactActivity"
             android:exported="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:finishOnCloseSystemDialogs="true"

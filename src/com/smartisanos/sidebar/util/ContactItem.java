@@ -45,6 +45,7 @@ public abstract class ContactItem{
         all.addAll(DingDingContact.getContacts(context));
         all.addAll(WechatContact.getContacts(context));
         all.addAll(MmsContact.getContacts(context));
+        all.addAll(MailContact.getContacts(context));
         return all;
     }
 }

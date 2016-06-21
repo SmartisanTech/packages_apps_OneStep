@@ -7,7 +7,8 @@ import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 
 import android.content.Context;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,16 +21,23 @@ public class ToAddResolveInfoGroupAdapter extends BaseAdapter{
     private Context mContext;
     private ResolveInfoManager mManager;
     private List<ResolveInfoGroup> mInfos;
+    private Handler mHandler;
 
     public ToAddResolveInfoGroupAdapter(Context context){
         mContext = context;
         mManager = ResolveInfoManager.getInstance(mContext);
         mInfos = mManager.getUnAddedResolveInfoGroup();
+        mHandler = new Handler(Looper.getMainLooper());
         mManager.addListener(new ResolveInfoManager.ResolveInfoUpdateListener() {
             @Override
             public void onUpdate() {
                 mInfos = mManager.getUnAddedResolveInfoGroup();
-                notifyDataSetChanged();
+                mHandler.post(new Runnable(){
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+                });
             }
         });
     }

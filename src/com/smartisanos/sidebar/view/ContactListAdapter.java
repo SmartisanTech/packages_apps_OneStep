@@ -9,7 +9,6 @@ import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 
 import android.content.Context;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.DragEvent;
@@ -21,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.SidebarController;
 
 public class ContactListAdapter extends BaseAdapter {
     private static final String TAG = ContactListAdapter.class.getName();
