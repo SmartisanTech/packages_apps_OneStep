@@ -82,9 +82,9 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        final ViewHolder holder;
+        ResolveInfoGroup resolveInfoGroup = mResolveInfos.get(position);
         if (convertView == null || !(convertView instanceof RelativeLayout)) {
-            ResolveInfoGroup resolveInfoGroup = mResolveInfos.get(position);
             View view = LayoutInflater.from(mContext).inflate(R.layout.shareitem, null);
             ImageView iconInputLeft = (ImageView) view.findViewById(R.id.icon_input_left);
             ImageView iconInputRight = (ImageView) view.findViewById(R.id.icon_input_right);
@@ -101,60 +101,47 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
             view.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
+            holder.resolveInfoGroup = resolveInfoGroup;
         }
-        boolean showLeft = false;
-        if(SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT){
-            showLeft = true;
-        }
-        holder.updateIconFlag(showLeft);
-//        final View ret;
-//        if (convertView == null) {
-//            ret = LayoutInflater.from(mContext).inflate(R.layout.shareitem, null);
-//        }else{
-//            ret = convertView;
-//        }
-//        final ResolveInfoGroup rig = mAcceptableResolveInfos.get(position);
-//        final ImageView iv = (ImageView) ret.findViewById(R.id.shareitemimageview);
-//        final Drawable icon = rig.loadIcon(mContext.getPackageManager());
-//        iv.setImageBitmap(BitmapUtils.convertToBlackWhite(icon));
-//        holder.view.setOnDragListener(new View.OnDragListener() {
-//            @Override
-//            public boolean onDrag(View v, DragEvent event) {
-//                final int action = event.getAction();
-//                switch (action) {
-//                    case DragEvent.ACTION_DRAG_STARTED:
-//                        boolean accept = rig.accpetDragEvent(mContext, event);
-//                        if(accept){
-//                            iv.setImageDrawable(icon);
-//                        }
-//                        Log.d(TAG,"ACTION_DRAG_STARTED, accpet -> " + accept);
-//                        return accept;
-//                    case DragEvent.ACTION_DRAG_ENTERED:
-//                        Log.d(TAG, "ACTION_DRAG_ENTERED");
-//                        ret.animate().scaleX(1.1f).scaleY(1.1f).setDuration(100).start();
-//                        return true;
-//                    case DragEvent.ACTION_DRAG_EXITED:
-//                        Log.d(TAG, "ACTION_DRAG_EXITED");
-//                        ret.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
-//                        return true;
-//                    case DragEvent.ACTION_DRAG_LOCATION:
-//                        Log.d(TAG, "ACTION_DRAG_LOCATION");
-//                        return true;
-//                    case DragEvent.ACTION_DROP:
-//                        Log.d(TAG, "ACTION_DRAG_DROP");
-//                        ret.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
-//                        boolean ret =  rig.handleEvent(mContext, event);
-//                        if(ret){
-//                            Utils.dismissAllDialog(mContext);
-//                        }
-//                        return ret;
-//                    case DragEvent.ACTION_DRAG_ENDED:
-//                        iv.setImageBitmap(BitmapUtils.convertToBlackWhite(icon));
-//                        return true;
-//                }
-//                return false;
-//            }
-//        });
+        holder.updateIconFlag(SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
+        holder.view.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                final int action = event.getAction();
+                switch (action) {
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        boolean accept = holder.resolveInfoGroup.accpetDragEvent(mContext, event);
+                        if(accept){
+                            holder.iconImageView.setImageDrawable(holder.resolveInfoGroup.loadIcon(mContext.getPackageManager()));
+                        }
+                        Log.d(TAG,"ACTION_DRAG_STARTED, accpet -> " + accept);
+                        return accept;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        Log.d(TAG, "ACTION_DRAG_ENTERED");
+                        holder.view.animate().scaleX(1.1f).scaleY(1.1f).setDuration(100).start();
+                        return true;
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        Log.d(TAG, "ACTION_DRAG_EXITED");
+                        holder.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
+                        return true;
+                    case DragEvent.ACTION_DRAG_LOCATION:
+                        Log.d(TAG, "ACTION_DRAG_LOCATION");
+                        return true;
+                    case DragEvent.ACTION_DROP:
+                        Log.d(TAG, "ACTION_DRAG_DROP");
+                        holder.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
+                        boolean ret =  holder.resolveInfoGroup.handleEvent(mContext, event);
+                        if(ret){
+                            Utils.dismissAllDialog(mContext);
+                        }
+                        return ret;
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        holder.iconImageView.setImageBitmap(BitmapUtils.convertToBlackWhite(holder.resolveInfoGroup.loadIcon(mContext.getPackageManager())));
+                        return true;
+                }
+                return false;
+            }
+        });
         return holder.view;
     }
 
