@@ -76,7 +76,7 @@ public class SidebarRootView extends FrameLayout {
         private ResolveInfoGroup resolveInfoGroup;
         private ContactItem contactItem;
         public int floatUpIndex;
-        public int switchIndex;
+        public int viewIndex;
 
         private boolean isSystemApp = false;
 
@@ -85,7 +85,7 @@ public class SidebarRootView extends FrameLayout {
             itemType = type;
             iconOrig = icon;
             floatUpIndex = initIndex;
-            switchIndex = initIndex;
+            viewIndex = initIndex;
             if (itemType == TYPE_APPLICATION) {
                 resolveInfoGroup = (ResolveInfoGroup) data;
                 String pkg = resolveInfoGroup.getPackageName();
@@ -263,12 +263,23 @@ public class SidebarRootView extends FrameLayout {
 
     public void dropDrag() {
         log.error("dropDrag !");
+        DragItem item = null;
         if (mDragView != null) {
+            item = mDragView.getDragItem();
             mDragView.clearFocus();
             mDragView.setVisibility(View.INVISIBLE);
             removeView(mDragView);
         }
         if (mSideView != null) {
+            ResolveInfoListAdapter adapter = mSideView.getAppListAdapter();
+            if (item != null) {
+                int index = item.viewIndex;
+                if (item.itemType == DragItem.TYPE_APPLICATION) {
+                    ResolveInfoGroup data = item.resolveInfoGroup;
+                    log.error("set item to index ["+index+"]");
+                    adapter.setItem(index, data);
+                }
+            }
             mSideView.notifyAppListDataSetChanged();
         }
     }

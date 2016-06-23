@@ -76,6 +76,30 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
         return position;
     }
 
+    public boolean removeItem(ResolveInfoGroup item) {
+        return mResolveInfos.remove(item);
+    }
+
+    public ResolveInfoGroup removeItem(int index) {
+        if (index < 0 || index >= mAcceptableResolveInfos.size()) {
+            return null;
+        }
+        return mResolveInfos.remove(index);
+    }
+
+    public void addItem(int index, ResolveInfoGroup item) {
+        if (index < 0) {
+            mResolveInfos.add(0, item);
+        } else {
+            mResolveInfos.add(index, item);
+        }
+    }
+
+    public void setItem(int index, ResolveInfoGroup item) {
+        mResolveInfos.remove(item);
+        addItem(index, item);
+    }
+
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;

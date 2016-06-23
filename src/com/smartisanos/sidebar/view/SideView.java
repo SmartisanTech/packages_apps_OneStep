@@ -120,6 +120,10 @@ public class SideView extends RelativeLayout {
         mScrollList = (ScrollView) findViewById(R.id.sideview_scroll_list);
     }
 
+    public ResolveInfoListAdapter getAppListAdapter() {
+        return mResolveAdapter;
+    }
+
     public void notifyAppListDataSetChanged() {
         if (mResolveAdapter != null) {
             mResolveAdapter.notifyDataSetChanged();
@@ -189,7 +193,6 @@ public class SideView extends RelativeLayout {
     public int[] sideViewLoc = new int[2];
     public int[] appListLoc = new int[2];
     private Rect drawingRect = new Rect();
-    private int[] scrollViewLoc = new int[2];
 
     private int[] preLoc = new int[2];
 
@@ -200,7 +203,6 @@ public class SideView extends RelativeLayout {
         preLoc[0] = x;
         preLoc[1] = y;
         mShareList.getLocationOnScreen(appListLoc);
-        mScrollList.getLocationOnScreen(scrollViewLoc);
 //        log.error("app list view loc ["+appListLoc[0]+"], ["+appListLoc[1]+"]");
         log.error("touch at ["+x+", "+y+"] scroll view H ["+mScrollList.getHeight()+"], TOP ["+mScrollList.getTop()+"]");
         int viewWidth = mShareList.getWidth();
@@ -217,6 +219,9 @@ public class SideView extends RelativeLayout {
                 int subViewHeight = drawingRect.bottom / count;
                 int position = localLoc[1] / subViewHeight;
                 mShareList.pointToNewPositionWithAnim(position);
+                if (position >= 0) {
+                    mRootView.getDraggedView().getDragItem().viewIndex = position;
+                }
 //                post(new Runnable() {
 //                    @Override
 //                    public void run() {
