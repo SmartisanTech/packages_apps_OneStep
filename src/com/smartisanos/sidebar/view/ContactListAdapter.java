@@ -5,6 +5,7 @@ import java.util.List;
 import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.ContactManager;
+import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 
@@ -22,7 +23,7 @@ import android.widget.TextView;
 import com.smartisanos.sidebar.R;
 
 public class ContactListAdapter extends BaseAdapter {
-    private static final String TAG = ContactListAdapter.class.getName();
+    private static final LOG log = LOG.getInstance(ContactListAdapter.class);
 
     private Context mContext;
     private ContactManager mManager;
@@ -66,10 +67,15 @@ public class ContactListAdapter extends BaseAdapter {
             holder.contactIcon = (ImageView) ret.findViewById(R.id.contact_icon);
             holder.typeIcon = (ImageView) ret.findViewById(R.id.type_icon);
             holder.displayName = (TextView) ret.findViewById(R.id.display_name);
+            holder.mItem = mContacts.get(position);
+            holder.view = ret;
             ret.setTag(holder);
-        }else{
+        } else {
             ret = convertView;
             holder = (ViewHolder) ret.getTag();
+            if (holder.view.getVisibility() == View.INVISIBLE) {
+                holder.view.setVisibility(View.VISIBLE);
+            }
         }
         final Bitmap avatar = mContacts.get(position).getAvatar();
         holder.contactIcon.setImageBitmap(BitmapUtils.convertToBlackWhite(avatar));
@@ -87,18 +93,18 @@ public class ContactListAdapter extends BaseAdapter {
                     if(accept){
                         holder.contactIcon.setImageBitmap(avatar);
                     }
-                    Log.d(TAG, "ACTION_DRAG_ENTERED");
+                    log.d("ACTION_DRAG_ENTERED");
                     return accept;
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    Log.d(TAG, "ACTION_DRAG_ENTERED");
+                    log.d("ACTION_DRAG_ENTERED");
                     holder.displayName.setVisibility(View.VISIBLE);
                     return true;
                 case DragEvent.ACTION_DRAG_EXITED:
-                    Log.d(TAG, "ACTION_DRAG_EXITED");
+                    log.d("ACTION_DRAG_EXITED");
                     holder.displayName.setVisibility(View.GONE);
                     return true;
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    Log.d(TAG, "ACTION_DRAG_LOCATION");
+                    log.d("ACTION_DRAG_LOCATION");
                     return true;
                 case DragEvent.ACTION_DROP:
                     boolean ret =  ri.handleDragEvent(event);
@@ -116,9 +122,35 @@ public class ContactListAdapter extends BaseAdapter {
         return ret;
     }
 
-    class ViewHolder {
+    public static class ViewHolder {
+        public View view;
         public ImageView contactIcon;
         public ImageView typeIcon;
         public TextView displayName;
+
+        public ContactItem mItem;
+    }
+
+    public int objectIndex(ContactItem item) {
+        if (item == null) {
+            return -1;
+        }
+        if (mContacts == null) {
+            return -1;
+        }
+        return mContacts.indexOf(item);
+    }
+
+    public void setItem(int index, ContactItem item) {
+        mContacts.remove(item);
+        addItem(index, item);
+    }
+
+    public void addItem(int index, ContactItem item) {
+        if (index < 0) {
+            mContacts.add(0, item);
+        } else {
+            mContacts.add(index, item);
+        }
     }
 }

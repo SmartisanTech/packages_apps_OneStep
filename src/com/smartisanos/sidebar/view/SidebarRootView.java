@@ -271,16 +271,22 @@ public class SidebarRootView extends FrameLayout {
             removeView(mDragView);
         }
         if (mSideView != null) {
-            ResolveInfoListAdapter adapter = mSideView.getAppListAdapter();
             if (item != null) {
                 int index = item.viewIndex;
                 if (item.itemType == DragItem.TYPE_APPLICATION) {
                     ResolveInfoGroup data = item.resolveInfoGroup;
                     log.error("set item to index ["+index+"]");
+                    ResolveInfoListAdapter adapter = mSideView.getAppListAdapter();
                     adapter.setItem(index, data);
+                } else if (item.itemType == DragItem.TYPE_SHORTCUT) {
+                    ContactItem contactItem = item.contactItem;
+                    log.error("set item to index ["+index+"]");
+                    ContactListAdapter adapter = mSideView.getContactListAdapter();
+                    adapter.setItem(index, contactItem);
                 }
             }
             mSideView.notifyAppListDataSetChanged();
+            mSideView.notifyContactListDataSetChanged();
         }
     }
 
