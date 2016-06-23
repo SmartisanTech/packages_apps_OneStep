@@ -42,6 +42,8 @@ public class Anim {
 
 
     //Android anim name
+    private static final String X           = "x";
+    private static final String Y           = "y";
     private static final String TRANSLATE_X = "translationX";
     private static final String TRANSLATE_Y = "translationY";
     private static final String ROTATION    = "rotation";
@@ -54,8 +56,6 @@ public class Anim {
     public static final int TRANSLATE = 1001;
     public static final int ROTATE    = 1002;
     public static final int SCALE     = 1003;
-
-    private int pid;
 
     private Object mView;
     private int animType;
@@ -78,8 +78,6 @@ public class Anim {
         if (from == null || to == null) {
             throw new IllegalArgumentException("lose from or to");
         }
-        pid = Process.myTid();
-        log.error("pid ["+pid+"]");
         mView = view;
         animType = type;
         duration = time;
@@ -95,6 +93,7 @@ public class Anim {
                 break;
             }
             case SCALE : {
+                initScale(mFrom, mTo);
                 break;
             }
         }
@@ -104,14 +103,28 @@ public class Anim {
         if (from == null || to == null) {
             throw new IllegalArgumentException("something is null ["+from+"]["+to+"]");
         }
-        log.error("initTranslate X ["+from.x+"] => ["+to.x+"], Y ["+from.y+"] => ["+to.y+"]");
         mAnimList = new ArrayList<Animator>();
         if (from.x != to.x) {
-            ObjectAnimator animatorX = ObjectAnimator.ofFloat(mView, TRANSLATE_X, from.x, to.x);
+            ObjectAnimator animatorX = ObjectAnimator.ofFloat(mView, X, from.x, to.x);
             mAnimList.add(animatorX);
         }
         if (from.y != to.y) {
-            ObjectAnimator animatorY = ObjectAnimator.ofFloat(mView, TRANSLATE_Y, from.y, to.y);
+            ObjectAnimator animatorY = ObjectAnimator.ofFloat(mView, Y, from.y, to.y);
+            mAnimList.add(animatorY);
+        }
+    }
+
+    private void initScale(Vector3f from, Vector3f to) {
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("something is null ["+from+"]["+to+"]");
+        }
+        mAnimList = new ArrayList<Animator>();
+        if (from.x != to.x) {
+            ObjectAnimator animatorX = ObjectAnimator.ofFloat(mView, SCALE_X, from.x, to.x);
+            mAnimList.add(animatorX);
+        }
+        if (from.y != to.y) {
+            ObjectAnimator animatorY = ObjectAnimator.ofFloat(mView, SCALE_Y, from.y, to.y);
             mAnimList.add(animatorY);
         }
     }
@@ -130,6 +143,24 @@ public class Anim {
         mAnimationSet.setInterpolator(interpolator);
         mAnimationSet.addListener(listener);
         mAnimationSet.start();
+    }
+
+    public List<ObjectAnimator> getAnimList() {
+        if (mAnimList == null || mAnimList.size() == 0) {
+            return null;
+        }
+        List<ObjectAnimator> list = new ArrayList<ObjectAnimator>();
+        int size = mAnimList.size();
+        AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(mInOut);
+        for (int i = 0; i < size; i++) {
+            ObjectAnimator anim = (ObjectAnimator) mAnimList.get(i);
+            if (anim != null) {
+                anim.setDuration(duration);
+                anim.setInterpolator(interpolator);
+                list.add(anim);
+            }
+        }
+        return list;
     }
 
     private class AnimatorSetListener implements Animator.AnimatorListener {

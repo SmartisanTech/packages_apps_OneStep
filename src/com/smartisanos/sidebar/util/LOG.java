@@ -170,16 +170,17 @@ public class LOG {
         _info(getLogString(info));
     }
 
-    public void error(String info) {
-        _error(getLogString(info));
-    }
-
     public void info(String tag, String info) {
         if (DISABLE_INFO_LOG) {
             return;
         }
         if (close) { return; }
         _info(getLogString(tag + " : " + info));
+    }
+
+    public void error(String info) {
+        if (close) { return; }
+        _error(getLogString(info));
     }
 
     public void error(String tag, String info) {
@@ -200,5 +201,21 @@ public class LOG {
 
     private static void _error(String info) {
         Log.e(TAG, info);
+    }
+
+    public void d(String info) {
+        if (DISABLE_INFO_LOG) { return; }
+        if (close) {return;}
+        _d(getLogString(info));
+    }
+
+    public void d(String tag, String info) {
+        if (DISABLE_INFO_LOG) { return; }
+        if (close) {return;}
+        _d(tag + " : " + info);
+    }
+
+    private static void _d(String info) {
+        Log.d(TAG, info);
     }
 }

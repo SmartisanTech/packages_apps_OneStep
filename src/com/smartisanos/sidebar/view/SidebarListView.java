@@ -1,18 +1,26 @@
 package com.smartisanos.sidebar.view;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.util.SidebarAdapter;
+import com.smartisanos.sidebar.util.LOG;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
-public class SidebarListView extends ListView {
+import java.util.ArrayList;
+import java.util.List;
 
+public class SidebarListView extends ListView {
+    private static final LOG log = LOG.getInstance(SidebarListView.class);
+
+    private Context mContext;
     private DragEvent mStartDragEvent = null;
     private boolean mNeedFootView = false;
     private View mFootView;
@@ -31,7 +39,8 @@ public class SidebarListView extends ListView {
     public SidebarListView(Context context, AttributeSet attrs,
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        mFootView = LayoutInflater.from(mContext).inflate(R.layout.sidebar_view_divider, null);
+        mFootView = LayoutInflater.from(context).inflate(R.layout.sidebar_view_divider, null);
+        mContext = context;
     }
 
     @Override
@@ -65,22 +74,73 @@ public class SidebarListView extends ListView {
         }
     }
 
-    @Override
-    public boolean dispatchDragEvent(DragEvent event) {
-//        if(event.getAction() == DragEvent.ACTION_DRAG_STARTED){
-//            mStartDragEvent = DragEvent.obtain(event);
-//            if(getAdapter() instanceof SidebarAdapter){
-//                SidebarAdapter adapter = (SidebarAdapter)getAdapter();
-//                adapter.setDragEvent(event);
-//            }
-//        }else if(event.getAction() == DragEvent.ACTION_DRAG_ENDED){
-//            mStartDragEvent.recycle();
-//            mStartDragEvent = null;
-//            if(getAdapter() instanceof SidebarAdapter){
-//                SidebarAdapter adapter = (SidebarAdapter)getAdapter();
-//                adapter.setDragEvent(null);
-//            }
-//        }
-        return super.dispatchDragEvent(event);
+    private int mPrePosition = -1;
+    public void setPrePosition(int position) {
+        mPrePosition = position;
+        if (mPrePosition == -1) {
+            viewArr = null;
+        }
+    }
+
+    private View[] viewArr = null;
+    private AnimTimeLine moveAnimTimeLine;
+
+    public void pointToNewPositionWithAnim(int position) {
+        if (position < 0) {
+            return;
+        }
+        if (mPrePosition == position) {
+            return;
+        }
+        mPrePosition = position;
+        int count = getCount();
+        if (viewArr == null || viewArr.length != count) {
+            viewArr = new View[count];
+        }
+        int index = -1;
+        for (int i = 0; i < count; i++) {
+            View view = getChildAt(i);
+//            String name = Integer.toHexString(System.identityHashCode(view));
+//            log.error("A ["+i+"]"+ name + " top ["+view.getTop()+"]");
+            if (view.getVisibility() == View.INVISIBLE) {
+                viewArr[position] = view;
+                continue;
+            }
+            index = index + 1;
+            if (index == position) {
+                index = index + 1;
+            }
+            viewArr[index] = view;
+        }
+        int[] listViewLoc = new int[2];
+        getLocationOnScreen(listViewLoc);
+        moveAnimTimeLine = new AnimTimeLine();
+        for (int i = 0; i < viewArr.length; i++) {
+            View view = viewArr[i];
+            int top = view.getTop();
+            int height = view.getHeight();
+            int viewIndex = top / height;
+            int fromY = (int) view.getY();
+            int toY = (height * i);
+            if (fromY != toY) {
+                log.error("view move from ["+viewIndex+"] to ["+i+"] ("+fromY+") -> ("+toY+")");
+                Vector3f from = new Vector3f(0, fromY);
+                Vector3f to = new Vector3f(0, toY);
+                Anim anim = new Anim(view, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
+                moveAnimTimeLine.addAnim(anim);
+            }
+        }
+        moveAnimTimeLine.setAnimListener(new AnimListener() {
+            @Override
+            public void onStart() {
+                log.error("move anim start");
+            }
+
+            @Override
+            public void onComplete() {
+                log.error("move anim end");
+            }
+        });
+        moveAnimTimeLine.start();
     }
 }

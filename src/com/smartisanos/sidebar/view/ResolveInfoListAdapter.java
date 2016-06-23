@@ -1,10 +1,7 @@
 package com.smartisanos.sidebar.view;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,14 +10,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.util.BitmapUtils;
+import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 import com.smartisanos.sidebar.util.SidebarAdapter;
@@ -29,7 +25,7 @@ import com.smartisanos.sidebar.util.Utils;
 import smartisanos.util.SidebarUtils;
 
 public class ResolveInfoListAdapter extends SidebarAdapter {
-    private static final String TAG = ResolveInfoListAdapter.class.getName();
+    private static final LOG log = LOG.getInstance(ResolveInfoListAdapter.class);
 
     private Context mContext;
     private List<ResolveInfoGroup> mResolveInfos;
@@ -102,6 +98,9 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
             holder.resolveInfoGroup = resolveInfoGroup;
+            if (holder.view.getVisibility() == View.INVISIBLE) {
+                holder.view.setVisibility(View.VISIBLE);
+            }
         }
         holder.updateIconFlag(SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
         holder.view.setOnDragListener(new View.OnDragListener() {
@@ -114,21 +113,21 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
                         if(accept){
                             holder.iconImageView.setImageDrawable(holder.resolveInfoGroup.loadIcon(mContext.getPackageManager()));
                         }
-                        Log.d(TAG,"ACTION_DRAG_STARTED, accpet -> " + accept);
+                        log.d("ACTION_DRAG_STARTED, accpet -> " + accept);
                         return accept;
                     case DragEvent.ACTION_DRAG_ENTERED:
-                        Log.d(TAG, "ACTION_DRAG_ENTERED");
+                        log.d("ACTION_DRAG_ENTERED");
                         holder.view.animate().scaleX(1.1f).scaleY(1.1f).setDuration(100).start();
                         return true;
                     case DragEvent.ACTION_DRAG_EXITED:
-                        Log.d(TAG, "ACTION_DRAG_EXITED");
+                        log.d("ACTION_DRAG_EXITED");
                         holder.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
                         return true;
                     case DragEvent.ACTION_DRAG_LOCATION:
-                        Log.d(TAG, "ACTION_DRAG_LOCATION");
+                        log.d("ACTION_DRAG_LOCATION");
                         return true;
                     case DragEvent.ACTION_DROP:
-                        Log.d(TAG, "ACTION_DRAG_DROP");
+                        log.d("ACTION_DRAG_DROP");
                         holder.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
                         boolean ret =  holder.resolveInfoGroup.handleEvent(mContext, event);
                         if(ret){

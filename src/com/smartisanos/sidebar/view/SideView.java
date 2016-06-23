@@ -4,15 +4,20 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
+import android.util.EventLog;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.R;
@@ -32,6 +37,7 @@ public class SideView extends RelativeLayout {
 
     private SidebarListView mShareList, mContactList;
     private ResolveInfoListAdapter mResolveAdapter;
+    private ScrollView mScrollList;
 
     private BaseAdapter mContactAdapter;
 
@@ -110,6 +116,14 @@ public class SideView extends RelativeLayout {
         mResolveAdapter = new ResolveInfoListAdapter(mContext);
         mShareList.setAdapter(mResolveAdapter);
         mShareList.setOnItemLongClickListener(mShareItemOnLongClickListener);
+
+        mScrollList = (ScrollView) findViewById(R.id.sideview_scroll_list);
+    }
+
+    public void notifyAppListDataSetChanged() {
+        if (mResolveAdapter != null) {
+            mResolveAdapter.notifyDataSetChanged();
+        }
     }
 
     private void updateExitButtonBackground() {
@@ -125,7 +139,7 @@ public class SideView extends RelativeLayout {
         mResolveAdapter.notifyDataSetChanged();
     }
 
-    private static final boolean DEV_FLAG = true;
+    private static final boolean DEV_FLAG = false;
 
     private AdapterView.OnItemLongClickListener mShareItemOnLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
@@ -145,16 +159,18 @@ public class SideView extends RelativeLayout {
             ResolveInfoListAdapter.ViewHolder holder = (ResolveInfoListAdapter.ViewHolder) view.getTag();
             int width = holder.iconImageView.getWidth();
             int height = holder.iconImageView.getHeight();
-            log.error("onItemLongClick size ["+width+"], ["+height+"]");
             PackageManager pm = mContext.getPackageManager();
             ResolveInfoGroup data = holder.resolveInfoGroup;
             Drawable iconDrawable = data.loadIcon(pm);
             Bitmap icon = drawableToBitmap(iconDrawable, width, height);
 
             int index = mResolveAdapter.objectIndex(data);
+            mShareList.setPrePosition(index);
             SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(
-                    SidebarRootView.DragItem.TYPE_APPLICATION, icon, data, index);
+                    mContext, SidebarRootView.DragItem.TYPE_APPLICATION, icon, data, index);
             mRootView.startDrag(dragItem);
+            mSideView.getLocationOnScreen(sideViewLoc);
+            holder.view.setVisibility(View.INVISIBLE);
             return false;
         }
     };
@@ -168,5 +184,71 @@ public class SideView extends RelativeLayout {
         drawable.setBounds(0, 0, width, height);
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    public int[] sideViewLoc = new int[2];
+    public int[] appListLoc = new int[2];
+    private Rect drawingRect = new Rect();
+    private int[] scrollViewLoc = new int[2];
+
+    private int[] preLoc = new int[2];
+
+    public void dragObjectMove(int x, int y) {
+        if (x < sideViewLoc[0]) {
+            return;
+        }
+        preLoc[0] = x;
+        preLoc[1] = y;
+        mShareList.getLocationOnScreen(appListLoc);
+        mScrollList.getLocationOnScreen(scrollViewLoc);
+//        log.error("app list view loc ["+appListLoc[0]+"], ["+appListLoc[1]+"]");
+        log.error("touch at ["+x+", "+y+"] scroll view H ["+mScrollList.getHeight()+"], TOP ["+mScrollList.getTop()+"]");
+        int viewWidth = mShareList.getWidth();
+        int viewHeight = mShareList.getHeight();
+        if (inArea(x, y, viewWidth, viewHeight, appListLoc)) {
+            log.error("in list area");
+            int count = mResolveAdapter.getCount();
+            if (count > 0) {
+                //convert global coordinate to view local coordinate
+                log.error("h ["+viewHeight+"]");
+                mShareList.getDrawingRect(drawingRect);
+                int[] localLoc = convertToLocalCoordinate(x, y, appListLoc, drawingRect);
+                log.error("local loc Y ["+localLoc[1]+"]");
+                int subViewHeight = drawingRect.bottom / count;
+                int position = localLoc[1] / subViewHeight;
+                mShareList.pointToNewPositionWithAnim(position);
+//                post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //list view scroll
+//                    }
+//                });
+            } else {
+            }
+        } else {
+            log.error("out list area");
+        }
+    }
+
+    private int[] convertToLocalCoordinate(int x, int y, int[] viewLoc, Rect drawingRect) {
+        int[] loc = new int[2];
+        loc[0] = x - viewLoc[0];
+        loc[1] = y - viewLoc[1];
+        loc[0] = loc[0] + drawingRect.left;
+        loc[1] = loc[1] + drawingRect.top;
+        return loc;
+    }
+
+    private boolean inArea(float x, float y, int viewWidth, int viewHeight, int[] loc) {
+        int left   = loc[0];
+        int top    = loc[1];
+        int right  = left + viewWidth;
+        int bottom = top + viewHeight;
+        if (left < x && x < right) {
+            if (top < y && y < bottom) {
+                return true;
+            }
+        }
+        return false;
     }
 }

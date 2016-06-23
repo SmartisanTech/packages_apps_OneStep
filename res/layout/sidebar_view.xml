@@ -18,6 +18,7 @@
         android:layout_gravity="right|top"
         android:layout_alignParentRight="true" >
         <ScrollView
+            android:id="@+id/sideview_scroll_list"
             android:scrollbars="none"
             android:layout_marginTop="86dp"
             android:layout_width="wrap_content"

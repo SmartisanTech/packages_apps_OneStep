@@ -2,6 +2,8 @@ package com.smartisanos.sidebar.view;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -24,6 +26,7 @@ public class SidebarRootView extends FrameLayout {
 
     private Context mContext;
     private DragView mDragView;
+    private SideView mSideView;
 
     public SidebarRootView(Context context) {
         super(context);
@@ -40,9 +43,20 @@ public class SidebarRootView extends FrameLayout {
         mContext = context;
     }
 
+    public void resetSidebarWindow() {
+        removeView(mDragView);
+        mDragView = null;
+        SidebarController.getInstance(mContext).updateDragWindow(false);
+    }
+
+    public void setSideView(SideView sideView) {
+        mSideView = sideView;
+    }
+
     private Trash mTrash;
     public void setTrashView() {
         mTrash = new Trash(mContext, (FrameLayout) findViewById(R.id.trash));
+        mTrash.mRootView = this;
     }
 
     public Trash getTrash() {
@@ -53,23 +67,69 @@ public class SidebarRootView extends FrameLayout {
         public static final int TYPE_APPLICATION = 1;
         public static final int TYPE_SHORTCUT = 2;
 
+        private Context mContext;
+
         private Bitmap iconOrig;
         private Bitmap iconFloatUp;
 
         private int itemType;
         private ResolveInfoGroup resolveInfoGroup;
         private ContactItem contactItem;
-        private int oldIndex;
+        public int floatUpIndex;
+        public int switchIndex;
 
-        public DragItem(int type, Bitmap icon, Object data, int initIndex) {
+        private boolean isSystemApp = false;
+
+        public DragItem(Context context, int type, Bitmap icon, Object data, int initIndex) {
+            mContext = context;
             itemType = type;
             iconOrig = icon;
-            oldIndex = initIndex;
+            floatUpIndex = initIndex;
+            switchIndex = initIndex;
             if (itemType == TYPE_APPLICATION) {
                 resolveInfoGroup = (ResolveInfoGroup) data;
+                String pkg = resolveInfoGroup.getPackageName();
+                isSystemApp = isSystemAppByPackageName(context, pkg);
             } else if (itemType == TYPE_SHORTCUT) {
                 contactItem = (ContactItem) data;
             }
+        }
+
+        public int getItemType() {
+            return itemType;
+        }
+
+        public boolean isSystemApp() {
+            return isSystemApp;
+        }
+
+        public static final int FLAG_PRIVILEGED = 1<<30;
+        public static final int PRIVATE_FLAG_PRIVILEGED = 1<<3;
+
+        public static boolean isSystemAppByPackageName(Context context, final String pkgName) {
+            PackageManager pm = context.getPackageManager();
+            int appFlags = 0;
+            try {
+                appFlags = pm.getApplicationInfo(pkgName, 0).flags;
+            } catch (PackageManager.NameNotFoundException e) {
+                return false;
+            }
+            if ((appFlags & android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0
+                    || (appFlags & FLAG_PRIVILEGED) != 0
+                    || (appFlags & PRIVATE_FLAG_PRIVILEGED) != 0) {
+                try {
+                    PackageInfo pinfo = pm.getPackageInfo(pkgName, 0);
+                    if(pinfo != null) {
+                        String path = pinfo.applicationInfo.sourceDir;
+                        if(path != null && path.startsWith("/system")) {
+                            return true;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return false;
         }
     }
 
@@ -146,6 +206,10 @@ public class SidebarRootView extends FrameLayout {
             canvas.drawBitmap(mBitmap, 0.0f, 0.0f, mPaint);
         }
 
+        public DragItem getDragItem() {
+            return mItem;
+        }
+
         public void move(float touchX, float touchY) {
             setTranslationX(touchX - viewWidth / 2);
             setTranslationY(touchY - viewHeight / 2);
@@ -176,6 +240,7 @@ public class SidebarRootView extends FrameLayout {
         //set sidebar to full screen
         SidebarController.getInstance(mContext).updateDragWindow(true);
         mDragView = new DragView(mContext, item);
+        mDragView.clearFocus();
         post(new Runnable() {
             public void run() {
                 mTrash.trashAppearWithAnim();
@@ -196,13 +261,29 @@ public class SidebarRootView extends FrameLayout {
         });
     }
 
+    public void dropDrag() {
+        log.error("dropDrag !");
+        if (mDragView != null) {
+            mDragView.clearFocus();
+            mDragView.setVisibility(View.INVISIBLE);
+            removeView(mDragView);
+        }
+        if (mSideView != null) {
+            mSideView.notifyAppListDataSetChanged();
+        }
+    }
+
+    public DragView getDraggedView() {
+        return mDragView;
+    }
+
     private final float[] pointDownLoc = new float[2];
 
     private final boolean ENABLE_TOUCH_LOG = false;
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        int action = event.getAction();
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction() & MotionEvent.ACTION_MASK;
         if (action == MotionEvent.ACTION_DOWN) {
             pointDownLoc[0] = event.getRawX();
             pointDownLoc[1] = event.getRawY();
@@ -210,59 +291,77 @@ public class SidebarRootView extends FrameLayout {
         }
         if (mDragView == null) {
             if (action == MotionEvent.ACTION_DOWN) {
-                SidebarController controller = SidebarController.getInstance(mContext);
-                if (controller != null) {
-                    if (controller.getCurrentContentType() != ContentView.ContentType.NONE) {
-                        Utils.resumeSidebar(mContext);
-                        return true;
-                    }
+                if (processResumeSidebar()) {
+                    return true;
                 }
             }
         } else {
-            switch (action) {
-                case MotionEvent.ACTION_DOWN : {
-                    if (ENABLE_TOUCH_LOG) log.error("ACTION_DOWN");
-                    pointDownLoc[0] = event.getX();
-                    pointDownLoc[1] = event.getY();
-                    break;
-                }
-                case MotionEvent.ACTION_UP : {
-                    if (ENABLE_TOUCH_LOG) log.error("ACTION_UP");
-                    mTrash.trashDisappearWithAnim(this);
-                    break;
-                }
-                case MotionEvent.ACTION_MOVE : {
-                    float x = event.getX();
-                    float y = event.getY();
-                    mDragView.move(x, y);
-                    if (mTrash.inTrashReactArea(x, y)) {
-                        //in trash area
-                        mTrash.trashFloatUpWithAnim();
-                    } else {
-                        //out trash area
-                        mTrash.trashFallDownWithAnim();
-                    }
-                    if (ENABLE_TOUCH_LOG) log.error("ACTION_MOVE");
-                    break;
-                }
-                case MotionEvent.ACTION_CANCEL : {
-                    if (ENABLE_TOUCH_LOG) log.error("ACTION_CANCEL");
-                    mTrash.trashDisappearWithAnim(this);
-                    break;
-                }
-                case MotionEvent.ACTION_SCROLL : {
-                    if (ENABLE_TOUCH_LOG) log.error("ACTION_SCROLL");
-                    break;
-                }
-            }
+            precessTouch(event);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (mDragView != null) {
             return true;
         }
+        return super.onInterceptTouchEvent(event);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
         return super.dispatchTouchEvent(event);
     }
 
-    public void resetSidebarWindow() {
-        removeView(mDragView);
-        mDragView = null;
-        SidebarController.getInstance(mContext).updateDragWindow(false);
+    private boolean processResumeSidebar() {
+        SidebarController controller = SidebarController.getInstance(mContext);
+        if (controller != null) {
+            if (controller.getCurrentContentType() != ContentView.ContentType.NONE) {
+                log.error("resumeSidebar !");
+                Utils.resumeSidebar(mContext);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void precessTouch(MotionEvent event) {
+        int action = event.getAction();
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN : {
+                if (ENABLE_TOUCH_LOG) log.error("ACTION_DOWN");
+                pointDownLoc[0] = x;
+                pointDownLoc[1] = y;
+                break;
+            }
+            case MotionEvent.ACTION_UP : {
+                if (ENABLE_TOUCH_LOG) log.error("ACTION_UP");
+                if (mTrash.dragObjectUpOnUp(x, y)) {
+                    mTrash.trashDisappearWithAnim(this);
+                    break;
+                }
+                dropDrag();
+                mTrash.trashDisappearWithAnim(this);
+                break;
+            }
+            case MotionEvent.ACTION_MOVE : {
+                mDragView.move(x, y);
+                mSideView.dragObjectMove(x, y);
+                mTrash.dragObjectMoveTo(x, y);
+                if (ENABLE_TOUCH_LOG) log.error("ACTION_MOVE");
+                break;
+            }
+            case MotionEvent.ACTION_CANCEL : {
+                if (ENABLE_TOUCH_LOG) log.error("ACTION_CANCEL");
+                break;
+            }
+            case MotionEvent.ACTION_SCROLL : {
+                if (ENABLE_TOUCH_LOG) log.error("ACTION_SCROLL");
+                break;
+            }
+        }
     }
 }

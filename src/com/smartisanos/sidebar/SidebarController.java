@@ -103,6 +103,7 @@ public class SidebarController {
             mSidebarRoot.setTrashView();
             mSideView = (SideView) mSidebarRoot.findViewById(R.id.sidebar);
             mSideView.setRootView(mSidebarRoot);
+            mSidebarRoot.setSideView(mSideView);
         }
 
         if(mTopView == null){

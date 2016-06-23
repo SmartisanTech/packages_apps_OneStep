@@ -1,20 +1,24 @@
 package com.smartisanos.sidebar.util.anim;
 
 public class Vector3f {
-    public float x;
-    public float y;
-    public float z;
+    public int x;
+    public int y;
+    public int z;
 
-    public Vector3f(float _x, float _y) {
+    public Vector3f(int _x, int _y) {
         x = _x;
         y = _y;
         z = 0;
     }
 
-    public Vector3f(float _x, float _y, float _z) {
+    public Vector3f(int _x, int _y, int _z) {
         x = _x;
         y = _y;
         z = _z;
+    }
+
+    public Vector3f(float _x, float _y) {
+        this((int) _x, (int) _y);
     }
 
     @Override
@@ -29,5 +33,10 @@ public class Vector3f {
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return new String("("+x+", "+y+", "+z+")");
     }
 }

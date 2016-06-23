@@ -1,7 +1,5 @@
 package com.smartisanos.sidebar.view;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
@@ -9,11 +7,12 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.action.UninstallAction;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.anim.Anim;
-import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
@@ -27,14 +26,7 @@ public class Trash {
     private Context mContext;
     private FrameLayout mTrashView;
 
-    private static final String TRANSLATE_X = "translationX";
-    private static final String TRANSLATE_Y = "translationY";
-    private static final String ROTATION    = "rotation";
-    private static final String ROTATION_X  = "rotationX";
-    private static final String ROTATION_Y  = "rotationY";
-    private static final String SCALE_X     = "scaleX";
-    private static final String SCALE_Y     = "scaleY";
-    private static final String ALHPA       = "alpha";
+    public SidebarRootView mRootView;
 
     private int mTrashWidth;
     private int mTrashHeight;
@@ -43,6 +35,8 @@ public class Trash {
     private int mTrashDisplayHeight;
     private int mTrashFloatUpHeight;
     private int [] trash_react_area = new int[4];
+    private int [] trash_uninstall_react_area = new int[4];
+
 
     public static final int TRASH_HIDE = 1;
     public static final int TRASH_SHOW = 2;
@@ -54,6 +48,8 @@ public class Trash {
         mContext = context;
         mTrashView = trashView;
         Resources resources = mContext.getResources();
+        mTrashWidth         = resources.getInteger(R.integer.trash_width);;
+        mTrashHeight        = resources.getInteger(R.integer.trash_height);
         mTrashDisplayHeight = resources.getInteger(R.integer.trash_display_height);
         mTrashFloatUpHeight = resources.getInteger(R.integer.trash_float_up_height);
     }
@@ -62,7 +58,7 @@ public class Trash {
         if (trash_react_area[0] == 0) {
             return false;
         }
-        if (x > trash_react_area[0] && x < trash_react_area[2]) {
+        if (trash_react_area[0] < x && x < trash_react_area[2]) {
             if (y > trash_react_area[1]) {
                 return true;
             }
@@ -70,12 +66,63 @@ public class Trash {
         return false;
     }
 
+    public boolean inTrashUninstallReactArea(float x, float y) {
+        if (trash_uninstall_react_area[0] == 0) {
+            return false;
+        }
+        if (trash_uninstall_react_area[0] < x && x < trash_uninstall_react_area[2]) {
+            if (y > trash_uninstall_react_area[1]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void dragObjectMoveTo(float x, float y) {
+        if (inTrashReactArea(x, y)) {
+            //in trash area
+            trashFloatUpWithAnim();
+        } else {
+            //out trash area
+            trashFallDownWithAnim();
+        }
+    }
+
+    public boolean dragObjectUpOnUp(float x, float y) {
+        boolean processUninstall = false;
+        log.error("dragObjectUpOnUp ["+x+"], ["+y+"]");
+        if (!inTrashUninstallReactArea(x, y)) {
+            return processUninstall;
+        }
+        SidebarRootView.DragView dragView = mRootView.getDraggedView();
+        if (dragView == null) {
+            log.error("dragObjectUpOnUp return by dragView is null");
+            return processUninstall;
+        }
+        SidebarRootView.DragItem item = dragView.getDragItem();
+        if (item == null) {
+            log.error("dragObjectUpOnUp return by dragItem is null");
+            return processUninstall;
+        }
+        if (item.getItemType() == SidebarRootView.DragItem.TYPE_APPLICATION && item.isSystemApp()) {
+            //check is system app !
+            boolean isSystemApp = false;
+            if (isSystemApp) {
+                Toast toast = Toast.makeText(mContext, R.string.uninstall_system_app_text, Toast.LENGTH_XLONG);
+                toast.show();
+            }
+            log.error("dragObjectUpOnUp return by isSystemApp");
+            return processUninstall;
+        }
+        UninstallAction action = new UninstallAction(mContext);
+        action.showUninstallDialog();
+        processUninstall = true;
+        log.error("handle uninstall process");
+        return processUninstall;
+    }
+
     public void initTrashView() {
         mTrashView.setVisibility(View.GONE);
-        Resources resources = mContext.getResources();
-        mTrashWidth = resources.getInteger(R.integer.trash_width);;
-        mTrashHeight = resources.getInteger(R.integer.trash_height);
-        log.error("initTrashView ["+mTrashWidth+"] ["+mTrashHeight+"]");
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
@@ -107,6 +154,11 @@ public class Trash {
         trash_react_area[1] = top;
         trash_react_area[2] = right;
         trash_react_area[3] = bottom;
+
+        trash_uninstall_react_area[0] = left;
+        trash_uninstall_react_area[1] = mWindowHeight - mTrashHeight;
+        trash_uninstall_react_area[2] = right;
+        trash_uninstall_react_area[3] = bottom;
     }
 
     public void hieTrashView() {
@@ -120,14 +172,12 @@ public class Trash {
 
     public void trashAppearWithAnim() {
         if (mTrashStatus != TRASH_HIDE) {
-            log.error("trashAppearWithAnim return by status is not TRASH_HIDE");
             return;
         }
         if (trashAppearAnimRunning) {
             log.error("trashAppearWithAnim return by trashAppearAnimRunning true");
             return;
         }
-        log.error("trashAppearWithAnim");
         trashAppearAnimRunning = true;
         int fromY = mWindowHeight;
         int toY = mWindowHeight - mTrashDisplayHeight;
@@ -152,7 +202,6 @@ public class Trash {
 
     public void trashDisappearWithAnim(final SidebarRootView rootView) {
         if (mTrashStatus == TRASH_HIDE) {
-            log.error("trashDisappearWithAnim return by status is TRASH_HIDE");
             return;
         }
         if (trashDisappearAnimRunning) {
@@ -160,11 +209,8 @@ public class Trash {
             return;
         }
         trashDisappearAnimRunning = true;
-        log.error("trashDisappearWithAnim");
-        int fromY = (int) mTrashView.getTranslationY();
-        int toY   = mWindowHeight;
-        Vector3f from = new Vector3f(0, fromY);
-        Vector3f to = new Vector3f(0, toY);
+        Vector3f from = new Vector3f(0, mTrashView.getTranslationY());
+        Vector3f to = new Vector3f(0, mWindowHeight);
         Anim anim = new Anim(mTrashView, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
         anim.setListener(new AnimListener() {
             @Override
@@ -187,7 +233,6 @@ public class Trash {
 
     public void trashFloatUpWithAnim() {
         if (mTrashStatus == TRASH_FLOAT) {
-            log.error("trashFloatUpWithAnim return by mTrashStatus = TRASH_FLOAT");
             return;
         }
         if (mTrashUpAnimRunning) {
@@ -195,7 +240,7 @@ public class Trash {
             return;
         }
         mTrashUpAnimRunning = true;
-        int fromY = (int) mTrashView.getTranslationY();
+        int fromY = (int) mTrashView.getY();
         int toY = mWindowHeight - mTrashDisplayHeight - mTrashFloatUpHeight;
         Vector3f from = new Vector3f(0, fromY);
         Vector3f to = new Vector3f(0, toY);
@@ -216,7 +261,6 @@ public class Trash {
 
     public void trashFallDownWithAnim() {
         if (mTrashStatus != TRASH_FLOAT) {
-            log.error("trashFallDownWithAnim return by mTrashStatus is not TRASH_FLOAT");
             return;
         }
         if (mTrashDownAnimRunning) {
@@ -224,10 +268,8 @@ public class Trash {
             return;
         }
         mTrashDownAnimRunning = true;
-        int fromY = (int) mTrashView.getTranslationY();
-        int toY = mWindowHeight - mTrashDisplayHeight;
-        Vector3f from = new Vector3f(0, fromY);
-        Vector3f to = new Vector3f(0, toY);
+        Vector3f from = new Vector3f(0, mTrashView.getY());
+        Vector3f to = new Vector3f(0, mWindowHeight - mTrashDisplayHeight);
 
         Anim anim = new Anim(mTrashView, Anim.TRANSLATE, 100, Anim.CUBIC_OUT, from, to);
         anim.setListener(new AnimListener() {
