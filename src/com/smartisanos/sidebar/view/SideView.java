@@ -9,9 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -152,7 +154,7 @@ public class SideView extends RelativeLayout {
         mResolveAdapter.notifyDataSetChanged();
     }
 
-    private static final boolean DEV_FLAG = true;
+    private static final boolean DEV_FLAG = false;
 
     private AdapterView.OnItemLongClickListener mShareItemOnLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
@@ -182,7 +184,8 @@ public class SideView extends RelativeLayout {
             SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(
                     mContext, SidebarRootView.DragItem.TYPE_APPLICATION, icon, data, index);
             mRootView.startDrag(dragItem);
-            mScrollList.getLocationOnScreen(sideScrollViewLoc);
+            dragItemType = SidebarRootView.DragItem.TYPE_APPLICATION;
+            getScrollViewLayoutParams();
             holder.view.setVisibility(View.INVISIBLE);
             return false;
         }
@@ -212,7 +215,8 @@ public class SideView extends RelativeLayout {
             SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(
                     mContext, SidebarRootView.DragItem.TYPE_SHORTCUT, icon, item, index);
             mRootView.startDrag(dragItem);
-            mScrollList.getLocationOnScreen(sideScrollViewLoc);
+            dragItemType = SidebarRootView.DragItem.TYPE_SHORTCUT;
+            getScrollViewLayoutParams();
             holder.view.setVisibility(View.INVISIBLE);
             return false;
         }
@@ -229,34 +233,132 @@ public class SideView extends RelativeLayout {
         return bitmap;
     }
 
-    public int[] sideScrollViewLoc = new int[2];
     public int[] appListLoc = new int[2];
     public int[] contactListLoc = new int[2];
     private Rect drawingRect = new Rect();
+    private Rect scrollViewRect = new Rect();
+    private int[] scrollViewLoc = new int[2];
+    private int[] scrollViewSize = new int[2];
+    private int mAppListHeight;
+    private int mContactListHeight;
+    private int dragItemType = 0;
 
     private int[] preLoc = new int[2];
 
-    public void dragObjectMove(int x, int y) {
-        if (x < sideScrollViewLoc[0]) {
+    private void getScrollViewLayoutParams() {
+        initWindowSize(mContext);
+        mAppListHeight = mShareList.getHeight();
+        mContactListHeight = mContactList.getHeight();
+        mScrollList.getLocationOnScreen(scrollViewLoc);
+        scrollViewSize[0] = mScrollList.getWidth();
+        scrollViewSize[1] = mScrollList.getHeight();
+        log.error("scroll view size ("+mScrollList.getWidth()+", "+mScrollList.getHeight()+")");
+        log.error("scroll view loc ["+ scrollViewLoc[0]+", "+ scrollViewLoc[1]+"] " +
+                "rect ["+scrollViewRect.left+", "+scrollViewRect.top+", "+scrollViewRect.right+", "+scrollViewRect.bottom+"]");
+    }
+
+    private int mWindowWidth;
+    private int mWindowHeight;
+
+    private void initWindowSize(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int widthPixels;
+        int heightPixels;
+        if (metrics.heightPixels > metrics.widthPixels) {
+            widthPixels = metrics.widthPixels;
+            heightPixels = metrics.heightPixels;
+        } else {
+            widthPixels = metrics.heightPixels;
+            heightPixels = metrics.widthPixels;
+        }
+        mWindowWidth = widthPixels;
+        mWindowHeight = heightPixels;
+    }
+
+    private int AREA_TYPE_NORMAL = 0;
+    private int AREA_TYPE_TOP = 1;
+    private int AREA_TYPE_BOTTOM = 2;
+
+    private int areaType(int x, int y, int itemViewHeight) {
+        if (x < scrollViewLoc[0]) {
+            return AREA_TYPE_NORMAL;
+        }
+        if ((scrollViewLoc[1] - 20) < y && y < (scrollViewLoc[1] + itemViewHeight)) {
+            if (scrollViewRect.top != 0) {
+                return AREA_TYPE_TOP;
+            }
+        }
+        if (y > mWindowHeight - itemViewHeight) {
+            if (scrollViewRect.bottom < (mAppListHeight + mContactListHeight)) {
+                return AREA_TYPE_BOTTOM;
+            }
+        }
+        return AREA_TYPE_NORMAL;
+    }
+
+    private volatile boolean scrolling = false;
+
+    private void setScrollTo(int area, int itemViewHeight) {
+        if (itemViewHeight == 0) {
+            return;
+        }
+        int scrollY = 0;
+        if (area == AREA_TYPE_TOP) {
+            scrollY = scrollViewRect.top - itemViewHeight;
+            if (scrollY < 0) {
+                scrollY = 0;
+            }
+        } else if (area == AREA_TYPE_BOTTOM) {
+            int totalHeight = mAppListHeight + mContactListHeight;
+            scrollY = scrollViewRect.bottom + itemViewHeight;
+            if (scrollY > totalHeight) {
+                scrollY = totalHeight;
+            }
+        }
+        final int y = scrollY;
+        log.error("setScrollTo type "+area+", Y => " + y);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                mScrollList.smoothScrollTo(0, y);
+//                mScrollList.scrollTo(0, y);
+                scrolling = false;
+            }
+        });
+    }
+
+    private long preScrollTime;
+
+    public void dragObjectMove(int x, int y, long eventTime) {
+        if (x < scrollViewLoc[0]) {
             return;
         }
         preLoc[0] = x;
         preLoc[1] = y;
         mShareList.getLocationOnScreen(appListLoc);
         mContactList.getLocationOnScreen(contactListLoc);
-//        log.error("app list view loc ["+appListLoc[0]+"], ["+appListLoc[1]+"]");
-        log.error("touch at ["+x+", "+y+"] scroll view H ["+mScrollList.getHeight()+"], TOP ["+mScrollList.getTop()+"]");
-        if (inArea(x, y, mShareList, appListLoc)) {
-            log.error("in app list area");
+//        log.error("touch at ["+x+", "+y+"] ("+mShareList.getHeight()+", "+mContactList.getHeight()+")");
+        int itemViewHeight = 0;
+        mScrollList.getDrawingRect(scrollViewRect);
+        int area = AREA_TYPE_NORMAL;
+        if (dragItemType == SidebarRootView.DragItem.TYPE_APPLICATION
+                && inArea(x, y, mShareList, appListLoc)) {
             int count = mResolveAdapter.getCount();
             if (count > 0) {
                 //convert global coordinate to view local coordinate
                 mShareList.getDrawingRect(drawingRect);
                 int[] localLoc = convertToLocalCoordinate(x, y, appListLoc, drawingRect);
-                log.error("A local loc Y ["+localLoc[1]+"]");
                 int subViewHeight = drawingRect.bottom / count;
+                itemViewHeight = subViewHeight;
                 int position = localLoc[1] / subViewHeight;
-                log.error("A position ["+position+"]");
+                if (position >= count) {
+                    return;
+                }
+                area = areaType(x, y, itemViewHeight);
+                log.error("A position ["+position+"], Y ["+localLoc[1]+"] AREA ["+area+"]");
                 mShareList.pointToNewPositionWithAnim(position);
                 if (position >= 0) {
                     if (mRootView.getDraggedView() != null) {
@@ -264,16 +366,20 @@ public class SideView extends RelativeLayout {
                     }
                 }
             }
-        } else if (inArea(x, y, mContactList, contactListLoc)) {
-            log.error("in contact list area");
+        } else if (dragItemType == SidebarRootView.DragItem.TYPE_SHORTCUT
+                && inArea(x, y, mContactList, contactListLoc)) {
             int count = mContactAdapter.getCount();
             if (count > 0) {
                 mContactList.getDrawingRect(drawingRect);
                 int[] localLoc = convertToLocalCoordinate(x, y, contactListLoc, drawingRect);
-                log.error("B local loc Y ["+localLoc[1]+"]");
                 int subViewHeight = drawingRect.bottom / count;
+                itemViewHeight = subViewHeight;
                 int position = localLoc[1] / subViewHeight;
-                log.error("B position ["+position+"]");
+                if (position >= count) {
+                    return;
+                }
+                area = areaType(x, y, itemViewHeight);
+                log.error("B position ["+position+"], Y ["+localLoc[1]+"] AREA ["+area+"]");
                 mContactList.pointToNewPositionWithAnim(position);
                 if (position >= 0) {
                     if (mRootView.getDraggedView() != null) {
@@ -281,6 +387,20 @@ public class SideView extends RelativeLayout {
                     }
                 }
             }
+        }
+
+        if (area != AREA_TYPE_NORMAL) {
+            if (scrolling) {
+                return;
+            }
+            long delta = eventTime - preScrollTime;
+            if (delta < 200) {
+                log.error("preScrollTime ["+preScrollTime+"] ["+eventTime+"]");
+                return;
+            }
+            preScrollTime = eventTime;
+            scrolling = true;
+            setScrollTo(area, itemViewHeight);
         }
     }
 

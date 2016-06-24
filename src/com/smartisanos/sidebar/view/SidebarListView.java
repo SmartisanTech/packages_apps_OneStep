@@ -100,17 +100,15 @@ public class SidebarListView extends ListView {
         int index = -1;
         for (int i = 0; i < count; i++) {
             View view = getChildAt(i);
-//            String name = Integer.toHexString(System.identityHashCode(view));
-//            log.error("A ["+i+"]"+ name + " top ["+view.getTop()+"]");
             if (view.getVisibility() == View.INVISIBLE) {
                 viewArr[position] = view;
-                continue;
-            }
-            index = index + 1;
-            if (index == position) {
+            } else {
                 index = index + 1;
+                if (index == position) {
+                    index = index + 1;
+                }
+                viewArr[index] = view;
             }
-            viewArr[index] = view;
         }
         int[] listViewLoc = new int[2];
         getLocationOnScreen(listViewLoc);

@@ -275,12 +275,12 @@ public class SidebarRootView extends FrameLayout {
                 int index = item.viewIndex;
                 if (item.itemType == DragItem.TYPE_APPLICATION) {
                     ResolveInfoGroup data = item.resolveInfoGroup;
-                    log.error("set item to index ["+index+"]");
+                    log.error("A set item to index ["+index+"]");
                     ResolveInfoListAdapter adapter = mSideView.getAppListAdapter();
                     adapter.setItem(index, data);
                 } else if (item.itemType == DragItem.TYPE_SHORTCUT) {
                     ContactItem contactItem = item.contactItem;
-                    log.error("set item to index ["+index+"]");
+                    log.error("B set item to index ["+index+"]");
                     ContactListAdapter adapter = mSideView.getContactListAdapter();
                     adapter.setItem(index, contactItem);
                 }
@@ -347,6 +347,7 @@ public class SidebarRootView extends FrameLayout {
         int action = event.getAction();
         int x = (int) event.getX();
         int y = (int) event.getY();
+        long eventTime = event.getEventTime();
         switch (action) {
             case MotionEvent.ACTION_DOWN : {
                 if (ENABLE_TOUCH_LOG) log.error("ACTION_DOWN");
@@ -366,7 +367,7 @@ public class SidebarRootView extends FrameLayout {
             }
             case MotionEvent.ACTION_MOVE : {
                 mDragView.move(x, y);
-                mSideView.dragObjectMove(x, y);
+                mSideView.dragObjectMove(x, y, eventTime);
                 mTrash.dragObjectMoveTo(x, y);
                 if (ENABLE_TOUCH_LOG) log.error("ACTION_MOVE");
                 break;
