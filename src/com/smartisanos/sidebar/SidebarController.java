@@ -2,6 +2,7 @@ package com.smartisanos.sidebar;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -40,6 +41,12 @@ public class SidebarController {
 
     private int mSidbarMode = SidebarMode.MODE_LEFT;
 
+    private float mRate = 1.0f;
+    private int mScreenWidth, mScreenHeight;
+    private int mSideViewWidth;
+    private int mTopViewWidth, mTopViewHeight;
+    private int mContentViewWidth, mContentViewHeight;
+
     public static SidebarController getInstance(Context context){
         if(sInstance == null){
             synchronized(SidebarController.class){
@@ -55,6 +62,16 @@ public class SidebarController {
         mContext = context;
         mHandler = new Handler(Looper.getMainLooper());
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        Point pt = new Point();
+        mWindowManager.getDefaultDisplay().getSize(pt);
+        mScreenWidth = pt.x;
+        mScreenHeight = pt.y;
+        mSideViewWidth = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_width);
+        mRate = 1.0f - mSideViewWidth * 1.0f / mScreenWidth;
+        mTopViewWidth = mScreenWidth - mSideViewWidth;
+        mTopViewHeight = (int) (mScreenHeight * (1.0f - mRate));
+        mContentViewWidth = mScreenWidth - mSideViewWidth;
+        mContentViewHeight = mScreenHeight - mTopViewHeight;
     }
 
     public void init(){
@@ -117,9 +134,8 @@ public class SidebarController {
 
     private void addSideView() {
         if (mSidebarRoot != null) {
-            int sideViewWidth = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_width);
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    sideViewWidth,
+                    mSideViewWidth,
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
@@ -169,9 +185,8 @@ public class SidebarController {
             if (mSidebarRoot.getTrash() != null) {
                 mSidebarRoot.getTrash().hieTrashView();
             }
-            int sideViewWidth = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_width);
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    sideViewWidth,
+                    mSideViewWidth,
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
@@ -194,11 +209,9 @@ public class SidebarController {
 
     private void addTopView() {
         if (mTopView != null) {
-            int topViewWidth = mContext.getResources().getDimensionPixelSize(R.dimen.topbar_width);
-            int topViewHeight = mContext.getResources().getDimensionPixelSize(R.dimen.topbar_height);
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    topViewWidth,
-                    topViewHeight,
+                    mTopViewWidth,
+                    mTopViewHeight,
                     WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                     | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
@@ -221,12 +234,9 @@ public class SidebarController {
     public void addContentView() {
         if (mContentView != null && !mContentViewAdded) {
             mContentViewAdded = true;
-
-            int contentViewWidth = mContext.getResources().getDimensionPixelSize(R.dimen.content_width);
-            int contentViewHeight = mContext.getResources().getDimensionPixelSize(R.dimen.content_height);
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    contentViewWidth,
-                    contentViewHeight,
+                    mContentViewWidth,
+                    mContentViewHeight,
                     WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                     | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL

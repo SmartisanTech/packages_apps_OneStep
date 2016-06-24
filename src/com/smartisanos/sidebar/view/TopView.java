@@ -30,7 +30,6 @@ public class TopView extends LinearLayout {
 
     private SidebarController mController;
 
-    private View mDimView;
     private TopItemView mPhotos, mFile, mClipboard;
 
     private Map<TopItemView, ContentType> mViewToType;
@@ -89,7 +88,6 @@ public class TopView extends LinearLayout {
 
         mFinishInflated = true;
 
-        mDimView = findViewById(R.id.dim_view);
         mPhotos = (TopItemView) findViewById(R.id.photo);
         mPhotos.setText(R.string.topbar_photo);
         mFile = (TopItemView) findViewById(R.id.file);
@@ -118,7 +116,6 @@ public class TopView extends LinearLayout {
                                 view.dim();
                             }
                         }
-                        mDimView.setVisibility(View.VISIBLE);
                     } else {
                         if (mController.getCurrentContentType() == mViewToType
                                 .get(itemView)) {
@@ -226,14 +223,12 @@ public class TopView extends LinearLayout {
         for (TopItemView view : mViewToType.keySet()) {
             view.dim();
         }
-        mDimView.setVisibility(View.VISIBLE);
     }
 
     public void resumeToNormal(){
         for (TopItemView view : mViewToType.keySet()) {
             view.resume();
         }
-        mDimView.setVisibility(View.GONE);
     }
 
     @Override

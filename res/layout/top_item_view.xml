@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.smartisanos.sidebar.view.TopItemView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
-    android:layout_width="wrap_content"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
+    android:layout_weight="1"
     sidebar:icon_content_paddingTop="11dp">
     <RelativeLayout
-        android:layout_width="98dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
         <View
             android:id="@+id/back_dim_view"

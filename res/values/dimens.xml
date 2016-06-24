@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="sidebar_width">48dp</dimen>
-    <dimen name="topbar_width">314dp</dimen>
-    <dimen name="topbar_height">85.3dp</dimen>
-    <dimen name="content_width">312dp</dimen>
-    <dimen name="content_height">554.7dp</dimen>
     <dimen name="recent_photo_size">80dp</dimen>
     <dimen name="topbar_photo_icon_content_size">36dp</dimen>
     <dimen name="topbar_photo_icon_content_paddingTop">11dp</dimen>
