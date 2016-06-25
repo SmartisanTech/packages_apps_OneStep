@@ -325,7 +325,13 @@ public class SideView extends RelativeLayout {
             public void run() {
                 mScrollList.smoothScrollTo(0, y);
 //                mScrollList.scrollTo(0, y);
-                scrolling = false;
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrolling = false;
+                    }
+                });
+
             }
         });
     }
@@ -344,6 +350,7 @@ public class SideView extends RelativeLayout {
         int itemViewHeight = 0;
         mScrollList.getDrawingRect(scrollViewRect);
         int area = AREA_TYPE_NORMAL;
+        int position = -1;
         if (dragItemType == SidebarRootView.DragItem.TYPE_APPLICATION
                 && inArea(x, y, mShareList, appListLoc)) {
             int count = mResolveAdapter.getCount();
@@ -353,18 +360,12 @@ public class SideView extends RelativeLayout {
                 int[] localLoc = convertToLocalCoordinate(x, y, appListLoc, drawingRect);
                 int subViewHeight = drawingRect.bottom / count;
                 itemViewHeight = subViewHeight;
-                int position = localLoc[1] / subViewHeight;
+                position = localLoc[1] / subViewHeight;
                 if (position >= count) {
                     return;
                 }
                 area = areaType(x, y, itemViewHeight);
                 log.error("A position ["+position+"], Y ["+localLoc[1]+"] AREA ["+area+"]");
-                mShareList.pointToNewPositionWithAnim(position);
-                if (position >= 0) {
-                    if (mRootView.getDraggedView() != null) {
-                        mRootView.getDraggedView().getDragItem().viewIndex = position;
-                    }
-                }
             }
         } else if (dragItemType == SidebarRootView.DragItem.TYPE_SHORTCUT
                 && inArea(x, y, mContactList, contactListLoc)) {
@@ -374,21 +375,14 @@ public class SideView extends RelativeLayout {
                 int[] localLoc = convertToLocalCoordinate(x, y, contactListLoc, drawingRect);
                 int subViewHeight = drawingRect.bottom / count;
                 itemViewHeight = subViewHeight;
-                int position = localLoc[1] / subViewHeight;
+                position = localLoc[1] / subViewHeight;
                 if (position >= count) {
                     return;
                 }
                 area = areaType(x, y, itemViewHeight);
                 log.error("B position ["+position+"], Y ["+localLoc[1]+"] AREA ["+area+"]");
-                mContactList.pointToNewPositionWithAnim(position);
-                if (position >= 0) {
-                    if (mRootView.getDraggedView() != null) {
-                        mRootView.getDraggedView().getDragItem().viewIndex = position;
-                    }
-                }
             }
         }
-
         if (area != AREA_TYPE_NORMAL) {
             if (scrolling) {
                 return;
@@ -401,6 +395,16 @@ public class SideView extends RelativeLayout {
             preScrollTime = eventTime;
             scrolling = true;
             setScrollTo(area, itemViewHeight);
+        }
+        if (position >= 0 && !scrolling) {
+            if (dragItemType == SidebarRootView.DragItem.TYPE_APPLICATION) {
+                mShareList.pointToNewPositionWithAnim(position);
+            } else if (dragItemType == SidebarRootView.DragItem.TYPE_SHORTCUT) {
+                mContactList.pointToNewPositionWithAnim(position);
+            }
+            if (mRootView.getDraggedView() != null) {
+                mRootView.getDraggedView().getDragItem().viewIndex = position;
+            }
         }
     }
 
