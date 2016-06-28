@@ -1,6 +1,9 @@
 package com.smartisanos.sidebar;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Handler;
@@ -17,6 +20,7 @@ import android.view.WindowManager;
 import com.android.internal.sidebar.ISidebar;
 import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.util.LOG;
+import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.view.ContentView;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 import com.smartisanos.sidebar.view.SideView;
@@ -72,6 +76,10 @@ public class SidebarController {
         mTopViewHeight = (int) (mScreenHeight * (1.0f - mRate));
         mContentViewWidth = mScreenWidth - mSideViewWidth;
         mContentViewHeight = mScreenHeight - mTopViewHeight;
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        context.registerReceiver(mBroadcastReceiver, filter);
     }
 
     public void init(){
@@ -251,6 +259,7 @@ public class SidebarController {
             }
             lp.setTitle("sidebar_contentview");
             lp.packageName = mContext.getPackageName();
+            lp.isEatHomeKey = true;
             mWindowManager.addView(mContentView, lp);
         }
     }
@@ -312,6 +321,20 @@ public class SidebarController {
         @Override
         public void onExitSidebarModeEnd() throws RemoteException {
             //TODO
+        }
+    };
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
+                String reason = intent.getStringExtra("reason");
+                if ("eathomekey".equals(reason)) {
+                    Utils.resumeSidebar(context);
+                }
+            }
         }
     };
 }
