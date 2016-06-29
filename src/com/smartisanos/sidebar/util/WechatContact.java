@@ -33,8 +33,7 @@ public class WechatContact extends ContactItem {
             return false;
         }
         String mimeType = event.getClipDescription().getMimeType(0);
-        if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)
-                || ClipDescription.compareMimeTypes(mimeType, "image/*")) {
+        if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
             return true;
         }
         return false;
@@ -46,6 +45,7 @@ public class WechatContact extends ContactItem {
         try {
             intent = Intent.parseUri(mIntent, 0);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("wechat_text", event.getClipData().getItemAt(0).getText());
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return false;
