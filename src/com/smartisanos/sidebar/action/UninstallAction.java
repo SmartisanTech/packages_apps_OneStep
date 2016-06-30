@@ -99,7 +99,7 @@ public class UninstallAction {
             return;
         }
         trash.stopRock();
-        trash.trashDisappearWithAnim(rootView);
+        trash.trashDisappearWithAnim();
         rootView.dropDrag();
     }
 
@@ -132,7 +132,7 @@ public class UninstallAction {
 
             @Override
             public void onComplete() {
-                trash.trashDisappearWithAnim(rootView);
+                trash.trashDisappearWithAnim();
                 rootView.dropDrag();
             }
         });

@@ -109,19 +109,16 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
             ImageView iconInputLeft = (ImageView) view.findViewById(R.id.icon_input_left);
             ImageView iconInputRight = (ImageView) view.findViewById(R.id.icon_input_right);
             ImageView iconImage = (ImageView) view.findViewById(R.id.shareitemimageview);
-            Drawable icon = resolveInfoGroup.loadIcon(mContext.getPackageManager());
-            iconImage.setImageBitmap(BitmapUtils.convertToBlackWhite(icon));
             holder = new ViewHolder();
             holder.view = view;
+            holder.context = mContext;
             holder.iconInputLeft = iconInputLeft;
             holder.iconInputRight = iconInputRight;
             holder.iconImageView = iconImage;
-            holder.icon = icon;
-            holder.resolveInfoGroup = resolveInfoGroup;
             view.setTag(holder);
+            holder.setInfo(resolveInfoGroup);
         } else {
             holder = (ViewHolder) convertView.getTag();
-            holder.resolveInfoGroup = resolveInfoGroup;
             if (holder.view.getVisibility() == View.INVISIBLE) {
                 holder.view.setVisibility(View.VISIBLE);
             }
@@ -177,11 +174,21 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
 
     public static class ViewHolder {
         public View view;
+        public Context context;
         public ImageView iconInputLeft;
         public ImageView iconInputRight;
         public ImageView iconImageView;
         public Drawable icon;
         public ResolveInfoGroup resolveInfoGroup;
+
+        public void setInfo(ResolveInfoGroup info) {
+            resolveInfoGroup = info;
+            if (info == null) {
+                return;
+            }
+            Drawable icon = resolveInfoGroup.loadIcon(context.getPackageManager());
+            iconImageView.setImageBitmap(BitmapUtils.convertToBlackWhite(icon));
+        }
 
         public void updateIconFlag(boolean showLeft) {
             if (showLeft) {

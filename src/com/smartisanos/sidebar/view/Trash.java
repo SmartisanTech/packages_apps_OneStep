@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.action.UninstallAction;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.anim.Anim;
@@ -209,7 +210,17 @@ public class Trash {
 
     private boolean trashDisappearAnimRunning = false;
 
-    public void trashDisappearWithAnim(final SidebarRootView rootView) {
+    public void trashDisappearWithoutAnim() {
+        mTrashView.setTranslationY(mWindowHeight);
+        mTrashStatus = TRASH_HIDE;
+        SidebarController controller = SidebarController.getInstance(mContext);
+        SidebarRootView rootView = controller.getSidebarRootView();
+        if (rootView != null) {
+            rootView.resetSidebarWindow();
+        }
+    }
+
+    public void trashDisappearWithAnim() {
         if (mTrashStatus == TRASH_HIDE) {
             return;
         }
@@ -229,6 +240,8 @@ public class Trash {
             public void onComplete() {
                 mTrashStatus = TRASH_HIDE;
                 trashDisappearAnimRunning = false;
+                SidebarController controller = SidebarController.getInstance(mContext);
+                SidebarRootView rootView = controller.getSidebarRootView();
                 if (rootView != null) {
                     rootView.resetSidebarWindow();
                 }

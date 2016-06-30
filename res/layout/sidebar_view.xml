@@ -81,9 +81,4 @@
             android:background="@drawable/trash_foreground"
             />
     </FrameLayout>
-    <View
-        android:id="@+id/dragView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
 </com.smartisanos.sidebar.view.SidebarRootView>

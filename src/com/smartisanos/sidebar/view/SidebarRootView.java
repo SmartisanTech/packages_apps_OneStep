@@ -251,8 +251,6 @@ public class SidebarRootView extends FrameLayout {
         //set sidebar to full screen
         SidebarController.getInstance(mContext).updateDragWindow(true);
         mDragView = new DragView(mContext, item);
-        mDragView.setId(R.id.dragView);
-        mDragView.clearFocus();
         post(new Runnable() {
             public void run() {
                 mTrash.trashAppearWithAnim();
@@ -373,7 +371,8 @@ public class SidebarRootView extends FrameLayout {
                     //handle uninstall
                 } else {
                     dropDrag();
-                    mTrash.trashDisappearWithAnim(this);
+//                    mTrash.trashDisappearWithoutAnim();
+                    mTrash.trashDisappearWithAnim();
                 }
                 break;
             }
@@ -394,26 +393,4 @@ public class SidebarRootView extends FrameLayout {
             }
         }
     }
-
-//    private int trashViewDrawingIndex;
-//    private int dragViewDrawingIndex;
-//
-//    @Override
-//    protected int getChildDrawingOrder(int childCount, int i) {
-//        if (i < childCount) {
-//            int viewId = getChildAt(i).getId();
-//            if (viewId == R.id.dragView) {
-//                log.error("dragview index " + i);
-//            }
-//            if (viewId == R.id.trash_foreground) {
-//                log.error("trash_foreground index " + i);
-//            }
-//        }
-//        return super.getChildDrawingOrder(childCount, i);
-//    }
-//
-//    @Override
-//    protected boolean isChildrenDrawingOrderEnabled() {
-//        return super.isChildrenDrawingOrderEnabled();
-//    }
 }

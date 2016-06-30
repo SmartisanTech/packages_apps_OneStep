@@ -59,30 +59,26 @@ public class ContactListAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        View ret;
         final ViewHolder holder;
+        ContactItem item = mContacts.get(position);
         if (convertView == null) {
-            ret = LayoutInflater.from(mContext).inflate(R.layout.contact_item, null);
+            View view = LayoutInflater.from(mContext).inflate(R.layout.contact_item, null);
             holder = new ViewHolder();
-            holder.contactIcon = (ImageView) ret.findViewById(R.id.contact_icon);
-            holder.typeIcon = (ImageView) ret.findViewById(R.id.type_icon);
-            holder.displayName = (TextView) ret.findViewById(R.id.display_name);
-            holder.mItem = mContacts.get(position);
-            holder.view = ret;
-            ret.setTag(holder);
+            holder.contactIcon = (ImageView) view.findViewById(R.id.contact_icon);
+            holder.typeIcon = (ImageView) view.findViewById(R.id.type_icon);
+            holder.displayName = (TextView) view.findViewById(R.id.display_name);
+            holder.view = view;
+            view.setTag(holder);
+            holder.setItem(item);
         } else {
-            ret = convertView;
-            holder = (ViewHolder) ret.getTag();
+            holder = (ViewHolder) convertView.getTag();
             if (holder.view.getVisibility() == View.INVISIBLE) {
                 holder.view.setVisibility(View.VISIBLE);
             }
         }
-        final Bitmap avatar = mContacts.get(position).getAvatar();
-        holder.contactIcon.setImageBitmap(BitmapUtils.convertToBlackWhite(avatar));
-        holder.typeIcon.setImageResource(mContacts.get(position).getTypeIcon());
-        holder.displayName.setText(mContacts.get(position).getDisplayName());
-
-        ret.setOnDragListener(new View.OnDragListener() {
+        log.error("contact get view ==>index ["+position+"], name ["+item.getDisplayName()+"]");
+        final Bitmap avatar = item.getAvatar();
+        holder.view.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
                 final int action = event.getAction();
@@ -119,7 +115,7 @@ public class ContactListAdapter extends BaseAdapter {
                 return false;
             }
         });
-        return ret;
+        return holder.view;
     }
 
     public static class ViewHolder {
@@ -129,6 +125,17 @@ public class ContactListAdapter extends BaseAdapter {
         public TextView displayName;
 
         public ContactItem mItem;
+
+        public void setItem(ContactItem item) {
+            mItem = item;
+            if (item == null) {
+                return;
+            }
+            Bitmap avatar = mItem.getAvatar();
+            contactIcon.setImageBitmap(BitmapUtils.convertToBlackWhite(avatar));
+            typeIcon.setImageResource(item.getTypeIcon());
+            displayName.setText(item.getDisplayName());
+        }
     }
 
     public int objectIndex(ContactItem item) {
@@ -151,6 +158,17 @@ public class ContactListAdapter extends BaseAdapter {
             mContacts.add(0, item);
         } else {
             mContacts.add(index, item);
+        }
+    }
+
+    public void dumpAdapter() {
+        if (mContacts == null) {
+            return;
+        }
+        int count = mContacts.size();
+        for (int i = 0; i < count; i++) {
+            ContactItem item = mContacts.get(i);
+            log.error("contact item index ["+i+"], name ["+item.getDisplayName()+"]");
         }
     }
 }
