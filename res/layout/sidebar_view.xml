@@ -5,7 +5,6 @@
     android:id="@+id/sidebar_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_alignParentRight="true"
     android:background="#cc000000"
     >
     <com.smartisanos.sidebar.view.SideView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -82,4 +81,9 @@
             android:background="@drawable/trash_foreground"
             />
     </FrameLayout>
+    <View
+        android:id="@+id/dragView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 </com.smartisanos.sidebar.view.SidebarRootView>

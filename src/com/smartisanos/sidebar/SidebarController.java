@@ -16,6 +16,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 
 import com.android.internal.sidebar.ISidebar;
 import com.android.internal.sidebar.ISidebarService;
@@ -140,6 +141,10 @@ public class SidebarController {
         }
     }
 
+    public SidebarRootView getSidebarRootView() {
+        return mSidebarRoot;
+    }
+
     private void addSideView() {
         if (mSidebarRoot != null) {
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
@@ -172,6 +177,18 @@ public class SidebarController {
             if (mSidebarRoot.getTrash() != null) {
                 mSidebarRoot.getTrash().initTrashView();
             }
+//            if (mSideView != null) {
+//                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mSideView.getLayoutParams();
+//                if (lp != null) {
+//                    lp.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+//                    lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//                    if (getSidebarMode() == SidebarMode.MODE_LEFT) {
+//                        lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+//                    } else {
+//                        lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//                    }
+//                }
+//            }
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -185,6 +202,11 @@ public class SidebarController {
 
             lp.x = 0;
             lp.y = 0;
+            if(getSidebarMode() == SidebarMode.MODE_LEFT){
+                lp.gravity = Gravity.LEFT | Gravity.FILL_VERTICAL;
+            }else{
+                lp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
+            }
             lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
             lp.setTitle("sidebar_sideview");
             lp.packageName = mContext.getPackageName();

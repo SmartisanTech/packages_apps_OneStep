@@ -1,11 +1,15 @@
 package com.smartisanos.sidebar.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -13,7 +17,9 @@ import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.action.UninstallAction;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
 public class Trash {
@@ -28,14 +34,14 @@ public class Trash {
 
     public SidebarRootView mRootView;
 
-    private int mTrashWidth;
-    private int mTrashHeight;
-    private int mWindowWidth;
-    private int mWindowHeight;
-    private int mTrashDisplayHeight;
-    private int mTrashFloatUpHeight;
-    private int [] trash_react_area = new int[4];
-    private int [] trash_uninstall_react_area = new int[4];
+    public int mTrashWidth;
+    public int mTrashHeight;
+    public int mWindowWidth;
+    public int mWindowHeight;
+    public int mTrashDisplayHeight;
+    public int mTrashFloatUpHeight;
+    public int [] trash_react_area = new int[4];
+    public int [] trash_uninstall_react_area = new int[4];
 
 
     public static final int TRASH_HIDE = 1;
@@ -104,17 +110,20 @@ public class Trash {
             log.error("dragObjectUpOnUp return by dragItem is null");
             return processUninstall;
         }
-        if (item.getItemType() == SidebarRootView.DragItem.TYPE_APPLICATION && item.isSystemApp()) {
-            //check is system app !
-            boolean isSystemApp = false;
-            if (isSystemApp) {
-                Toast toast = Toast.makeText(mContext, R.string.uninstall_system_app_text, Toast.LENGTH_XLONG);
-                toast.show();
-            }
-            log.error("dragObjectUpOnUp return by isSystemApp");
-            return processUninstall;
-        }
-        UninstallAction action = new UninstallAction(mContext);
+//        if (item.getItemType() == SidebarRootView.DragItem.TYPE_APPLICATION && item.isSystemApp()) {
+//            //check is system app !
+//            boolean isSystemApp = false;
+//            if (isSystemApp) {
+//                Toast toast = Toast.makeText(mContext, R.string.uninstall_system_app_text, Toast.LENGTH_XLONG);
+//                toast.show();
+//            }
+//            log.error("dragObjectUpOnUp return by isSystemApp");
+//            return processUninstall;
+//        }
+        //move icon to trash
+        moveIconToTrash(dragView);
+        String name = item.getDisplayName();
+        UninstallAction action = new UninstallAction(mContext, name);
         action.showUninstallDialog();
         processUninstall = true;
         log.error("handle uninstall process");
@@ -284,5 +293,172 @@ public class Trash {
             }
         });
         anim.start();
+    }
+
+    public void moveIconToTrash(final View view) {
+        if (view == null) {
+            return;
+        }
+        float fromX = view.getX();
+        float fromY = view.getY();
+        int viewWidth = view.getWidth();
+        int viewHeight = view.getHeight();
+        float toX = mWindowWidth / 2 - viewWidth / 2;
+        float toY = mWindowHeight - mTrashDisplayHeight - mTrashFloatUpHeight - viewHeight;
+        Vector3f from = new Vector3f(fromX, fromY);
+        Vector3f to = new Vector3f(toX, toY);
+        log.error("moveIconToTrash move from " + from + ", to " + to);
+
+        Anim anim = new Anim(view, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
+        anim.setListener(new AnimListener() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onComplete() {
+                if (view == null) {
+                    log.error("moveIconToTrash view is null when anim complete");
+                    return;
+                }
+                rockOnTrash(view);
+            }
+        });
+        anim.start();
+    }
+
+    private boolean rockRepeat = false;
+    private AnimatorSet mRockAnimSet;
+
+    public void rockOnTrash(View view) {
+        if (mRockAnimSet != null) {
+            mRockAnimSet = null;
+        }
+        float rockAngle = 2.0f;
+        float offset = 2.0f;
+        long interval_time = 70;
+        float locX = view.getX();
+        float locY = view.getY();
+        //init view loc and rotate
+        rockRepeat = true;
+        view.setTranslationX(locX - offset);
+        view.setTranslationY(locY + offset);
+        view.setRotation(-rockAngle);
+
+        Vector3f loc = new Vector3f(locX, locY);
+        mRockAnimSet = generateRockAnimSet(view, loc);
+        RockAnimListener listener = new RockAnimListener(view, loc);
+        mRockAnimSet.addListener(listener);
+        mRockAnimSet.start();
+    }
+
+    public void stopRock() {
+        rockRepeat = false;
+        if (mRockAnimSet != null) {
+            if (mRockAnimSet.isStarted()) {
+                if (mRockAnimSet.isRunning()) {
+                    mRockAnimSet.end();
+                } else {
+                    mRockAnimSet.cancel();
+                }
+            }
+        }
+        //
+    }
+
+    private class RockAnimListener implements Animator.AnimatorListener {
+
+        private View mView;
+        private Vector3f mLoc;
+
+        public RockAnimListener(View view, Vector3f loc) {
+            mView = view;
+            mLoc = loc;
+        }
+
+        @Override
+        public void onAnimationStart(Animator animator) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animator) {
+            if (rockRepeat) {
+                mRockAnimSet = generateRockAnimSet(mView, mLoc);
+                RockAnimListener listener = new RockAnimListener(mView, mLoc);
+                mRockAnimSet.addListener(listener);
+                mRockAnimSet.start();
+            }
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animator) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animator) {
+
+        }
+    }
+
+    private AnimatorSet generateRockAnimSet(View view, Vector3f loc) {
+        float rockAngle = 2.0f;
+        float offset = 2.0f;
+        long interval_time = 70;
+        AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(Anim.CIRC_IN_OUT);
+        AnimatorSet animSet = new AnimatorSet();
+
+        //step 1
+        ObjectAnimator anim1_translateX = ObjectAnimator.ofFloat(view, Anim.X, loc.x - offset, loc.x + offset);
+        anim1_translateX.setDuration(interval_time);
+        anim1_translateX.setInterpolator(interpolator);
+
+        ObjectAnimator anim1_translateY = ObjectAnimator.ofFloat(view, Anim.Y, loc.y + offset, loc.y - offset);
+        anim1_translateY.setDuration(interval_time);
+        anim1_translateY.setInterpolator(interpolator);
+
+        animSet.play(anim1_translateX).with(anim1_translateY);
+
+        //step 2
+        ObjectAnimator anim2_rotate = ObjectAnimator.ofFloat(view, Anim.ROTATION, -rockAngle, rockAngle);
+        anim2_rotate.setDuration(interval_time);
+        anim2_rotate.setInterpolator(interpolator);
+
+        ObjectAnimator anim2_translateX = ObjectAnimator.ofFloat(view, Anim.X, loc.x + offset, loc.x + offset);
+        anim2_translateX.setDuration(interval_time);
+        anim2_translateX.setInterpolator(interpolator);
+
+        ObjectAnimator anim2_translateY = ObjectAnimator.ofFloat(view, Anim.Y, loc.y - offset, loc.y + offset);
+        anim2_translateY.setDuration(interval_time);
+        anim2_translateY.setInterpolator(interpolator);
+        animSet.play(anim2_rotate).with(anim2_translateX).with(anim2_translateY).after(anim1_translateX);
+
+        //step 3
+        ObjectAnimator anim3_translateX = ObjectAnimator.ofFloat(view, Anim.X, loc.x + offset, loc.x - offset);
+        anim3_translateX.setDuration(interval_time);
+        anim3_translateX.setInterpolator(interpolator);
+
+        ObjectAnimator anim3_translateY = ObjectAnimator.ofFloat(view, Anim.Y, loc.y + offset, loc.y - offset);
+        anim3_translateY.setDuration(interval_time);
+        anim3_translateY.setInterpolator(interpolator);
+
+        animSet.play(anim3_translateX).with(anim3_translateY).after(anim2_rotate);
+
+        //step 4
+        ObjectAnimator anim4_rotate = ObjectAnimator.ofFloat(view, Anim.ROTATION, rockAngle, -rockAngle);
+        anim4_rotate.setDuration(interval_time);
+        anim4_rotate.setInterpolator(interpolator);
+
+        ObjectAnimator anim4_translateX = ObjectAnimator.ofFloat(view, Anim.X, loc.x - offset, loc.x - offset);
+        anim4_translateX.setDuration(interval_time);
+        anim4_translateX.setInterpolator(interpolator);
+
+        ObjectAnimator anim4_translateY = ObjectAnimator.ofFloat(view, Anim.Y, loc.y - offset, loc.y + offset);
+        anim4_translateY.setDuration(interval_time);
+        anim4_translateY.setInterpolator(interpolator);
+
+        animSet.play(anim4_rotate).with(anim4_translateX).with(anim4_translateY).after(anim3_translateX);
+        return animSet;
     }
 }

@@ -103,6 +103,17 @@ public class SidebarRootView extends FrameLayout {
             return isSystemApp;
         }
 
+        public String getDisplayName() {
+            if (itemType == TYPE_APPLICATION) {
+                PackageManager pm = mContext.getPackageManager();
+                return resolveInfoGroup.loadLabel(pm).toString();
+            } else if (itemType == TYPE_SHORTCUT) {
+                return contactItem.getDisplayName().toString();
+            } else {
+                return null;
+            }
+        }
+
         public static final int FLAG_PRIVILEGED = 1<<30;
         public static final int PRIVATE_FLAG_PRIVILEGED = 1<<3;
 
@@ -240,6 +251,7 @@ public class SidebarRootView extends FrameLayout {
         //set sidebar to full screen
         SidebarController.getInstance(mContext).updateDragWindow(true);
         mDragView = new DragView(mContext, item);
+        mDragView.setId(R.id.dragView);
         mDragView.clearFocus();
         post(new Runnable() {
             public void run() {
@@ -358,11 +370,11 @@ public class SidebarRootView extends FrameLayout {
             case MotionEvent.ACTION_UP : {
                 if (ENABLE_TOUCH_LOG) log.error("ACTION_UP");
                 if (mTrash.dragObjectUpOnUp(x, y)) {
+                    //handle uninstall
+                } else {
+                    dropDrag();
                     mTrash.trashDisappearWithAnim(this);
-                    break;
                 }
-                dropDrag();
-                mTrash.trashDisappearWithAnim(this);
                 break;
             }
             case MotionEvent.ACTION_MOVE : {
@@ -382,4 +394,26 @@ public class SidebarRootView extends FrameLayout {
             }
         }
     }
+
+//    private int trashViewDrawingIndex;
+//    private int dragViewDrawingIndex;
+//
+//    @Override
+//    protected int getChildDrawingOrder(int childCount, int i) {
+//        if (i < childCount) {
+//            int viewId = getChildAt(i).getId();
+//            if (viewId == R.id.dragView) {
+//                log.error("dragview index " + i);
+//            }
+//            if (viewId == R.id.trash_foreground) {
+//                log.error("trash_foreground index " + i);
+//            }
+//        }
+//        return super.getChildDrawingOrder(childCount, i);
+//    }
+//
+//    @Override
+//    protected boolean isChildrenDrawingOrderEnabled() {
+//        return super.isChildrenDrawingOrderEnabled();
+//    }
 }

@@ -42,16 +42,16 @@ public class Anim {
 
 
     //Android anim name
-    private static final String X           = "x";
-    private static final String Y           = "y";
-    private static final String TRANSLATE_X = "translationX";
-    private static final String TRANSLATE_Y = "translationY";
-    private static final String ROTATION    = "rotation";
-    private static final String ROTATION_X  = "rotationX";
-    private static final String ROTATION_Y  = "rotationY";
-    private static final String SCALE_X     = "scaleX";
-    private static final String SCALE_Y     = "scaleY";
-    private static final String ALHPA       = "alpha";
+    public static final String X           = "x";
+    public static final String Y           = "y";
+    public static final String TRANSLATE_X = "translationX";
+    public static final String TRANSLATE_Y = "translationY";
+    public static final String ROTATION    = "rotation";
+    public static final String ROTATION_X  = "rotationX";
+    public static final String ROTATION_Y  = "rotationY";
+    public static final String SCALE_X     = "scaleX";
+    public static final String SCALE_Y     = "scaleY";
+    public static final String ALHPA       = "alpha";
 
     public static final int TRANSLATE = 1001;
     public static final int ROTATE    = 1002;
@@ -90,6 +90,7 @@ public class Anim {
                 break;
             }
             case ROTATE : {
+                initRotate(mFrom, mTo);
                 break;
             }
             case SCALE : {
@@ -111,6 +112,17 @@ public class Anim {
         if (from.y != to.y) {
             ObjectAnimator animatorY = ObjectAnimator.ofFloat(mView, Y, from.y, to.y);
             mAnimList.add(animatorY);
+        }
+    }
+
+    private void initRotate(Vector3f from, Vector3f to) {
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("something is null ["+from+"]["+to+"]");
+        }
+        mAnimList = new ArrayList<Animator>();
+        if (from.z != to.z) {
+            ObjectAnimator rotateZ = ObjectAnimator.ofFloat(mView, ROTATION, from.z, to.z);
+            mAnimList.add(rotateZ);
         }
     }
 

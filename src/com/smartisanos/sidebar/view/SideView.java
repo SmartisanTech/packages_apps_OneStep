@@ -346,7 +346,6 @@ public class SideView extends RelativeLayout {
         preLoc[1] = y;
         mShareList.getLocationOnScreen(appListLoc);
         mContactList.getLocationOnScreen(contactListLoc);
-//        log.error("touch at ["+x+", "+y+"] ("+mShareList.getHeight()+", "+mContactList.getHeight()+")");
         int itemViewHeight = 0;
         mScrollList.getDrawingRect(scrollViewRect);
         int area = AREA_TYPE_NORMAL;

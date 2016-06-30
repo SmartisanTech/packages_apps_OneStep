@@ -19,6 +19,10 @@ import java.util.List;
 
 public class SidebarListView extends ListView {
     private static final LOG log = LOG.getInstance(SidebarListView.class);
+    private static final boolean DBG = false;
+    static {
+        if (!DBG) {log.close();}
+    }
 
     private Context mContext;
     private DragEvent mStartDragEvent = null;
