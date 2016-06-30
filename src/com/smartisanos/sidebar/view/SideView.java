@@ -307,31 +307,24 @@ public class SideView extends RelativeLayout {
         }
         int scrollY = 0;
         if (area == AREA_TYPE_TOP) {
-            scrollY = scrollViewRect.top - itemViewHeight;
-            if (scrollY < 0) {
-                scrollY = 0;
-            }
+            scrollY = -itemViewHeight;
         } else if (area == AREA_TYPE_BOTTOM) {
-            int totalHeight = mAppListHeight + mContactListHeight;
-            scrollY = scrollViewRect.bottom + itemViewHeight;
-            if (scrollY > totalHeight) {
-                scrollY = totalHeight;
-            }
+            scrollY = itemViewHeight;
         }
         final int y = scrollY;
-        log.error("setScrollTo type "+area+", Y => " + y);
+//        log.error("setScrollTo type "+area+", Y => " + y);
+        scrolling = true;
+        mScrollList.setSmoothScrollingEnabled(true);
         post(new Runnable() {
             @Override
             public void run() {
-                mScrollList.smoothScrollTo(0, y);
-//                mScrollList.scrollTo(0, y);
+                mScrollList.smoothScrollBy(0, y);
                 post(new Runnable() {
                     @Override
                     public void run() {
                         scrolling = false;
                     }
                 });
-
             }
         });
     }
@@ -387,15 +380,17 @@ public class SideView extends RelativeLayout {
                 return;
             }
             long delta = eventTime - preScrollTime;
-            if (delta < 200) {
-                log.error("preScrollTime ["+preScrollTime+"] ["+eventTime+"]");
+            if (delta < 0) {
+                delta = delta * -1;
+            }
+            if (delta < 250) {
+//                log.error("preScrollTime ["+preScrollTime+"] ["+eventTime+"]");
                 return;
             }
             preScrollTime = eventTime;
-            scrolling = true;
             setScrollTo(area, itemViewHeight);
         }
-        if (position >= 0 && !scrolling) {
+        if (position >= 0) {
             if (dragItemType == SidebarRootView.DragItem.TYPE_APPLICATION) {
                 mShareList.pointToNewPositionWithAnim(position);
             } else if (dragItemType == SidebarRootView.DragItem.TYPE_SHORTCUT) {

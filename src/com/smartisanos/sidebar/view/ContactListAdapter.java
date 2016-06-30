@@ -76,7 +76,6 @@ public class ContactListAdapter extends BaseAdapter {
                 holder.view.setVisibility(View.VISIBLE);
             }
         }
-        log.error("contact get view ==>index ["+position+"], name ["+item.getDisplayName()+"]");
         final Bitmap avatar = item.getAvatar();
         holder.view.setOnDragListener(new View.OnDragListener() {
             @Override
