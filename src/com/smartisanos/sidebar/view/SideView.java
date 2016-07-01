@@ -11,7 +11,9 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
+import android.view.DragEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -31,12 +33,12 @@ import com.smartisanos.sidebar.view.ContentView.ContentType;
 public class SideView extends RelativeLayout {
     private static final LOG log = LOG.getInstance(SideView.class);
 
-    private SidebarController mController;
-
     private Button mExit;
     private Button mAdd;
 
     private SidebarListView mShareList, mContactList;
+    private SidebarListView mShareListFake, mContactListFake;
+
     private ResolveInfoListAdapter mResolveAdapter;
     private ScrollView mScrollList;
 
@@ -62,13 +64,11 @@ public class SideView extends RelativeLayout {
         mContext = context;
     }
 
-    private SideView mSideView;
     private SidebarRootView mRootView;
 
     public void setRootView(SidebarRootView view) {
         mRootView = view;
     }
-
 
     @Override
     protected void onFinishInflate() {
@@ -104,8 +104,6 @@ public class SideView extends RelativeLayout {
             }
         });
 
-        mSideView = this;
-
         //contact
         mContactList = (SidebarListView) findViewById(R.id.contactlist);
         mContactList.setNeedFootView(true);
@@ -113,13 +111,42 @@ public class SideView extends RelativeLayout {
         mContactList.setAdapter(mContactAdapter);
         mContactList.setOnItemLongClickListener(mContactItemOnLongClickListener);
 
+        mContactListFake = (SidebarListView) findViewById(R.id.contactlist_fake);
+        mContactListFake.setNeedFootView(true);
+        mContactListFake.setAdapter(new ContactListAdapter(mContext));
+
+        mContactList.setFake(mContactListFake);
+
         //resolve
         mShareList = (SidebarListView) findViewById(R.id.sharelist);
         mResolveAdapter = new ResolveInfoListAdapter(mContext);
         mShareList.setAdapter(mResolveAdapter);
         mShareList.setOnItemLongClickListener(mShareItemOnLongClickListener);
 
+        mShareListFake = (SidebarListView) findViewById(R.id.sharelist_fake);
+        mShareListFake.setCanAccpetDrag(false);
+        mShareListFake.setAdapter(new ResolveInfoListAdapter(mContext));
+
+        mShareList.setFake(mShareListFake);
+
         mScrollList = (ScrollView) findViewById(R.id.sideview_scroll_list);
+    }
+
+    @Override
+    public boolean dispatchDragEvent(DragEvent event) {
+        int action = event.getAction();
+        switch(action){
+        case DragEvent.ACTION_DRAG_STARTED:
+            mShareList.onDragStart(event);
+            mContactList.onDragStart(event);
+            return super.dispatchDragEvent(event);
+        case DragEvent.ACTION_DRAG_ENDED:
+            boolean ret = super.dispatchDragEvent(event);
+            mShareList.onDragEnd();
+            mContactList.onDragEnd();
+            return ret;
+        }
+        return super.dispatchDragEvent(event);
     }
 
     public ResolveInfoListAdapter getAppListAdapter() {

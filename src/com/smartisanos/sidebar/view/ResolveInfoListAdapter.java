@@ -2,10 +2,12 @@ package com.smartisanos.sidebar.view;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -19,17 +21,18 @@ import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
-import com.smartisanos.sidebar.util.SidebarAdapter;
 import com.smartisanos.sidebar.util.Utils;
 
 import smartisanos.util.SidebarUtils;
 
-public class ResolveInfoListAdapter extends SidebarAdapter {
+public class ResolveInfoListAdapter extends DragEventAdapter {
     private static final LOG log = LOG.getInstance(ResolveInfoListAdapter.class);
+    private static final float SCALE_SIZE = 1.2f;
 
     private Context mContext;
     private List<ResolveInfoGroup> mResolveInfos;
     private List<ResolveInfoGroup> mAcceptableResolveInfos = new ArrayList<ResolveInfoGroup>();
+    private DragEvent mDragEvent;
     private ResolveInfoManager mManager;
     public ResolveInfoListAdapter(Context context) {
         mContext = context;
@@ -48,7 +51,7 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
     private void updateAcceptableResolveInfos() {
         mAcceptableResolveInfos.clear();
         for (ResolveInfoGroup rig : mResolveInfos) {
-            if (rig.accpetDragEvent(mContext, getDragEvent())) {
+            if (mDragEvent == null || rig.acceptDragEvent(mContext, mDragEvent)) {
                 mAcceptableResolveInfos.add(rig);
             }
         }
@@ -56,8 +59,22 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
     }
 
     @Override
-    public void setDragEvent(DragEvent event) {
-        super.setDragEvent(event);
+    public void onDragStart(DragEvent event) {
+        if (mDragEvent != null) {
+            mDragEvent.recycle();
+            mDragEvent = null;
+        }
+        mDragEvent = DragEvent.obtain(event);
+        updateAcceptableResolveInfos();
+    }
+
+    @Override
+    public void onDragEnd() {
+        if (mDragEvent == null) {
+            return;
+        }
+        mDragEvent.recycle();
+        mDragEvent = null;
         updateAcceptableResolveInfos();
     }
 
@@ -103,7 +120,7 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
-        ResolveInfoGroup resolveInfoGroup = mResolveInfos.get(position);
+        ResolveInfoGroup resolveInfoGroup = mAcceptableResolveInfos.get(position);
         if (convertView == null || !(convertView instanceof RelativeLayout)) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.shareitem, null);
             ImageView iconInputLeft = (ImageView) view.findViewById(R.id.icon_input_left);
@@ -116,29 +133,28 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
             holder.iconInputRight = iconInputRight;
             holder.iconImageView = iconImage;
             view.setTag(holder);
-            holder.setInfo(resolveInfoGroup);
         } else {
             holder = (ViewHolder) convertView.getTag();
             if (holder.view.getVisibility() == View.INVISIBLE) {
                 holder.view.setVisibility(View.VISIBLE);
             }
         }
+        holder.setInfo(resolveInfoGroup, mDragEvent != null);
         holder.updateIconFlag(SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
+        Utils.setAlwaysCanAcceptDrag(holder.view, true);
         holder.view.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
                 final int action = event.getAction();
                 switch (action) {
                     case DragEvent.ACTION_DRAG_STARTED:
-                        boolean accept = holder.resolveInfoGroup.accpetDragEvent(mContext, event);
-                        if(accept){
-                            holder.iconImageView.setImageDrawable(holder.resolveInfoGroup.loadIcon(mContext.getPackageManager()));
-                        }
-                        log.d("ACTION_DRAG_STARTED, accpet -> " + accept);
-                        return accept;
+                        return true;
                     case DragEvent.ACTION_DRAG_ENTERED:
                         log.d("ACTION_DRAG_ENTERED");
-                        holder.view.animate().scaleX(1.1f).scaleY(1.1f).setDuration(100).start();
+                        holder.view.animate().scaleX(SCALE_SIZE).scaleY(SCALE_SIZE)
+                        .setInterpolator(new AccelerateDecelerateInterpolator())
+                        .setStartDelay(0)
+                        .setDuration(100).start();
                         return true;
                     case DragEvent.ACTION_DRAG_EXITED:
                         log.d("ACTION_DRAG_EXITED");
@@ -156,7 +172,6 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
                         }
                         return ret;
                     case DragEvent.ACTION_DRAG_ENDED:
-                        holder.iconImageView.setImageBitmap(BitmapUtils.convertToBlackWhite(holder.resolveInfoGroup.loadIcon(mContext.getPackageManager())));
                         return true;
                 }
                 return false;
@@ -181,13 +196,16 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
         public Drawable icon;
         public ResolveInfoGroup resolveInfoGroup;
 
-        public void setInfo(ResolveInfoGroup info) {
+        public void setInfo(ResolveInfoGroup info, boolean color) {
             resolveInfoGroup = info;
             if (info == null) {
                 return;
             }
-            Drawable icon = resolveInfoGroup.loadIcon(context.getPackageManager());
-            iconImageView.setImageBitmap(BitmapUtils.convertToBlackWhite(icon));
+            if (color) {
+                iconImageView.setImageDrawable(resolveInfoGroup.loadIcon(context.getPackageManager()));
+            } else {
+                iconImageView.setImageBitmap(resolveInfoGroup.loadBlackWhiteIcon(context.getPackageManager()));
+            }
         }
 
         public void updateIconFlag(boolean showLeft) {

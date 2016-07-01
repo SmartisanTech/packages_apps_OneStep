@@ -1,5 +1,6 @@
 package com.smartisanos.sidebar.util;
 
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,6 +15,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,6 +24,8 @@ import android.view.DragEvent;
 public class ResolveInfoGroup extends ArrayList<ResolveInfo>{
     private static final long serialVersionUID = 1L;
     private static final String TAG = ResolveInfoGroup.class.getName();
+
+    private SoftReference<Bitmap> mBlackWhiteIcon = null;
 
     public ResolveInfoGroup(){
     }
@@ -80,6 +84,18 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo>{
         }
     }
 
+    public Bitmap loadBlackWhiteIcon(PackageManager pm) {
+        if (mBlackWhiteIcon != null) {
+            Bitmap ret = mBlackWhiteIcon.get();
+            if (ret != null) {
+                return ret;
+            }
+        }
+        Bitmap ret = BitmapUtils.convertToBlackWhite(loadIcon(pm));
+        mBlackWhiteIcon = new SoftReference<Bitmap>(ret);
+        return ret;
+    }
+
     public CharSequence loadLabel(PackageManager pm){
         if(size() <= 0){
             return null;
@@ -88,7 +104,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo>{
         }
     }
 
-    public boolean accpetDragEvent(Context context, DragEvent event){
+    public boolean acceptDragEvent(Context context, DragEvent event){
         if (event == null) {
             return true;
         }
