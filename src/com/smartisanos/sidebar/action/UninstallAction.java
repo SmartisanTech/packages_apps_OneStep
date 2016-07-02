@@ -3,6 +3,7 @@ package com.smartisanos.sidebar.action;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.IBinder;
 import android.view.WindowManager;
 
 import com.smartisanos.sidebar.SidebarController;
@@ -76,7 +77,8 @@ public class UninstallAction {
             }
         });
         mUninstallDialog = builder.create();
-        SidebarRootView view = SidebarController.getInstance(mContext).getSidebarRootView();
+        SidebarController controller = SidebarController.getInstance(mContext);
+        SidebarRootView view = controller.getSidebarRootView();
         mUninstallDialog.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
         mUninstallDialog.getWindow().getAttributes().token = view.getWindowToken();
         mUninstallDialog.show();
@@ -127,7 +129,6 @@ public class UninstallAction {
         anim.setListener(new AnimListener() {
             @Override
             public void onStart() {
-
             }
 
             @Override

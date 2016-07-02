@@ -2,8 +2,12 @@ package com.smartisanos.sidebar.view;
 
 import smartisanos.app.MenuDialog;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.CopyHistoryItem;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -17,9 +21,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
 import android.view.animation.ScaleAnimation;
+import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -27,13 +33,18 @@ import android.widget.TextView;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.IClear;
+import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentClipManager;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.ExpandableCollapsedTextViewHeightAnim;
+
 import smartisanos.util.SidebarUtils;
 
 public class ContentView extends RelativeLayout {
+    private static final LOG log = LOG.getInstance(ContentView.class);
 
     public enum ContentType{
         NONE,
@@ -52,7 +63,15 @@ public class ContentView extends RelativeLayout {
 
     private View mClearPhoto, mClearFile, mClearClipboard;
     private ClipboardAdapter mClipboardAdapter;
+    private TextView mClipboardTitle;
     private TextView mClipboardFullText;
+    private Button mClipboardCopyItemButton;
+    private Button mClipboardShareItemButton;
+    private LinearLayout mClipboardItemBack;
+
+    private LinearLayout mClipboardListTitle;
+    private LinearLayout mClipboardItemTitle;
+
     private Context mViewContext;
 
     private ContentType mCurType = ContentType.NONE;
@@ -158,7 +177,7 @@ public class ContentView extends RelativeLayout {
             }
             break;
         case CLIPBOARD:
-            setClipboardFullTextVisible(View.GONE);
+            resetClipboardFullTextStatus();
             if (anim) {
                 mClipList.setLayoutAnimation(getExitLayoutAnimationForListView());
                 mClipList.startLayoutAnimation();
@@ -214,8 +233,16 @@ public class ContentView extends RelativeLayout {
         mClipboardAdapter = new ClipboardAdapter(this.mContext);
         mClipList.setAdapter(mClipboardAdapter);
 
+//        mClipList.setOnClickListener();
         mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
         mClipList.setOnItemLongClickListener(mOnClipBoardItemLongClickListener);
+
+        mClipboardTitle = (TextView) findViewById(R.id.clipboard_title);
+        mClipboardItemBack = (LinearLayout) findViewById(R.id.back_button);
+        mClipboardCopyItemButton = (Button) findViewById(R.id.copy_icon);
+        mClipboardShareItemButton = (Button) findViewById(R.id.share_icon);
+        mClipboardListTitle = (LinearLayout) findViewById(R.id.clipboard_list_title);
+        mClipboardItemTitle = (LinearLayout) findViewById(R.id.clipboard_item_title);
         mClipboardFullText = (TextView) findViewById(R.id.clipboard_full_content);
 
         mClearPhoto.setOnClickListener(new ClearListener(new Runnable(){
@@ -250,6 +277,10 @@ public class ContentView extends RelativeLayout {
                 mCurType = ContentType.NONE;
             }
         }));
+
+        mClipboardItemBack.setOnClickListener(mOnClickClipboardFullTextTitleBackButton);
+        mClipboardCopyItemButton.setOnClickListener(mOnClickClipboardFullTextTitleCopyButton);
+        mClipboardShareItemButton.setOnClickListener(mOnClickClipboardFullTextTitleShareButton);
     }
 
     private static final int ANIMATION_DURA = 314;
@@ -378,6 +409,9 @@ public class ContentView extends RelativeLayout {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
+            if (mEnableClipboardFullTextTitleBackButton) {
+                break;
+            }
             Utils.resumeSidebar(mContext);
             return true;
         default:
@@ -423,31 +457,53 @@ public class ContentView extends RelativeLayout {
         }
     }
 
-    private void setClipboardFullTextVisible(int visible) {
-        if (visible == View.VISIBLE) {
-            mClipList.setVisibility(View.GONE);
-            mClipboardFullText.setVisibility(View.VISIBLE);
-        } else {
-            mClipboardFullText.setText("");
-            mClipList.setVisibility(View.VISIBLE);
-            mClipboardFullText.setVisibility(View.GONE);
-        }
+    private void resetClipboardFullTextStatus() {
+        mClipboardItemTitle.setVisibility(View.GONE);
+        mClipboardListTitle.setVisibility(View.VISIBLE);
+
+        mClipboardFullText.setText("");
+        mClipList.setVisibility(View.VISIBLE);
+        mClipboardFullText.setVisibility(View.GONE);
+
+        mClipList.setTranslationX(0);
+        mClipList.setTranslationY(0);
+        clipboardItemClicked = false;
+        switchViewAnimRunning = false;
+        mEnableClipboardFullTextTitleBackButton = false;
     }
+
+    private ExpandableCollapsedTextViewHeightAnim animation = new ExpandableCollapsedTextViewHeightAnim();
+    private int horizontalScrollTime = 200;
+    private int expandableOrCollapsedTime = 200;
+
+    private boolean clipboardItemClicked = false;
+    private boolean switchViewAnimRunning = false;
 
     private AdapterView.OnItemClickListener mOnClipBoardItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            Log.i("Sidebar", "onItemClick ["+position+"] ["+id+"]");
+            Log.i("Sidebar", "onItemClick [" + position + "] [" + id + "]");
             CopyHistoryItem item = (CopyHistoryItem) mClipboardAdapter.getItem(position);
             if (item == null) {
-                Log.i("Sidebar", "onItemClick lose CopyHistoryItem at ["+position+"]");
+                Log.i("Sidebar", "onItemClick lose CopyHistoryItem at [" + position + "]");
                 return;
             }
+            if (clipboardItemClicked) {
+                log.error("clipboardItemClicked true");
+                return;
+            }
+            clipboardItemClicked = true;
             String content = item.mContent;
             mClipboardFullText.setText(content);
-            setClipboardFullTextVisible(View.VISIBLE);
+            showClipboardFullTextWithAnim();
         }
     };
+
+    private static int getTextViewRealHeight(TextView view) {
+        int textHeight = view.getLayout().getLineTop(view.getLineCount());
+        int padding = view.getCompoundPaddingTop() + view.getCompoundPaddingBottom();
+        return textHeight + padding;
+    }
 
     private AdapterView.OnItemLongClickListener mOnClipBoardItemLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
@@ -463,4 +519,171 @@ public class ContentView extends RelativeLayout {
             return false;
         }
     };
+
+    private boolean mEnableClipboardFullTextTitleBackButton = false;
+
+    private View.OnClickListener mOnClickClipboardFullTextTitleBackButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            log.error("onClick mOnClickClipboardFullTextTitleBackButton");
+            if (switchViewAnimRunning) {
+                log.error("switchViewAnimRunning true");
+                return;
+            }
+            if (!mEnableClipboardFullTextTitleBackButton) {
+                log.error("mEnableClipboardFullTextTitleBackButton is false");
+                return;
+            }
+            hideClipboardFullTextWithAnim();
+        }
+    };
+
+    private View.OnClickListener mOnClickClipboardFullTextTitleShareButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            log.error("onClick mOnClickClipboardFullTextTitleShareButton");
+        }
+    };
+
+    private View.OnClickListener mOnClickClipboardFullTextTitleCopyButton = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            log.error("onClick mOnClickClipboardFullTextTitleCopyButton");
+        }
+    };
+
+    private void showClipboardFullTextWithAnim() {
+        if (switchViewAnimRunning) {
+            log.error("showClipboardFullTextWithAnim return by anim is running");
+            return;
+        }
+        switchViewAnimRunning = true;
+
+        mClipboardListTitle.setVisibility(View.GONE);
+        mClipboardItemTitle.setVisibility(View.VISIBLE);
+
+        Rect rect = new Rect();
+        mClipList.getDrawingRect(rect);
+        int viewWidth = mClipList.getWidth();
+        final int viewHeight = (rect.bottom - rect.top);//mClipList.getHeight();
+        mClipboardFullText.setTranslationX(-viewWidth);
+        mClipboardFullText.setHeight(viewHeight);
+        mClipboardFullText.requestLayout();
+        mClipboardFullText.setVisibility(View.VISIBLE);
+
+        AnimatorSet set = new AnimatorSet();
+        ObjectAnimator listAnim = ObjectAnimator.ofFloat(mClipList, Anim.TRANSLATE_X, 0, -viewWidth);
+        ObjectAnimator textAnim = ObjectAnimator.ofFloat(mClipboardFullText, Anim.TRANSLATE_X, viewWidth, 0);
+        set.play(listAnim).with(textAnim);
+        set.setDuration(horizontalScrollTime);
+        set.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                mClipList.setVisibility(View.GONE);
+                switchViewAnimRunning = false;
+                int from = viewHeight;
+                int to = getTextViewRealHeight(mClipboardFullText);
+                log.error("mClipboardFullText height ["+from+"], text height ["+to+"]");
+                if (from != to) {
+                    //do expandable or Collapsed anim
+                    animation.init(mClipboardFullText, from, to, expandableOrCollapsedTime);
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            log.error("animation start !!!");
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            mEnableClipboardFullTextTitleBackButton = true;
+                            switchViewAnimRunning = false;
+                        }
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                        }
+                    });
+                    animation.start();
+                    switchViewAnimRunning = true;
+                } else {
+                    mEnableClipboardFullTextTitleBackButton = true;
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+            }
+        });
+        set.start();
+    }
+
+    private void hideClipboardFullTextWithAnim() {
+        if (switchViewAnimRunning) {
+            log.error("hideClipboardFullTextWithAnim return by anim is running");
+            return;
+        }
+        switchViewAnimRunning = true;
+        mEnableClipboardFullTextTitleBackButton = false;
+        mClipboardItemTitle.setVisibility(View.GONE);
+        Rect rect = new Rect();
+        mClipList.getDrawingRect(rect);
+        final int viewWidth = mClipList.getWidth();
+        final int viewHeight = (rect.bottom - rect.top);//mClipList.getHeight();
+        int from = mClipboardFullText.getHeight();
+        log.error("hideClipboardFullTextWithAnim height from ["+from+"], to ["+viewHeight+"]");
+        animation.init(mClipboardFullText, from, viewHeight, expandableOrCollapsedTime);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mClipList.setTranslationX(viewWidth);
+                mClipList.setVisibility(View.VISIBLE);
+                mClipList.requestLayout();
+
+                AnimatorSet set = new AnimatorSet();
+                ObjectAnimator listAnim = ObjectAnimator.ofFloat(mClipList, Anim.TRANSLATE_X, -viewWidth, 0);
+                ObjectAnimator textAnim = ObjectAnimator.ofFloat(mClipboardFullText, Anim.TRANSLATE_X, 0, viewWidth);
+                set.play(listAnim).with(textAnim);
+                set.setDuration(horizontalScrollTime);
+                set.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        mClipboardListTitle.setVisibility(View.VISIBLE);
+                        mClipboardFullText.setVisibility(View.GONE);
+                        switchViewAnimRunning = false;
+                        clipboardItemClicked = false;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+                    }
+                });
+                set.start();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        animation.start();
+        switchViewAnimRunning = true;
+    }
 }

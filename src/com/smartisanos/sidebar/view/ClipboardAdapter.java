@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
@@ -63,9 +64,8 @@ public class ClipboardAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent){
-        log.error("getView position ["+position+"]");
         View res = convertView;
-        if(res == null){
+        if(res == null) {
             res =  View.inflate(mContext,R.layout.copyhistoryitem, null);
         }
         TextView tv = (TextView)res.findViewById(R.id.text);

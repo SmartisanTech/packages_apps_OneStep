@@ -177,18 +177,6 @@ public class SidebarController {
             if (mSidebarRoot.getTrash() != null) {
                 mSidebarRoot.getTrash().initTrashView();
             }
-//            if (mSideView != null) {
-//                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mSideView.getLayoutParams();
-//                if (lp != null) {
-//                    lp.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
-//                    lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//                    if (getSidebarMode() == SidebarMode.MODE_LEFT) {
-//                        lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-//                    } else {
-//                        lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//                    }
-//                }
-//            }
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT,

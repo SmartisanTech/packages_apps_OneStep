@@ -163,6 +163,9 @@ public class SideView extends RelativeLayout {
                 log.error("feature close");
                 return false;
             }
+            if (!enableLongClick()) {
+                return false;
+            }
             if (view == null) {
                 log.error("onItemLongClick return by view is null");
                 return false;
@@ -196,6 +199,9 @@ public class SideView extends RelativeLayout {
         public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
             if (DEV_FLAG) {
                 log.error("feature close");
+                return false;
+            }
+            if (!enableLongClick()) {
                 return false;
             }
             if (view == null) {
@@ -232,6 +238,15 @@ public class SideView extends RelativeLayout {
         drawable.draw(canvas);
         return bitmap;
     }
+
+    private boolean enableLongClick() {
+        SidebarController controller = SidebarController.getInstance(mContext);
+        if (controller.getCurrentContentType() == ContentType.ADDTOSIDEBAR) {
+            return false;
+        }
+        return true;
+    }
+
 
     public int[] appListLoc = new int[2];
     public int[] contactListLoc = new int[2];
@@ -357,7 +372,7 @@ public class SideView extends RelativeLayout {
                     return;
                 }
                 area = areaType(x, y, itemViewHeight);
-                log.error("A position ["+position+"], Y ["+localLoc[1]+"] AREA ["+area+"]");
+//                log.error("A position ["+position+"], Y ["+localLoc[1]+"] AREA ["+area+"]");
             }
         } else if (dragItemType == SidebarRootView.DragItem.TYPE_SHORTCUT
                 && inArea(x, y, mContactList, contactListLoc)) {
@@ -372,7 +387,7 @@ public class SideView extends RelativeLayout {
                     return;
                 }
                 area = areaType(x, y, itemViewHeight);
-                log.error("B position ["+position+"], Y ["+localLoc[1]+"] AREA ["+area+"]");
+//                log.error("B position ["+position+"], Y ["+localLoc[1]+"] AREA ["+area+"]");
             }
         }
         if (area != AREA_TYPE_NORMAL) {

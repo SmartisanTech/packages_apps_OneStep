@@ -22,6 +22,8 @@
     <string name="delete">清空</string>
     <string name="add_wechat_hint">进入微信，在微信好友详细资料界面点击右上角的三个点图标，选择将好友“添加到桌面”</string>
 
+    <string name="clipboard_fulltext_back">Back</string>
+
     <!-- uninstall -->
     <string name="uninstall_app_dialog_title">Notice</string>
     <string name="uninstall_app_dialog_text">Uninstall \"%1$s\"?</string>
