@@ -25,7 +25,7 @@ public class MailContact extends ContactItem {
     private String mMailAddress;
 
     public MailContact(Context context, CharSequence displayName, String mailAddress) {
-        this(context, BitmapFactory.decodeResource(context.getResources(), R.drawable.mail_contact_avatar), displayName, mailAddress);
+        this(context, BitmapFactory.decodeResource(context.getResources(), R.drawable.default_contact_avatar), displayName, mailAddress);
     }
 
     public MailContact(Context context, Bitmap avatar, CharSequence displayName, String mailAddress) {

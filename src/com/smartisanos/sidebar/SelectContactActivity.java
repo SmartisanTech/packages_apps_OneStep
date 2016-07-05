@@ -82,8 +82,14 @@ public class SelectContactActivity extends Activity {
                             }
                             String displayName = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                             int contactId = cursor.getInt(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+                            Bitmap avatar = getAvatarById(contactId);
                             if (contactId > 0 && !TextUtils.isEmpty(number)) {
-                                return new MmsContact(getApplicationContext(), contactId, number, BitmapUtils.getRoundedCornerBitmap(getAvatarById(contactId)), displayName);
+                                if (avatar == null) {
+                                    return new MmsContact(getApplicationContext(), contactId, number, displayName);
+                                } else {
+                                    return new MmsContact(getApplicationContext(), contactId, number,
+                                            BitmapUtils.getRoundedCornerBitmap(avatar), displayName);
+                                }
                             }
                         }
                     } while (cursor.moveToNext());

@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
@@ -23,6 +24,10 @@ public class MmsContact extends ContactItem {
     private Context context;
     private int mContactId;
     private String mPhoneNumber;
+
+    public MmsContact(Context context, int contactId, String number, CharSequence displayName) {
+        this(context, contactId, number, BitmapFactory.decodeResource(context.getResources(), R.drawable.default_contact_avatar), displayName);
+    }
 
     public MmsContact(Context context, int contactId, String number, Bitmap avatar, CharSequence displayName) {
         super(context, avatar, displayName);
