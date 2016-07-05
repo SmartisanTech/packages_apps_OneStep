@@ -133,7 +133,9 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo>{
     }
 
     public boolean handleEvent(Context context, DragEvent event){
-        if(event.getClipData().getItemCount() <= 0 || size() <= 0){
+        if (event.getClipData().getItemCount() <= 0
+                || event.getClipDescription().getMimeTypeCount() <= 0
+                || size() <= 0) {
             return false;
         }
 
