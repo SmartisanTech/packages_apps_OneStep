@@ -173,7 +173,11 @@ public class SidebarRootView extends FrameLayout {
         private int bubbleTextWidth;
         private int bubbleTextHeight;
 
-        public DragView(Context context, DragItem item) {
+        private int[] initLoc;
+
+        private boolean mAlreadyInit = false;
+
+        public DragView(Context context, DragItem item, int[] loc) {
             mView = LayoutInflater.from(context).inflate(R.layout.drag_view, null);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -185,16 +189,18 @@ public class SidebarRootView extends FrameLayout {
             final float offsetX = 0;
             final float offsetY = 0;
             final float initialScale = 1;
-            iconWidth = mIcon.getIntrinsicWidth();
-            iconHeight = mIcon.getIntrinsicHeight();
+            int iconSize = context.getResources().getDimensionPixelSize(R.dimen.drag_view_icon_size);
+            log.error("icon size ====> " + iconSize);
+            iconWidth = iconSize;
+            iconHeight = iconSize;
             Resources resources = context.getResources();
             final float scaleDps = resources.getDimensionPixelSize(R.dimen.dragViewScale);
             final float scale = (iconWidth + scaleDps) / iconWidth;
 
             mDragViewIcon = (ImageView) mView.findViewById(R.id.drag_view_icon);
             mDragViewIcon.setBackground(mIcon);
-            log.error("mView size ["+mView.getWidth()+", "+mView.getHeight()+"]");
-            log.error("mDragViewIcon size ["+mDragViewIcon.getWidth()+", "+mDragViewIcon.getHeight()+"]");
+            initLoc = loc;
+//            log.error("view init loc ["+initLoc[0]+", "+initLoc[1]+"]");
 
             mInitialScale = initialScale;
             mAnim = new ValueAnimator();
@@ -204,7 +210,6 @@ public class SidebarRootView extends FrameLayout {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     final float value = (Float) animation.getAnimatedValue();
-                    log.error("anim value ==> " + value);
                     final int deltaX = (int) ((value * offsetX) - mOffsetX);
                     final int deltaY = (int) ((value * offsetY) - mOffsetY);
 
@@ -215,19 +220,31 @@ public class SidebarRootView extends FrameLayout {
                     mView.setScaleX(scaleX);
                     mView.setScaleY(scaleY);
 
+                    float translateX = mView.getTranslationX();
+                    float translateY = mView.getTranslationY();
+                    if (translateX == 0) {
+                        translateX = initLoc[0];
+                    }
+                    if (translateY == 0) {
+                        translateY = initLoc[1];
+                    }
                     if (mView.getParent() == null) {
                         animation.cancel();
                     } else {
-                        float translateX = mView.getTranslationX() + deltaX;
-                        float translateY = mView.getTranslationY() + deltaY;
+                        translateX += deltaX;
+                        translateY += deltaY;
                         mView.setTranslationX(translateX);
                         mView.setTranslationY(translateY);
+                    }
+                    if (mView.getVisibility() != View.VISIBLE) {
+                        mView.setVisibility(View.VISIBLE);
                     }
                 }
             });
             mAnim.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animator) {
+
                 }
 
                 @Override
@@ -237,6 +254,7 @@ public class SidebarRootView extends FrameLayout {
                     mBubbleText.setVisibility(View.VISIBLE);
                     bubbleTextWidth = mBubbleText.getWidth();
                     bubbleTextHeight = mBubbleText.getHeight();
+                    mAlreadyInit = true;
                 }
 
                 @Override
@@ -268,6 +286,9 @@ public class SidebarRootView extends FrameLayout {
         }
 
         public void move(float touchX, float touchY) {
+            if (!mAlreadyInit) {
+                return;
+            }
             int bubbleHeight = 0;
             if (mBubbleText != null) {
                 bubbleHeight = mBubbleText.getHeight();
@@ -294,23 +315,18 @@ public class SidebarRootView extends FrameLayout {
         }
     }
 
-    public void startDrag(DragItem item) {
+    public void startDrag(DragItem item, int[] loc) {
         if (mDragView != null) {
             return;
         }
         //set sidebar to full screen
         SidebarController.getInstance(mContext).updateDragWindow(true);
-        mDragView = new DragView(mContext, item);
+        mDragView = new DragView(mContext, item, loc);
+        mDragView.mView.setVisibility(View.INVISIBLE);
+        addView(mDragView.mView);
         post(new Runnable() {
             public void run() {
                 mTrash.trashAppearWithAnim();
-                mDragView.setVisibility(View.INVISIBLE);
-                addView(mDragView.mView);
-                final float touchX = pointDownLoc[0];
-                final float touchY = pointDownLoc[1];
-                log.error("startDrag ["+touchX+"]["+touchY+"]");
-                mDragView.move(touchX, touchY);
-                mDragView.setVisibility(View.VISIBLE);
                 post(new Runnable() {
                     @Override
                     public void run() {
@@ -353,18 +369,11 @@ public class SidebarRootView extends FrameLayout {
         return mDragView;
     }
 
-    private final float[] pointDownLoc = new float[2];
-
     private final boolean ENABLE_TOUCH_LOG = false;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction() & MotionEvent.ACTION_MASK;
-        if (action == MotionEvent.ACTION_DOWN) {
-            pointDownLoc[0] = event.getRawX();
-            pointDownLoc[1] = event.getRawY();
-            log.error("dispatchTouchEvent ACTION_DOWN ["+pointDownLoc[0]+"]["+pointDownLoc[1]+"]");
-        }
         if (mDragView == null) {
             if (action == MotionEvent.ACTION_DOWN) {
                 if (processResumeSidebar()) {
@@ -410,8 +419,6 @@ public class SidebarRootView extends FrameLayout {
         switch (action) {
             case MotionEvent.ACTION_DOWN : {
                 if (ENABLE_TOUCH_LOG) log.error("ACTION_DOWN");
-                pointDownLoc[0] = x;
-                pointDownLoc[1] = y;
                 break;
             }
             case MotionEvent.ACTION_UP : {

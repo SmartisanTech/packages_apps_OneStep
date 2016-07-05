@@ -209,9 +209,14 @@ public class SideView extends RelativeLayout {
 
             int index = mResolveAdapter.objectIndex(data);
             mShareList.setPrePosition(index);
+            int[] viewLoc = new int[2];
+            view.getLocationOnScreen(viewLoc);
+            viewLoc[0] = viewLoc[0] + view.getWidth() / 2;
+            viewLoc[1] = viewLoc[1] + view.getHeight() / 2;
+
             SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(
                     mContext, SidebarRootView.DragItem.TYPE_APPLICATION, icon, data, index);
-            mRootView.startDrag(dragItem);
+            mRootView.startDrag(dragItem, viewLoc);
             dragItemType = SidebarRootView.DragItem.TYPE_APPLICATION;
             getScrollViewLayoutParams();
             holder.view.setVisibility(View.INVISIBLE);
@@ -237,6 +242,12 @@ public class SideView extends RelativeLayout {
                 log.error("mContactItemOnLongClickListener return by tag is null");
                 return false;
             }
+
+            int[] viewLoc = new int[2];
+            view.getLocationOnScreen(viewLoc);
+            viewLoc[0] = viewLoc[0] + view.getWidth() / 2;
+            viewLoc[1] = viewLoc[1] + view.getHeight() / 2;
+
             ContactListAdapter.ViewHolder holder = (ContactListAdapter.ViewHolder) view.getTag();
             ContactItem item = holder.mItem;
             holder.view.buildDrawingCache();
@@ -246,7 +257,7 @@ public class SideView extends RelativeLayout {
             mContactList.setPrePosition(index);
             SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(
                     mContext, SidebarRootView.DragItem.TYPE_SHORTCUT, icon, item, index);
-            mRootView.startDrag(dragItem);
+            mRootView.startDrag(dragItem, viewLoc);
             dragItemType = SidebarRootView.DragItem.TYPE_SHORTCUT;
             getScrollViewLayoutParams();
             holder.view.setVisibility(View.INVISIBLE);

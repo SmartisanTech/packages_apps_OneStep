@@ -9,16 +9,17 @@
         android:id="@+id/drag_view_bubble_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14dp"
-        android:textColor="#26000000"
+        android:textSize="14sp"
+        android:textColor="#ffffff"
         android:background="@drawable/long_press_bubble"
         android:visibility="gone"
         android:layout_gravity="center|center_horizontal"
         />
     <ImageView
         android:id="@+id/drag_view_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/drag_view_icon_size"
+        android:layout_height="@dimen/drag_view_icon_size"
+        android:scaleType="fitXY"
         android:layout_gravity="center|center_horizontal"
         />
 </LinearLayout>

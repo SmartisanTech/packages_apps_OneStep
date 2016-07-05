@@ -88,7 +88,7 @@ public class Trash {
     public void dragObjectMoveTo(float x, float y) {
         if (inTrashReactArea(x, y)) {
             //in trash area
-            trashFloatUpWithAnim();
+            trashFloatUpWithAnim(null);
         } else {
             //out trash area
             trashFallDownWithAnim();
@@ -111,16 +111,6 @@ public class Trash {
             log.error("dragObjectUpOnUp return by dragItem is null");
             return processUninstall;
         }
-//        if (item.getItemType() == SidebarRootView.DragItem.TYPE_APPLICATION && item.isSystemApp()) {
-//            //check is system app !
-//            boolean isSystemApp = false;
-//            if (isSystemApp) {
-//                Toast toast = Toast.makeText(mContext, R.string.uninstall_system_app_text, Toast.LENGTH_XLONG);
-//                toast.show();
-//            }
-//            log.error("dragObjectUpOnUp return by isSystemApp");
-//            return processUninstall;
-//        }
         //move icon to trash
         moveIconToTrash(dragView);
         String name = item.getDisplayName();
@@ -253,7 +243,7 @@ public class Trash {
     private boolean mTrashUpAnimRunning = false;
     private boolean mTrashDownAnimRunning = false;
 
-    public void trashFloatUpWithAnim() {
+    public void trashFloatUpWithAnim(final Runnable runnable) {
         if (mTrashStatus == TRASH_FLOAT) {
             return;
         }
@@ -276,6 +266,9 @@ public class Trash {
             public void onComplete() {
                 mTrashStatus = TRASH_FLOAT;
                 mTrashUpAnimRunning = false;
+                if (runnable != null) {
+                    runnable.run();
+                }
             }
         });
         anim.start();
@@ -340,7 +333,18 @@ public class Trash {
                     log.error("moveIconToTrash view is null when anim complete");
                     return;
                 }
-                rockOnTrash(dragView.mView);
+                if (mTrashStatus != TRASH_FLOAT) {
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            rockOnTrash(dragView.mView);
+                        }
+                    };
+                    trashFloatUpWithAnim(runnable);
+                } else {
+                    rockOnTrash(dragView.mView);
+                }
+
             }
         });
         anim.start();
