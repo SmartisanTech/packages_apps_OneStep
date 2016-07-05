@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.IBinder;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.smartisanos.sidebar.SidebarController;
@@ -123,9 +124,10 @@ public class UninstallAction {
         }
         trash.stopRock();
         SidebarRootView.DragView dragView = rootView.getDraggedView();
-        Vector3f from = new Vector3f(0, dragView.getY());
+        View view = dragView.mView;
+        Vector3f from = new Vector3f(0, view.getY());
         Vector3f to = new Vector3f(0, trash.mWindowHeight);
-        Anim anim = new Anim(dragView, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
+        Anim anim = new Anim(view, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
         anim.setListener(new AnimListener() {
             @Override
             public void onStart() {

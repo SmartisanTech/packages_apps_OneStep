@@ -22,7 +22,7 @@
 
     <!-- uninstall -->
     <string name="uninstall_app_dialog_title">提示</string>
-    <string name="uninstall_app_dialog_text">是否删除“%1$s”？</string>
+    <string name="uninstall_app_dialog_text">是否移除“%1$s”？</string>
     <string name="uninstall_ok">确认</string>
     <string name="uninstall_cancel">取消</string>
     <string name="uninstall_system_app_text">为了保证完整的系统功能，无法卸载系统内建的应用程序</string>

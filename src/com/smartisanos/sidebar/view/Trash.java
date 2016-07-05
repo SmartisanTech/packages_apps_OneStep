@@ -308,16 +308,22 @@ public class Trash {
         anim.start();
     }
 
-    public void moveIconToTrash(final View view) {
+    public void moveIconToTrash(final SidebarRootView.DragView dragView) {
+        if (dragView == null) {
+            return;
+        }
+        View view = dragView.mView;
         if (view == null) {
             return;
         }
+        dragView.hideBubble();
         float fromX = view.getX();
         float fromY = view.getY();
-        int viewWidth = view.getWidth();
-        int viewHeight = view.getHeight();
-        float toX = mWindowWidth / 2 - viewWidth / 2;
-        float toY = mWindowHeight - mTrashDisplayHeight - mTrashFloatUpHeight - viewHeight;
+        int iconWidth = dragView.iconWidth;
+        int iconHeight = dragView.iconHeight;
+        log.error("moveIconToTrash view width ["+iconWidth+"], view height ["+iconHeight+"]");
+        float toX = mWindowWidth / 2 - iconWidth / 2;
+        float toY = mWindowHeight - mTrashDisplayHeight - mTrashFloatUpHeight - iconHeight;
         Vector3f from = new Vector3f(fromX, fromY);
         Vector3f to = new Vector3f(toX, toY);
         log.error("moveIconToTrash move from " + from + ", to " + to);
@@ -330,11 +336,11 @@ public class Trash {
 
             @Override
             public void onComplete() {
-                if (view == null) {
+                if (dragView == null) {
                     log.error("moveIconToTrash view is null when anim complete");
                     return;
                 }
-                rockOnTrash(view);
+                rockOnTrash(dragView.mView);
             }
         });
         anim.start();

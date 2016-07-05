@@ -26,7 +26,7 @@
 
     <!-- uninstall -->
     <string name="uninstall_app_dialog_title">Notice</string>
-    <string name="uninstall_app_dialog_text">Uninstall \"%1$s\"?</string>
+    <string name="uninstall_app_dialog_text">Remove \"%1$s\"?</string>
     <string name="uninstall_ok">OK</string>
     <string name="uninstall_cancel">Cancel</string>
     <string name="uninstall_system_app_text">Unable to uninstall built-in apps.</string>

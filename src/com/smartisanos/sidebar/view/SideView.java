@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -175,12 +176,9 @@ public class SideView extends RelativeLayout {
                 return false;
             }
             ResolveInfoListAdapter.ViewHolder holder = (ResolveInfoListAdapter.ViewHolder) view.getTag();
-            int width = holder.iconImageView.getWidth();
-            int height = holder.iconImageView.getHeight();
             PackageManager pm = mContext.getPackageManager();
             ResolveInfoGroup data = holder.resolveInfoGroup;
-            Drawable iconDrawable = data.loadIcon(pm);
-            Bitmap icon = drawableToBitmap(iconDrawable, width, height);
+            Drawable icon = data.loadIcon(pm);
 
             int index = mResolveAdapter.objectIndex(data);
             mShareList.setPrePosition(index);
@@ -215,7 +213,8 @@ public class SideView extends RelativeLayout {
             ContactListAdapter.ViewHolder holder = (ContactListAdapter.ViewHolder) view.getTag();
             ContactItem item = holder.mItem;
             holder.view.buildDrawingCache();
-            Bitmap icon = holder.view.getDrawingCache();
+            Bitmap drawingCache = holder.view.getDrawingCache();
+            Drawable icon = new BitmapDrawable(getResources(), drawingCache);
             int index = mContactAdapter.objectIndex(item);
             mContactList.setPrePosition(index);
             SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(

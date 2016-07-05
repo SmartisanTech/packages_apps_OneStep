@@ -1,17 +1,22 @@
 package com.smartisanos.sidebar.view;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.ContactItem;
@@ -44,7 +49,7 @@ public class SidebarRootView extends FrameLayout {
     }
 
     public void resetSidebarWindow() {
-        removeView(mDragView);
+        removeView(mDragView.mView);
         mDragView = null;
         SidebarController.getInstance(mContext).updateDragWindow(false);
     }
@@ -69,18 +74,18 @@ public class SidebarRootView extends FrameLayout {
 
         private Context mContext;
 
-        private Bitmap iconOrig;
-        private Bitmap iconFloatUp;
+        private Drawable iconOrig;
 
         private int itemType;
         private ResolveInfoGroup resolveInfoGroup;
         private ContactItem contactItem;
         public int floatUpIndex;
         public int viewIndex;
+        public String mDisplayName;
 
         private boolean isSystemApp = false;
 
-        public DragItem(Context context, int type, Bitmap icon, Object data, int initIndex) {
+        public DragItem(Context context, int type, Drawable icon, Object data, int initIndex) {
             mContext = context;
             itemType = type;
             iconOrig = icon;
@@ -90,8 +95,11 @@ public class SidebarRootView extends FrameLayout {
                 resolveInfoGroup = (ResolveInfoGroup) data;
                 String pkg = resolveInfoGroup.getPackageName();
                 isSystemApp = isSystemAppByPackageName(context, pkg);
+                PackageManager pm = context.getPackageManager();
+                mDisplayName = resolveInfoGroup.loadLabel(pm).toString();
             } else if (itemType == TYPE_SHORTCUT) {
                 contactItem = (ContactItem) data;
+                mDisplayName = contactItem.getDisplayName().toString();
             }
         }
 
@@ -144,33 +152,49 @@ public class SidebarRootView extends FrameLayout {
         }
     }
 
-    public static class DragView extends View {
+    public static class DragView {
 
         ValueAnimator mAnim;
         private float mOffsetX = 0.0f;
         private float mOffsetY = 0.0f;
         private float mInitialScale = 1f;
 
-        private Bitmap mBitmap;
+        private Drawable mIcon;
         private Paint mPaint;
         private DragItem mItem;
 
-        private int viewWidth;
-        private int viewHeight;
+        public int iconWidth;
+        public int iconHeight;
+
+        public View mView;
+        public ImageView mDragViewIcon;
+        public TextView mBubbleText;
+
+        private int bubbleTextWidth;
+        private int bubbleTextHeight;
 
         public DragView(Context context, DragItem item) {
-            super(context);
+            mView = LayoutInflater.from(context).inflate(R.layout.drag_view, null);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            mView.setLayoutParams(params);
             mItem = item;
-            mBitmap = item.iconOrig;
+            mIcon = item.iconOrig;
             mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
             final float offsetX = 0;
             final float offsetY = 0;
             final float initialScale = 1;
-            viewWidth = mBitmap.getWidth();
-            viewHeight = mBitmap.getHeight();
+            iconWidth = mIcon.getIntrinsicWidth();
+            iconHeight = mIcon.getIntrinsicHeight();
             Resources resources = context.getResources();
             final float scaleDps = resources.getDimensionPixelSize(R.dimen.dragViewScale);
-            final float scale = (viewWidth + scaleDps) / viewWidth;
+            final float scale = (iconWidth + scaleDps) / iconWidth;
+
+            mDragViewIcon = (ImageView) mView.findViewById(R.id.drag_view_icon);
+            mDragViewIcon.setBackground(mIcon);
+            log.error("mView size ["+mView.getWidth()+", "+mView.getHeight()+"]");
+            log.error("mDragViewIcon size ["+mDragViewIcon.getWidth()+", "+mDragViewIcon.getHeight()+"]");
 
             mInitialScale = initialScale;
             mAnim = new ValueAnimator();
@@ -180,6 +204,7 @@ public class SidebarRootView extends FrameLayout {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     final float value = (Float) animation.getAnimatedValue();
+                    log.error("anim value ==> " + value);
                     final int deltaX = (int) ((value * offsetX) - mOffsetX);
                     final int deltaY = (int) ((value * offsetY) - mOffsetY);
 
@@ -187,34 +212,55 @@ public class SidebarRootView extends FrameLayout {
                     mOffsetY += deltaY;
                     float scaleX = initialScale + (value * (scale - initialScale));
                     float scaleY = initialScale + (value * (scale - initialScale));
-                    setScaleX(scaleX);
-                    setScaleY(scaleY);
+                    mView.setScaleX(scaleX);
+                    mView.setScaleY(scaleY);
 
-                    if (getParent() == null) {
+                    if (mView.getParent() == null) {
                         animation.cancel();
                     } else {
-                        float translateX = getTranslationX() + deltaX;
-                        float translateY = getTranslationY() + deltaY;
-//                        log.error("DragView translate ["+translateX+"] ["+translateY+"]");
-                        setTranslationX(translateX);
-                        setTranslationY(translateY);
+                        float translateX = mView.getTranslationX() + deltaX;
+                        float translateY = mView.getTranslationY() + deltaY;
+                        mView.setTranslationX(translateX);
+                        mView.setTranslationY(translateY);
                     }
+                }
+            });
+            mAnim.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    mBubbleText = (TextView) mView.findViewById(R.id.drag_view_bubble_text);
+                    mBubbleText.setText(mItem.mDisplayName);
+                    mBubbleText.setVisibility(View.VISIBLE);
+                    bubbleTextWidth = mBubbleText.getWidth();
+                    bubbleTextHeight = mBubbleText.getHeight();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {
                 }
             });
 
             // Force a measure, because Workspace uses getMeasuredHeight() before the layout pass
-            int ms = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-            measure(ms, ms);
+//            int ms = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+//            measure(ms, ms);
         }
 
-        @Override
-        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            setMeasuredDimension(mBitmap.getWidth(), mBitmap.getHeight());
+        public void hideBubble() {
+            if (mBubbleText != null) {
+                mBubbleText.setVisibility(View.GONE);
+            }
         }
 
-        @Override
-        protected void onDraw(Canvas canvas) {
-            canvas.drawBitmap(mBitmap, 0.0f, 0.0f, mPaint);
+        public void setVisibility(int visibility) {
+            mView.setVisibility(visibility);
         }
 
         public DragItem getDragItem() {
@@ -222,8 +268,12 @@ public class SidebarRootView extends FrameLayout {
         }
 
         public void move(float touchX, float touchY) {
-            setTranslationX(touchX - viewWidth / 2);
-            setTranslationY(touchY - viewHeight / 2);
+            int bubbleHeight = 0;
+            if (mBubbleText != null) {
+                bubbleHeight = mBubbleText.getHeight();
+            }
+            mView.setTranslationX(touchX - iconWidth / 2);
+            mView.setTranslationY(touchY - iconHeight / 2 - bubbleHeight);
         }
 
         public void cancel() {
@@ -255,7 +305,7 @@ public class SidebarRootView extends FrameLayout {
             public void run() {
                 mTrash.trashAppearWithAnim();
                 mDragView.setVisibility(View.INVISIBLE);
-                addView(mDragView);
+                addView(mDragView.mView);
                 final float touchX = pointDownLoc[0];
                 final float touchY = pointDownLoc[1];
                 log.error("startDrag ["+touchX+"]["+touchY+"]");
@@ -274,11 +324,10 @@ public class SidebarRootView extends FrameLayout {
     public void dropDrag() {
         log.error("dropDrag !");
         DragItem item = null;
-        if (mDragView != null) {
+        if (mDragView != null && mDragView.mView != null) {
             item = mDragView.getDragItem();
-            mDragView.clearFocus();
             mDragView.setVisibility(View.INVISIBLE);
-            removeView(mDragView);
+            removeView(mDragView.mView);
         }
         if (mSideView != null) {
             if (item != null) {
