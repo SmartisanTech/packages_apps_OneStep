@@ -81,9 +81,6 @@ public class SidebarRootView extends FrameLayout {
         private Drawable iconOrig;
         private int itemType;
         public SidebarItem sidebarItem;
-        private ResolveInfoGroup resolveInfoGroup;
-        private ContactItem contactItem;
-        private boolean isSystemApp = false;
         public int floatUpIndex;
         public int viewIndex;
         public String displayName;
@@ -243,7 +240,7 @@ public class SidebarRootView extends FrameLayout {
         });
     }
 
-    public void dropDrag(boolean delete) {
+    public void dropDrag(final boolean delete) {
         log.error("dropDrag !");
         if (mDragView == null) {
             return;
@@ -299,18 +296,18 @@ public class SidebarRootView extends FrameLayout {
             public void onAnimationEnd(Animator animator) {
                 view.setVisibility(View.INVISIBLE);
                 removeView(view);
-                if (mSideView != null) {
+                if (!delete && mSideView != null) {
                     if (item != null) {
                         item.mListItemView.setVisibility(View.VISIBLE);
                         int index = item.viewIndex;
                         if (item.itemType == DragItem.TYPE_APPLICATION) {
-                            ResolveInfoGroup data = item.resolveInfoGroup;
+                            ResolveInfoGroup data = (ResolveInfoGroup) item.sidebarItem;
                             log.error("A set item to index ["+index+"]");
                             ResolveInfoListAdapter adapter = mSideView.getAppListAdapter();
                             adapter.setItem(index, data);
                             mSideView.notifyAppListDataSetChanged();
                         } else if (item.itemType == DragItem.TYPE_SHORTCUT) {
-                            ContactItem contactItem = item.contactItem;
+                            ContactItem contactItem = (ContactItem) item.sidebarItem;
                             log.error("B set item to index ["+index+"]");
                             ContactListAdapter adapter = mSideView.getContactListAdapter();
                             adapter.setItem(index, contactItem);

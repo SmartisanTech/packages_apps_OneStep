@@ -76,7 +76,7 @@ public class ToAddResolveInfoGroupAdapter extends BaseAdapter{
         ret.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ResolveInfoManager.getInstance(mContext).addResolveInfo(rig);
+                ResolveInfoManager.getInstance(mContext).addResolveInfoGroup(rig);
             }
         });
         return ret;

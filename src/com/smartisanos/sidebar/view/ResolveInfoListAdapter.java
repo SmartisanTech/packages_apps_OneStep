@@ -1,8 +1,12 @@
 package com.smartisanos.sidebar.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,19 +15,13 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
-import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 import com.smartisanos.sidebar.util.Utils;
-
-import smartisanos.util.SidebarUtils;
 
 public class ResolveInfoListAdapter extends DragEventAdapter {
     private static final LOG log = LOG.getInstance(ResolveInfoListAdapter.class);
@@ -42,8 +40,13 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
         mManager.addListener(new ResolveInfoManager.ResolveInfoUpdateListener() {
             @Override
             public void onUpdate() {
-                mResolveInfos = mManager.getAddedResolveInfoGroup();
-                updateAcceptableResolveInfos();
+                new Handler(Looper.getMainLooper()).post(new Runnable(){
+                    @Override
+                    public void run() {
+                        mResolveInfos = mManager.getAddedResolveInfoGroup();
+                        updateAcceptableResolveInfos();
+                    }
+                });
             }
         });
     }
