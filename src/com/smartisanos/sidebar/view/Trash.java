@@ -113,8 +113,7 @@ public class Trash {
         }
         //move icon to trash
         moveIconToTrash(dragView);
-        String name = item.getDisplayName();
-        UninstallAction action = new UninstallAction(mContext, name);
+        UninstallAction action = new UninstallAction(mContext, item);
         action.showUninstallDialog();
         processUninstall = true;
         log.error("handle uninstall process");

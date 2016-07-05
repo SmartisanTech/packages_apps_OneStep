@@ -62,7 +62,12 @@ public class WechatContact extends ContactItem {
 
     @Override
     public void save() {
+        // TODO
+    }
 
+    @Override
+    public void deleteFromDatabase() {
+        // TODO
     }
 
     @Override

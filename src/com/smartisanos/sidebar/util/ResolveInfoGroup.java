@@ -21,13 +21,16 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.DragEvent;
 
-public class ResolveInfoGroup extends ArrayList<ResolveInfo>{
+public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarItem{
     private static final long serialVersionUID = 1L;
     private static final String TAG = ResolveInfoGroup.class.getName();
 
+    private Context mContext;
     private SoftReference<Bitmap> mBlackWhiteIcon = null;
 
-    public ResolveInfoGroup(){
+    public ResolveInfoGroup(Context context){
+        super();
+        mContext = context;
     }
 
     public String getPackageName(){
@@ -94,14 +97,6 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo>{
         Bitmap ret = BitmapUtils.convertToBlackWhite(loadIcon(pm));
         mBlackWhiteIcon = new SoftReference<Bitmap>(ret);
         return ret;
-    }
-
-    public CharSequence loadLabel(PackageManager pm){
-        if(size() <= 0){
-            return null;
-        }else{
-            return get(0).loadLabel(pm);
-        }
     }
 
     public boolean acceptDragEvent(Context context, DragEvent event){
@@ -196,7 +191,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo>{
     }
 
     public static ResolveInfoGroup fromData(Context context, String pkgName, String componentNames){
-        ResolveInfoGroup rig = new ResolveInfoGroup();
+        ResolveInfoGroup rig = new ResolveInfoGroup(context);
         String[] names = componentNames.split("\\|");
         if(names != null){
             for(String name : names){
@@ -290,5 +285,19 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo>{
             return false;
         }
         return true;
+    }
+
+    @Override
+    public CharSequence getDisplayName() {
+        if(size() <= 0){
+            return null;
+        }else{
+            return get(0).loadLabel(mContext.getPackageManager());
+        }
+    }
+
+    @Override
+    public void delete() {
+        ResolveInfoManager.getInstance(mContext).delete(this);
     }
 }

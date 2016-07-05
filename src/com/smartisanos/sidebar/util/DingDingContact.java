@@ -67,6 +67,11 @@ public class DingDingContact extends ContactItem {
     }
 
     @Override
+    public void deleteFromDatabase() {
+        DatabaseHelper.getInstance(mContext).remove(this);
+    }
+
+    @Override
     public int getTypeIcon() {
         return R.drawable.contact_icon_dingding;
     }
@@ -163,6 +168,14 @@ public class DingDingContact extends ContactItem {
                         ContactColumns._ID + "=?", new String[] { id + "" });
             } else {
                 getWritableDatabase().insert(TABLE_CONTACTS, null, cv);
+            }
+        }
+
+        public void remove(DingDingContact ddc) {
+            int id = getId(ddc);
+            if (id != 0) {
+                getWritableDatabase().delete(TABLE_CONTACTS,
+                        ContactColumns._ID + "=?", new String[] { id + "" });
             }
         }
 

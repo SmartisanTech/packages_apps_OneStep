@@ -75,6 +75,12 @@ public class MailContact extends ContactItem {
         MailDatabaseHelper.getInstance(mContext).update(this);
     }
 
+
+    @Override
+    public void deleteFromDatabase() {
+        MailDatabaseHelper.getInstance(mContext).remove(this);
+    }
+
     @Override
     public int getTypeIcon() {
         return R.drawable.contact_icon_mail;
@@ -153,6 +159,14 @@ public class MailContact extends ContactItem {
                         ContactColumns._ID + "=?", new String[] { id + "" });
             } else {
                 getWritableDatabase().insert(TABLE_CONTACTS, null, cv);
+            }
+        }
+
+        public void remove(MailContact contact) {
+            int id = getId(contact);
+            if (id != 0) {
+                getWritableDatabase().delete(TABLE_CONTACTS,
+                        ContactColumns._ID + "=?", new String[] { id + "" });
             }
         }
 

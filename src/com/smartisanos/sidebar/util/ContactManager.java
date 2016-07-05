@@ -7,6 +7,10 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 
 public class ContactManager extends DataManager{
     private volatile static ContactManager sInstance;
@@ -23,14 +27,21 @@ public class ContactManager extends DataManager{
 
     private Context mContext;
     private List<ContactItem> mContacts = new ArrayList<ContactItem>();
+    private Handler mHandler;
     private ContactManager(Context context){
         mContext = context;
         mContacts = ContactItem.getContactList(mContext);
         Collections.sort(mContacts, new ContactComparator());
+
+        HandlerThread thread = new HandlerThread(RecentFileManager.class.getName());
+        thread.start();
+        mHandler = new ContactManagerHandler(thread.getLooper());
     }
 
     public List<ContactItem> getContactList(){
-        return mContacts;
+        List<ContactItem> ret = new ArrayList<ContactItem>();
+        ret.addAll(mContacts);
+        return ret;
     }
 
     public void addContact(ContactItem ci){
@@ -44,22 +55,28 @@ public class ContactManager extends DataManager{
             }
         }
         ci.setIndex(mContacts.size());
-        saveContact(ci);
         mContacts.add(0, ci);
         notifyListener();
+        saveContact(ci);
+    }
+
+    public void remove(ContactItem ci){
+        for(int i = 0; i < mContacts.size(); ++ i){
+            if(ci.sameContact(mContacts.get(i))){
+                mContacts.remove(i);
+                notifyListener();
+                deleteContactFromDatabase(ci);
+                return ;
+            }
+        }
     }
 
     private void saveContact(ContactItem ci){
-        new SaveContactTask().execute(ci);
+        mHandler.obtainMessage(MSG_SAVE_CONTACT, ci).sendToTarget();
     }
 
-    class SaveContactTask extends AsyncTask<ContactItem, Integer, Void> {
-        @Override
-        protected Void doInBackground(ContactItem... params) {
-            ContactItem ci = params[0];
-            ci.save();
-            return null;
-        }
+    private void deleteContactFromDatabase(ContactItem ci){
+        mHandler.obtainMessage(MSG_DELETE_CONTACT, ci).sendToTarget();
     }
 
     public static final class ContactComparator implements Comparator<ContactItem> {
@@ -71,6 +88,27 @@ public class ContactManager extends DataManager{
                 return 1;
             } else {
                 return 0;
+            }
+        }
+    }
+
+    private static final int MSG_SAVE_CONTACT = 0;
+    private static final int MSG_DELETE_CONTACT = 1;
+    private class ContactManagerHandler extends Handler {
+        public ContactManagerHandler(Looper looper) {
+            super(looper, null, false);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            ContactItem ci = (ContactItem) msg.obj;
+            switch (msg.what) {
+            case MSG_SAVE_CONTACT:
+                ci.save();
+                break;
+            case MSG_DELETE_CONTACT:
+                ci.deleteFromDatabase();
+                break;
             }
         }
     }

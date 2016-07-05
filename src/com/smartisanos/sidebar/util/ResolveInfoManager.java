@@ -119,6 +119,17 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         }
     }
 
+    public void delete(ResolveInfoGroup rig){
+        for(int i = 0; i < mList.size(); ++ i){
+            if(mList.get(i).equals(rig)){
+                mList.remove(i);
+                notifyUpdate();
+                //TODO remove from database!
+                return;
+            }
+        }
+    }
+
     public void addResolveInfo(ResolveInfoGroup rig){
         addResolveInfoGroup(rig, null);
     }
@@ -187,11 +198,11 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         SameGroupComparator sgc = new SameGroupComparator();
         Collections.sort(allri, sgc);
         List<ResolveInfoGroup> ret = new ArrayList<ResolveInfoGroup>();
-        ret.add(new ResolveInfoGroup());
+        ret.add(new ResolveInfoGroup(mContext));
         ret.get(0).add(allri.get(0));
         for(int i = 1; i < allri.size(); ++ i){
             if(sgc.compare(ret.get(ret.size() - 1).get(0), allri.get(i)) != 0){
-                ret.add(new ResolveInfoGroup());
+                ret.add(new ResolveInfoGroup(mContext));
             }
             ret.get(ret.size() - 1).add(allri.get(i));
         }

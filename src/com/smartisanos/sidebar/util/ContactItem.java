@@ -7,7 +7,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.DragEvent;
 
-public abstract class ContactItem{
+public abstract class ContactItem implements SidebarItem{
     protected Context mContext;
     protected Bitmap mAvatar;
     protected CharSequence mDisplayName;
@@ -35,6 +35,14 @@ public abstract class ContactItem{
         mIndex = index;
     }
 
+    public final void delete(){
+        ContactManager.getInstance(mContext).remove(this);
+    }
+
+    /**
+     * this method can only be called by ContactManger. don't invoke it in other place!
+     * */
+    public abstract void deleteFromDatabase();
     public abstract boolean accptDragEvent(DragEvent event);
     public abstract boolean handleDragEvent(DragEvent event);
     public abstract void save();

@@ -12,6 +12,7 @@ import com.smartisanos.sidebar.util.Utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,7 +92,7 @@ public class ContactListAdapter extends DragEventAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        final ViewHolder holder;
+        ViewHolder holder;
         ContactItem item = mAcceptableContacts.get(position);
         if (convertView == null) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.contact_item, null);
@@ -112,7 +113,6 @@ public class ContactListAdapter extends DragEventAdapter {
             @Override
             public boolean onDrag(View v, DragEvent event) {
                 final int action = event.getAction();
-                ContactItem ri = mContacts.get(position);
                 switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     return true;
@@ -123,7 +123,8 @@ public class ContactListAdapter extends DragEventAdapter {
                 case DragEvent.ACTION_DRAG_LOCATION:
                     return true;
                 case DragEvent.ACTION_DROP:
-                    boolean ret =  ri.handleDragEvent(event);
+                    ViewHolder vh = (ViewHolder) v.getTag();
+                    boolean ret =  vh.mItem.handleDragEvent(event);
                     if(ret){
                         Utils.dismissAllDialog(mContext);
                     }
@@ -178,7 +179,7 @@ public class ContactListAdapter extends DragEventAdapter {
         addItem(index, item);
     }
 
-    public void addItem(int index, ContactItem item) {
+    private void addItem(int index, ContactItem item) {
         if (index < 0) {
             mContacts.add(0, item);
         } else {

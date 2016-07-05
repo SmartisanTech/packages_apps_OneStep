@@ -85,6 +85,11 @@ public class MmsContact extends ContactItem {
     }
 
     @Override
+    public void deleteFromDatabase() {
+        MmsDatabaseHelper.getInstance(context).delete(this);
+    }
+
+    @Override
     public int getTypeIcon() {
         return R.drawable.contact_icon_mms;
     }
@@ -181,6 +186,14 @@ public class MmsContact extends ContactItem {
                         ContactColumns._ID + "=?", new String[] { id + "" });
             } else {
                 getWritableDatabase().insert(TABLE_CONTACTS, null, cv);
+            }
+        }
+
+        public void delete(MmsContact contact) {
+            int id = getId(contact);
+            if (id != 0) {
+                getWritableDatabase().delete(TABLE_CONTACTS,
+                        ContactColumns._ID + "=?", new String[] { id + "" });
             }
         }
 

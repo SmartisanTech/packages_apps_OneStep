@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
+import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 import com.smartisanos.sidebar.R;
@@ -73,84 +75,25 @@ public class SidebarRootView extends FrameLayout {
     public static class DragItem {
         public static final int TYPE_APPLICATION = 1;
         public static final int TYPE_SHORTCUT = 2;
-
-        private Context mContext;
-
         private Drawable iconOrig;
 
         private int itemType;
-        private ResolveInfoGroup resolveInfoGroup;
-        private ContactItem contactItem;
+        public SidebarItem sidebarItem;
         public int floatUpIndex;
         public int viewIndex;
-        public String mDisplayName;
+        public String displayName;
 
-        private boolean isSystemApp = false;
-
-        public DragItem(Context context, int type, Drawable icon, Object data, int initIndex) {
-            mContext = context;
+        public DragItem(Context context, int type, Drawable icon, SidebarItem data, int initIndex) {
             itemType = type;
             iconOrig = icon;
             floatUpIndex = initIndex;
             viewIndex = initIndex;
-            if (itemType == TYPE_APPLICATION) {
-                resolveInfoGroup = (ResolveInfoGroup) data;
-                String pkg = resolveInfoGroup.getPackageName();
-                isSystemApp = isSystemAppByPackageName(context, pkg);
-                PackageManager pm = context.getPackageManager();
-                mDisplayName = resolveInfoGroup.loadLabel(pm).toString();
-            } else if (itemType == TYPE_SHORTCUT) {
-                contactItem = (ContactItem) data;
-                mDisplayName = contactItem.getDisplayName().toString();
-            }
+            sidebarItem = data;
+            displayName = sidebarItem.getDisplayName().toString();
         }
 
-        public int getItemType() {
-            return itemType;
-        }
-
-        public boolean isSystemApp() {
-            return isSystemApp;
-        }
-
-        public String getDisplayName() {
-            if (itemType == TYPE_APPLICATION) {
-                PackageManager pm = mContext.getPackageManager();
-                return resolveInfoGroup.loadLabel(pm).toString();
-            } else if (itemType == TYPE_SHORTCUT) {
-                return contactItem.getDisplayName().toString();
-            } else {
-                return null;
-            }
-        }
-
-        public static final int FLAG_PRIVILEGED = 1<<30;
-        public static final int PRIVATE_FLAG_PRIVILEGED = 1<<3;
-
-        public static boolean isSystemAppByPackageName(Context context, final String pkgName) {
-            PackageManager pm = context.getPackageManager();
-            int appFlags = 0;
-            try {
-                appFlags = pm.getApplicationInfo(pkgName, 0).flags;
-            } catch (PackageManager.NameNotFoundException e) {
-                return false;
-            }
-            if ((appFlags & android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0
-                    || (appFlags & FLAG_PRIVILEGED) != 0
-                    || (appFlags & PRIVATE_FLAG_PRIVILEGED) != 0) {
-                try {
-                    PackageInfo pinfo = pm.getPackageInfo(pkgName, 0);
-                    if(pinfo != null) {
-                        String path = pinfo.applicationInfo.sourceDir;
-                        if(path != null && path.startsWith("/system")) {
-                            return true;
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            return false;
+        public void delelte(){
+            sidebarItem.delete();
         }
     }
 
@@ -200,7 +143,7 @@ public class SidebarRootView extends FrameLayout {
             mDragViewIcon = (ImageView) mView.findViewById(R.id.drag_view_icon);
             mDragViewIcon.setBackground(mIcon);
             mBubbleText = (TextView) mView.findViewById(R.id.drag_view_bubble_text);
-            mBubbleText.setText(mItem.mDisplayName);
+            mBubbleText.setText(mItem.displayName);
             initLoc = loc;
             log.error("init loc ==> ("+initLoc[0]+", "+initLoc[1]+")");
 
@@ -295,7 +238,7 @@ public class SidebarRootView extends FrameLayout {
         });
     }
 
-    public void dropDrag() {
+    public void dropDrag(boolean delete) {
         log.error("dropDrag !");
         if (mDragView == null) {
             return;
@@ -309,16 +252,16 @@ public class SidebarRootView extends FrameLayout {
         view.setVisibility(View.INVISIBLE);
         removeView(view);
         item = mDragView.getDragItem();
-        if (mSideView != null) {
+        if (!delete && mSideView != null) {
             if (item != null) {
                 int index = item.viewIndex;
                 if (item.itemType == DragItem.TYPE_APPLICATION) {
-                    ResolveInfoGroup data = item.resolveInfoGroup;
+                    ResolveInfoGroup data = (ResolveInfoGroup) item.sidebarItem;
                     log.error("A set item to index ["+index+"]");
                     ResolveInfoListAdapter adapter = mSideView.getAppListAdapter();
                     adapter.setItem(index, data);
                 } else if (item.itemType == DragItem.TYPE_SHORTCUT) {
-                    ContactItem contactItem = item.contactItem;
+                    ContactItem contactItem = (ContactItem) item.sidebarItem;
                     log.error("B set item to index ["+index+"]");
                     ContactListAdapter adapter = mSideView.getContactListAdapter();
                     adapter.setItem(index, contactItem);
@@ -385,7 +328,7 @@ public class SidebarRootView extends FrameLayout {
                 if (mTrash.dragObjectUpOnUp(x, y)) {
                     //handle uninstall
                 } else {
-                    dropDrag();
+                    dropDrag(false);
                 }
                 break;
             }
@@ -401,7 +344,7 @@ public class SidebarRootView extends FrameLayout {
                 if (mTrash.dragObjectUpOnUp(x, y)) {
                     //handle uninstall
                 } else {
-                    dropDrag();
+                    dropDrag(false);
                 }
                 break;
             }

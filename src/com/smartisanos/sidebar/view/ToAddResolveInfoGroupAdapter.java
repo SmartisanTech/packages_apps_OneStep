@@ -72,7 +72,7 @@ public class ToAddResolveInfoGroupAdapter extends BaseAdapter{
         }
         final ResolveInfoGroup rig = mInfos.get(position);
         vh.iv.setImageDrawable(rig.loadIcon(mContext.getPackageManager()));
-        vh.tv.setText(rig.loadLabel(mContext.getPackageManager()));
+        vh.tv.setText(rig.getDisplayName());
         ret.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
