@@ -197,7 +197,7 @@ public class Trash {
         anim.start();
     }
 
-    private boolean trashDisappearAnimRunning = false;
+    public boolean trashDisappearAnimRunning = false;
 
     public void trashDisappearWithoutAnim() {
         mTrashView.setTranslationY(mWindowHeight);
@@ -209,13 +209,13 @@ public class Trash {
         }
     }
 
-    public void trashDisappearWithAnim() {
+    public Anim trashDisappearWithAnim() {
         if (mTrashStatus == TRASH_HIDE) {
-            return;
+            return null;
         }
         if (trashDisappearAnimRunning) {
             log.error("trashDisappearWithAnim return by trashDisappearAnimRunning true");
-            return;
+            return null;
         }
         trashDisappearAnimRunning = true;
         Vector3f from = new Vector3f(0, mTrashView.getTranslationY());
@@ -227,16 +227,9 @@ public class Trash {
             }
             @Override
             public void onComplete() {
-                mTrashStatus = TRASH_HIDE;
-                trashDisappearAnimRunning = false;
-                SidebarController controller = SidebarController.getInstance(mContext);
-                SidebarRootView rootView = controller.getSidebarRootView();
-                if (rootView != null) {
-                    rootView.resetSidebarWindow();
-                }
             }
         });
-        anim.start();
+        return anim;
     }
 
     private boolean mTrashUpAnimRunning = false;

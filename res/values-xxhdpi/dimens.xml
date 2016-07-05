@@ -7,4 +7,5 @@
     <integer name="trash_display_height">123</integer>
     <integer name="trash_float_up_height">75</integer>
     <dimen name="drag_view_icon_size">48dp</dimen>
+    <dimen name="sidebar_list_item_img_size">32dp</dimen>
 </resources>

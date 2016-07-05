@@ -1,11 +1,10 @@
 package com.smartisanos.sidebar.view;
 
 import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
@@ -25,9 +24,13 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.util.anim.Anim;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SidebarRootView extends FrameLayout {
 
@@ -76,19 +79,22 @@ public class SidebarRootView extends FrameLayout {
         public static final int TYPE_APPLICATION = 1;
         public static final int TYPE_SHORTCUT = 2;
         private Drawable iconOrig;
-
         private int itemType;
         public SidebarItem sidebarItem;
+        private ResolveInfoGroup resolveInfoGroup;
+        private ContactItem contactItem;
+        private boolean isSystemApp = false;
         public int floatUpIndex;
         public int viewIndex;
         public String displayName;
+        public View mListItemView;
 
-        public DragItem(Context context, int type, Drawable icon, SidebarItem data, int initIndex) {
+        public DragItem(int type, Drawable icon, SidebarItem item, int initIndex) {
             itemType = type;
             iconOrig = icon;
             floatUpIndex = initIndex;
             viewIndex = initIndex;
-            sidebarItem = data;
+            sidebarItem = item;
             displayName = sidebarItem.getDisplayName().toString();
         }
 
@@ -200,7 +206,6 @@ public class SidebarRootView extends FrameLayout {
             int y = (int) (touchY - iconHeight / 2 - bubbleHeight);
             mView.setTranslationX(x);
             mView.setTranslationY(y);
-            log.error("touch ("+touchX+", "+touchY+") move x, y ==> ("+x+", "+y+")");
         }
 
         public void cancel() {
@@ -246,31 +251,92 @@ public class SidebarRootView extends FrameLayout {
         if (mDragView.mView == null) {
             return;
         }
-        DragItem item = null;
         mDragView.hideBubble();
-        View view = mDragView.mView;
-        view.setVisibility(View.INVISIBLE);
-        removeView(view);
-        item = mDragView.getDragItem();
-        if (!delete && mSideView != null) {
-            if (item != null) {
-                int index = item.viewIndex;
-                if (item.itemType == DragItem.TYPE_APPLICATION) {
-                    ResolveInfoGroup data = (ResolveInfoGroup) item.sidebarItem;
-                    log.error("A set item to index ["+index+"]");
-                    ResolveInfoListAdapter adapter = mSideView.getAppListAdapter();
-                    adapter.setItem(index, data);
-                } else if (item.itemType == DragItem.TYPE_SHORTCUT) {
-                    ContactItem contactItem = (ContactItem) item.sidebarItem;
-                    log.error("B set item to index ["+index+"]");
-                    ContactListAdapter adapter = mSideView.getContactListAdapter();
-                    adapter.setItem(index, contactItem);
-                }
-            }
-            mSideView.notifyAppListDataSetChanged();
-            mSideView.notifyContactListDataSetChanged();
+        final DragItem item = mDragView.getDragItem();
+        final View view = mDragView.mView;
+        int time = 200;
+        AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(Anim.CUBIC_OUT);
+        List<Animator> anims = new ArrayList<Animator>();
+        int[] from = new int[2];
+        int[] to = new int[2];
+        view.getLocationOnScreen(from);
+        item.mListItemView.getLocationOnScreen(to);
+        //drag view move anim
+        ObjectAnimator moveAnimX = ObjectAnimator.ofFloat(view, Anim.TRANSLATE_X, from[0], to[0]);
+        moveAnimX.setDuration(time);
+        moveAnimX.setInterpolator(interpolator);
+        anims.add(moveAnimX);
+        ObjectAnimator moveAnimY = ObjectAnimator.ofFloat(view, Anim.TRANSLATE_Y, from[1], to[1]);
+        moveAnimY.setDuration(time);
+        moveAnimY.setInterpolator(interpolator);
+        anims.add(moveAnimY);
+        //drag view scale anim
+        int dragViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.drag_view_icon_size);
+        int itemViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_list_item_img_size);
+        float scale = (float) ((1.0 * itemViewSize) / (1.0 * dragViewSize));
+//        log.error("dragViewSize ["+dragViewSize+"], itemViewSize ["+itemViewSize+"], scale size ==> " + scale);
+        ObjectAnimator scaleAnimX = ObjectAnimator.ofFloat(view, Anim.SCALE_X, 1, scale);
+        scaleAnimX.setDuration(time);
+        scaleAnimX.setInterpolator(interpolator);
+        anims.add(scaleAnimX);
+        ObjectAnimator scaleAnimY = ObjectAnimator.ofFloat(view, Anim.SCALE_Y, 1, scale);
+        scaleAnimY.setDuration(time);
+        scaleAnimY.setInterpolator(interpolator);
+        anims.add(scaleAnimY);
+
+        Anim trashAnim = mTrash.trashDisappearWithAnim();
+        if (trashAnim != null) {
+            anims.addAll(trashAnim.getAnimList());
         }
-        mTrash.trashDisappearWithAnim();
+        AnimatorSet set = new AnimatorSet();
+        set.setDuration(time);
+        set.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                view.setVisibility(View.INVISIBLE);
+                removeView(view);
+                if (mSideView != null) {
+                    if (item != null) {
+                        item.mListItemView.setVisibility(View.VISIBLE);
+                        int index = item.viewIndex;
+                        if (item.itemType == DragItem.TYPE_APPLICATION) {
+                            ResolveInfoGroup data = item.resolveInfoGroup;
+                            log.error("A set item to index ["+index+"]");
+                            ResolveInfoListAdapter adapter = mSideView.getAppListAdapter();
+                            adapter.setItem(index, data);
+                            mSideView.notifyAppListDataSetChanged();
+                        } else if (item.itemType == DragItem.TYPE_SHORTCUT) {
+                            ContactItem contactItem = item.contactItem;
+                            log.error("B set item to index ["+index+"]");
+                            ContactListAdapter adapter = mSideView.getContactListAdapter();
+                            adapter.setItem(index, contactItem);
+                            mSideView.notifyContactListDataSetChanged();
+                        }
+                    }
+                }
+
+                SidebarController controller = SidebarController.getInstance(mContext);
+                SidebarRootView rootView = controller.getSidebarRootView();
+                Trash trash = rootView.getTrash();
+                trash.mTrashStatus = Trash.TRASH_HIDE;
+                trash.trashDisappearAnimRunning = false;
+                rootView.resetSidebarWindow();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+            }
+        });
+        set.playTogether(anims);
+        set.start();
     }
 
     public DragView getDraggedView() {

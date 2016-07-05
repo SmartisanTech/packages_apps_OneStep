@@ -214,8 +214,8 @@ public class SideView extends RelativeLayout {
             viewLoc[0] = viewLoc[0] + view.getWidth() / 2;
             viewLoc[1] = viewLoc[1] + view.getHeight() / 2;
 
-            SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(
-                    mContext, SidebarRootView.DragItem.TYPE_APPLICATION, icon, data, index);
+            SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(SidebarRootView.DragItem.TYPE_APPLICATION, icon, data, index);
+            dragItem.mListItemView = view;
             mRootView.startDrag(dragItem, viewLoc);
             dragItemType = SidebarRootView.DragItem.TYPE_APPLICATION;
             getScrollViewLayoutParams();
@@ -253,8 +253,8 @@ public class SideView extends RelativeLayout {
             Drawable icon = new BitmapDrawable(getResources(), item.getAvatar());
             int index = mContactAdapter.objectIndex(item);
             mContactList.setPrePosition(index);
-            SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(
-                    mContext, SidebarRootView.DragItem.TYPE_SHORTCUT, icon, item, index);
+            SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(SidebarRootView.DragItem.TYPE_SHORTCUT, icon, item, index);
+            dragItem.mListItemView = view;
             mRootView.startDrag(dragItem, viewLoc);
             dragItemType = SidebarRootView.DragItem.TYPE_SHORTCUT;
             getScrollViewLayoutParams();
