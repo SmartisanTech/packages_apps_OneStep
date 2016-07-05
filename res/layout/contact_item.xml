@@ -33,6 +33,7 @@
             android:gravity="center"
             android:textColor="#ccffffff"
             android:textSize="10sp"
+            android:singleLine="true"
             android:visibility="gone"/>
     </LinearLayout>
 </FrameLayout>
