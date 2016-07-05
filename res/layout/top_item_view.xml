@@ -36,10 +36,11 @@
                 android:layout_toRightOf="@id/icon"
                 android:layout_marginTop="18dp"
                 android:layout_marginLeft="6dp">
-                <TextView
+                <smartisanos.widget.FontFitTextView
                     android:id="@+id/text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:textSize="12sp"
                     android:textColor="#ccffffff"/>
                 <ImageView
