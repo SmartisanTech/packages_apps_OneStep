@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -23,6 +22,7 @@ import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.view.ContentView.ContentType;
 import com.smartisanos.sidebar.R;
 
 public class SidebarRootView extends FrameLayout {
@@ -374,13 +374,13 @@ public class SidebarRootView extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction() & MotionEvent.ACTION_MASK;
-        if (mDragView == null) {
-            if (action == MotionEvent.ACTION_DOWN) {
-                if (processResumeSidebar()) {
-                    return true;
-                }
+        if (action == MotionEvent.ACTION_DOWN) {
+            if (processResumeSidebar()) {
+                return true;
             }
-        } else {
+        }
+
+        if (mDragView != null) {
             precessTouch(event);
         }
         return true;
@@ -388,25 +388,19 @@ public class SidebarRootView extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (mDragView != null) {
+        if (mDragView != null
+                || SidebarController.getInstance(mContext)
+                        .getCurrentContentType() != ContentType.NONE) {
             return true;
         }
         return super.onInterceptTouchEvent(event);
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        return super.dispatchTouchEvent(event);
-    }
-
     private boolean processResumeSidebar() {
-        SidebarController controller = SidebarController.getInstance(mContext);
-        if (controller != null) {
-            if (controller.getCurrentContentType() != ContentView.ContentType.NONE) {
-                log.error("resumeSidebar !");
-                Utils.resumeSidebar(mContext);
-                return true;
-            }
+        if (SidebarController.getInstance(mContext).getCurrentContentType() != ContentView.ContentType.NONE) {
+            log.error("resumeSidebar !");
+            Utils.resumeSidebar(mContext);
+            return true;
         }
         return false;
     }
