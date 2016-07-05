@@ -102,7 +102,6 @@ public class UninstallAction {
             return;
         }
         trash.stopRock();
-        trash.trashDisappearWithAnim();
         rootView.dropDrag();
     }
 
@@ -117,11 +116,12 @@ public class UninstallAction {
             log.error("uninstallAnim failed by rootView is null");
             return;
         }
-        final Trash trash = rootView.getTrash();
+        Trash trash = rootView.getTrash();
         if (trash == null) {
             log.error("uninstallAnim failed by trash is null");
             return;
         }
+        uninstallAppRunning = true;
         trash.stopRock();
         SidebarRootView.DragView dragView = rootView.getDraggedView();
         View view = dragView.mView;
@@ -135,7 +135,6 @@ public class UninstallAction {
 
             @Override
             public void onComplete() {
-                trash.trashDisappearWithAnim();
                 rootView.dropDrag();
             }
         });

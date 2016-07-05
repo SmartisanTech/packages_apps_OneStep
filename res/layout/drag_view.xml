@@ -9,11 +9,10 @@
         android:id="@+id/drag_view_bubble_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textColor="#ffffff"
         android:background="@drawable/long_press_bubble"
-        android:visibility="gone"
-        android:layout_gravity="center|center_horizontal"
+        android:layout_gravity="center|center_horizontal|center_vertical"
         />
     <ImageView
         android:id="@+id/drag_view_icon"

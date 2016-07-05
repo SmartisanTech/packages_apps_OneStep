@@ -6,5 +6,5 @@
     <integer name="trash_react_height">500</integer>
     <integer name="trash_display_height">123</integer>
     <integer name="trash_float_up_height">75</integer>
-    <dimen name="drag_view_icon_size">64dp</dimen>
+    <dimen name="drag_view_icon_size">48dp</dimen>
 </resources>

@@ -250,9 +250,7 @@ public class SideView extends RelativeLayout {
 
             ContactListAdapter.ViewHolder holder = (ContactListAdapter.ViewHolder) view.getTag();
             ContactItem item = holder.mItem;
-            holder.view.buildDrawingCache();
-            Bitmap drawingCache = holder.view.getDrawingCache();
-            Drawable icon = new BitmapDrawable(getResources(), drawingCache);
+            Drawable icon = new BitmapDrawable(getResources(), item.getAvatar());
             int index = mContactAdapter.objectIndex(item);
             mContactList.setPrePosition(index);
             SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(
@@ -280,6 +278,12 @@ public class SideView extends RelativeLayout {
         SidebarController controller = SidebarController.getInstance(mContext);
         if (controller.getCurrentContentType() == ContentType.ADDTOSIDEBAR) {
             return false;
+        }
+        SidebarRootView rootView = controller.getSidebarRootView();
+        if (rootView != null) {
+            if (rootView.getDraggedView() != null) {
+                return false;
+            }
         }
         return true;
     }
