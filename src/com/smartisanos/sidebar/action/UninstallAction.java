@@ -85,16 +85,11 @@ public class UninstallAction {
             return;
         }
         trash.stopRock();
-        rootView.dropDrag(false);
+        rootView.dropDrag();
     }
 
     private void uninstallAnim() {
-        SidebarController controller = SidebarController.getInstance(mContext);
-        if (controller == null) {
-            log.error("uninstallAnim failed by controller is null");
-            return;
-        }
-        final SidebarRootView rootView = controller.getSidebarRootView();
+        final SidebarRootView rootView = SidebarController.getInstance(mContext).getSidebarRootView();
         if (rootView == null) {
             log.error("uninstallAnim failed by rootView is null");
             return;
@@ -105,21 +100,6 @@ public class UninstallAction {
             return;
         }
         trash.stopRock();
-        SidebarRootView.DragView dragView = rootView.getDraggedView();
-        View view = dragView.mView;
-        Vector3f from = new Vector3f(0, view.getY());
-        Vector3f to = new Vector3f(0, trash.mWindowHeight);
-        Anim anim = new Anim(view, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
-        anim.setListener(new AnimListener() {
-            @Override
-            public void onStart() {
-            }
-
-            @Override
-            public void onComplete() {
-                rootView.dropDrag(true);
-            }
-        });
-        anim.start();
+        rootView.deleteDrag();
     }
 }

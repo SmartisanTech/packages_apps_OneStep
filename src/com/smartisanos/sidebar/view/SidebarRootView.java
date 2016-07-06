@@ -26,6 +26,8 @@ import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimInterpolator;
+import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 import com.smartisanos.sidebar.R;
 
@@ -240,12 +242,34 @@ public class SidebarRootView extends FrameLayout {
         });
     }
 
-    public void dropDrag(final boolean delete) {
+    private boolean mDragDeleting = false;
+    public void deleteDrag(){
+        final View view = mDragView.mView;
+        Vector3f from = new Vector3f(0, view.getY());
+        Vector3f to = new Vector3f(0, mTrash.mWindowHeight);
+        Anim anim = new Anim(view, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
+        anim.setListener(new AnimListener() {
+            @Override
+            public void onStart() {
+                mDragDeleting = true;
+            }
+
+            @Override
+            public void onComplete() {
+                mDragDeleting = false;
+                view.setVisibility(View.INVISIBLE);
+                removeView(view);
+                SidebarRootView rootView = SidebarController.getInstance(mContext).getSidebarRootView();
+                rootView.resetSidebarWindow();
+            }
+        });
+        anim.start();
+    }
+
+    private boolean mDragDroping = false;
+    public void dropDrag() {
         log.error("dropDrag !");
         if (mDragView == null) {
-            return;
-        }
-        if (mDragView.mView == null) {
             return;
         }
         mDragView.hideBubble();
@@ -281,22 +305,20 @@ public class SidebarRootView extends FrameLayout {
         scaleAnimY.setInterpolator(interpolator);
         anims.add(scaleAnimY);
 
-        Anim trashAnim = mTrash.trashDisappearWithAnim();
-        if (trashAnim != null) {
-            anims.addAll(trashAnim.getAnimList());
-        }
         AnimatorSet set = new AnimatorSet();
         set.setDuration(time);
         set.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
+                mDragDroping = true;
             }
 
             @Override
             public void onAnimationEnd(Animator animator) {
+                mDragDroping = false;
                 view.setVisibility(View.INVISIBLE);
                 removeView(view);
-                if (!delete && mSideView != null) {
+                if (mSideView != null) {
                     if (item != null) {
                         item.mListItemView.setVisibility(View.VISIBLE);
                         int index = item.viewIndex;
@@ -318,9 +340,6 @@ public class SidebarRootView extends FrameLayout {
 
                 SidebarController controller = SidebarController.getInstance(mContext);
                 SidebarRootView rootView = controller.getSidebarRootView();
-                Trash trash = rootView.getTrash();
-                trash.mTrashStatus = Trash.TRASH_HIDE;
-                trash.trashDisappearAnimRunning = false;
                 rootView.resetSidebarWindow();
             }
 
@@ -367,6 +386,14 @@ public class SidebarRootView extends FrameLayout {
         return super.onInterceptTouchEvent(event);
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (mDragDroping || mDragDeleting) {
+            return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
     private boolean processResumeSidebar() {
         if (SidebarController.getInstance(mContext).getCurrentContentType() != ContentView.ContentType.NONE) {
             log.error("resumeSidebar !");
@@ -386,12 +413,14 @@ public class SidebarRootView extends FrameLayout {
                 if (ENABLE_TOUCH_LOG) log.error("ACTION_DOWN");
                 break;
             }
+            case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP : {
                 if (ENABLE_TOUCH_LOG) log.error("ACTION_UP");
                 if (mTrash.dragObjectUpOnUp(x, y)) {
                     //handle uninstall
                 } else {
-                    dropDrag(false);
+                    dropDrag();
+                    mTrash.trashDisappearWithAnim();
                 }
                 break;
             }
@@ -400,15 +429,6 @@ public class SidebarRootView extends FrameLayout {
                 mSideView.dragObjectMove(x, y, eventTime);
                 mTrash.dragObjectMoveTo(x, y);
                 if (ENABLE_TOUCH_LOG) log.error("ACTION_MOVE");
-                break;
-            }
-            case MotionEvent.ACTION_CANCEL : {
-                if (ENABLE_TOUCH_LOG) log.error("ACTION_CANCEL");
-                if (mTrash.dragObjectUpOnUp(x, y)) {
-                    //handle uninstall
-                } else {
-                    dropDrag(false);
-                }
                 break;
             }
             case MotionEvent.ACTION_SCROLL : {
