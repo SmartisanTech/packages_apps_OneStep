@@ -130,10 +130,10 @@ public class RecentPhotoGridView extends GridView{
             final ImageInfo ii = mList.get(position - 1);
             View ret = null;
             final ImageView iv;
-            if(convertView.getTag() != null){
+            if (convertView != null && convertView.getTag() != null) {
                 ret = convertView;
                 iv = (ImageView) convertView.getTag();
-            }else{
+            } else {
                 ret = LayoutInflater.from(mContext).inflate(R.layout.recentphotoitem, null);
                 iv = (ImageView) ret.findViewById(R.id.image);
                 ret.setTag(iv);
