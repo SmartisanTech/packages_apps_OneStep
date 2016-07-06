@@ -51,7 +51,7 @@ public abstract class ContactItem implements SidebarItem{
     public static List<ContactItem> getContactList(Context context){
         List<ContactItem> all = new ArrayList<ContactItem>();
         all.addAll(DingDingContact.getContacts(context));
-        all.addAll(WechatContact.getContacts(context));
+        //all.addAll(WechatContact.getContacts(context));
         all.addAll(MmsContact.getContacts(context));
         all.addAll(MailContact.getContacts(context));
         return all;

@@ -68,7 +68,7 @@ public class ToAddContactGridView extends GridView {
         private void initData(){
             mItemList.clear();
             mItemList.add(new AddContactItem(R.drawable.icon_dingding, R.string.add_contact_dingding, mDingDingListener));
-            mItemList.add(new AddContactItem(R.drawable.icon_wechat, R.string.add_contact_wechat, mWechatListener));
+            //mItemList.add(new AddContactItem(R.drawable.icon_wechat, R.string.add_contact_wechat, mWechatListener));
             mItemList.add(new AddContactItem(R.drawable.icon_mms, R.string.add_contact_mms, mMmsListener));
             mItemList.add(new AddContactItem(R.drawable.icon_mail, R.string.add_contact_mail, mMailListener));
         }
