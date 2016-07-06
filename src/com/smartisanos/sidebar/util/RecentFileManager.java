@@ -13,8 +13,10 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.util.Log;
 
 public class RecentFileManager extends DataManager implements IClear{
+    private static final String TAG = RecentFileManager.class.getName();
 
     private volatile static RecentFileManager sInstance;
     public synchronized static RecentFileManager getInstance(Context context){
@@ -63,18 +65,24 @@ public class RecentFileManager extends DataManager implements IClear{
                 MediaStore.Files.getContentUri("external"), thumbCols, null,
                 null, null);
         if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    FileInfo info = new FileInfo();
-                    info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
-                    info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
-                    info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
-                    if (info.valid() && !useless.contains(info.id)) {
-                        filelist.add(info);
-                    }
-                } while (cursor.moveToNext());
+            try {
+                if (cursor.moveToFirst()) {
+                    do {
+                        FileInfo info = new FileInfo();
+                        info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+                        info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
+                        info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
+                        if (info.valid() && !useless.contains(info.id)) {
+                            filelist.add(info);
+                        }
+                    } while (cursor.moveToNext());
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "fail to update file list!", e);
+                return;
+            }finally{
+                cursor.close();
             }
-            cursor.close();
             Collections.reverse(filelist);
         }
 
