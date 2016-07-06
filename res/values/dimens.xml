@@ -6,6 +6,8 @@
     <dimen name="topbar_photo_icon_content_paddingTop">11dp</dimen>
     <dimen name="topbar_file_icon_content_paddingTop">10dp</dimen>
 
+    <dimen name="drag_scroll_view_top_area">12dp</dimen>
+    <dimen name="drag_scroll_view_bottom_area">72dp</dimen>
     <!-- drag view values -->
     <dimen name="dragViewScale">12dp</dimen>
 </resources>
