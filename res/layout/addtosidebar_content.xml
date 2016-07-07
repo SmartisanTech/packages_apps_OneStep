@@ -17,7 +17,7 @@
             <include layout="@layout/add_contact"/>
             <View
                 android:layout_width="match_parent"
-                android:layout_height="24dp"/>
+                android:layout_height="18dp"/>
             <include layout="@layout/add_resolve"/>
         </LinearLayout>
     </ScrollView>

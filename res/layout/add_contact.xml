@@ -13,6 +13,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:paddingLeft="12dp"
+        android:paddingTop="6dp"
         android:paddingBottom="6dp"/>
     <!-- divider -->
     <View
