@@ -84,7 +84,7 @@ public class SidebarController {
         context.registerReceiver(mBroadcastReceiver, filter);
     }
 
-    public void init(){
+    public void init() {
         inflateView();
         ISidebarService sidebarService = ISidebarService.Stub.asInterface(ServiceManager.getService(Context.SIDEBAR_SERVICE));
         if (sidebarService != null) {
@@ -180,7 +180,7 @@ public class SidebarController {
                 mSidebarRoot.getTrash().initTrashView();
             }
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    mWindowFullWidth,
+                    ViewGroup.LayoutParams.MATCH_PARENT, //mWindowFullWidth,
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
@@ -200,6 +200,7 @@ public class SidebarController {
             lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
             lp.setTitle("sidebar_sideview");
             lp.packageName = mContext.getPackageName();
+            //lp.windowAnimations = 0;
             mWindowManager.updateViewLayout(mSidebarRoot, lp);
         } else {
             if (mSidebarRoot.getTrash() != null) {
