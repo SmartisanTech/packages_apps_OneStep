@@ -332,11 +332,8 @@ public class SidebarRootView extends FrameLayout {
                             adapter.setItem(index, data);
                             mSideView.notifyAppListDataSetChanged();
                         } else if (item.itemType == DragItem.TYPE_SHORTCUT) {
-                            ContactItem contactItem = (ContactItem) item.sidebarItem;
                             log.error("B set item to index ["+index+"]");
-                            ContactListAdapter adapter = mSideView.getContactListAdapter();
-                            adapter.setItem(index, contactItem);
-                            mSideView.notifyContactListDataSetChanged();
+                            mSideView.getContactListAdapter().moveItemPostion((ContactItem) item.sidebarItem, index);
                         }
                     }
                 }

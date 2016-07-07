@@ -298,56 +298,49 @@ public class SidebarListView extends ListView {
     private int mPrePosition = -1;
     public void setPrePosition(int position) {
         mPrePosition = position;
-        if (mPrePosition == -1) {
-            viewArr = null;
-        }
     }
 
-    private View[] viewArr = null;
     private AnimTimeLine moveAnimTimeLine;
 
     public void pointToNewPositionWithAnim(int position) {
         if (position < 0) {
             return;
         }
+        int count = getCount() - getFooterViewsCount();
+        if(position >= count){
+            return ;
+        }
         if (mPrePosition == position) {
             return;
         }
         mPrePosition = position;
-        int count = getCount();
-        if (viewArr == null || viewArr.length != count) {
-            viewArr = new View[count];
-        }
-        int index = -1;
+        View[] viewArr = new View[count];
+        int index = 0;
         for (int i = 0; i < count; i++) {
             View view = getChildAt(i);
             if (view.getVisibility() == View.INVISIBLE) {
                 viewArr[position] = view;
             } else {
-                index = index + 1;
                 if (index == position) {
-                    index = index + 1;
+                    index ++ ;
                 }
-                viewArr[index] = view;
+                viewArr[index ++] = view;
             }
         }
         int[] listViewLoc = new int[2];
         getLocationOnScreen(listViewLoc);
         moveAnimTimeLine = new AnimTimeLine();
+        int toY = 0;
         for (int i = 0; i < viewArr.length; i++) {
             View view = viewArr[i];
-            int top = view.getTop();
-            int height = view.getHeight();
-            int viewIndex = top / height;
             int fromY = (int) view.getY();
-            int toY = (height * i);
             if (fromY != toY) {
-                log.error("view move from ["+viewIndex+"] to ["+i+"] ("+fromY+") -> ("+toY+")");
                 Vector3f from = new Vector3f(0, fromY);
                 Vector3f to = new Vector3f(0, toY);
                 Anim anim = new Anim(view, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
                 moveAnimTimeLine.addAnim(anim);
             }
+            toY += view.getHeight();
         }
         moveAnimTimeLine.setAnimListener(new AnimListener() {
             @Override

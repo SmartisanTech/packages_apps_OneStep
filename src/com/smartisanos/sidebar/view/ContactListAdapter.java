@@ -17,12 +17,14 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
 
 public class ContactListAdapter extends DragEventAdapter {
+    private static float SCALE_SIZE = 1.4f;
     private static final LOG log = LOG.getInstance(ContactListAdapter.class);
 
     private Context mContext;
@@ -104,26 +106,30 @@ public class ContactListAdapter extends DragEventAdapter {
             view.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
-            if (holder.view.getVisibility() == View.INVISIBLE) {
-                holder.view.setVisibility(View.VISIBLE);
-            }
         }
+        holder.restore();
         holder.setItem(item, mDragEvent != null);
         holder.view.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
+                ViewHolder vh = (ViewHolder) v.getTag();
                 final int action = event.getAction();
                 switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     return true;
                 case DragEvent.ACTION_DRAG_ENTERED:
+                    vh.view.animate().scaleX(SCALE_SIZE).scaleY(SCALE_SIZE)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setStartDelay(0)
+                    .setDuration(100).start();
                     return true;
                 case DragEvent.ACTION_DRAG_EXITED:
+                    vh.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
                     return true;
                 case DragEvent.ACTION_DRAG_LOCATION:
                     return true;
                 case DragEvent.ACTION_DROP:
-                    ViewHolder vh = (ViewHolder) v.getTag();
+                    vh.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
                     boolean ret =  vh.mItem.handleDragEvent(event);
                     if(ret){
                         Utils.dismissAllDialog(mContext);
@@ -162,6 +168,14 @@ public class ContactListAdapter extends DragEventAdapter {
                 displayName.setVisibility(View.GONE);
             }
         }
+
+        public void restore(){
+            if (view.getVisibility() == View.INVISIBLE) {
+                view.setVisibility(View.VISIBLE);
+            }
+            view.setY(0);
+            view.animate().translationY(0).setDuration(0).start();
+        }
     }
 
     public int objectIndex(ContactItem item) {
@@ -174,17 +188,27 @@ public class ContactListAdapter extends DragEventAdapter {
         return mContacts.indexOf(item);
     }
 
-    public void setItem(int index, ContactItem item) {
-        mContacts.remove(item);
-        addItem(index, item);
+    public void moveItemPostion(ContactItem item, int index) {
+        if(index < 0){
+            index = 0;
+        }
+        if(index >= mContacts.size()){
+            index = mContacts.size() - 1;
+        }
+        int now = mContacts.indexOf(item);
+        if(now == -1 || now == index){
+            return ;
+        }
+        mContacts.remove(now);
+        mContacts.add(index, item);
+        onOrderChange();
     }
 
-    private void addItem(int index, ContactItem item) {
-        if (index < 0) {
-            mContacts.add(0, item);
-        } else {
-            mContacts.add(index, item);
+    private void onOrderChange(){
+        for(int i = 0; i < mContacts.size(); ++ i){
+            mContacts.get(i).setIndex(mContacts.size() - 1 - i);
         }
+        mManager.updateOrder();
     }
 
     public void dumpAdapter() {

@@ -119,7 +119,7 @@ public class TopView extends LinearLayout {
                     } else {
                         if (mController.getCurrentContentType() == mViewToType
                                 .get(itemView)) {
-                            mController.dismissContent();
+                            mController.dismissContent(true);
                             resumeToNormal();
                         } else {
                             // never happen !

@@ -113,15 +113,16 @@ public class SidebarController {
         return mSidbarMode;
     }
 
-    public void start(){
+    private void start(){
         addTopView();
         addSideView();
     }
 
-    public void stop(){
+    private void stop(){
         mWindowManager.removeView(mTopView);
         mWindowManager.removeView(mSidebarRoot);
-        dismissContent();
+        dismissContent(false);
+        removeContentView();
     }
 
     private void inflateView() {
@@ -292,8 +293,8 @@ public class SidebarController {
         mContentView.show(ct, true);
     }
 
-    public void dismissContent() {
-        mContentView.dismiss(mContentView.getCurrentContent(), true);
+    public void dismissContent(boolean anim) {
+        mContentView.dismiss(mContentView.getCurrentContent(), anim);
     }
 
     public void dimTopView(){

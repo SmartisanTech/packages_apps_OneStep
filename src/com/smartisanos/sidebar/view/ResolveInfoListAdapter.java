@@ -25,7 +25,7 @@ import com.smartisanos.sidebar.util.Utils;
 
 public class ResolveInfoListAdapter extends DragEventAdapter {
     private static final LOG log = LOG.getInstance(ResolveInfoListAdapter.class);
-    private static final float SCALE_SIZE = 1.2f;
+    private static final float SCALE_SIZE = 1.4f;
 
     private Context mContext;
     private List<ResolveInfoGroup> mResolveInfos;

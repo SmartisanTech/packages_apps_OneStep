@@ -99,7 +99,7 @@ public class SideView extends RelativeLayout {
                     sc.showContent(ContentType.ADDTOSIDEBAR);
                 }else if(sc.getCurrentContentType() == ContentType.ADDTOSIDEBAR){
                     sc.resumeTopView();
-                    sc.dismissContent();
+                    sc.dismissContent(true);
                 }
             }
         });
