@@ -20,7 +20,7 @@
                 android:layout_alignParentBottom="true"
                 android:scaleType="fitXY"/>
         </RelativeLayout>
-        <TextView
+        <smartisanos.widget.FontFitTextView
             android:id="@+id/label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
