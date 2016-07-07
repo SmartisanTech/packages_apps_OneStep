@@ -173,8 +173,7 @@ public class ContactListAdapter extends DragEventAdapter {
             if (view.getVisibility() == View.INVISIBLE) {
                 view.setVisibility(View.VISIBLE);
             }
-            view.setY(0);
-            view.animate().translationY(0).setDuration(0).start();
+            view.setTranslationY(0);
         }
     }
 

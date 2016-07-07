@@ -27,10 +27,19 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
 
     private Context mContext;
     private SoftReference<Bitmap> mBlackWhiteIcon = null;
+    private int mIndex = -1;
 
     public ResolveInfoGroup(Context context){
         super();
         mContext = context;
+    }
+
+    public void setIndex(int index) {
+        mIndex = index;
+    }
+
+    public int getIndex() {
+        return mIndex;
     }
 
     public String getPackageName(){
@@ -221,6 +230,20 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
         }
         return ri1.activityInfo.packageName.equals(ri2.activityInfo.packageName) &&
                 ri1.activityInfo.name.equals(ri2.activityInfo.name);
+    }
+
+    public static class IndexComparator implements Comparator<ResolveInfoGroup> {
+
+        @Override
+        public int compare(ResolveInfoGroup lhs, ResolveInfoGroup rhs) {
+            if (lhs.getIndex() > rhs.getIndex()) {
+                return -1;
+            }
+            if (lhs.getIndex() < rhs.getIndex()) {
+                return 1;
+            }
+            return 0;
+        }
     }
 
     public static class SameGroupComparator implements Comparator<ResolveInfo> {

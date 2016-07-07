@@ -96,28 +96,27 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
         return position;
     }
 
-    public boolean removeItem(ResolveInfoGroup item) {
-        return mResolveInfos.remove(item);
-    }
-
-    public ResolveInfoGroup removeItem(int index) {
-        if (index < 0 || index >= mAcceptableResolveInfos.size()) {
-            return null;
-        }
-        return mResolveInfos.remove(index);
-    }
-
-    public void addItem(int index, ResolveInfoGroup item) {
+    public void moveItemPostion(ResolveInfoGroup item, int index) {
         if (index < 0) {
-            mResolveInfos.add(0, item);
-        } else {
-            mResolveInfos.add(index, item);
+            index = 0;
         }
+        if (index >= mResolveInfos.size()) {
+            index = mResolveInfos.size() - 1;
+        }
+        int now = mResolveInfos.indexOf(item);
+        if (now == -1 || now == index) {
+            return;
+        }
+        mResolveInfos.remove(item);
+        mResolveInfos.add(index, item);
+        onOrderChange();
     }
 
-    public void setItem(int index, ResolveInfoGroup item) {
-        mResolveInfos.remove(item);
-        addItem(index, item);
+    private void onOrderChange() {
+        for(int i = 0; i < mResolveInfos.size(); ++ i){
+            mResolveInfos.get(i).setIndex(mResolveInfos.size() - 1 - i);
+        }
+        mManager.updateOrder();
     }
 
     @Override
@@ -138,10 +137,8 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
             view.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
-            if (holder.view.getVisibility() == View.INVISIBLE) {
-                holder.view.setVisibility(View.VISIBLE);
-            }
         }
+        holder.restore();
         holder.setInfo(resolveInfoGroup, mDragEvent != null);
         holder.updateIconFlag(SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
         Utils.setAlwaysCanAcceptDrag(holder.view, true);
@@ -219,6 +216,13 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
                 iconInputLeft.setVisibility(View.VISIBLE);
                 iconInputRight.setVisibility(View.INVISIBLE);
             }
+        }
+
+        public void restore(){
+            if (view.getVisibility() == View.INVISIBLE) {
+                view.setVisibility(View.VISIBLE);
+            }
+            view.setTranslationY(0);
         }
     }
 }

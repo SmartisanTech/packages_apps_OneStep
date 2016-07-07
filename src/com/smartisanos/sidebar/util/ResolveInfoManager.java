@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeMap;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,7 +21,6 @@ import android.os.Message;
 import android.provider.BaseColumns;
 import android.util.Pair;
 
-import com.smartisanos.sidebar.util.DingDingContact.DatabaseHelper.ContactColumns;
 import com.smartisanos.sidebar.util.ResolveInfoGroup.SameGroupComparator;
 
 public class ResolveInfoManager extends SQLiteOpenHelper {
@@ -141,15 +139,51 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         if(rig == null || rig.size() <= 0){
             return;
         }
-        for(int i = 0; i < mList.size(); ++ i){
-            if(mList.get(i).equals(rig)){
-                return ;
+        synchronized (mList) {
+            for (int i = 0; i < mList.size(); ++i) {
+                if (mList.get(i).equals(rig)) {
+                    return;
+                }
             }
+            if (mList.size() == 0) {
+                rig.setIndex(0);
+            } else {
+                int maxIndex = mList.get(0).getIndex();
+                for (int i = 1; i < mList.size(); ++i) {
+                    if (mList.get(i).getIndex() > maxIndex) {
+                        maxIndex = mList.get(i).getIndex();
+                    }
+                }
+                rig.setIndex(maxIndex);
+            }
+            mList.add(0, rig);
         }
-
-        mList.add(0, rig);
         mHandler.obtainMessage(MSG_SAVE, rig).sendToTarget();
         notifyUpdate();
+    }
+
+
+    public void updateOrder() {
+        synchronized (mList) {
+            Collections.sort(mList, new ResolveInfoGroup.IndexComparator());
+        }
+        notifyUpdate();
+        mHandler.obtainMessage(MSG_SAVE_ORDER).sendToTarget();
+    }
+
+    private void saveOrderForList(){
+        List<ResolveInfoGroup> list = getAddedResolveInfoGroup();
+        for(ResolveInfoGroup rig : list){
+            int id = getId(rig);
+            if(id != 0){
+                ContentValues cv = new ContentValues();
+                cv.put(ResolveInfoColumns.PACKAGE_NAME, rig.getPackageName());
+                cv.put(ResolveInfoColumns.COMPONENT_NAMES, rig.getComponentNames());
+                cv.put(ResolveInfoColumns.WEIGHT, rig.getIndex());
+                getWritableDatabase().update(TABLE_RESOLVEINFO, cv,
+                        ResolveInfoColumns._ID + "=?", new String[] { id + "" });
+            }
+        }
     }
 
     private int getId(ResolveInfoGroup rig) {
@@ -162,7 +196,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
                 null, null, null);
 
         if (cursor.moveToFirst()) {
-            return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
+            return cursor.getInt(cursor.getColumnIndex(ResolveInfoColumns._ID));
         }
         return 0;
     }
@@ -171,7 +205,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         int id = getId(rig);
         if(id != 0){
             getWritableDatabase().delete(TABLE_RESOLVEINFO,
-                    ContactColumns._ID + "=?", new String[] { id + "" });
+                    ResolveInfoColumns._ID + "=?", new String[] { id + "" });
         }
     }
 
@@ -179,62 +213,62 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(ResolveInfoColumns.PACKAGE_NAME, rig.getPackageName());
         cv.put(ResolveInfoColumns.COMPONENT_NAMES, rig.getComponentNames());
-        cv.put(ResolveInfoColumns.WEIGHT, mList.size());
+        cv.put(ResolveInfoColumns.WEIGHT, rig.getIndex());
         getWritableDatabase().insert(TABLE_RESOLVEINFO, null, cv);
     }
 
     private void updateComponentList(){
-        TreeMap<Integer, ResolveInfoGroup> map = new TreeMap<Integer, ResolveInfoGroup>();
+        List<ResolveInfoGroup> list = new ArrayList<ResolveInfoGroup>();
         Cursor cursor = getReadableDatabase().query(TABLE_RESOLVEINFO, null,null, null, null, null, null);
         if (cursor != null) {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        String pkgName = cursor.getString(cursor
-                                        .getColumnIndex(ResolveInfoColumns.PACKAGE_NAME));
-                        String componentNames = cursor.getString(cursor
-                                        .getColumnIndex(ResolveInfoColumns.COMPONENT_NAMES));
-                        int weight = cursor.getInt(cursor
-                                .getColumnIndex(ResolveInfoColumns.WEIGHT));
+                        String pkgName = cursor.getString(cursor.getColumnIndex(ResolveInfoColumns.PACKAGE_NAME));
+                        String componentNames = cursor.getString(cursor.getColumnIndex(ResolveInfoColumns.COMPONENT_NAMES));
+                        int weight = cursor.getInt(cursor.getColumnIndex(ResolveInfoColumns.WEIGHT));
                         ResolveInfoGroup rig = ResolveInfoGroup.fromData(mContext, pkgName, componentNames);
                         if (rig != null) {
-                            map.put(weight, ResolveInfoGroup.fromData(mContext, pkgName, componentNames));
+                            rig.setIndex(weight);
+                            list.add(rig);
                         } else {
-                            getWritableDatabase().delete(TABLE_RESOLVEINFO,
-                                    "packagename=? and names=?", new String[] { pkgName, componentNames });
+                            getWritableDatabase().delete(TABLE_RESOLVEINFO, "packagename=? and names=?", new String[] { pkgName, componentNames });
                         }
                     } while (cursor.moveToNext());
-                    cursor.close();
                 }
             } finally {
                 cursor.close();
             }
         }
 
+        Collections.sort(list, new ResolveInfoGroup.IndexComparator());
         synchronized (mList) {
             mList.clear();
-            mList.addAll(map.values());
-            Collections.reverse(mList);
+            mList.addAll(list);
         }
         notifyUpdate();
     }
 
-    public List<ResolveInfoGroup> getAddedResolveInfoGroup(){
+    public List<ResolveInfoGroup> getAddedResolveInfoGroup() {
         List<ResolveInfoGroup> ret = new ArrayList<ResolveInfoGroup>();
-        ret.addAll(mList);
+        synchronized (mList) {
+            ret.addAll(mList);
+        }
         return ret;
     }
 
     public List<ResolveInfoGroup> getUnAddedResolveInfoGroup(){
         List<ResolveInfoGroup> ret = getAllResolveInfoGroupByPackageName(null);
-        if(ret != null){
-            for(int i = 0; i < ret.size(); ++ i){
-                for(int j = 0; j < mList.size(); ++ j)
-                    if(ret.get(i).equals(mList.get(j))){
-                        ret.remove(i);
-                        i -- ;
-                        break;
-                    }
+        synchronized (mList) {
+            if (ret != null) {
+                for (int i = 0; i < ret.size(); ++i) {
+                    for (int j = 0; j < mList.size(); ++j)
+                        if (ret.get(i).equals(mList.get(j))) {
+                            ret.remove(i);
+                            i--;
+                            break;
+                        }
+                }
             }
         }
         return ret;
@@ -286,11 +320,13 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
 
     public void onPackageRemoved(String packageName){
         boolean removed = false;
-        for(int i = 0; i < mList.size(); ++ i){
-            if(mList.get(i).getPackageName().equals(packageName)){
-                mList.remove(i);
-                i --;
-                removed = true;
+        synchronized (mList) {
+            for (int i = 0; i < mList.size(); ++i) {
+                if (mList.get(i).getPackageName().equals(packageName)) {
+                    mList.remove(i);
+                    i--;
+                    removed = true;
+                }
             }
         }
         if(removed){
@@ -343,6 +379,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
     private static final int MSG_SAVE = 0;
     private static final int MSG_DELETE = 1;
     private static final int MSG_UPDATE_LIST = 2;
+    private static final int MSG_SAVE_ORDER = 3;
     private class ResolveInfoManagerHandler extends Handler {
         public ResolveInfoManagerHandler(Looper looper) {
             super(looper, null, false);
@@ -359,6 +396,9 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
                 break;
             case MSG_UPDATE_LIST:
                 updateComponentList();
+                break;
+            case MSG_SAVE_ORDER:
+                saveOrderForList();
                 break;
             }
         }

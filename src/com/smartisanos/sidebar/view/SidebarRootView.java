@@ -324,16 +324,10 @@ public class SidebarRootView extends FrameLayout {
                 if (mSideView != null) {
                     if (item != null) {
                         item.mListItemView.setVisibility(View.VISIBLE);
-                        int index = item.viewIndex;
                         if (item.itemType == DragItem.TYPE_APPLICATION) {
-                            ResolveInfoGroup data = (ResolveInfoGroup) item.sidebarItem;
-                            log.error("A set item to index ["+index+"]");
-                            ResolveInfoListAdapter adapter = mSideView.getAppListAdapter();
-                            adapter.setItem(index, data);
-                            mSideView.notifyAppListDataSetChanged();
+                            mSideView.getAppListAdapter().moveItemPostion((ResolveInfoGroup) item.sidebarItem, item.viewIndex);
                         } else if (item.itemType == DragItem.TYPE_SHORTCUT) {
-                            log.error("B set item to index ["+index+"]");
-                            mSideView.getContactListAdapter().moveItemPostion((ContactItem) item.sidebarItem, index);
+                            mSideView.getContactListAdapter().moveItemPostion((ContactItem) item.sidebarItem, item.viewIndex);
                         }
                     }
                 }
