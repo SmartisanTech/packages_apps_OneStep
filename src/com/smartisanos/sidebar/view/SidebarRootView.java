@@ -225,10 +225,12 @@ public class SidebarRootView extends FrameLayout {
         }
     }
 
+    private boolean mDragging = false;
     public void startDrag(DragItem item, int[] loc) {
-        if (mDragView != null) {
-            return;
+        if(mDragging){
+            return ;
         }
+        mDragging = true;
         //set sidebar to full screen
         SidebarController.getInstance(mContext).updateDragWindow(true);
         mDragView = new DragView(mContext, item, loc);
@@ -244,6 +246,10 @@ public class SidebarRootView extends FrameLayout {
 
     private boolean mDragDeleting = false;
     public void deleteDrag(){
+        if (!mDragging) {
+            return;
+        }
+        mDragging = false;
         final View view = mDragView.mView;
         Vector3f from = new Vector3f(0, view.getY());
         Vector3f to = new Vector3f(0, mTrash.mWindowHeight);
@@ -268,10 +274,11 @@ public class SidebarRootView extends FrameLayout {
 
     private boolean mDragDroping = false;
     public void dropDrag() {
-        log.error("dropDrag !");
-        if (mDragView == null) {
+        if (!mDragging) {
             return;
         }
+        mDragging = false;
+        log.error("dropDrag !");
         mDragView.hideBubble();
         final DragItem item = mDragView.getDragItem();
         final View view = mDragView.mView;
@@ -356,41 +363,32 @@ public class SidebarRootView extends FrameLayout {
     }
 
     public DragView getDraggedView() {
+        if(!mDragging){
+            return null;
+        }
         return mDragView;
     }
 
     private final boolean ENABLE_TOUCH_LOG = false;
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction() & MotionEvent.ACTION_MASK;
-        if (action == MotionEvent.ACTION_DOWN) {
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (mDragDroping || mDragDeleting) {
+            // ignore !
+            return true;
+        }
+
+        if (mDragging) {
+            precessTouch(ev);
+            return true;
+        }
+
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             if (processResumeSidebar()) {
                 return true;
             }
         }
 
-        if (mDragView != null) {
-            precessTouch(event);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (mDragView != null
-                || SidebarController.getInstance(mContext)
-                        .getCurrentContentType() != ContentType.NONE) {
-            return true;
-        }
-        return super.onInterceptTouchEvent(event);
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (mDragDroping || mDragDeleting) {
-            return true;
-        }
         return super.dispatchTouchEvent(ev);
     }
 

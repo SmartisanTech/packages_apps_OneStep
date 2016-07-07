@@ -191,13 +191,6 @@ public class SideView extends RelativeLayout {
                 log.error("feature close");
                 return false;
             }
-            if (!enableLongClick()) {
-                return false;
-            }
-            if (view == null) {
-                log.error("onItemLongClick return by view is null");
-                return false;
-            }
             if (view.getTag() == null) {
                 log.error("onItemLongClick return by tag is null");
                 return false;
@@ -229,13 +222,6 @@ public class SideView extends RelativeLayout {
         public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
             if (DEV_FLAG) {
                 log.error("feature close");
-                return false;
-            }
-            if (!enableLongClick()) {
-                return false;
-            }
-            if (view == null) {
-                log.error("onItemLongClick return by view is null");
                 return false;
             }
             if (view.getTag() == null) {
@@ -273,21 +259,6 @@ public class SideView extends RelativeLayout {
         drawable.draw(canvas);
         return bitmap;
     }
-
-    private boolean enableLongClick() {
-        SidebarController controller = SidebarController.getInstance(mContext);
-        if (controller.getCurrentContentType() == ContentType.ADDTOSIDEBAR) {
-            return false;
-        }
-        SidebarRootView rootView = controller.getSidebarRootView();
-        if (rootView != null) {
-            if (rootView.getDraggedView() != null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     public int[] appListLoc = new int[2];
     public int[] contactListLoc = new int[2];
