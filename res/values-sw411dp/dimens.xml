@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="window_width">1080</integer>
+    <integer name="window_width">1440</integer>
 
     <integer name="trash_width">225</integer>
     <integer name="trash_height">297</integer>

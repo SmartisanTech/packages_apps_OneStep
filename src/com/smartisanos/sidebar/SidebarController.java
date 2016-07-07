@@ -37,6 +37,7 @@ public class SidebarController {
     private Handler mHandler;
     private WindowManager mWindowManager;
 
+    private int mWindowFullWidth;
     private SidebarRootView mSidebarRoot;
     private SideView mSideView;
     private TopView mTopView;
@@ -124,6 +125,7 @@ public class SidebarController {
     }
 
     private void inflateView() {
+        mWindowFullWidth = mContext.getResources().getInteger(R.integer.window_width);
         if (mSidebarRoot == null) {
             mSidebarRoot = (SidebarRootView) View.inflate(mContext,R.layout.sidebar_view, null);
             mSidebarRoot.setTrashView();
@@ -178,7 +180,7 @@ public class SidebarController {
                 mSidebarRoot.getTrash().initTrashView();
             }
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    mWindowFullWidth,
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN

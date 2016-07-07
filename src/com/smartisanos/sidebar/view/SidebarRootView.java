@@ -5,11 +5,9 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,7 +26,6 @@ import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.Vector3f;
-import com.smartisanos.sidebar.view.ContentView.ContentType;
 import com.smartisanos.sidebar.R;
 
 import java.util.ArrayList;
@@ -136,14 +133,13 @@ public class SidebarRootView extends FrameLayout {
             mItem = item;
             mIcon = item.iconOrig;
             mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
-            final float offsetX = 0;
-            final float offsetY = 0;
-            final float initialScale = 1;
-            int iconSize = context.getResources().getDimensionPixelSize(R.dimen.drag_view_icon_size);
-
-            Resources resources = context.getResources();
-            final float scaleDps = resources.getDimensionPixelSize(R.dimen.dragViewScale);
-            final float scale = (iconWidth + scaleDps) / iconWidth;
+//            final float offsetX = 0;
+//            final float offsetY = 0;
+//            final float initialScale = 1;
+//            int iconSize = context.getResources().getDimensionPixelSize(R.dimen.drag_view_icon_size);
+//            Resources resources = context.getResources();
+//            final float scaleDps = resources.getDimensionPixelSize(R.dimen.dragViewScale);
+//            final float scale = (iconWidth + scaleDps) / iconWidth;
 
             mDragViewIcon = (ImageView) mView.findViewById(R.id.drag_view_icon);
             mDragViewIcon.setBackground(mIcon);
@@ -152,7 +148,7 @@ public class SidebarRootView extends FrameLayout {
             initLoc = loc;
             log.error("init loc ==> ("+initLoc[0]+", "+initLoc[1]+")");
 
-            mInitialScale = initialScale;
+//            mInitialScale = initialScale;
             mAnim = new ValueAnimator();
             mAnim.setFloatValues(0f, 1f);
             mAnim.setDuration(100);
