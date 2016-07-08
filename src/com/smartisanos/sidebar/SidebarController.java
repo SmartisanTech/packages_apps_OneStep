@@ -152,7 +152,7 @@ public class SidebarController {
     private void addSideView() {
         if (mSidebarRoot != null) {
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    mSideViewWidth,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
@@ -163,11 +163,16 @@ public class SidebarController {
                     PixelFormat.TRANSLUCENT);
             if(getSidebarMode() == SidebarMode.MODE_LEFT){
                 lp.gravity = Gravity.LEFT | Gravity.FILL_VERTICAL;
+                FrameLayout.LayoutParams llp = (FrameLayout.LayoutParams)mSideView.getLayoutParams();
+                llp.gravity = Gravity.LEFT | Gravity.FILL_VERTICAL;
             }else{
                 lp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
+                FrameLayout.LayoutParams llp = (FrameLayout.LayoutParams)mSideView.getLayoutParams();
+                llp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
             }
             lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
             lp.setTitle("sidebar_sideview");
+            lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_NO_MOVE_ANIMATION;
             lp.packageName = mContext.getPackageName();
             mWindowManager.addView(mSidebarRoot, lp);
         }
@@ -177,67 +182,21 @@ public class SidebarController {
         if (mSidebarRoot == null) {
             return;
         }
+        final WindowManager.LayoutParams lp = (WindowManager.LayoutParams)mSidebarRoot.getLayoutParams();
         if (toFullScreen) {
             if (mSidebarRoot.getTrash() != null) {
                 mSidebarRoot.getTrash().initTrashView();
             }
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mSideViewWidth,
-                    ViewGroup.LayoutParams.MATCH_PARENT);
-            if(getSidebarMode() == SidebarMode.MODE_LEFT){
-                params.gravity = Gravity.LEFT | Gravity.TOP;
-            } else {
-                params.gravity = Gravity.RIGHT | Gravity.TOP;
-            }
-            mSideView.setLayoutParams(params);
-            mSideView.requestLayout();
-
-            final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, //mWindowFullWidth,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                            | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                            | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
-                            | WindowManager.LayoutParams.FLAG_FULLSCREEN
-                            | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                    PixelFormat.TRANSLUCENT);
-
-            lp.x = 0;
-            lp.y = 0;
-            if(getSidebarMode() == SidebarMode.MODE_LEFT){
-                lp.gravity = Gravity.LEFT | Gravity.FILL_VERTICAL;
-            }else{
-                lp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
-            }
-            lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-            lp.setTitle("sidebar_sideview");
-            lp.packageName = mContext.getPackageName();
-            //lp.windowAnimations = 0;
-            mWindowManager.updateViewLayout(mSidebarRoot, lp);
+            lp.flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+            lp.flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR;
         } else {
             if (mSidebarRoot.getTrash() != null) {
                 mSidebarRoot.getTrash().hieTrashView();
             }
-            final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    mSideViewWidth,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                            | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                            | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
-                            | WindowManager.LayoutParams.FLAG_FULLSCREEN
-                            | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                    PixelFormat.TRANSLUCENT);
-            if(getSidebarMode() == SidebarMode.MODE_LEFT){
-                lp.gravity = Gravity.LEFT | Gravity.FILL_VERTICAL;
-            }else{
-                lp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
-            }
-            lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-            lp.setTitle("sidebar_sideview");
-            lp.packageName = mContext.getPackageName();
-            mWindowManager.updateViewLayout(mSidebarRoot, lp);
+            lp.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR;
+            lp.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
         }
+        mWindowManager.updateViewLayout(mSidebarRoot, lp);
     }
 
     private void addTopView() {
