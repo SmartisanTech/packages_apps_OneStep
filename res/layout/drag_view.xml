@@ -11,6 +11,8 @@
         android:layout_height="wrap_content"
         android:textSize="13sp"
         android:textColor="#ffffff"
+        android:maxWidth="159dp"
+        android:ellipsize="end"
         android:background="@drawable/long_press_bubble"
         android:gravity="center"
         />

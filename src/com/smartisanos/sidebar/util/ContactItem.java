@@ -10,17 +10,23 @@ import android.view.DragEvent;
 public abstract class ContactItem implements SidebarItem{
     protected Context mContext;
     protected Bitmap mAvatar;
+    protected Bitmap mAvatarWithGray;
     protected CharSequence mDisplayName;
     protected int mIndex;
 
     public ContactItem(Context context, Bitmap avatar, CharSequence displayName) {
         mContext = context;
         mAvatar = avatar;
+        mAvatarWithGray = BitmapUtils.convertToBlackWhite(mAvatar);
         mDisplayName = displayName;
     }
 
     public Bitmap getAvatar() {
         return mAvatar;
+    }
+
+    public Bitmap getAvatarWithGray() {
+        return mAvatarWithGray;
     }
 
     public CharSequence getDisplayName() {

@@ -157,14 +157,14 @@ public class ContactListAdapter extends DragEventAdapter {
             if (item == null) {
                 return;
             }
-            Bitmap avatar = mItem.getAvatar();
             typeIcon.setImageResource(item.getTypeIcon());
             displayName.setText(item.getDisplayName());
             if(draging){
-                contactIcon.setImageBitmap(avatar);
+                contactIcon.setImageBitmap(mItem.getAvatar());
                 displayName.setVisibility(View.VISIBLE);
             }else{
-                contactIcon.setImageBitmap(BitmapUtils.convertToBlackWhite(avatar));
+                log.error("ContactItem set BlackWhite icon");
+                contactIcon.setImageBitmap(mItem.getAvatarWithGray());
                 displayName.setVisibility(View.GONE);
             }
         }
