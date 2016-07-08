@@ -184,10 +184,8 @@ public class SidebarController {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mSideViewWidth,
                     ViewGroup.LayoutParams.MATCH_PARENT);
             if(getSidebarMode() == SidebarMode.MODE_LEFT){
-                log.error("left mode !!!");
                 params.gravity = Gravity.LEFT | Gravity.TOP;
             } else {
-                log.error("right mode !!!");
                 params.gravity = Gravity.RIGHT | Gravity.TOP;
             }
             mSideView.setLayoutParams(params);

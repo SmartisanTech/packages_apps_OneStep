@@ -163,7 +163,6 @@ public class ContactListAdapter extends DragEventAdapter {
                 contactIcon.setImageBitmap(mItem.getAvatar());
                 displayName.setVisibility(View.VISIBLE);
             }else{
-                log.error("ContactItem set BlackWhite icon");
                 contactIcon.setImageBitmap(mItem.getAvatarWithGray());
                 displayName.setVisibility(View.GONE);
             }

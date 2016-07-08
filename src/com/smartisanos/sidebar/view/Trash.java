@@ -5,6 +5,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -23,10 +24,6 @@ import com.smartisanos.sidebar.util.anim.Vector3f;
 
 public class Trash {
     private static final LOG log = LOG.getInstance(Trash.class);
-    private static final boolean DBG_ANIM = false;
-    static {
-        if (!DBG_ANIM) log.close();
-    }
 
     private Context mContext;
     private FrameLayout mTrashView;
@@ -184,6 +181,8 @@ public class Trash {
             @Override
             public void onStart() {
                 trashAnimRunning = true;
+                int width = mTrashView.getWidth();
+                mTrashView.setTranslationX(mWindowWidth / 2 - width / 2);
             }
             @Override
             public void onComplete() {
