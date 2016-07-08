@@ -16,6 +16,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.android.internal.sidebar.ISidebar;
@@ -180,6 +181,18 @@ public class SidebarController {
             if (mSidebarRoot.getTrash() != null) {
                 mSidebarRoot.getTrash().initTrashView();
             }
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mSideViewWidth,
+                    ViewGroup.LayoutParams.MATCH_PARENT);
+            if(getSidebarMode() == SidebarMode.MODE_LEFT){
+                log.error("left mode !!!");
+                params.gravity = Gravity.LEFT | Gravity.TOP;
+            } else {
+                log.error("right mode !!!");
+                params.gravity = Gravity.RIGHT | Gravity.TOP;
+            }
+            mSideView.setLayoutParams(params);
+            mSideView.requestLayout();
+
             final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, //mWindowFullWidth,
                     ViewGroup.LayoutParams.MATCH_PARENT,

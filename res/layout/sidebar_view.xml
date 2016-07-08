@@ -7,15 +7,13 @@
     android:layout_height="match_parent"
     android:background="#cc000000"
     >
-    <com.smartisanos.sidebar.view.SideView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+    <com.smartisanos.sidebar.view.SideView
         android:id="@+id/sidebar"
         android:layout_width="48dp"
         android:layout_height="match_parent"
         android:background="@drawable/background"
         android:orientation="vertical"
-        android:layout_gravity="right|top"
-        android:layout_alignParentRight="true" >
+        >
         <com.smartisanos.sidebar.view.DragScrollView
             android:id="@+id/sideview_scroll_list"
             android:scrollbars="none"
