@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import android.app.ActivityManagerNative;
 import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.RemoteException;
 import android.view.View;
 
@@ -46,5 +47,15 @@ public class Utils {
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isPackageInstalled(Context context, String packageName){
+        try {
+            context.getPackageManager().getPackageInfo(packageName, 0);
+            return true;
+        } catch (NameNotFoundException e) {
+            // NA
+        }
+        return false;
     }
 }

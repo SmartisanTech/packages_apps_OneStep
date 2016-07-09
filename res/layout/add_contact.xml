@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="2px"
         android:background="#14ffffff"/>
-    <com.smartisanos.sidebar.view.ToAddContactGridView
+    <com.smartisanos.sidebar.view.FullGridView
         android:id="@+id/contact_gridview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

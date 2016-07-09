@@ -1,5 +1,6 @@
 package com.smartisanos.sidebar;
 
+import com.smartisanos.sidebar.util.AddContactManager;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 
 import android.content.BroadcastReceiver;
@@ -17,8 +18,10 @@ public class PackagesMonitor extends BroadcastReceiver {
         Log.d(TAG, "action -> " + action + " , packageName -> " + packageName);
         if(Intent.ACTION_PACKAGE_REMOVED.equals(action)){
             ResolveInfoManager.getInstance(context).onPackageRemoved(packageName);
+            AddContactManager.getInstance(context).onPackageRemoved(packageName);
         }else if(Intent.ACTION_PACKAGE_ADDED.equals(action)){
             ResolveInfoManager.getInstance(context).onPackageAdded(packageName);
+            AddContactManager.getInstance(context).onPackageAdded(packageName);
         }
     }
 }
