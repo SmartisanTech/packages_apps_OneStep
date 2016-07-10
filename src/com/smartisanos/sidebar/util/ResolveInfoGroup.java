@@ -108,26 +108,41 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
         return ret;
     }
 
-    public boolean acceptDragEvent(Context context, DragEvent event){
+    public boolean acceptDragEvent(Context context, DragEvent event) {
         if (event == null) {
             return true;
         }
-        if(event.getClipDescription().getMimeTypeCount() <= 0 || size() <= 0){
+        if (event.getClipDescription().getMimeTypeCount() <= 0 || size() <= 0) {
             return false;
         }
 
         String mimeType = event.getClipDescription().getMimeType(0);
-        for (String action : ResolveInfoManager.ACTIONS) {
-            Intent intent = new Intent(action);
-            intent.addCategory(Intent.CATEGORY_DEFAULT);
-            intent.setType(mimeType);
-            intent.setPackage(getPackageName());
-            List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
+        if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
+            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(sharingIntent, 0);
             if (infos != null) {
                 for (ResolveInfo ri1 : this) {
                     for (ResolveInfo ri2 : infos) {
                         if (sameComponet(ri1, ri2)) {
                             return true;
+                        }
+                    }
+                }
+            }
+        } else {
+            for (String action : ResolveInfoManager.ACTIONS) {
+                Intent intent = new Intent(action);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.setType(mimeType);
+                intent.setPackage(getPackageName());
+                List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
+                if (infos != null) {
+                    for (ResolveInfo ri1 : this) {
+                        for (ResolveInfo ri2 : infos) {
+                            if (sameComponet(ri1, ri2)) {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -146,22 +161,22 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
 
         String mimeType = event.getClipDescription().getMimeType(0);
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType) && !TextUtils.isEmpty(event.getClipData().getItemAt(0).getText())) {
-            for (String action : ResolveInfoManager.ACTIONS) {
-                Intent intent = new Intent(action);
-                intent.addCategory(Intent.CATEGORY_DEFAULT);
-                intent.setPackage(getPackageName());
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setType(mimeType);
-                intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText());
-                List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
-                if (infos != null) {
-                    for (ResolveInfo ri1 : this) {
-                        for (ResolveInfo ri2 : infos) {
-                            if (sameComponet(ri1, ri2)) {
-                                intent.setComponent(new ComponentName(ri1.activityInfo.packageName, ri1.activityInfo.name));
-                                context.startActivity(intent);
-                                return true;
-                            }
+            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setPackage(getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setType(mimeType);
+            intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText());
+            List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
+            if (infos != null) {
+                for (ResolveInfo ri1 : this) {
+                    for (ResolveInfo ri2 : infos) {
+                        if (sameComponet(ri1, ri2)) {
+                            intent.setComponent(new ComponentName(
+                                    ri1.activityInfo.packageName,
+                                    ri1.activityInfo.name));
+                            context.startActivity(intent);
+                            return true;
                         }
                     }
                 }

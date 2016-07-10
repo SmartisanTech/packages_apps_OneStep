@@ -61,7 +61,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
     };
 
     public static final String[] ACTIONS = new String[]{
-        Intent.ACTION_VIEW,
+        //Intent.ACTION_VIEW,
         Intent.ACTION_SEND,
         Intent.ACTION_SEND_MULTIPLE
     };
