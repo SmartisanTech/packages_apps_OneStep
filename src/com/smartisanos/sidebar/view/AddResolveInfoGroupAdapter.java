@@ -75,7 +75,7 @@ public class AddResolveInfoGroupAdapter extends BaseAdapter{
         View ret = convertView;
         ViewHolder vh;
         if (ret == null) {
-            ret = LayoutInflater.from(mContext).inflate(R.layout.toadd_resolveinfo_group_item, null);
+            ret = LayoutInflater.from(mContext).inflate(R.layout.add_resolve_item, null);
             vh = new ViewHolder();
             vh.iv = (ImageView) ret.findViewById(R.id.icon);
             vh.tv = (TextView) ret.findViewById(R.id.label);

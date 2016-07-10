@@ -4,6 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" >
     <RelativeLayout
+        android:layout_gravity="center"
         android:layout_width="91dp"
         android:layout_height="91dp">
         <RelativeLayout
