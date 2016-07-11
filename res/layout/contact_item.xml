@@ -12,9 +12,9 @@
             android:layout_height="48dp"
             android:background="@drawable/avatar_mask">
             <ImageView
-                android:id="@+id/contact_icon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:id="@+id/contact_avatar"
+                android:layout_width="@dimen/contact_avatar_size"
+                android:layout_height="@dimen/contact_avatar_size"
                 android:layout_centerInParent="true"/>
             <ImageView
                 android:id="@+id/type_icon"

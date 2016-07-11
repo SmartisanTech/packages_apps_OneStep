@@ -43,7 +43,7 @@ public class AddContactManager extends DataManager {
         mMapPackageToItem.put(new AddContactItem(R.drawable.icon_dingding, R.string.add_contact_dingding, mDingDingListener), "com.alibaba.android.rimet");
         mMapPackageToItem.put(new AddContactItem(R.drawable.icon_mms, R.string.add_contact_mms, mMmsListener), "com.android.contacts");
         mMapPackageToItem.put(new AddContactItem(R.drawable.icon_mail, R.string.add_contact_mail, mMailListener), "com.android.contacts");
-        //mMapPackageToItem.put(new AddContactItem(R.drawable.icon_wechat, R.string.add_contact_wechat, mWechatListener), "com.tencent.mm");
+        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_wechat, R.string.add_contact_wechat, mWechatListener), "com.tencent.mm");
         updateData();
     }
 

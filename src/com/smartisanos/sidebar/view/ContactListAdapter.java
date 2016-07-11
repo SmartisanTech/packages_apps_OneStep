@@ -99,7 +99,7 @@ public class ContactListAdapter extends DragEventAdapter {
         if (convertView == null) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.contact_item, null);
             holder = new ViewHolder();
-            holder.contactIcon = (ImageView) view.findViewById(R.id.contact_icon);
+            holder.contactAvatar = (ImageView) view.findViewById(R.id.contact_avatar);
             holder.typeIcon = (ImageView) view.findViewById(R.id.type_icon);
             holder.displayName = (TextView) view.findViewById(R.id.display_name);
             holder.view = view;
@@ -146,7 +146,7 @@ public class ContactListAdapter extends DragEventAdapter {
 
     public static class ViewHolder {
         public View view;
-        public ImageView contactIcon;
+        public ImageView contactAvatar;
         public ImageView typeIcon;
         public TextView displayName;
 
@@ -160,10 +160,10 @@ public class ContactListAdapter extends DragEventAdapter {
             typeIcon.setImageResource(item.getTypeIcon());
             displayName.setText(item.getDisplayName());
             if(draging){
-                contactIcon.setImageBitmap(mItem.getAvatar());
+                contactAvatar.setImageBitmap(mItem.getAvatar());
                 displayName.setVisibility(View.VISIBLE);
             }else{
-                contactIcon.setImageBitmap(mItem.getAvatarWithGray());
+                contactAvatar.setImageBitmap(mItem.getAvatarWithGray());
                 displayName.setVisibility(View.GONE);
             }
         }
