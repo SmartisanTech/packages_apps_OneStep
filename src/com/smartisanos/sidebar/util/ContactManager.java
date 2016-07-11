@@ -30,12 +30,10 @@ public class ContactManager extends DataManager{
     private Handler mHandler;
     private ContactManager(Context context){
         mContext = context;
-        mContacts = ContactItem.getContactList(mContext);
-        Collections.sort(mContacts, new ContactComparator());
-
         HandlerThread thread = new HandlerThread(RecentFileManager.class.getName());
         thread.start();
         mHandler = new ContactManagerHandler(thread.getLooper());
+        mHandler.obtainMessage(MSG_READ_CONTACTS).sendToTarget();
     }
 
     public List<ContactItem> getContactList() {
@@ -44,6 +42,16 @@ public class ContactManager extends DataManager{
             ret.addAll(mContacts);
         }
         return ret;
+    }
+
+    private void readContacts(){
+        List<ContactItem> list = ContactItem.getContactList(mContext);
+        Collections.sort(list, new ContactComparator());
+        synchronized(mContacts){
+            mContacts.clear();
+            mContacts.addAll(list);
+        }
+        notifyListener();
     }
 
     public void updateOrder() {
@@ -119,6 +127,7 @@ public class ContactManager extends DataManager{
     private static final int MSG_SAVE_CONTACT = 0;
     private static final int MSG_DELETE_CONTACT = 1;
     private static final int MSG_UPDATE_ORDER = 2;
+    private static final int MSG_READ_CONTACTS = 3;
     private class ContactManagerHandler extends Handler {
         public ContactManagerHandler(Looper looper) {
             super(looper, null, false);
@@ -141,6 +150,8 @@ public class ContactManager extends DataManager{
                     }
                 }
                 break;
+            case MSG_READ_CONTACTS:
+                readContacts();
             }
         }
     }
