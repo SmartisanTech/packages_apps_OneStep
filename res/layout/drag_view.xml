@@ -13,6 +13,7 @@
         android:textColor="#ffffff"
         android:maxWidth="159dp"
         android:ellipsize="end"
+        android:maxLines="1"
         android:background="@drawable/long_press_bubble"
         android:gravity="center"
         />
