@@ -164,7 +164,9 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
             Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             intent.addCategory(Intent.CATEGORY_DEFAULT);
             intent.setPackage(getPackageName());
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+                    | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             intent.setType(mimeType);
             intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText());
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
@@ -189,7 +191,9 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
                 Intent intent = new Intent(action);
                 intent.addCategory(Intent.CATEGORY_DEFAULT);
                 intent.setPackage(getPackageName());
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+                        | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 if(Intent.ACTION_VIEW.equals(action)){
                     intent.setDataAndType(event.getClipData().getItemAt(0).getUri(), mimeType);
                 }else{
