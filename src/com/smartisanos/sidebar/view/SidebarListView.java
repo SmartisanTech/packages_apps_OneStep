@@ -7,7 +7,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -135,6 +134,16 @@ public class SidebarListView extends ListView {
         return ret;
     }
 
+    public List<View> getChildViews() {
+        List<View> views = new ArrayList<View>();
+        int viewCount = getChildCount();
+        for (int i = 0; i < viewCount; i++) {
+            View child = getChildAt(i);
+            views.add(child);
+        }
+        return views;
+    }
+
     public List<View> getVisibleChild() {
         List<View> ret = new ArrayList<View>();
         int parentScrollY = getScrollViewParent().getScrollY();
@@ -171,7 +180,7 @@ public class SidebarListView extends ListView {
                 public boolean onPreDraw() {
                     getViewTreeObserver().removeOnPreDrawListener(this);
                     final long animDelay = 20;
-                    final List<View> childs = getVisibleChild();
+                    final List<View> childs = getChildViews();
                     for (int i = 0; i < childs.size(); ++i) {
                         final View child = childs.get(i);
                         child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
@@ -227,7 +236,7 @@ public class SidebarListView extends ListView {
                 public boolean onPreDraw() {
                     getViewTreeObserver().removeOnPreDrawListener(this);
                     final long animDelay = 20;
-                    final List<View> childs = getVisibleChild();
+                    final List<View> childs = getChildViews();
                     for (int i = 0; i < childs.size(); ++i) {
                         final View child = childs.get(i);
                         child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
@@ -266,7 +275,7 @@ public class SidebarListView extends ListView {
     public void dismiss(final DragEvent event) {
         final long delayStep = 20;
 
-        final List<View> childs = getVisibleChild();
+        final List<View> childs = getChildViews();
         for (int i = 0; i < childs.size(); ++i) {
             final View child = childs.get(i);
             child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
