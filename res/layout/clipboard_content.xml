@@ -53,17 +53,14 @@
                 android:layout_gravity="left|center_vertical"
                 android:orientation="horizontal"
                 >
-                <Button
-                    android:layout_width="35dp"
-                    android:layout_height="27dp"
-                    android:background="@drawable/back_arrow_icon"
-                    />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/back_arrow_icon"
                     android:text="@string/clipboard_fulltext_back"
                     android:textColor="#ccffffff"
                     android:textSize="12dp"
+                    android:gravity="left|center_vertical"
                     />
             </LinearLayout>
             <Button

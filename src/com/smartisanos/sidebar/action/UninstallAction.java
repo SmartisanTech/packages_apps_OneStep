@@ -85,7 +85,7 @@ public class UninstallAction {
             return;
         }
         trash.stopRock();
-        rootView.dropDrag();
+        rootView.dropDrag(null);
     }
 
     private void uninstallAnim() {
