@@ -326,7 +326,10 @@ public class SidebarController {
     private void animWhenEnterSidebarMode() {
         int windowWidth = mContext.getResources().getInteger(R.integer.window_width);
         if (mSideView != null) {
-            mSideView.sidebarListShowAnim(windowWidth);
+            mSideView.showAnimWhenSplitWindow(windowWidth);
+        }
+        if (mTopView != null) {
+            mTopView.showAnimWhenSplitWindow();
         }
     }
 }

@@ -14,8 +14,12 @@ import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.CopyHistoryItem;
 import android.graphics.Bitmap;
@@ -242,5 +246,29 @@ public class TopView extends LinearLayout {
             }
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    public void showAnimWhenSplitWindow() {
+        ObjectAnimator photoIconScaleXAnim = ObjectAnimator.ofFloat(mPhotos, Anim.SCALE_X, 1, 1.1f);
+        ObjectAnimator photoIconScaleYAnim = ObjectAnimator.ofFloat(mPhotos, Anim.SCALE_Y, 1, 1.1f);
+
+        ObjectAnimator fileIconScaleXAnim = ObjectAnimator.ofFloat(mFile, Anim.SCALE_X, 1, 1.1f);
+        ObjectAnimator fileIconScaleYAnim = ObjectAnimator.ofFloat(mFile, Anim.SCALE_Y, 1, 1.1f);
+
+        ObjectAnimator clipboardIconScaleXAnim = ObjectAnimator.ofFloat(mClipboard, Anim.SCALE_X, 1, 1.1f);
+        ObjectAnimator clipboardIconScaleYAnim = ObjectAnimator.ofFloat(mClipboard, Anim.SCALE_Y, 1, 1.1f);
+
+        ObjectAnimator[] anims = new ObjectAnimator[] {
+                photoIconScaleXAnim, photoIconScaleYAnim,
+                fileIconScaleXAnim, fileIconScaleYAnim,
+                clipboardIconScaleXAnim, clipboardIconScaleYAnim
+        };
+
+        AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(Anim.CUBIC_OUT);
+        AnimatorSet set = new AnimatorSet();
+        set.setDuration(125);
+        set.setInterpolator(interpolator);
+        set.playTogether(anims);
+        set.start();
     }
 }

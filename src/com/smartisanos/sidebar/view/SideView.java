@@ -457,7 +457,7 @@ public class SideView extends RelativeLayout {
         return false;
     }
 
-    public void sidebarListShowAnim(int windowWidth) {
+    public void showAnimWhenSplitWindow(int windowWidth) {
         int listWidth = mScrollList.getWidth();
         if (listWidth == 0) {
             return;
