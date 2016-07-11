@@ -117,6 +117,7 @@ public class SidebarController {
     private void start(){
         addTopView();
         addSideView();
+        animWhenEnterSidebarMode();
     }
 
     private void stop(){
@@ -321,4 +322,11 @@ public class SidebarController {
             }
         }
     };
+
+    private void animWhenEnterSidebarMode() {
+        int windowWidth = mContext.getResources().getInteger(R.integer.window_width);
+        if (mSideView != null) {
+            mSideView.sidebarListShowAnim(windowWidth);
+        }
+    }
 }

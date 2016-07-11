@@ -1,5 +1,8 @@
 package com.smartisanos.sidebar.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -11,7 +14,6 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
@@ -28,6 +30,8 @@ import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 public class SideView extends RelativeLayout {
@@ -451,5 +455,29 @@ public class SideView extends RelativeLayout {
             }
         }
         return false;
+    }
+
+    public void sidebarListShowAnim(int windowWidth) {
+        int listWidth = mScrollList.getWidth();
+        if (listWidth == 0) {
+            return;
+        }
+        boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
+        int fromX = -listWidth;
+        int toX = 0;
+        if (!isLeft) {
+            fromX = windowWidth;
+        }
+        log.error("sidebarListShowAnim from ["+fromX+"] to ["+toX+"]");
+
+        ObjectAnimator anim1 = ObjectAnimator.ofFloat(mContactList, Anim.TRANSLATE_X, fromX, toX);
+        ObjectAnimator anim2 = ObjectAnimator.ofFloat(mShareList, Anim.TRANSLATE_X, fromX, toX);
+
+        AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(Anim.CUBIC_OUT);
+        AnimatorSet set = new AnimatorSet();
+        set.setDuration(200);
+        set.setInterpolator(interpolator);
+        set.play(anim1).with(anim2);
+        set.start();
     }
 }
