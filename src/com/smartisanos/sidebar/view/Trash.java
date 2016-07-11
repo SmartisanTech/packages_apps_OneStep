@@ -132,7 +132,13 @@ public class Trash {
         }
         mWindowWidth = widthPixels;
         mWindowHeight = heightPixels;
-        int locX = widthPixels / 2 - mTrashWidth / 2;
+
+        int trashViewWidth = mTrashView.getWidth();
+        if (trashViewWidth == 0) {
+            trashViewWidth = mTrashWidth;
+        }
+
+        int locX = widthPixels / 2 - trashViewWidth / 2;
         int locY = heightPixels;
         mTrashView.setTranslationX(locX);
         mTrashView.setTranslationY(locY);
@@ -172,6 +178,7 @@ public class Trash {
             log.error("trashAppearWithAnim return by trashAppearAnimRunning true");
             return;
         }
+        mTrashView.setTranslationX(mWindowWidth / 2 - mTrashView.getWidth() / 2);
         int fromY = mWindowHeight;
         int toY = mWindowHeight - mTrashDisplayHeight;
         Vector3f from = new Vector3f(0, fromY);
@@ -192,16 +199,6 @@ public class Trash {
             }
         });
         anim.start();
-    }
-
-    public void trashDisappearWithoutAnim() {
-        mTrashView.setTranslationY(mWindowHeight);
-        mTrashStatus = TRASH_HIDE;
-        SidebarController controller = SidebarController.getInstance(mContext);
-        SidebarRootView rootView = controller.getSidebarRootView();
-        if (rootView != null) {
-            rootView.resetSidebarWindow();
-        }
     }
 
     public void trashDisappearWithAnim() {
@@ -298,6 +295,11 @@ public class Trash {
         if (view == null) {
             return;
         }
+
+        int[] trashLoc = new int[2];
+        mTrashView.getLocationOnScreen(trashLoc);
+        log.error("trash loc ==> ("+trashLoc[0]+", "+trashLoc[1]+")");
+
         dragView.hideBubble();
         float fromX = view.getX();
         float fromY = view.getY();
