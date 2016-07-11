@@ -281,6 +281,8 @@ public class ContentView extends RelativeLayout {
         mClipboardItemBack.setOnClickListener(mOnClickClipboardFullTextTitleBackButton);
         mClipboardCopyItemButton.setOnClickListener(mOnClickClipboardFullTextTitleCopyButton);
         mClipboardShareItemButton.setOnClickListener(mOnClickClipboardFullTextTitleShareButton);
+
+        mClipboardFullText.setOnLongClickListener(mOnClipBoardFullTextItemLongClickListener);
     }
 
     private static final int ANIMATION_DURA = 314;
@@ -409,9 +411,6 @@ public class ContentView extends RelativeLayout {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
-            if (mEnableClipboardFullTextTitleBackButton) {
-                break;
-            }
             Utils.resumeSidebar(mContext);
             return true;
         default:
@@ -516,6 +515,22 @@ public class ContentView extends RelativeLayout {
             TextView textView = (TextView) view.findViewById(R.id.text);
             Utils.dismissAllDialog(mContext);
             SidebarUtils.dragText(textView, mContext, textView.getText());
+            return false;
+        }
+    };
+
+    private OnLongClickListener mOnClipBoardFullTextItemLongClickListener = new OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            if (view == null) {
+                return false;
+            }
+            if (view instanceof TextView) {
+                TextView textView = (TextView) view;
+                Utils.dismissAllDialog(mContext);
+                SidebarUtils.dragText(textView, mContext, textView.getText());
+                return true;
+            }
             return false;
         }
     };
