@@ -187,16 +187,24 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
     }
 
     private int getId(ResolveInfoGroup rig) {
-        Cursor cursor = getReadableDatabase().query(
-                TABLE_RESOLVEINFO,
-                null,
-                ResolveInfoColumns.PACKAGE_NAME + "=? and "
-                        + ResolveInfoColumns.COMPONENT_NAMES + "=?",
-                new String[] { rig.getPackageName(), rig.getComponentNames() },
-                null, null, null);
-
-        if (cursor.moveToFirst()) {
-            return cursor.getInt(cursor.getColumnIndex(ResolveInfoColumns._ID));
+        Cursor cursor = null;
+        try {
+            cursor = getReadableDatabase().query(
+                    TABLE_RESOLVEINFO,
+                    null,
+                    ResolveInfoColumns.PACKAGE_NAME + "=? and "
+                            + ResolveInfoColumns.COMPONENT_NAMES + "=?",
+                    new String[] { rig.getPackageName(), rig.getComponentNames() },
+                    null, null, null);
+            if (cursor.moveToFirst()) {
+                return cursor.getInt(cursor.getColumnIndex(ResolveInfoColumns._ID));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
         return 0;
     }
