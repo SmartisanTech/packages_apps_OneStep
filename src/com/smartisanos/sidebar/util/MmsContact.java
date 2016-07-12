@@ -165,8 +165,16 @@ public class MmsContact extends ContactItem {
             Cursor cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
                         ContactColumns.CONTACT_ID + "=?" + " and " + ContactColumns.PHONE_NUMBER + "=?",
                         new String[] { contact.mContactId + "", contact.mPhoneNumber }, null, null, null);
-            if (cursor.moveToFirst()) {
-                return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
+                    }
+                } catch (Exception e) {
+                    // NA
+                } finally {
+                    cursor.close();
+                }
             }
             return 0;
         }
