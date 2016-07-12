@@ -119,6 +119,8 @@ public class ShortcutReceiver extends BroadcastReceiver {
             return info.loadLabel(pm).toString();
         } catch (PackageManager.NameNotFoundException nnfe) {
             // NA
+        } catch (Exception e) {
+            // NA
         }
         return "";
     }
