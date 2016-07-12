@@ -139,8 +139,16 @@ public class MailContact extends ContactItem {
             Cursor cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
                         ContactColumns.MAIL_ADDRESS + "=?",
                         new String[] {contact.mMailAddress }, null, null, null);
-            if (cursor.moveToFirst()) {
-                return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
+                    }
+                } catch (Exception e) {
+                    // NA
+                } finally {
+                    cursor.close();
+                }
             }
             return 0;
         }

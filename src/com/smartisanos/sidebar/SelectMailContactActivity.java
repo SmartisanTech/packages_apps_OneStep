@@ -1,36 +1,28 @@
 package com.smartisanos.sidebar;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.smartisanos.sidebar.util.ContactItem;
-import com.smartisanos.sidebar.util.ContactManager;
-import com.smartisanos.sidebar.util.MailContact;
-import com.smartisanos.sidebar.util.MailContactsHelper;
-
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
+import android.text.TextUtils;
 
-import smartisanos.api.ContactContantsSmt;
-import smartisanos.api.ContactsContractSmt;
+import com.smartisanos.sidebar.util.ContactManager;
+import com.smartisanos.sidebar.util.MailContact;
+
 public class SelectMailContactActivity extends Activity {
 
     private static final int REQUEST_SELECT_MAIL = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent toIntent = new Intent(
-                "com.android.contact.activities.ContactSelectionActivity.pickEmailsExceptSelected");
-        toIntent.addCategory("android.intent.category.DEFAULT");
-
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setPackage("com.android.contacts");
+        intent.setType("vnd.android.cursor.dir/email_v2");
+        /**
         ArrayList<Long> ids = new ArrayList<Long>();
         for (ContactItem ci : ContactManager.getInstance(this).getContactList()) {
             if (ci instanceof MailContact) {
@@ -42,10 +34,11 @@ public class SelectMailContactActivity extends Activity {
         }
 
         if (ids.size() > 0) {
-            toIntent.putExtra(ContactsContractSmt.get_BASE_URI(), ContactsContract.CommonDataKinds.Phone.CONTENT_URI.toString());
-            toIntent.putExtra(ContactsContractSmt.get_EXTRA_PHONE_IDS(), ids);
+            intent.putExtra(ContactsContractSmt.get_BASE_URI(), ContactsContract.CommonDataKinds.Phone.CONTENT_URI.toString());
+            intent.putExtra(ContactsContractSmt.get_EXTRA_PHONE_IDS(), ids);
         }
-        startActivityForResult(toIntent, REQUEST_SELECT_MAIL);
+        */
+        startActivityForResult(intent, REQUEST_SELECT_MAIL);
         overridePendingTransition(smartisanos.R.anim.pop_up_in, smartisanos.R.anim.fake_anim);
     }
 
@@ -53,77 +46,53 @@ public class SelectMailContactActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_SELECT_MAIL) {
             if(resultCode == Activity.RESULT_OK){
-                addContacts(resultCode, data);
+                addContacts(data);
             }
             finish();
         }
     }
 
-    private void addContacts(int request, Intent data) {
-        if (data == null) {
+    private void addContacts(Intent result) {
+        if (result == null|| result.getData() == null) {
             return;
         }
-        ArrayList<Long> datas = (ArrayList<Long>) data.getExtra(ContactContantsSmt.EXTRA_PHONE_IDS);
-        if (datas == null || datas.size() == 0) {
-            return;
-        }
-        String baseUri = data.getStringExtra(ContactContantsSmt.BASE_URI);
-        ArrayList<Uri> uris = new ArrayList<Uri>();
-        for (long id : datas) {
-            uris.add(Uri.withAppendedPath(Uri.parse(baseUri), String.valueOf(id)));
-        }
-        new AllEmailContactsTask(this.getApplicationContext()).execute(uris);
+        new AllEmailContactsTask().execute(result.getData());
     }
 
-    private class AllEmailContactsTask extends AsyncTask<List<Uri>, Integer, List<ContactItem>> {
-        private Context mContext;
 
-        public AllEmailContactsTask(Context context) {
-            this.mContext = context;
+    private class AllEmailContactsTask extends AsyncTask<Uri, Integer, MailContact> {
+        @Override
+        protected void onPostExecute(MailContact contact) {
+            if (contact != null) {
+                ContactManager.getInstance(getApplicationContext()).addContact(contact);
+            }
         }
 
         @Override
-        protected List<ContactItem> doInBackground(List<Uri>... params) {
-            List<ContactItem> ret = new ArrayList<ContactItem>();
-            for (Uri uri : params[0]) {
-                ret.addAll(getAllContactsWithEmail(mContext, uri));
-            }
-            return ret;
-        }
-
-        @Override
-        protected void onPostExecute(List<ContactItem> result) {
-            for (ContactItem ci : result) {
-                ContactManager.getInstance(mContext).addContact(ci);
-            }
-        }
-    }
-
-    private List<MailContact> getAllContactsWithEmail(Context context, Uri uri) {
-        List<MailContact> result = new ArrayList<MailContact>();
-        Cursor cursor = null;
-        try {
-            cursor = context.getContentResolver().query(uri,
-                            new String[] {
-                                    ContactsContract.Contacts._ID,
-                                    ContactsContract.Contacts.LOOKUP_KEY,
-                                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                                    ContactsContract.CommonDataKinds.Email.ADDRESS, },
-                            null, null, null);
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
+        protected MailContact doInBackground(Uri... params) {
+            Uri uri = params[0];
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
                     do {
-                        String email = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.ADDRESS));
-                        String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                        result.add(new MailContact(context, name, email));
+                        String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE));
+                        if (TextUtils.equals(mimeType, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
+                            String email = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.ADDRESS));
+                            String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                            if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(name)) {
+                                return new MailContact(getApplicationContext(),name, email);
+                            }
+                        }
                     } while (cursor.moveToNext());
                 }
+            } catch (Exception ex){
+                ex.printStackTrace();
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+            return null;
         }
-        return result;
     }
 }
