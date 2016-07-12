@@ -5,7 +5,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -440,6 +439,17 @@ public class SidebarRootView extends FrameLayout {
             case MotionEvent.ACTION_SCROLL : {
                 if (ENABLE_TOUCH_LOG) log.error("ACTION_SCROLL");
                 break;
+            }
+        }
+    }
+
+    public void exitSidebarMode() {
+        if (mDragView != null) {
+            View view = mDragView.mView;
+            if (view != null) {
+                mDragDroping = false;
+                view.setVisibility(View.GONE);
+                removeView(view);
             }
         }
     }

@@ -125,6 +125,9 @@ public class SidebarController {
         mWindowManager.removeView(mSidebarRoot);
         dismissContent(false);
         removeContentView();
+        if (mSidebarRoot != null) {
+            mSidebarRoot.exitSidebarMode();
+        }
     }
 
     private void inflateView() {
