@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import android.app.ActivityManagerNative;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.RemoteException;
@@ -47,6 +49,26 @@ public class Utils {
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void copyText(Context context, CharSequence cs, boolean inHistory){
+        ClipboardManager cm  = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        try {
+            Method method = cm.getClass().getMethod("setPrimaryClip", ClipData.class, boolean.class);
+            try {
+                method.invoke(cm, ClipData.newPlainText(null, cs), false);
+                return;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        cm.setPrimaryClip(ClipData.newPlainText(null, cs));
     }
 
     public static boolean isPackageInstalled(Context context, String packageName){

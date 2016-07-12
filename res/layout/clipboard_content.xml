@@ -68,15 +68,7 @@
                 android:layout_width="35dp"
                 android:layout_height="27dp"
                 android:background="@drawable/clipboard_copy_icon"
-                android:layout_gravity="right"
-                />
-            <Button
-                android:id="@+id/share_icon"
-                android:layout_width="35dp"
-                android:layout_height="27dp"
-                android:background="@drawable/clipboard_share_icon"
-                android:layout_gravity="right"
-                />
+                android:layout_gravity="right"/>
         </LinearLayout>
      </LinearLayout>
     <!-- divider -->
@@ -92,15 +84,13 @@
             android:id="@+id/clipboard_listview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            />
+            android:layout_gravity="top"/>
         <ScrollView
             android:id="@+id/full_text_scroll_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:visibility="gone"
-            >
+            android:visibility="gone">
             <TextView
                 android:id="@+id/clipboard_full_content"
                 android:layout_width="match_parent"
@@ -109,8 +99,7 @@
                 android:paddingRight="15dp"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
-                android:textColor="#ccffffff"
-                />
+                android:textColor="#ccffffff"/>
         </ScrollView>
     </FrameLayout>
 </LinearLayout>

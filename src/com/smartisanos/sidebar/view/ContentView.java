@@ -33,6 +33,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
@@ -71,7 +72,6 @@ public class ContentView extends RelativeLayout {
     private TextView mClipboardFullText;
     private ScrollView mClipboardFullTextScrollView;
     private Button mClipboardCopyItemButton;
-    private Button mClipboardShareItemButton;
     private LinearLayout mClipboardItemBack;
 
     private LinearLayout mClipboardListTitle;
@@ -244,7 +244,6 @@ public class ContentView extends RelativeLayout {
 
         mClipboardItemBack = (LinearLayout) findViewById(R.id.back_button);
         mClipboardCopyItemButton = (Button) findViewById(R.id.copy_icon);
-        mClipboardShareItemButton = (Button) findViewById(R.id.share_icon);
         mClipboardListTitle = (LinearLayout) findViewById(R.id.clipboard_list_title);
         mClipboardItemTitle = (LinearLayout) findViewById(R.id.clipboard_item_title);
         mClipboardContentArea = (FrameLayout) findViewById(R.id.clipboard_content_area);
@@ -286,7 +285,6 @@ public class ContentView extends RelativeLayout {
 
         mClipboardItemBack.setOnClickListener(mOnClickClipboardFullTextTitleBackButton);
         mClipboardCopyItemButton.setOnClickListener(mOnClickClipboardFullTextTitleCopyButton);
-        mClipboardShareItemButton.setOnClickListener(mOnClickClipboardFullTextTitleShareButton);
 
         mClipboardFullText.setOnLongClickListener(mOnClipBoardFullTextItemLongClickListener);
     }
@@ -562,17 +560,15 @@ public class ContentView extends RelativeLayout {
         }
     };
 
-    private View.OnClickListener mOnClickClipboardFullTextTitleShareButton = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            log.error("onClick mOnClickClipboardFullTextTitleShareButton");
-        }
-    };
-
     private View.OnClickListener mOnClickClipboardFullTextTitleCopyButton = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            log.error("onClick mOnClickClipboardFullTextTitleCopyButton");
+            CharSequence text = mClipboardFullText.getText();
+            Utils.copyText(mContext, text, false);
+            Toast toast = Toast.makeText(mContext, R.string.text_copied, Toast.LENGTH_SHORT);
+            toast.getWindowParams().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
+            toast.getWindowParams().token = view.getWindowToken();
+            toast.show();
         }
     };
 
