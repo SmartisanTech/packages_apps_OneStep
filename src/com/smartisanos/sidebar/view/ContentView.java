@@ -10,9 +10,11 @@ import android.content.CopyHistoryItem;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
@@ -25,9 +27,11 @@ import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
@@ -63,8 +67,9 @@ public class ContentView extends RelativeLayout {
 
     private View mClearPhoto, mClearFile, mClearClipboard;
     private ClipboardAdapter mClipboardAdapter;
-    private TextView mClipboardTitle;
+    private FrameLayout mClipboardContentArea;
     private TextView mClipboardFullText;
+    private ScrollView mClipboardFullTextScrollView;
     private Button mClipboardCopyItemButton;
     private Button mClipboardShareItemButton;
     private LinearLayout mClipboardItemBack;
@@ -237,12 +242,13 @@ public class ContentView extends RelativeLayout {
         mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
         mClipList.setOnItemLongClickListener(mOnClipBoardItemLongClickListener);
 
-        mClipboardTitle = (TextView) findViewById(R.id.clipboard_title);
         mClipboardItemBack = (LinearLayout) findViewById(R.id.back_button);
         mClipboardCopyItemButton = (Button) findViewById(R.id.copy_icon);
         mClipboardShareItemButton = (Button) findViewById(R.id.share_icon);
         mClipboardListTitle = (LinearLayout) findViewById(R.id.clipboard_list_title);
         mClipboardItemTitle = (LinearLayout) findViewById(R.id.clipboard_item_title);
+        mClipboardContentArea = (FrameLayout) findViewById(R.id.clipboard_content_area);
+        mClipboardFullTextScrollView = (ScrollView) findViewById(R.id.full_text_scroll_view);
         mClipboardFullText = (TextView) findViewById(R.id.clipboard_full_content);
 
         mClearPhoto.setOnClickListener(new ClearListener(new Runnable(){
@@ -462,7 +468,7 @@ public class ContentView extends RelativeLayout {
 
         mClipboardFullText.setText("");
         mClipList.setVisibility(View.VISIBLE);
-        mClipboardFullText.setVisibility(View.GONE);
+        mClipboardFullTextScrollView.setVisibility(View.GONE);
 
         mClipList.setTranslationX(0);
         mClipList.setTranslationY(0);
@@ -528,7 +534,7 @@ public class ContentView extends RelativeLayout {
             if (mClipboardFullText == null) {
                 return false;
             }
-            if (mClipboardFullText.getVisibility() != View.VISIBLE) {
+            if (mClipboardFullTextScrollView.getVisibility() != VISIBLE) {
                 return false;
             }
             CharSequence text = mClipboardFullText.getText();
@@ -584,14 +590,14 @@ public class ContentView extends RelativeLayout {
         mClipList.getDrawingRect(rect);
         int viewWidth = mClipList.getWidth();
         final int viewHeight = (rect.bottom - rect.top);//mClipList.getHeight();
-        mClipboardFullText.setTranslationX(-viewWidth);
-        mClipboardFullText.setHeight(viewHeight);
-        mClipboardFullText.requestLayout();
-        mClipboardFullText.setVisibility(View.VISIBLE);
+        mClipboardFullTextScrollView.setTranslationX(-viewWidth);
+        mClipboardFullTextScrollView.getLayoutParams().height = viewHeight;
+        mClipboardFullTextScrollView.requestLayout();
+        mClipboardFullTextScrollView.setVisibility(View.VISIBLE);
 
         AnimatorSet set = new AnimatorSet();
         ObjectAnimator listAnim = ObjectAnimator.ofFloat(mClipList, Anim.TRANSLATE_X, 0, -viewWidth);
-        ObjectAnimator textAnim = ObjectAnimator.ofFloat(mClipboardFullText, Anim.TRANSLATE_X, viewWidth, 0);
+        ObjectAnimator textAnim = ObjectAnimator.ofFloat(mClipboardFullTextScrollView, Anim.TRANSLATE_X, viewWidth, 0);
         set.play(listAnim).with(textAnim);
         set.setDuration(horizontalScrollTime);
         set.addListener(new Animator.AnimatorListener() {
@@ -608,17 +614,19 @@ public class ContentView extends RelativeLayout {
                 log.error("mClipboardFullText height ["+from+"], text height ["+to+"]");
                 if (from != to) {
                     //do expandable or Collapsed anim
-                    animation.init(mClipboardFullText, from, to, expandableOrCollapsedTime);
+                    animation.init(mClipboardFullTextScrollView, from, to, expandableOrCollapsedTime);
                     animation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
-                            log.error("animation start !!!");
                         }
-
                         @Override
                         public void onAnimationEnd(Animation animation) {
                             mEnableClipboardFullTextTitleBackButton = true;
                             switchViewAnimRunning = false;
+                            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            params.gravity = Gravity.TOP;
+                            mClipboardContentArea.updateViewLayout(mClipboardFullTextScrollView, params);
                         }
                         @Override
                         public void onAnimationRepeat(Animation animation) {
@@ -656,7 +664,7 @@ public class ContentView extends RelativeLayout {
         final int viewHeight = (rect.bottom - rect.top);//mClipList.getHeight();
         int from = mClipboardFullText.getHeight();
         log.error("hideClipboardFullTextWithAnim height from ["+from+"], to ["+viewHeight+"]");
-        animation.init(mClipboardFullText, from, viewHeight, expandableOrCollapsedTime);
+        animation.init(mClipboardFullTextScrollView, from, viewHeight, expandableOrCollapsedTime);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -670,7 +678,7 @@ public class ContentView extends RelativeLayout {
 
                 AnimatorSet set = new AnimatorSet();
                 ObjectAnimator listAnim = ObjectAnimator.ofFloat(mClipList, Anim.TRANSLATE_X, -viewWidth, 0);
-                ObjectAnimator textAnim = ObjectAnimator.ofFloat(mClipboardFullText, Anim.TRANSLATE_X, 0, viewWidth);
+                ObjectAnimator textAnim = ObjectAnimator.ofFloat(mClipboardFullTextScrollView, Anim.TRANSLATE_X, 0, viewWidth);
                 set.play(listAnim).with(textAnim);
                 set.setDuration(horizontalScrollTime);
                 set.addListener(new Animator.AnimatorListener() {
@@ -681,7 +689,7 @@ public class ContentView extends RelativeLayout {
                     @Override
                     public void onAnimationEnd(Animator animator) {
                         mClipboardListTitle.setVisibility(View.VISIBLE);
-                        mClipboardFullText.setVisibility(View.GONE);
+                        mClipboardFullTextScrollView.setVisibility(View.GONE);
                         switchViewAnimRunning = false;
                         clipboardItemClicked = false;
                     }

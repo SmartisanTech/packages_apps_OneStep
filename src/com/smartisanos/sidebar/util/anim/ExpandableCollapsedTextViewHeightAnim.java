@@ -1,7 +1,11 @@
 package com.smartisanos.sidebar.util.anim;
 
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.util.LOG;
@@ -9,15 +13,15 @@ import com.smartisanos.sidebar.util.LOG;
 public class ExpandableCollapsedTextViewHeightAnim extends Animation {
     private static final LOG log = LOG.getInstance(ExpandableCollapsedTextViewHeightAnim.class);
 
-    private TextView mTextView;
+    private ScrollView mTextScrollView;
     private int mFrom;
     private int mTo;
 
     public ExpandableCollapsedTextViewHeightAnim() {
     }
 
-    public void init(TextView textView, int from, int to, int time) {
-        mTextView = textView;
+    public void init(ScrollView scrollView, int from, int to, int time) {
+        mTextScrollView = scrollView;
         mFrom = from;
         mTo = to;
         setDuration(time);
@@ -33,15 +37,14 @@ public class ExpandableCollapsedTextViewHeightAnim extends Animation {
     protected void applyTransformation(float interpolatedTime, Transformation t) {
         int newHeight = (int)((mTo - mFrom) * interpolatedTime + mFrom);
 //            log.error("interpolatedTime ["+interpolatedTime+"], from ["+mFrom+"], to ["+mTo+"], new ["+newHeight+"]");
-        mTextView.setMaxHeight(newHeight);
-        mTextView.getLayoutParams().height = newHeight;
-        mTextView.requestLayout();
+        mTextScrollView.getLayoutParams().height = newHeight;
+        mTextScrollView.requestLayout();
         if (interpolatedTime == 1) {
             cancel();
         }
     }
 
     public void start() {
-        mTextView.startAnimation(this);
+        mTextScrollView.startAnimation(this);
     }
 }

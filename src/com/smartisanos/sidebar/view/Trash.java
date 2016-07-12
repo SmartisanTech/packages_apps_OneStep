@@ -26,7 +26,7 @@ public class Trash {
     private static final LOG log = LOG.getInstance(Trash.class);
 
     private Context mContext;
-    private FrameLayout mTrashView;
+    public FrameLayout mTrashView;
 
     public SidebarRootView mRootView;
 
@@ -201,7 +201,7 @@ public class Trash {
         anim.start();
     }
 
-    public void trashDisappearWithAnim() {
+    public void trashDisappearWithAnim(final Runnable callback) {
         if (mTrashStatus == TRASH_HIDE) {
             return;
         }
@@ -221,6 +221,9 @@ public class Trash {
             public void onComplete() {
                 trashAnimRunning = false;
                 mTrashStatus = TRASH_HIDE;
+                if (callback != null) {
+                    callback.run();
+                }
             }
         });
         anim.start();

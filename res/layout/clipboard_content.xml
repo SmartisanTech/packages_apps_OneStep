@@ -85,6 +85,7 @@
         android:layout_height="2px"
         android:background="#14ffffff"/>
     <FrameLayout
+        android:id="@+id/clipboard_content_area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ListView
@@ -93,17 +94,23 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             />
-        <TextView
-            android:id="@+id/clipboard_full_content"
-            android:layout_width="match_parent"
+        <ScrollView
+            android:id="@+id/full_text_scroll_view"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:textColor="#ccffffff"
-            android:visibility="gone"
             android:layout_gravity="top"
-            />
+            android:visibility="gone"
+            >
+            <TextView
+                android:id="@+id/clipboard_full_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:textColor="#ccffffff"
+                />
+        </ScrollView>
     </FrameLayout>
 </LinearLayout>

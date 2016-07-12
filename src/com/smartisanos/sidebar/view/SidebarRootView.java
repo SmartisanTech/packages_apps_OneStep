@@ -5,6 +5,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -248,8 +249,8 @@ public class SidebarRootView extends FrameLayout {
         mDragging = false;
         final View view = mDragView.mView;
         Vector3f from = new Vector3f(0, view.getY());
-        Vector3f to = new Vector3f(0, mTrash.mWindowHeight);
-        Anim anim = new Anim(view, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
+        Vector3f to = new Vector3f(0, mTrash.mTrashView.getY() + 20);
+        Anim anim = new Anim(view, Anim.TRANSLATE, 150, Anim.CUBIC_OUT, from, to);
         anim.setListener(new AnimListener() {
             @Override
             public void onStart() {
@@ -261,8 +262,13 @@ public class SidebarRootView extends FrameLayout {
                 mDragDeleting = false;
                 view.setVisibility(View.INVISIBLE);
                 removeView(view);
-                SidebarRootView rootView = SidebarController.getInstance(mContext).getSidebarRootView();
-                rootView.resetSidebarWindow();
+                mTrash.trashDisappearWithAnim(new Runnable() {
+                    @Override
+                    public void run() {
+                        SidebarRootView rootView = SidebarController.getInstance(mContext).getSidebarRootView();
+                        rootView.resetSidebarWindow();
+                    }
+                });
             }
         });
         anim.start();
@@ -288,6 +294,11 @@ public class SidebarRootView extends FrameLayout {
         } else {
             from = loc;
         }
+
+        log.error("drag icon size ("+mDragView.iconWidth+", "+mDragView.iconHeight+")");
+        from[0] = from[0] - mDragView.iconWidth / 2;
+        from[1] = from[1] - mDragView.iconHeight / 2;
+
 
         log.error("dropDrag start loc => ("+from[0]+", "+from[1]+")");
         item.mListItemView.getLocationOnScreen(to);
@@ -415,7 +426,7 @@ public class SidebarRootView extends FrameLayout {
                     //handle uninstall
                 } else {
                     dropDrag(touchLoc);
-                    mTrash.trashDisappearWithAnim();
+                    mTrash.trashDisappearWithAnim(null);
                 }
                 break;
             }
