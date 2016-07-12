@@ -525,13 +525,16 @@ public class ContentView extends RelativeLayout {
             if (view == null) {
                 return false;
             }
-            if (view instanceof TextView) {
-                TextView textView = (TextView) view;
-                Utils.dismissAllDialog(mContext);
-                SidebarUtils.dragText(textView, mContext, textView.getText());
-                return true;
+            if (mClipboardFullText == null) {
+                return false;
             }
-            return false;
+            if (mClipboardFullText.getVisibility() != View.VISIBLE) {
+                return false;
+            }
+            CharSequence text = mClipboardFullText.getText();
+            Utils.dismissAllDialog(mContext);
+            SidebarUtils.dragText(mClipboardFullText, mContext, text);
+            return true;
         }
     };
 
