@@ -135,20 +135,27 @@ public class DingDingContact extends ContactItem {
 
         public int getId(DingDingContact ddc) {
             Cursor cursor = null;
-            if (ddc.uid != 0) {
-                cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
-                        ContactColumns.UID + "=?",
-                        new String[] { ddc.uid + "" }, null, null, null);
-            }
-            if ((cursor == null || cursor.getCount() <= 0)
-                    && !TextUtils.isEmpty(ddc.encodedUid)) {
-                cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
-                        ContactColumns.ENCODED_UID + "=?",
-                        new String[] { ddc.encodedUid + "" }, null, null, null);
-            }
-
-            if (cursor.moveToFirst()) {
-                return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
+            try {
+                if (ddc.uid != 0) {
+                    cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
+                            ContactColumns.UID + "=?",
+                            new String[] { ddc.uid + "" }, null, null, null);
+                }
+                if ((cursor == null || cursor.getCount() <= 0)
+                        && !TextUtils.isEmpty(ddc.encodedUid)) {
+                    cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
+                            ContactColumns.ENCODED_UID + "=?",
+                            new String[] { ddc.encodedUid + "" }, null, null, null);
+                }
+                if (cursor.moveToFirst()) {
+                    return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
             return 0;
         }
@@ -181,19 +188,27 @@ public class DingDingContact extends ContactItem {
 
         public List<ContactItem> getContacts(){
             List<ContactItem> ret = new ArrayList<ContactItem>();
-            Cursor cursor = getReadableDatabase().query("contacts", null,
-                    null, null, null, null, null);
-            while (cursor.moveToNext()) {
-                long uid = Long.parseLong(cursor.getString(cursor.getColumnIndex(ContactColumns.UID)));
-                String encodedUid = cursor.getString(cursor.getColumnIndex(ContactColumns.ENCODED_UID));
-                Bitmap avatar = BitmapUtils.Bytes2Bitmap(cursor.getBlob(cursor.getColumnIndex(ContactColumns.AVATAR)));
-                String display_name = cursor.getString(cursor.getColumnIndex(ContactColumns.DISPLAY_NAME));
-                int index = cursor.getInt(cursor.getColumnIndex(ContactColumns.WEIGHT));
-                DingDingContact ddc = new DingDingContact(mContext, uid, encodedUid, avatar, display_name);
-                ddc.setIndex(index);
-                ret.add(ddc);
+            Cursor cursor = null;
+            try {
+                cursor = getReadableDatabase().query("contacts", null,
+                        null, null, null, null, null);
+                while (cursor.moveToNext()) {
+                    long uid = Long.parseLong(cursor.getString(cursor.getColumnIndex(ContactColumns.UID)));
+                    String encodedUid = cursor.getString(cursor.getColumnIndex(ContactColumns.ENCODED_UID));
+                    Bitmap avatar = BitmapUtils.Bytes2Bitmap(cursor.getBlob(cursor.getColumnIndex(ContactColumns.AVATAR)));
+                    String display_name = cursor.getString(cursor.getColumnIndex(ContactColumns.DISPLAY_NAME));
+                    int index = cursor.getInt(cursor.getColumnIndex(ContactColumns.WEIGHT));
+                    DingDingContact ddc = new DingDingContact(mContext, uid, encodedUid, avatar, display_name);
+                    ddc.setIndex(index);
+                    ret.add(ddc);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
-            cursor.close();
             return ret;
         }
 
