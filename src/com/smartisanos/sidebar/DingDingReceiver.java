@@ -22,8 +22,7 @@ public class DingDingReceiver extends BroadcastReceiver {
             String encodedUid = intent.getStringExtra("user_id_string");
             String displayName = intent.getStringExtra("name");
             Bitmap avatar = intent.getParcelableExtra("avatar");
-            //TODO compress here if need !
-            avatar = BitmapUtils.getRoundedCornerBitmap(avatar);
+            avatar = BitmapUtils.getContactAvatar(context, avatar);
             ContactItem ci = new DingDingContact(context, uid, encodedUid, avatar, displayName);
             cm.addContact(ci);
         }

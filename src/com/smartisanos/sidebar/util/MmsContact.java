@@ -26,7 +26,7 @@ public class MmsContact extends ContactItem {
     private String mPhoneNumber;
 
     public MmsContact(Context context, int contactId, String number, CharSequence displayName) {
-        this(context, contactId, number, BitmapFactory.decodeResource(context.getResources(), R.drawable.default_contact_avatar), displayName);
+        this(context, contactId, number, BitmapUtils.getDefaultContactAvatar(context), displayName);
     }
 
     public MmsContact(Context context, int contactId, String number, Bitmap avatar, CharSequence displayName) {

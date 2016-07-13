@@ -9,8 +9,7 @@
         android:orientation="vertical">
         <RelativeLayout
             android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/avatar_mask">
+            android:layout_height="48dp">
             <ImageView
                 android:id="@+id/contact_avatar"
                 android:layout_width="@dimen/contact_avatar_size"

@@ -99,7 +99,7 @@ public class ShortcutReceiver extends BroadcastReceiver {
             }
         }
 
-        icon = BitmapUtils.getRoundedCornerBitmap(icon);
+        icon = BitmapUtils.getContactAvatar(context, icon);
         String name = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME);
         name = ensureValidName(context, launchIntent, name).toString();
         String intentUri = launchIntent.toUri(0);

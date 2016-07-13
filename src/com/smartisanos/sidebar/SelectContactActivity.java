@@ -89,7 +89,7 @@ public class SelectContactActivity extends Activity {
                                     return new MmsContact(getApplicationContext(), contactId, number, displayName);
                                 } else {
                                     return new MmsContact(getApplicationContext(), contactId, number,
-                                            BitmapUtils.getRoundedCornerBitmap(avatar), displayName);
+                                            BitmapUtils.getContactAvatar(getApplicationContext(), avatar), displayName);
                                 }
                             }
                         }

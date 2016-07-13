@@ -2,6 +2,7 @@ package com.smartisanos.sidebar.util;
 
 import java.io.ByteArrayOutputStream;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,8 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+
+import com.smartisanos.sidebar.R;
 
 public class BitmapUtils {
     public static Bitmap getSquareBitmap(String filePath, int size){
@@ -146,6 +149,26 @@ public class BitmapUtils {
         paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
         return output;
+    }
+
+    public static Bitmap getDefaultContactAvatar(Context context){
+        return getContactAvatar(context, BitmapFactory.decodeResource(context.getResources(), R.drawable.default_contact_avatar));
+    }
+
+    public static Bitmap getContactAvatar(Context context, Bitmap photo){
+        int avatarSize = context.getResources().getDimensionPixelSize(R.dimen.contact_avatar_size);
+        Bitmap avatarMask = BitmapFactory.decodeResource(context.getResources(), R.drawable.avatar_mask);
+        avatarMask = getSquareBitmap(avatarMask, avatarSize);
+
+        Bitmap bitmap = Bitmap.createBitmap(avatarSize, avatarSize, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        // step 1 draw photo
+        photo = getSquareBitmap(photo, avatarSize);
+        canvas.drawBitmap(photo, 0, 0, null);
+        // step 2, draw mask on it!
+        canvas.drawBitmap(avatarMask, 0, 0, null);
+
+        return getRoundedCornerBitmap(bitmap);
     }
 
     public static byte[] Bitmap2Bytes(Bitmap bitmap) {
