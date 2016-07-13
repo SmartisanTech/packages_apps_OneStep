@@ -1,48 +1,18 @@
 package com.smartisanos.sidebar.view;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.view.WindowManager;
-import android.view.View.OnClickListener;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.LayoutAnimationController;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.Transformation;
-import android.view.animation.TranslateAnimation;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
-import com.smartisanos.sidebar.util.IClear;
 import com.smartisanos.sidebar.util.LOG;
-import com.smartisanos.sidebar.util.RecentFileManager;
-import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.Utils;
-import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimUtils;
-
-import smartisanos.util.SidebarUtils;
 
 public class ContentView extends RelativeLayout {
     private static final LOG log = LOG.getInstance(ContentView.class);
@@ -58,12 +28,9 @@ public class ContentView extends RelativeLayout {
     private ViewStub mViewStubAddToSidebar;
 
     private RecentPhotoViewGroup mRecentPhotoViewGroup;
+    private RecentFileViewGroup mRecentFileViewGroup;
     private ClipboardViewGroup mClipboardViewGroup;
 
-    private View mFileContainer;
-    private ListView mRecentFileList;
-
-    private View mClearFile;
     private Context mViewContext;
 
     private ContentType mCurType = ContentType.NONE;
@@ -105,13 +72,7 @@ public class ContentView extends RelativeLayout {
             mRecentPhotoViewGroup.show(anim);
             break;
         case FILE:
-            if (anim) {
-                mRecentFileList.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
-                mRecentFileList.startLayoutAnimation();
-                mFileContainer.startAnimation(AnimUtils.getEnterAnimationForContainer(mFileContainer));
-            } else {
-                mFileContainer.setVisibility(View.VISIBLE);
-            }
+            mRecentFileViewGroup.show(anim);
             break;
         case CLIPBOARD:
             mClipboardViewGroup.show(anim);
@@ -148,13 +109,7 @@ public class ContentView extends RelativeLayout {
             mRecentPhotoViewGroup.dismiss(anim);
             break;
         case FILE:
-            if (anim) {
-                mRecentFileList.setLayoutAnimation(AnimUtils.getExitLayoutAnimationForListView());
-                mRecentFileList.startLayoutAnimation();
-                mFileContainer.startAnimation(AnimUtils.getExitAnimationForContainer(mFileContainer));
-            } else {
-                mFileContainer.setVisibility(View.INVISIBLE);
-            }
+            mRecentFileViewGroup.dismiss(anim);
             break;
         case CLIPBOARD:
             mClipboardViewGroup.dismiss(anim);
@@ -188,26 +143,12 @@ public class ContentView extends RelativeLayout {
         super.onFinishInflate();
         mViewStubAddToSidebar = (ViewStub)findViewById(R.id.viewstub_addtosidebar);
 
-        mFileContainer = findViewById(R.id.file_container);
         mRecentPhotoViewGroup = (RecentPhotoViewGroup)findViewById(R.id.recent_photo_view_group);
         mRecentPhotoViewGroup.setContentView(this);
+        mRecentFileViewGroup = (RecentFileViewGroup)findViewById(R.id.recent_file_view_group);
+        mRecentFileViewGroup.setContentView(this);
         mClipboardViewGroup = (ClipboardViewGroup)findViewById(R.id.clipboard_view_group);
         mClipboardViewGroup.setContentView(this);
-        mClearFile = mFileContainer.findViewById(R.id.clear);
-
-        mRecentFileList = (ListView)findViewById(R.id.recentfile_listview);
-        mRecentFileList.setAdapter(new RecentFileAdapter(this.mContext));
-
-        mClearFile.setOnClickListener(new ClearListener(new Runnable() {
-            @Override
-            public void run() {
-                mRecentFileList.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
-                mRecentFileList.startLayoutAnimation();
-                mFileContainer.startAnimation(AnimUtils.getClearAnimationForContainer(mFileContainer, RecentFileManager.getInstance(mContext)));
-                SidebarController.getInstance(mContext).resumeTopView();
-                mCurType = ContentType.NONE;
-            }
-        }));
     }
 
     @Override

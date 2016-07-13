@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.FileInfo;
+import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
@@ -30,9 +31,11 @@ public class RecentFileAdapter extends BaseAdapter {
     private RecentFileManager mFileManager;
     private List<FileInfo> mList = new ArrayList<FileInfo>();
     private Handler mHandler;
+    private IEmpty mEmpty;
 
-    public RecentFileAdapter(Context context) {
+    public RecentFileAdapter(Context context, IEmpty empty) {
         mContext = context;
+        mEmpty = empty;
         mFileManager = RecentFileManager.getInstance(mContext);
         mList = mFileManager.getFileList();
         mHandler = new Handler(Looper.getMainLooper());
@@ -48,6 +51,14 @@ public class RecentFileAdapter extends BaseAdapter {
                 });
             }
         });
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        if (mEmpty != null) {
+            mEmpty.setEmpty(getCount() == 0);
+        }
+        super.notifyDataSetChanged();
     }
 
     @Override

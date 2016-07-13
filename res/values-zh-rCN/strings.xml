@@ -28,6 +28,8 @@
     <string name="text_copied">文本已复制</string>
     <string name="photo_empty_text">图片记录为空</string>
     <string name="photo_empty_hint">最近图片的记录将会出现在这里</string>
+    <string name="file_empty_text">文件记录为空</string>
+    <string name="file_empty_hint">最近文件的记录将会出现在这里</string>
     <string name="clipboard_empty_text">剪贴板为空</string>
     <string name="clipboard_empty_hint">最近剪切、复制的文字将会出现在这里</string>
 </resources>
