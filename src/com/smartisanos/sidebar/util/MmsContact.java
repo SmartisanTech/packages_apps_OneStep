@@ -162,17 +162,18 @@ public class MmsContact extends ContactItem {
         }
 
         public int getId(MmsContact contact) {
-            Cursor cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
+            Cursor cursor = null;
+            try {
+                cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
                         ContactColumns.CONTACT_ID + "=?" + " and " + ContactColumns.PHONE_NUMBER + "=?",
                         new String[] { contact.mContactId + "", contact.mPhoneNumber }, null, null, null);
-            if (cursor != null) {
-                try {
-                    if (cursor.moveToFirst()) {
-                        return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
-                    }
-                } catch (Exception e) {
-                    // NA
-                } finally {
+                if (cursor != null && cursor.moveToFirst()) {
+                    return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (cursor != null) {
                     cursor.close();
                 }
             }
@@ -207,19 +208,26 @@ public class MmsContact extends ContactItem {
 
         public List<ContactItem> getContacts(){
             List<ContactItem> ret = new ArrayList<ContactItem>();
-            Cursor cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
-                    null, null, null, null, null);
-            while (cursor.moveToNext()) {
-                int contactId = cursor.getInt(cursor.getColumnIndex(ContactColumns.CONTACT_ID));
-                String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactColumns.PHONE_NUMBER));
-                Bitmap avatar = BitmapUtils.Bytes2Bitmap(cursor.getBlob(cursor.getColumnIndex(ContactColumns.AVATAR)));
-                String display_name = cursor.getString(cursor.getColumnIndex(ContactColumns.DISPLAY_NAME));
-                int index = cursor.getInt(cursor.getColumnIndex(ContactColumns.WEIGHT));
-                MmsContact ddc = new MmsContact(mContext, contactId, phoneNumber, avatar, display_name);
-                ddc.setIndex(index);
-                ret.add(ddc);
+            Cursor cursor = null;
+            try {
+                cursor = getReadableDatabase().query(TABLE_CONTACTS, null, null, null, null, null, null);
+                while (cursor.moveToNext()) {
+                    int contactId = cursor.getInt(cursor.getColumnIndex(ContactColumns.CONTACT_ID));
+                    String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactColumns.PHONE_NUMBER));
+                    Bitmap avatar = BitmapUtils.Bytes2Bitmap(cursor.getBlob(cursor.getColumnIndex(ContactColumns.AVATAR)));
+                    String display_name = cursor.getString(cursor.getColumnIndex(ContactColumns.DISPLAY_NAME));
+                    int index = cursor.getInt(cursor.getColumnIndex(ContactColumns.WEIGHT));
+                    MmsContact ddc = new MmsContact(mContext, contactId, phoneNumber, avatar, display_name);
+                    ddc.setIndex(index);
+                    ret.add(ddc);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
-            cursor.close();
             return ret;
         }
 

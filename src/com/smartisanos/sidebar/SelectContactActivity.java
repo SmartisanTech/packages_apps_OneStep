@@ -68,8 +68,9 @@ public class SelectContactActivity extends Activity {
         @Override
         protected MmsContact doInBackground(Uri... params) {
             Uri uri = params[0];
-            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            Cursor cursor = null;
             try {
+                cursor = getContentResolver().query(uri, null, null, null, null);
                 if (cursor != null && cursor.moveToFirst()) {
                     do {
                         int mimeTypeIndex = cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE);

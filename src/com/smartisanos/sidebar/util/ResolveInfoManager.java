@@ -227,24 +227,27 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
 
     private void updateComponentList(){
         List<ResolveInfoGroup> list = new ArrayList<ResolveInfoGroup>();
-        Cursor cursor = getReadableDatabase().query(TABLE_RESOLVEINFO, null,null, null, null, null, null);
-        if (cursor != null) {
-            try {
-                if (cursor.moveToFirst()) {
-                    do {
-                        String pkgName = cursor.getString(cursor.getColumnIndex(ResolveInfoColumns.PACKAGE_NAME));
-                        String componentNames = cursor.getString(cursor.getColumnIndex(ResolveInfoColumns.COMPONENT_NAMES));
-                        int weight = cursor.getInt(cursor.getColumnIndex(ResolveInfoColumns.WEIGHT));
-                        ResolveInfoGroup rig = ResolveInfoGroup.fromData(mContext, pkgName, componentNames);
-                        if (rig != null) {
-                            rig.setIndex(weight);
-                            list.add(rig);
-                        } else {
-                            getWritableDatabase().delete(TABLE_RESOLVEINFO, "packagename=? and names=?", new String[] { pkgName, componentNames });
-                        }
-                    } while (cursor.moveToNext());
-                }
-            } finally {
+        Cursor cursor = null;
+        try {
+            cursor = getReadableDatabase().query(TABLE_RESOLVEINFO, null,null, null, null, null, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    String pkgName = cursor.getString(cursor.getColumnIndex(ResolveInfoColumns.PACKAGE_NAME));
+                    String componentNames = cursor.getString(cursor.getColumnIndex(ResolveInfoColumns.COMPONENT_NAMES));
+                    int weight = cursor.getInt(cursor.getColumnIndex(ResolveInfoColumns.WEIGHT));
+                    ResolveInfoGroup rig = ResolveInfoGroup.fromData(mContext, pkgName, componentNames);
+                    if (rig != null) {
+                        rig.setIndex(weight);
+                        list.add(rig);
+                    } else {
+                        getWritableDatabase().delete(TABLE_RESOLVEINFO, "packagename=? and names=?", new String[] { pkgName, componentNames });
+                    }
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
                 cursor.close();
             }
         }

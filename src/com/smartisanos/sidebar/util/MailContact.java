@@ -136,17 +136,18 @@ public class MailContact extends ContactItem {
         }
 
         public int getId(MailContact contact) {
-            Cursor cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
+            Cursor cursor = null;
+            try {
+                cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
                         ContactColumns.MAIL_ADDRESS + "=?",
                         new String[] {contact.mMailAddress }, null, null, null);
-            if (cursor != null) {
-                try {
-                    if (cursor.moveToFirst()) {
-                        return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
-                    }
-                } catch (Exception e) {
-                    // NA
-                } finally {
+                if (cursor.moveToFirst()) {
+                    return cursor.getInt(cursor.getColumnIndex(ContactColumns._ID));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (cursor != null) {
                     cursor.close();
                 }
             }
@@ -180,18 +181,26 @@ public class MailContact extends ContactItem {
 
         public List<ContactItem> getContacts(){
             List<ContactItem> ret = new ArrayList<ContactItem>();
-            Cursor cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
-                    null, null, null, null, null);
-            while (cursor.moveToNext()) {
-                String mailAddress = cursor.getString(cursor.getColumnIndex(ContactColumns.MAIL_ADDRESS));
-                Bitmap avatar = BitmapUtils.Bytes2Bitmap(cursor.getBlob(cursor.getColumnIndex(ContactColumns.AVATAR)));
-                String display_name = cursor.getString(cursor.getColumnIndex(ContactColumns.DISPLAY_NAME));
-                int index = cursor.getInt(cursor.getColumnIndex(ContactColumns.WEIGHT));
-                MailContact mc = new MailContact(mContext, avatar, display_name, mailAddress);
-                mc.setIndex(index);
-                ret.add(mc);
+            Cursor cursor = null;
+            try {
+                cursor = getReadableDatabase().query(TABLE_CONTACTS, null,
+                        null, null, null, null, null);
+                while (cursor.moveToNext()) {
+                    String mailAddress = cursor.getString(cursor.getColumnIndex(ContactColumns.MAIL_ADDRESS));
+                    Bitmap avatar = BitmapUtils.Bytes2Bitmap(cursor.getBlob(cursor.getColumnIndex(ContactColumns.AVATAR)));
+                    String display_name = cursor.getString(cursor.getColumnIndex(ContactColumns.DISPLAY_NAME));
+                    int index = cursor.getInt(cursor.getColumnIndex(ContactColumns.WEIGHT));
+                    MailContact mc = new MailContact(mContext, avatar, display_name, mailAddress);
+                    mc.setIndex(index);
+                    ret.add(mc);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
-            cursor.close();
             return ret;
         }
 

@@ -60,10 +60,9 @@ public class RecentPhotoManager extends DataManager implements IClear{
     private void updateImageList() {
         List<ImageInfo> imageList = new ArrayList<ImageInfo>();
         Set<Integer> useless = mDatabaseHelper.getSet();
-        Cursor cursor = mContext.getContentResolver().query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, thumbCols, null,
-                null, null);
-        if (cursor != null) {
+        Cursor cursor = null;
+        try {
+            cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, thumbCols, null, null, null);
             if (cursor.moveToFirst()) {
                 do {
                     ImageInfo info = new ImageInfo();
@@ -77,10 +76,14 @@ public class RecentPhotoManager extends DataManager implements IClear{
                     }
                 } while (cursor.moveToNext());
             }
-            cursor.close();
             Collections.reverse(imageList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-
         synchronized (RecentPhotoManager.class) {
             mList = imageList;
         }

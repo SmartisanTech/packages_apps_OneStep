@@ -190,8 +190,7 @@ public class DingDingContact extends ContactItem {
             List<ContactItem> ret = new ArrayList<ContactItem>();
             Cursor cursor = null;
             try {
-                cursor = getReadableDatabase().query("contacts", null,
-                        null, null, null, null, null);
+                cursor = getReadableDatabase().query("contacts", null, null, null, null, null, null);
                 while (cursor.moveToNext()) {
                     long uid = Long.parseLong(cursor.getString(cursor.getColumnIndex(ContactColumns.UID)));
                     String encodedUid = cursor.getString(cursor.getColumnIndex(ContactColumns.ENCODED_UID));

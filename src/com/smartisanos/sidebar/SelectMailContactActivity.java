@@ -71,8 +71,9 @@ public class SelectMailContactActivity extends Activity {
         @Override
         protected MailContact doInBackground(Uri... params) {
             Uri uri = params[0];
-            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            Cursor cursor = null;
             try {
+                cursor = getContentResolver().query(uri, null, null, null, null);
                 if (cursor != null && cursor.moveToFirst()) {
                     do {
                         String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE));

@@ -226,8 +226,9 @@ public class WechatContact extends ContactItem {
 
         public List<ContactItem> list() {
             List<ContactItem> list = new ArrayList<ContactItem>();
-            Cursor cursor = getReadableDatabase().query(TABLE_NAME, null, null, null, null, null, null);
+            Cursor cursor = null;
             try {
+                cursor = getReadableDatabase().query(TABLE_NAME, null, null, null, null, null, null);
                 if (cursor.moveToFirst()) {
                     int nameIndex = cursor.getColumnIndex(DISPLAY_NAME);
                     int weightIndex = cursor.getColumnIndex(WEIGHT);
