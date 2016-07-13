@@ -30,6 +30,7 @@ import android.content.CopyHistoryItem;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.IClear;
+import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.RecentClipManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
@@ -39,7 +40,7 @@ import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 import smartisanos.util.SidebarUtils;
 
-public class ClipboardViewGroup extends LinearLayout {
+public class ClipboardViewGroup extends FrameLayout implements IEmpty {
 
     private ContentView mContentView;
     private View mClearClipboard;
@@ -53,6 +54,10 @@ public class ClipboardViewGroup extends LinearLayout {
 
     private LinearLayout mClipboardListTitle;
     private LinearLayout mClipboardItemTitle;
+
+    private View mContainer;
+    private EmptyView mEmptyView;
+    private boolean mIsEmpty = true;
 
     public ClipboardViewGroup(Context context) {
         this(context, null);
@@ -79,6 +84,11 @@ public class ClipboardViewGroup extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mEmptyView = (EmptyView) findViewById(R.id.empty_view);
+        mEmptyView.setImageView(R.drawable.clipboard_blank);
+        mEmptyView.setText(R.string.clipboard_empty_text);
+        mEmptyView.setHint(R.string.clipboard_empty_hint);
+        mContainer = findViewById(R.id.clipboard_container);
         mClearClipboard = findViewById(R.id.clear);
         mClearClipboard.setOnClickListener(new ClearListener(new Runnable() {
             @Override
@@ -91,7 +101,7 @@ public class ClipboardViewGroup extends LinearLayout {
             }
         }));
         mClipList = (ListView)findViewById(R.id.clipboard_listview);
-        mClipboardAdapter = new ClipboardAdapter(mContext);
+        mClipboardAdapter = new ClipboardAdapter(mContext, this);
         mClipList.setAdapter(mClipboardAdapter);
 
         mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
@@ -122,21 +132,39 @@ public class ClipboardViewGroup extends LinearLayout {
         mClipboardFullText.setOnLongClickListener(mOnClipBoardFullTextItemLongClickListener);
     }
 
-    public void show(boolean anim){
+    @Override
+    public void setEmpty(boolean isEmpty) {
+        if (mIsEmpty != isEmpty) {
+            mIsEmpty = isEmpty;
+            if (mIsEmpty) {
+                mContainer.setVisibility(GONE);
+                mEmptyView.setVisibility(VISIBLE);
+            } else {
+                mContainer.setVisibility(VISIBLE);
+                mEmptyView.setVisibility(GONE);
+            }
+        }
+    }
+
+    public void show(boolean anim) {
         if (anim) {
-            mClipList.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
-            mClipList.startLayoutAnimation();
+            if (mIsEmpty) {
+                mClipList.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
+                mClipList.startLayoutAnimation();
+            }
             startAnimation(AnimUtils.getEnterAnimationForContainer(this));
         } else {
             setVisibility(View.VISIBLE);
         }
     }
 
-    public void dismiss(boolean anim){
+    public void dismiss(boolean anim) {
         resetClipboardFullTextStatus();
         if (anim) {
-            mClipList.setLayoutAnimation(AnimUtils.getExitLayoutAnimationForListView());
-            mClipList.startLayoutAnimation();
+            if (mIsEmpty) {
+                mClipList.setLayoutAnimation(AnimUtils.getExitLayoutAnimationForListView());
+                mClipList.startLayoutAnimation();
+            }
             startAnimation(AnimUtils.getExitAnimationForContainer(this));
         } else {
             setVisibility(View.INVISIBLE);

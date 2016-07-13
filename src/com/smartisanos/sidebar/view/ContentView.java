@@ -57,7 +57,7 @@ public class ContentView extends RelativeLayout {
 
     private ViewStub mViewStubAddToSidebar;
 
-    private ClipboardViewGroup mClipboardContainner;
+    private ClipboardViewGroup mClipboardViewGroup;
 
     private View mPhotoContainer, mFileContainer;
     private RecentPhotoGridView mPhotos;
@@ -120,7 +120,7 @@ public class ContentView extends RelativeLayout {
             }
             break;
         case CLIPBOARD:
-            mClipboardContainner.show(anim);
+            mClipboardViewGroup.show(anim);
             break;
         case ADDTOSIDEBAR:
             if(mAddContainner == null){
@@ -169,7 +169,7 @@ public class ContentView extends RelativeLayout {
             }
             break;
         case CLIPBOARD:
-            mClipboardContainner.dismiss(anim);
+            mClipboardViewGroup.dismiss(anim);
             break;
         case ADDTOSIDEBAR:
             if(mAddContainner == null){
@@ -203,8 +203,8 @@ public class ContentView extends RelativeLayout {
         // view container
         mPhotoContainer = findViewById(R.id.photo_container);
         mFileContainer = findViewById(R.id.file_container);
-        mClipboardContainner = (ClipboardViewGroup)findViewById(R.id.clipboard_container);
-        mClipboardContainner.setContentView(this);
+        mClipboardViewGroup = (ClipboardViewGroup)findViewById(R.id.clipboard_view_group);
+        mClipboardViewGroup.setContentView(this);
         mClearPhoto = mPhotoContainer.findViewById(R.id.clear);
         mClearFile = mFileContainer.findViewById(R.id.clear);
 

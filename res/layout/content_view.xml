@@ -11,7 +11,7 @@
     <include layout="@layout/file_content"
         android:id="@+id/file_container"
         android:visibility="invisible"/>
-    <include layout="@layout/clipboard_content"
+    <include layout="@layout/clipboard_view_group"
         android:visibility="invisible"/>
     <ViewStub
         android:id="@+id/viewstub_addtosidebar"

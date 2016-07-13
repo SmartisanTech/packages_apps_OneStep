@@ -30,4 +30,6 @@
     <string name="uninstall_ok">OK</string>
     <string name="uninstall_cancel">Cancel</string>
     <string name="text_copied">Text Copied</string>
+    <string name="clipboard_empty_text">clipboard is emtpy</string>
+    <string name="clipboard_empty_hint">recent clipboard is here</string>
 </resources>
