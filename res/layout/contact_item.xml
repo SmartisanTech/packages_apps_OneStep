@@ -30,6 +30,8 @@
             android:id="@+id/display_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="-6dp"
+            android:layout_marginBottom="6dp"
             android:gravity="center"
             android:textColor="#ccffffff"
             android:textSize="10sp"
