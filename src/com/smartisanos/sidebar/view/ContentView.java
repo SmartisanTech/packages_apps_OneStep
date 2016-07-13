@@ -57,13 +57,13 @@ public class ContentView extends RelativeLayout {
 
     private ViewStub mViewStubAddToSidebar;
 
+    private RecentPhotoViewGroup mRecentPhotoViewGroup;
     private ClipboardViewGroup mClipboardViewGroup;
 
-    private View mPhotoContainer, mFileContainer;
-    private RecentPhotoGridView mPhotos;
+    private View mFileContainer;
     private ListView mRecentFileList;
 
-    private View mClearPhoto, mClearFile;
+    private View mClearFile;
     private Context mViewContext;
 
     private ContentType mCurType = ContentType.NONE;
@@ -102,13 +102,7 @@ public class ContentView extends RelativeLayout {
         this.animate().alpha(1.0f).setDuration(ANIMATION_DURA).start();
         switch (ct) {
         case PHOTO:
-            if (anim) {
-                mPhotos.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
-                mPhotos.startLayoutAnimation();
-                mPhotoContainer.startAnimation(AnimUtils.getEnterAnimationForContainer(mPhotoContainer));
-            } else {
-                mPhotoContainer.setVisibility(View.VISIBLE);
-            }
+            mRecentPhotoViewGroup.show(anim);
             break;
         case FILE:
             if (anim) {
@@ -151,13 +145,7 @@ public class ContentView extends RelativeLayout {
         }
         switch (ct) {
         case PHOTO:
-            if (anim) {
-                mPhotos.setLayoutAnimation(AnimUtils.getExitLayoutAnimationForListView());
-                mPhotos.startLayoutAnimation();
-                mPhotoContainer.startAnimation(AnimUtils.getExitAnimationForContainer(mPhotoContainer));
-            } else {
-                mPhotoContainer.setVisibility(View.INVISIBLE);
-            }
+            mRecentPhotoViewGroup.dismiss(anim);
             break;
         case FILE:
             if (anim) {
@@ -200,30 +188,15 @@ public class ContentView extends RelativeLayout {
         super.onFinishInflate();
         mViewStubAddToSidebar = (ViewStub)findViewById(R.id.viewstub_addtosidebar);
 
-        // view container
-        mPhotoContainer = findViewById(R.id.photo_container);
         mFileContainer = findViewById(R.id.file_container);
+        mRecentPhotoViewGroup = (RecentPhotoViewGroup)findViewById(R.id.recent_photo_view_group);
+        mRecentPhotoViewGroup.setContentView(this);
         mClipboardViewGroup = (ClipboardViewGroup)findViewById(R.id.clipboard_view_group);
         mClipboardViewGroup.setContentView(this);
-        mClearPhoto = mPhotoContainer.findViewById(R.id.clear);
         mClearFile = mFileContainer.findViewById(R.id.clear);
-
-        // content
-        mPhotos = (RecentPhotoGridView)findViewById(R.id.recentphoto_gridview);
 
         mRecentFileList = (ListView)findViewById(R.id.recentfile_listview);
         mRecentFileList.setAdapter(new RecentFileAdapter(this.mContext));
-
-        mClearPhoto.setOnClickListener(new ClearListener(new Runnable(){
-            @Override
-            public void run() {
-                mPhotos.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
-                mPhotos.startLayoutAnimation();
-                mPhotoContainer.startAnimation(AnimUtils.getClearAnimationForContainer(mPhotoContainer, RecentPhotoManager.getInstance(mContext)));
-                SidebarController.getInstance(mContext).resumeTopView();
-                mCurType = ContentType.NONE;
-            }
-        }));
 
         mClearFile.setOnClickListener(new ClearListener(new Runnable() {
             @Override

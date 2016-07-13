@@ -4,6 +4,7 @@ import com.smartisanos.sidebar.R;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,6 +13,7 @@ public class EmptyView extends LinearLayout {
 
     private ImageView mImageView;
     private TextView mText, mHint;
+    private Button mButton;
 
     public EmptyView(Context context) {
         super(context, null);
@@ -36,6 +38,7 @@ public class EmptyView extends LinearLayout {
         mImageView = (ImageView) findViewById(R.id.empty_image_view);
         mText = (TextView) findViewById(R.id.empty_text);
         mHint = (TextView) findViewById(R.id.empty_hint);
+        mButton = (Button) findViewById(R.id.empty_button);
     }
 
     public void setImageView(int resId) {
@@ -53,6 +56,15 @@ public class EmptyView extends LinearLayout {
     public void setHint(int resId) {
         if (mHint != null) {
             mHint.setText(resId);
+        }
+    }
+
+    public void setButton(int textResid, int backgroundResId, OnClickListener mOnClickListener){
+        if(mButton != null){
+            mButton.setVisibility(VISIBLE);
+            mButton.setText(textResid);
+            mButton.setBackgroundResource(backgroundResId);
+            mButton.setOnClickListener(mOnClickListener);
         }
     }
 }
