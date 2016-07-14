@@ -266,15 +266,20 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty {
         }
     };
 
+    private Toast mClipboardCopyToast = null;
+
     private View.OnClickListener mOnClickClipboardFullTextTitleCopyButton = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             CharSequence text = mClipboardFullText.getText();
             Utils.copyText(mContext, text, false);
-            Toast toast = Toast.makeText(mContext, R.string.text_copied, Toast.LENGTH_SHORT);
-            toast.getWindowParams().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
-            toast.getWindowParams().token = view.getWindowToken();
-            toast.show();
+            if (mClipboardCopyToast != null) {
+                mClipboardCopyToast.cancel();
+            }
+            mClipboardCopyToast = Toast.makeText(mContext, R.string.text_copied, Toast.LENGTH_SHORT);
+            mClipboardCopyToast.getWindowParams().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
+            mClipboardCopyToast.getWindowParams().token = view.getWindowToken();
+            mClipboardCopyToast.show();
         }
     };
 
