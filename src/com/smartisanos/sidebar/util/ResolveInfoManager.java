@@ -50,6 +50,19 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         sBlackList.add("com.android.contacts");
         sBlackList.add("com.android.settings");
         sBlackList.add("com.android.gallery3d");
+        sBlackList.add("com.android.nfc");
+        sBlackList.add("com.android.bluetooth");
+        sBlackList.add("com.intsig.BizCardReader");
+        sBlackList.add("com.intsig.camscanner");
+        sBlackList.add("com.tmall.wireless");
+        sBlackList.add("com.tencent.qqpimsecure");
+        sBlackList.add("com.eg.android.AlipayGphone");
+        sBlackList.add("com.mobisystems.office");
+        sBlackList.add("com.google.android.apps.maps");
+        sBlackList.add("com.UCMobile");
+        sBlackList.add("com.Qunar");
+        sBlackList.add("com.estrongs.android.pop");
+        sBlackList.add("com.alensw.PicFolder");
 
         sBlackCompList = new HashSet<Pair<String, String>>();
         sBlackCompList.add(new Pair<String, String>("com.tencent.mobileqq", "com.tencent.mobileqq.activity.ContactSyncJumpActivity"));
