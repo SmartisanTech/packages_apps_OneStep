@@ -108,6 +108,13 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
         return ret;
     }
 
+    public void onIconChanged(){
+        if(mBlackWhiteIcon != null){
+            mBlackWhiteIcon.clear();
+            mBlackWhiteIcon = null;
+        }
+    }
+
     public boolean acceptDragEvent(Context context, DragEvent event) {
         if (event == null) {
             return true;

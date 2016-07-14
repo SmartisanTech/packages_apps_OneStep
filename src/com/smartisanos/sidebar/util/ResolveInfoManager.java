@@ -7,9 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,6 +21,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.BaseColumns;
+import android.util.Log;
 import android.util.Pair;
 
 import com.smartisanos.sidebar.util.ResolveInfoGroup.SameGroupComparator;
@@ -70,7 +73,6 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
     private List<ResolveInfoGroup> mList = new ArrayList<ResolveInfoGroup>();
     private List<ResolveInfoUpdateListener> mListeners = new ArrayList<ResolveInfoUpdateListener>();
     private Handler mHandler;
-
     private ResolveInfoManager(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         mContext = context;
@@ -78,6 +80,11 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         thread.start();
         mHandler = new ResolveInfoManagerHandler(thread.getLooper());
         mHandler.obtainMessage(MSG_UPDATE_LIST).sendToTarget();
+
+        // register receiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_UPDATE_ICON);
+        mContext.registerReceiver(mReceiver, filter);
     }
 
     @Override
@@ -414,4 +421,39 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
             }
         }
     }
+
+    private void onIconChanged(Set<String> packages){
+        synchronized(mList){
+            for(ResolveInfoGroup rig : mList){
+                if(packages.contains(rig.getPackageName())){
+                    rig.onIconChanged();
+                }
+            }
+        }
+        notifyUpdate();
+    }
+
+    private static final String ACTION_UPDATE_ICON = "com.smartisanos.launcher.update_icon";
+    private static final String EXTRA_PACKAGENAME = "extra_packagename";
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (ACTION_UPDATE_ICON.equals(action)) {
+                String packageNames = intent.getStringExtra(EXTRA_PACKAGENAME);
+                if (packageNames != null) {
+                    String[] packagearr = packageNames.split(",");
+                    if (packagearr != null) {
+                        Set<String> packages = new HashSet<String>();
+                        for (String pkg : packagearr) {
+                            packages.add(pkg);
+                        }
+                        onIconChanged(packages);
+                    }
+                }
+            }
+        }
+    };
 }
