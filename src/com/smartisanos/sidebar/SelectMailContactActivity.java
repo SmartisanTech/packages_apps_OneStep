@@ -1,14 +1,19 @@
 package com.smartisanos.sidebar;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.ContactManager;
 import com.smartisanos.sidebar.util.MailContact;
 
@@ -68,6 +73,11 @@ public class SelectMailContactActivity extends Activity {
             }
         }
 
+        private Bitmap getAvatarById(long id){
+            Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
+            return BitmapFactory.decodeStream(ContactsContract.Contacts.openContactPhotoInputStream(getContentResolver(), uri));
+        }
+
         @Override
         protected MailContact doInBackground(Uri... params) {
             Uri uri = params[0];
@@ -78,10 +88,16 @@ public class SelectMailContactActivity extends Activity {
                     do {
                         String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE));
                         if (TextUtils.equals(mimeType, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
+                            int contactId = cursor.getInt(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+                            Bitmap avatar = getAvatarById(contactId);
                             String email = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.ADDRESS));
                             String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                             if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(name)) {
-                                return new MailContact(getApplicationContext(),name, email);
+                                if (avatar != null) {
+                                    return new MailContact(getApplicationContext(), BitmapUtils.getContactAvatar(getApplicationContext(), avatar), name, email);
+                                } else {
+                                    return new MailContact(getApplicationContext(), name, email);
+                                }
                             }
                         }
                     } while (cursor.moveToNext());
