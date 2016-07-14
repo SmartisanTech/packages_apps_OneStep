@@ -9,7 +9,7 @@
         android:id="@+id/drag_view_bubble_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="13sp"
+        android:textSize="13dp"
         android:textColor="#ffffff"
         android:maxWidth="159dp"
         android:ellipsize="end"

@@ -30,6 +30,6 @@
             android:paddingTop="3dp"
             android:singleLine="true"
             android:textColor="#ccffffff"
-            android:textSize="12sp"/>
+            android:textSize="12dp"/>
     </RelativeLayout>
 </FrameLayout>

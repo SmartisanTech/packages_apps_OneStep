@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:singleLine="true"
-        android:textSize="12sp"
+        android:textSize="12dp"
         android:textColor="#ccffffff"
         android:gravity="center_vertical|left"
         />

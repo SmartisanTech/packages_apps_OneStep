@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:textSize="18sp"
+        android:textSize="18dp"
         android:textColor="#1effffff"/>
     <TextView
         android:id="@+id/empty_hint"
@@ -28,14 +28,14 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:gravity="center"
-        android:textSize="12sp"
+        android:textSize="12dp"
         android:textColor="#1effffff"/>
     <Button
         android:id="@+id/empty_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:textSize="12sp"
+        android:textSize="12dp"
         android:textColor="#9affffff"
         android:visibility="gone"/>
 </com.smartisanos.sidebar.view.EmptyView>

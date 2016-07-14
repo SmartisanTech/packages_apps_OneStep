@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/title_clipboard"
                 android:textColor="#4cffffff"
-                android:textSize="13.5sp"
+                android:textSize="13.5dp"
                 android:layout_marginLeft="12dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"

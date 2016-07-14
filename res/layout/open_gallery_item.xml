@@ -19,7 +19,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:paddingBottom="9dp"
-                android:textSize="10sp"
+                android:textSize="10dp"
                 android:textColor="#9affffff"
                 android:text="@string/open_gallery"/>
         </RelativeLayout>

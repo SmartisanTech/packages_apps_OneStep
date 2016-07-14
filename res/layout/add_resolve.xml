@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:text="@string/add_application_shortcut"
         android:textColor="#4cffffff"
-        android:textSize="13.5sp"
+        android:textSize="13.5dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:paddingLeft="12dp"
