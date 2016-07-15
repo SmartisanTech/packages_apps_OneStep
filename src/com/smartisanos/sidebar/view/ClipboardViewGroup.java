@@ -147,14 +147,13 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty {
     }
 
     public void show(boolean anim) {
+        setVisibility(View.VISIBLE);
         if (anim) {
             if (mIsEmpty) {
                 mClipList.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
                 mClipList.startLayoutAnimation();
             }
-            startAnimation(AnimUtils.getEnterAnimationForContainer(this));
-        } else {
-            setVisibility(View.VISIBLE);
+            startAnimation(AnimUtils.getEnterAnimationForContainer());
         }
     }
 

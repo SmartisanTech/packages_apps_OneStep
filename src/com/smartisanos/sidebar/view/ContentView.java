@@ -92,26 +92,12 @@ public class ContentView extends RelativeLayout {
             if(mAddContainner == null){
                 initAddToSidebar();
             }
+            mAddContainner.setVisibility(View.VISIBLE);
             if (anim) {
                 boolean isLeft = SidebarController.getInstance(mViewContext).getSidebarMode() == SidebarMode.MODE_LEFT;
                 ValueAnimator animator = new ValueAnimator();
                 animator.setFloatValues(0f, 1f);
                 animator.setDuration(300);
-                animator.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-                        mAddContainner.setVisibility(View.VISIBLE);
-                    }
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                    }
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
-                    }
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {
-                    }
-                });
                 if (isLeft) {
                     mAddContainner.setPivotX(0);
                 } else {
@@ -140,8 +126,6 @@ public class ContentView extends RelativeLayout {
                     }
                 });
                 animator.start();
-            }else{
-                mAddContainner.setVisibility(View.VISIBLE);
             }
             break;
         default:

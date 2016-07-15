@@ -102,14 +102,13 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty {
     }
 
     public void show(boolean anim) {
+        setVisibility(View.VISIBLE);
         if (anim) {
             if (!mIsEmpty) {
                 mGridView.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
                 mGridView.startLayoutAnimation();
             }
-            startAnimation(AnimUtils.getEnterAnimationForContainer(this));
-        } else {
-            setVisibility(View.VISIBLE);
+            startAnimation(AnimUtils.getEnterAnimationForContainer());
         }
     }
 

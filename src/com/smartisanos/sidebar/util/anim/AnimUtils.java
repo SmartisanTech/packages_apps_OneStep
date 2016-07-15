@@ -44,11 +44,10 @@ public class AnimUtils {
         return anim;
     }
 
-    public static Animation getEnterAnimationForContainer(View container){
+    public static Animation getEnterAnimationForContainer(){
         Animation scaleAnim = new ScaleAnimation(1.0f, 1.0f, 0.6f, 1.0f);
         scaleAnim.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
         scaleAnim.setDuration(ANIMATION_DURA);
-        scaleAnim.setAnimationListener(new ShowAnimationListener(container));
         return scaleAnim;
     }
 
@@ -58,29 +57,6 @@ public class AnimUtils {
         scaleAnim.setDuration(ANIMATION_DURA);
         scaleAnim.setAnimationListener(new DismissAnimationListener(container));
         return scaleAnim;
-    }
-
-    public static final class ShowAnimationListener implements Animation.AnimationListener{
-
-        private View view;
-        public ShowAnimationListener(View view){
-            this.view = view;
-        }
-
-        @Override
-        public void onAnimationStart(Animation animation) {
-            view.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        public void onAnimationEnd(Animation animation) {
-            //NA
-        }
-
-        @Override
-        public void onAnimationRepeat(Animation animation) {
-            //NA
-        }
     }
 
     public static final class DismissAnimationListener implements Animation.AnimationListener{

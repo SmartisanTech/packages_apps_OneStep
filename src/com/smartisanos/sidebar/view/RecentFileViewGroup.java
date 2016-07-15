@@ -86,14 +86,13 @@ public class RecentFileViewGroup extends FrameLayout implements IEmpty {
     }
 
     public void show(boolean anim) {
+        setVisibility(VISIBLE);
         if (anim) {
             if (!mIsEmpty) {
                 mRecentFileList.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
                 mRecentFileList.startLayoutAnimation();
             }
-            startAnimation(AnimUtils.getEnterAnimationForContainer(this));
-        } else {
-            setVisibility(View.VISIBLE);
+            startAnimation(AnimUtils.getEnterAnimationForContainer());
         }
     }
 
