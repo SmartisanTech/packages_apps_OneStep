@@ -46,6 +46,7 @@ public class RecentFileAdapter extends BaseAdapter {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        mList = mFileManager.getFileList();
                         RecentFileAdapter.this.notifyDataSetChanged();
                     }
                 });

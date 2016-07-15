@@ -47,10 +47,10 @@ public class RecentPhotoAdapter extends BaseAdapter {
         mPhotoManager.addListener(new RecentUpdateListener() {
             @Override
             public void onUpdate() {
-                mList = mPhotoManager.getImageList();
                 mHandler.post(new Runnable(){
                     @Override
                     public void run() {
+                        mList = mPhotoManager.getImageList();
                         notifyDataSetChanged();
                     }
                 });

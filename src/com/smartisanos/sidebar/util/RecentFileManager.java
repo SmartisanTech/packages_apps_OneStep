@@ -53,9 +53,11 @@ public class RecentFileManager extends DataManager implements IClear{
     }
 
     public List<FileInfo> getFileList(){
+        List<FileInfo> list = new ArrayList<FileInfo>();
         synchronized(RecentFileManager.class){
-            return mList;
+            list.addAll(mList);
         }
+        return list;
     }
 
     private void updateFileList() {

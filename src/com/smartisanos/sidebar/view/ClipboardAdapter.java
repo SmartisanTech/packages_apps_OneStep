@@ -44,6 +44,7 @@ public class ClipboardAdapter extends BaseAdapter{
                 mHandler.post(new Runnable(){
                     @Override
                     public void run() {
+                        mList = mClipManager.getCopyList();
                         notifyDataSetChanged();
                     }
                 });

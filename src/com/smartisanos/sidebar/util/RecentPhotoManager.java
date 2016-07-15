@@ -52,9 +52,11 @@ public class RecentPhotoManager extends DataManager implements IClear{
     }
 
     public List<ImageInfo> getImageList(){
+        List<ImageInfo> list =new ArrayList<ImageInfo>();
         synchronized(RecentPhotoManager.class){
-            return mList;
+            list.addAll(mList);
         }
+        return list;
     }
 
     private void updateImageList() {
