@@ -176,6 +176,12 @@ public class SidebarRootView extends FrameLayout {
             });
         }
 
+        public void setBubbleVisibleStatus(int visible) {
+            if (mBubbleText != null) {
+                mBubbleText.setVisibility(visible);
+            }
+        }
+
         public void hideBubble() {
             if (mBubbleText != null) {
                 mBubbleText.setVisibility(View.GONE);

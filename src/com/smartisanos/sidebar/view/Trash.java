@@ -92,7 +92,7 @@ public class Trash {
 
     public boolean dragObjectUpOnUp(float x, float y) {
         boolean processUninstall = false;
-        log.error("dragObjectUpOnUp ["+x+"], ["+y+"]");
+//        log.error("dragObjectUpOnUp ["+x+"], ["+y+"]");
         if (!inTrashUninstallReactArea(x, y)) {
             return processUninstall;
         }
@@ -111,7 +111,7 @@ public class Trash {
         UninstallAction action = new UninstallAction(mContext, item);
         action.showUninstallDialog();
         processUninstall = true;
-        log.error("handle uninstall process");
+//        log.error("handle uninstall process");
         return processUninstall;
     }
 
@@ -298,23 +298,16 @@ public class Trash {
         if (view == null) {
             return;
         }
-
-        int[] trashLoc = new int[2];
-        mTrashView.getLocationOnScreen(trashLoc);
-        log.error("trash loc ==> ("+trashLoc[0]+", "+trashLoc[1]+")");
-
-        dragView.hideBubble();
+        dragView.setBubbleVisibleStatus(View.INVISIBLE);
+        int viewWidth = view.getWidth();
+        int viewHeight = view.getHeight();
         float fromX = view.getX();
         float fromY = view.getY();
-        int iconWidth = dragView.iconWidth;
-        int iconHeight = dragView.iconHeight;
-        log.error("moveIconToTrash view width ["+iconWidth+"], view height ["+iconHeight+"]");
-        float toX = mWindowWidth / 2 - iconWidth / 2;
-        float toY = mWindowHeight - mTrashDisplayHeight - mTrashFloatUpHeight - iconHeight;
+        float toX = mWindowWidth / 2 - viewWidth / 2;
+        float toY = mWindowHeight - mTrashDisplayHeight - mTrashFloatUpHeight - viewHeight;
         Vector3f from = new Vector3f(fromX, fromY);
         Vector3f to = new Vector3f(toX, toY);
-        log.error("moveIconToTrash move from " + from + ", to " + to);
-
+//        log.error("moveIconToTrash move from " + from + ", to " + to);
         Anim anim = new Anim(view, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
         anim.setListener(new AnimListener() {
             @Override
