@@ -4,13 +4,22 @@ import java.io.File;
 
 import android.content.ClipDescription;
 import android.text.TextUtils;
-
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import android.util.Log;
 import com.smartisanos.sidebar.R;
 
 public class FileInfo {
     public String filePath;
     public String mimeType;
     public int id;
+    public String title;
+    public long time;
+    public int size;
+    public String pathID;
+    private final String log = "log";
 
     public boolean valid() {
         if (TextUtils.isEmpty(filePath) || TextUtils.isEmpty(mimeType)) {
@@ -27,6 +36,15 @@ public class FileInfo {
                 return false;
             }
         }
+
+        int start=filePath.lastIndexOf("/");
+        title = filePath.substring(start+1,filePath.length());
+        if(title.toLowerCase().contains(log) || (size == 0) ){
+            return false;
+        }
+
+        time = file.lastModified();
+        pathID = filePath + time;
         return true;
     }
 
