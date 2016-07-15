@@ -32,6 +32,8 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimInterpolator;
+import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 public class SideView extends RelativeLayout {
@@ -99,6 +101,7 @@ public class SideView extends RelativeLayout {
             public void onClick(View v) {
                 SidebarController sc = SidebarController.getInstance(mContext);
                 if(sc.getCurrentContentType() == ContentType.NONE){
+                    clickAddButtonAnim(true, null);
                     sc.dimTopView();
                     sc.showContent(ContentType.ADDTOSIDEBAR);
                 }else if(sc.getCurrentContentType() == ContentType.ADDTOSIDEBAR){
@@ -480,4 +483,102 @@ public class SideView extends RelativeLayout {
         set.play(anim1).with(anim2);
         set.start();
     }
+
+    private void restoreListItemView(SidebarListView listView) {
+        if (listView != null) {
+            try {
+                int count = listView.getCount();
+                if (count > 0) {
+                    for (int i = 0; i < count; i++) {
+                        View view = listView.getChildAt(i);
+                        if (view != null) {
+                            view.setScaleX(1);
+                            view.setScaleY(1);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void restoreView() {
+        mShareList.onDragEnd();
+        mContactList.onDragEnd();
+        restoreListItemView(mContactList);
+        restoreListItemView(mShareList);
+        mAdd.setRotation(0);
+    }
+
+    private static final boolean DISABLE_ADD_BUTTON_CLICK_ANIM = false;
+    private boolean mAddButtonAnimRunning = false;
+
+    public void clickAddButtonAnim(boolean isAdd, final Runnable taskForComplete) {
+        if (DISABLE_ADD_BUTTON_CLICK_ANIM) {
+            return;
+        }
+        if (mAdd == null) {
+            return;
+        }
+        if (mAddButtonAnimRunning) {
+            return;
+        }
+        mAddButtonAnimRunning = true;
+        int from = 0;
+        int to = 0;
+        if (isAdd) {
+            to = -45;
+        } else {
+            from = -45;
+        }
+        int width = mAdd.getWidth();
+        int height = mAdd.getHeight();
+        mAdd.setPivotX(width / 2);
+        mAdd.setPivotY(height / 2);
+        ObjectAnimator rotateAnim = ObjectAnimator.ofFloat(mAdd, Anim.ROTATION, from, to);
+        rotateAnim.setDuration(300);
+        rotateAnim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                mAddButtonAnimRunning = false;
+                if (taskForComplete != null) {
+                    taskForComplete.run();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+                mAddButtonAnimRunning = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+            }
+        });
+        rotateAnim.start();
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (View.VISIBLE == visibility) {
+            log.error("Sidebar onVisibilityChanged !!!!");
+        }
+    }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (View.VISIBLE == visibility) {
+            log.error("Sidebar onWindowVisibilityChanged !!!!");
+            int windowWidth = mContext.getResources().getInteger(R.integer.window_width);
+            showAnimWhenSplitWindow(windowWidth);
+        }
+    }
+
 }

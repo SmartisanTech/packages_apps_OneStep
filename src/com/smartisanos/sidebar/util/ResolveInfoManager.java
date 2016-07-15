@@ -21,7 +21,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.util.Pair;
 
 import com.smartisanos.sidebar.util.ResolveInfoGroup.SameGroupComparator;

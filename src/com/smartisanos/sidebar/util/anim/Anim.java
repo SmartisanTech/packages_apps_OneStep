@@ -51,11 +51,12 @@ public class Anim {
     public static final String ROTATION_Y  = "rotationY";
     public static final String SCALE_X     = "scaleX";
     public static final String SCALE_Y     = "scaleY";
-    public static final String ALHPA       = "alpha";
+    public static final String ALPHA       = "alpha";
 
-    public static final int TRANSLATE = 1001;
-    public static final int ROTATE    = 1002;
-    public static final int SCALE     = 1003;
+    public static final int TRANSLATE   = 1001;
+    public static final int ROTATE      = 1002;
+    public static final int SCALE       = 1003;
+    public static final int TRANSPARENT = 1004;
 
     private Object mView;
     private int animType;
@@ -72,7 +73,8 @@ public class Anim {
     public Anim(View view, int type, int time, int easeInOut, Vector3f from, Vector3f to) {
         if (type != TRANSLATE
                 && type != ROTATE
-                && type != SCALE) {
+                && type != SCALE
+                && type != TRANSPARENT) {
             throw new IllegalArgumentException("error anim type ["+type+"]");
         }
         if (from == null || to == null) {
@@ -95,6 +97,10 @@ public class Anim {
             }
             case SCALE : {
                 initScale(mFrom, mTo);
+                break;
+            }
+            case TRANSPARENT : {
+                initAlpha(mFrom.z, mTo.z);
                 break;
             }
         }
@@ -138,6 +144,14 @@ public class Anim {
         if (from.y != to.y) {
             ObjectAnimator animatorY = ObjectAnimator.ofFloat(mView, SCALE_Y, from.y, to.y);
             mAnimList.add(animatorY);
+        }
+    }
+
+    private void initAlpha(float from, float to) {
+        if (from != to) {
+            ObjectAnimator alphaAnim = ObjectAnimator.ofFloat(mView, ALPHA, from, to);
+            mAnimList = new ArrayList<Animator>();
+            mAnimList.add(alphaAnim);
         }
     }
 

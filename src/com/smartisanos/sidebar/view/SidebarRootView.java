@@ -452,5 +452,8 @@ public class SidebarRootView extends FrameLayout {
                 removeView(view);
             }
         }
+        if (mSideView != null) {
+            mSideView.restoreView();
+        }
     }
 }

@@ -10,14 +10,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.ServiceManager;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.android.internal.sidebar.ISidebar;
 import com.android.internal.sidebar.ISidebarService;
@@ -53,6 +51,10 @@ public class SidebarController {
     private int mSideViewWidth;
     private int mTopViewWidth, mTopViewHeight;
     private int mContentViewWidth, mContentViewHeight;
+
+    public int getContentViewWidth() {
+        return mContentViewWidth;
+    }
 
     public static SidebarController getInstance(Context context){
         if(sInstance == null){
@@ -117,10 +119,10 @@ public class SidebarController {
     private void start(){
         addTopView();
         addSideView();
-        animWhenEnterSidebarMode();
     }
 
     private void stop(){
+        mTopView.getViewTreeObserver().removeOnWindowShownListener(mTopWindowShownListener);
         mWindowManager.removeView(mTopView);
         mWindowManager.removeView(mSidebarRoot);
         dismissContent(false);
@@ -152,6 +154,9 @@ public class SidebarController {
     public SidebarRootView getSidebarRootView() {
         return mSidebarRoot;
     }
+    public SideView getSideView() {
+        return mSideView;
+    }
 
     private void addSideView() {
         if (mSidebarRoot != null) {
@@ -170,6 +175,7 @@ public class SidebarController {
                 FrameLayout.LayoutParams llp = (FrameLayout.LayoutParams)mSideView.getLayoutParams();
                 llp.gravity = Gravity.LEFT | Gravity.FILL_VERTICAL;
             }else{
+                //lp.windowAnimations = R.style.Animation_SidebarWindowRightAnim;
                 lp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
                 FrameLayout.LayoutParams llp = (FrameLayout.LayoutParams)mSideView.getLayoutParams();
                 llp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
@@ -223,7 +229,17 @@ public class SidebarController {
             lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
             lp.setTitle("sidebar_topview");
             lp.packageName = mContext.getPackageName();
+            mTopView.getViewTreeObserver().addOnWindowShownListener(mTopWindowShownListener);
             mWindowManager.addView(mTopView, lp);
+        }
+    }
+
+    private TopWindowShownListener mTopWindowShownListener = new TopWindowShownListener();
+
+    private class TopWindowShownListener implements ViewTreeObserver.OnWindowShownListener {
+
+        public void onWindowShown() {
+            log.error("mTopWindowShownListener onWindowShown !");
         }
     }
 
@@ -325,14 +341,4 @@ public class SidebarController {
             }
         }
     };
-
-    private void animWhenEnterSidebarMode() {
-        int windowWidth = mContext.getResources().getInteger(R.integer.window_width);
-        if (mSideView != null) {
-            mSideView.showAnimWhenSplitWindow(windowWidth);
-        }
-        if (mTopView != null) {
-            mTopView.showAnimWhenSplitWindow();
-        }
-    }
 }

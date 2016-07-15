@@ -80,23 +80,40 @@ public class AddResolveInfoGroupAdapter extends BaseAdapter{
             vh.iv = (ImageView) ret.findViewById(R.id.icon);
             vh.tv = (TextView) ret.findViewById(R.id.label);
             ret.setTag(vh);
+            vh.view = ret;
         } else {
             vh = (ViewHolder) ret.getTag();
         }
         final ResolveInfoGroup rig = mInfos.get(position);
         vh.iv.setImageDrawable(rig.loadIcon(mContext.getPackageManager()));
         vh.tv.setText(rig.getDisplayName());
+        final int index = position;
         ret.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ResolveInfoManager.getInstance(mContext).addResolveInfoGroup(rig);
+                if (AddItemViewGroup.getInstance() != null) {
+                    AddItemViewGroup.getInstance().removeItemAtIndex(index, true);
+                }
             }
         });
+        vh.restore();
         return ret;
     }
 
     class ViewHolder {
+        public View view;
         public ImageView iv;
         public TextView tv;
+
+        public void restore() {
+            if (view == null) {
+                return;
+            }
+            view.setTranslationX(0);
+            view.setTranslationY(0);
+            view.setScaleX(1);
+            view.setScaleY(1);
+            view.setAlpha(1);
+        }
     }
 }

@@ -301,6 +301,8 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty {
         mClipboardFullTextScrollView.requestLayout();
         mClipboardFullTextScrollView.setVisibility(View.VISIBLE);
 
+        mClipboardFullTextScrollView.setVerticalScrollBarEnabled(false);
+
         AnimatorSet set = new AnimatorSet();
         ObjectAnimator listAnim = ObjectAnimator.ofFloat(mClipList, Anim.TRANSLATE_X, 0, -viewWidth);
         ObjectAnimator textAnim = ObjectAnimator.ofFloat(mClipboardFullTextScrollView, Anim.TRANSLATE_X, viewWidth, 0);
@@ -332,6 +334,7 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty {
                                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                             params.gravity = Gravity.TOP;
                             mClipboardContentArea.updateViewLayout(mClipboardFullTextScrollView, params);
+                            mClipboardFullTextScrollView.setVerticalScrollBarEnabled(true);
                         }
                         @Override
                         public void onAnimationRepeat(Animation animation) {

@@ -9,6 +9,7 @@ import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.ImageInfo;
+import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentClipManager;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
@@ -16,6 +17,8 @@ import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimInterpolator;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 import android.animation.AnimatorSet;
@@ -24,12 +27,13 @@ import android.content.Context;
 import android.content.CopyHistoryItem;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
 public class TopView extends LinearLayout {
+    private static final LOG log = LOG.getInstance(TopView.class);
+
     private static final String TAG = TopView.class.getName();
 
     private SidebarController mController;
@@ -241,7 +245,7 @@ public class TopView extends LinearLayout {
         case MotionEvent.ACTION_DOWN:
             if (mController.getCurrentContentType() != ContentType.NONE) {
                 Utils.resumeSidebar(mContext);
-                Log.d(TAG, "content not none ! resume sidebar...");
+                log.error("content not none ! resume sidebar...");
                 return true;
             }
         }
@@ -249,26 +253,36 @@ public class TopView extends LinearLayout {
     }
 
     public void showAnimWhenSplitWindow() {
-        ObjectAnimator photoIconScaleXAnim = ObjectAnimator.ofFloat(mPhotos, Anim.SCALE_X, 1, 1.1f);
-        ObjectAnimator photoIconScaleYAnim = ObjectAnimator.ofFloat(mPhotos, Anim.SCALE_Y, 1, 1.1f);
+        int time = 200;
+        int[] loc = new int[2];
+        mPhotos.getLocationOnScreen(loc);
+        int fromY = - 50;
+        int toY = 0;
+//        Anim photoMove = new Anim(mPhotos, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
+//        Anim fileMove = new Anim(mFile, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
+//        Anim clipboardMove = new Anim(mClipboard, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
 
-        ObjectAnimator fileIconScaleXAnim = ObjectAnimator.ofFloat(mFile, Anim.SCALE_X, 1, 1.1f);
-        ObjectAnimator fileIconScaleYAnim = ObjectAnimator.ofFloat(mFile, Anim.SCALE_Y, 1, 1.1f);
+        Anim photoAlpha = new Anim(mPhotos, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+        Anim fileAlpha = new Anim(mFile, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+        Anim clipboardAlpha = new Anim(mClipboard, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
 
-        ObjectAnimator clipboardIconScaleXAnim = ObjectAnimator.ofFloat(mClipboard, Anim.SCALE_X, 1, 1.1f);
-        ObjectAnimator clipboardIconScaleYAnim = ObjectAnimator.ofFloat(mClipboard, Anim.SCALE_Y, 1, 1.1f);
+        AnimTimeLine timeLine = new AnimTimeLine();
+//        timeLine.addAnim(photoMove);
+//        timeLine.addAnim(fileMove);
+//        timeLine.addAnim(clipboardMove);
+        timeLine.addAnim(photoAlpha);
+        timeLine.addAnim(fileAlpha);
+        timeLine.addAnim(clipboardAlpha);
 
-        ObjectAnimator[] anims = new ObjectAnimator[] {
-                photoIconScaleXAnim, photoIconScaleYAnim,
-                fileIconScaleXAnim, fileIconScaleYAnim,
-                clipboardIconScaleXAnim, clipboardIconScaleYAnim
-        };
+        timeLine.start();
+    }
 
-        AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(Anim.CUBIC_OUT);
-        AnimatorSet set = new AnimatorSet();
-        set.setDuration(125);
-        set.setInterpolator(interpolator);
-        set.playTogether(anims);
-        set.start();
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (View.VISIBLE == visibility) {
+            log.error("onWindowVisibilityChanged !");
+            showAnimWhenSplitWindow();
+        }
     }
 }

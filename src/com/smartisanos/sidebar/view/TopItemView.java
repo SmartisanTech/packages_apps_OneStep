@@ -1,7 +1,14 @@
 package com.smartisanos.sidebar.view;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimInterpolator;
+import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -17,7 +24,7 @@ import android.widget.TextView;
 
 public class TopItemView extends FrameLayout {
 
-    private static final int ANIM_DURA = 128;
+    private static final int ANIM_DURA = 300;
 
     private View mContentGroup;
     private TextView mTextView;
@@ -76,29 +83,74 @@ public class TopItemView extends FrameLayout {
         if(!mIsDim){
             mIsDim = true;
             setClickable(false);
-            mTopDimView.setVisibility(View.VISIBLE);
+            ObjectAnimator anim = ObjectAnimator.ofFloat(mTopDimView, Anim.ALPHA, 0, 1);
+            anim.setDuration(ANIM_DURA);
+            anim.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
+            anim.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
+                    mTopDimView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {
+
+                }
+            });
+            anim.start();
         }
     }
 
     public void highlight() {
         if (!mIsHighlight) {
             mIsHighlight = true;
-            Animation anim = new ScaleAnimation(1.0f, 1.05f, 1.0f, 1.05f, 0.5f,0.5f);
-            anim.setDuration(ANIM_DURA);
-            anim.setFillAfter(true);
-            mContentGroup.startAnimation(anim);
-            mBackDimView.setVisibility(View.VISIBLE);
+            Anim scaleAnim = new Anim(mContentGroup, Anim.SCALE, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(1.05f, 1.05f));
+            Anim alphaAnim = new Anim(mBackDimView, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+            AnimTimeLine timeLine = new AnimTimeLine();
+            timeLine.addAnim(scaleAnim);
+            timeLine.addAnim(alphaAnim);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                    mBackDimView.setVisibility(View.VISIBLE);
+                }
+                @Override
+                public void onComplete() {
+                }
+            });
+            timeLine.start();
         }
     }
 
     public void resume() {
         if (mIsHighlight) {
             mIsHighlight = false;
-            Animation anim = new ScaleAnimation(1.05f, 1.0f, 1.05f, 1.0f, 0.5f,0.5f);
-            anim.setDuration(ANIM_DURA);
-            anim.setFillAfter(true);
-            mContentGroup.startAnimation(anim);
-            mBackDimView.setVisibility(View.GONE);
+            Anim scaleAnim = new Anim(mContentGroup, Anim.SCALE, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(1.05f, 1.05f), new Vector3f(1, 1));
+            Anim alphaAnim = new Anim(mBackDimView, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            AnimTimeLine timeLine = new AnimTimeLine();
+            timeLine.addAnim(scaleAnim);
+            timeLine.addAnim(alphaAnim);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onComplete() {
+                    mBackDimView.setVisibility(View.GONE);
+                }
+            });
+            timeLine.start();
         }
         if(mIsDim){
             mIsDim = false;

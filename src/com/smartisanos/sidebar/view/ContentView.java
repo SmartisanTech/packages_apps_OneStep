@@ -1,18 +1,28 @@
 package com.smartisanos.sidebar.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
 import android.view.ViewStub;
 import android.widget.RelativeLayout;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimInterpolator;
+import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimUtils;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 
 public class ContentView extends RelativeLayout {
     private static final LOG log = LOG.getInstance(ContentView.class);
@@ -66,7 +76,8 @@ public class ContentView extends RelativeLayout {
         setVisibility(View.VISIBLE);
         SidebarController.getInstance(mContext).addContentView();
         mCurType = ct;
-        this.animate().alpha(1.0f).setDuration(ANIMATION_DURA).start();
+        Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, ANIMATION_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+        alphaAnim.start();
         switch (ct) {
         case PHOTO:
             mRecentPhotoViewGroup.show(anim);
@@ -81,8 +92,54 @@ public class ContentView extends RelativeLayout {
             if(mAddContainner == null){
                 initAddToSidebar();
             }
-            if(anim){
-                mAddContainner.startAnimation(AnimUtils.getEnterAnimationForContainer(mAddContainner));
+            if (anim) {
+                boolean isLeft = SidebarController.getInstance(mViewContext).getSidebarMode() == SidebarMode.MODE_LEFT;
+                ValueAnimator animator = new ValueAnimator();
+                animator.setFloatValues(0f, 1f);
+                animator.setDuration(300);
+                animator.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                        mAddContainner.setVisibility(View.VISIBLE);
+                    }
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                    }
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+                    }
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+                    }
+                });
+                if (isLeft) {
+                    mAddContainner.setPivotX(0);
+                } else {
+                    int width = SidebarController.getInstance(mViewContext).getContentViewWidth();
+                    mAddContainner.setPivotX(width);
+                    log.error("mAddContainner show setPivotX ["+width+"]");
+                }
+                mAddContainner.setPivotY(0);
+                animator.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                        float percent = (Float) valueAnimator.getAnimatedValue();
+                        float scaleX = 0.6f + (0.4f * percent);
+                        float scaleY = 0.6f + (0.4f * percent);
+                        mAddContainner.setScaleX(scaleX);
+                        mAddContainner.setScaleY(scaleY);
+                        mAddContainner.setAlpha(percent);
+                        mAddContainner.setX(0);
+                        if (percent == 1.0f) {
+                            mAddContainner.setScaleX(1);
+                            mAddContainner.setScaleY(1);
+                            mAddContainner.setAlpha(1);
+                            valueAnimator.cancel();
+                        }
+                    }
+                });
+                animator.start();
             }else{
                 mAddContainner.setVisibility(View.VISIBLE);
             }
@@ -92,7 +149,7 @@ public class ContentView extends RelativeLayout {
         }
     }
 
-    private static final int ANIMATION_DURA = 314;
+    private static final int ANIMATION_DURA = 300;
 
     public void dismiss(ContentType ct, boolean anim) {
         if (mCurType != ct) {
@@ -100,7 +157,8 @@ public class ContentView extends RelativeLayout {
         }
         mCurType = ContentType.NONE;
         if(anim){
-            this.animate().alpha(0.0f).setDuration(ANIMATION_DURA).start();
+            Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, ANIMATION_DURA, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            alphaAnim.start();
         }else{
             this.setAlpha(0.0f);
         }
@@ -119,7 +177,57 @@ public class ContentView extends RelativeLayout {
                 initAddToSidebar();
             }
             if (anim) {
+                if (SidebarController.getInstance(mViewContext).getSideView() != null) {
+                    SidebarController.getInstance(mViewContext).getSideView().clickAddButtonAnim(false, null);
+                }
                 mAddContainner.startAnimation(AnimUtils.getExitAnimationForContainer(mAddContainner));
+                boolean isLeft = SidebarController.getInstance(mViewContext).getSidebarMode() == SidebarMode.MODE_LEFT;
+                ValueAnimator animator = new ValueAnimator();
+                animator.setFloatValues(0f, 1f);
+                animator.setDuration(300);
+                animator.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                    }
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        mAddContainner.setVisibility(View.INVISIBLE);
+                        mAddContainner.setAlpha(1);
+                    }
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+                    }
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+                    }
+                });
+                if (isLeft) {
+                    mAddContainner.setPivotX(0);
+                } else {
+                    int width = mAddContainner.getWidth();
+                    mAddContainner.setPivotX(width);
+                }
+
+                mAddContainner.setPivotY(0);
+                animator.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                        float percent = (Float) valueAnimator.getAnimatedValue();
+                        float scaleX = 1 - (0.4f * percent);
+                        float scaleY = 1 - (0.4f * percent);
+                        mAddContainner.setScaleX(scaleX);
+                        mAddContainner.setScaleY(scaleY);
+                        mAddContainner.setAlpha(1 - percent);
+                        mAddContainner.setX(0);
+                        if (percent == 1.0f) {
+                            mAddContainner.setScaleX(1);
+                            mAddContainner.setScaleY(1);
+                            valueAnimator.cancel();
+                        }
+                    }
+                });
+                animator.start();
             } else {
                 mAddContainner.setVisibility(View.INVISIBLE);
             }

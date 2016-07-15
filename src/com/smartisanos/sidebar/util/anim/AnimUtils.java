@@ -10,7 +10,7 @@ import android.view.animation.TranslateAnimation;
 import com.smartisanos.sidebar.util.IClear;
 
 public class AnimUtils {
-    private static final int ANIMATION_DURA = 314;
+    private static final int ANIMATION_DURA = 200;
     public static LayoutAnimationController getEnterLayoutAnimationForListView(){
         Animation anim = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
                 Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f);
@@ -45,14 +45,16 @@ public class AnimUtils {
     }
 
     public static Animation getEnterAnimationForContainer(View container){
-        Animation scaleAnim = new ScaleAnimation(1.0f, 1.0f, 0.0f, 1.0f);
+        Animation scaleAnim = new ScaleAnimation(1.0f, 1.0f, 0.6f, 1.0f);
+        scaleAnim.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
         scaleAnim.setDuration(ANIMATION_DURA);
         scaleAnim.setAnimationListener(new ShowAnimationListener(container));
         return scaleAnim;
     }
 
     public static Animation getExitAnimationForContainer(View container){
-        Animation scaleAnim = new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.0f);
+        Animation scaleAnim = new ScaleAnimation(1.0f, 1.0f, 1.0f, 0.6f);
+        scaleAnim.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
         scaleAnim.setDuration(ANIMATION_DURA);
         scaleAnim.setAnimationListener(new DismissAnimationListener(container));
         return scaleAnim;
