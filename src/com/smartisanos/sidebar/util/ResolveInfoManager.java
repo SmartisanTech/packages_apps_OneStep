@@ -350,20 +350,16 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
     }
 
     public void onPackageRemoved(String packageName){
-        boolean removed = false;
         synchronized (mList) {
             for (int i = 0; i < mList.size(); ++i) {
                 if (mList.get(i).getPackageName().equals(packageName)) {
+                    mHandler.obtainMessage(MSG_DELETE, mList.get(i)).sendToTarget();
                     mList.remove(i);
                     i--;
-                    removed = true;
                 }
             }
         }
-        if(removed){
-            notifyUpdate();
-        }
-        getWritableDatabase().delete(TABLE_RESOLVEINFO, "packagename=?", new String[]{packageName});
+        notifyUpdate();
     }
 
     public void onPackageAdded(String packageName){
