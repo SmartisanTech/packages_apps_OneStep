@@ -56,13 +56,18 @@ public class RecentPhotoAdapter extends BaseAdapter {
                 });
             }
         });
+        notifyEmpty();
+    }
+
+    private void notifyEmpty() {
+        if (mEmpty != null) {
+            mEmpty.setEmpty(mList.size() == 0);
+        }
     }
 
     @Override
     public void notifyDataSetChanged() {
-        if(mEmpty != null){
-            mEmpty.setEmpty(mList.size() == 0);
-        }
+        notifyEmpty();
         super.notifyDataSetChanged();
     }
 

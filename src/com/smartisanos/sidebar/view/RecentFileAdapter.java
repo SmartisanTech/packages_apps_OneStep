@@ -51,13 +51,18 @@ public class RecentFileAdapter extends BaseAdapter {
                 });
             }
         });
+        notifyEmpty();
+    }
+
+    private void notifyEmpty() {
+        if (mEmpty != null) {
+            mEmpty.setEmpty(getCount() == 0);
+        }
     }
 
     @Override
     public void notifyDataSetChanged() {
-        if (mEmpty != null) {
-            mEmpty.setEmpty(getCount() == 0);
-        }
+        notifyEmpty();
         super.notifyDataSetChanged();
     }
 
