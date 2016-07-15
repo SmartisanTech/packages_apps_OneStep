@@ -112,7 +112,6 @@ public class TopView extends LinearLayout {
                 } else {
                     TopItemView itemView = (TopItemView) v;
                     if (mController.getCurrentContentType() == ContentType.NONE) {
-                        RecentFileManager.getInstance(mContext).sendSideBarState(RecentFileManager.MSG_SEARCH_FILE);
                         mController.showContent(mViewToType.get(itemView));
                         for (TopItemView view : mViewToType.keySet()) {
                             if (view == itemView) {
