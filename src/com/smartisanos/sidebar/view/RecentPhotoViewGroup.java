@@ -4,10 +4,12 @@ import android.animation.ObjectAnimator;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
@@ -25,12 +27,15 @@ import com.smartisanos.sidebar.view.ContentView.ContentType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecentPhotoViewGroup extends FrameLayout implements IEmpty {
+public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, ContentView.ISubView {
     private static final LOG log = LOG.getInstance(RecentPhotoViewGroup.class);
 
     private ContentView mContentView;
-    private View mContainer, mClearPhoto;
+    private View mContainer;
+    private TextView mTitle;
+    private View mClear;
     private GridView mGridView;
+    private RecentPhotoAdapter mAdapter;
 
     private EmptyView mEmptyView;
     private boolean mIsEmpty = true;
@@ -78,10 +83,11 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty {
         });
 
         mContainer = findViewById(R.id.photo_container);
-        mClearPhoto = findViewById(R.id.clear);
+        mTitle = (TextView)findViewById(R.id.title);
+        mClear = findViewById(R.id.clear);
         mGridView = (GridView)findViewById(R.id.recentphoto_gridview);
-        mGridView.setAdapter(new RecentPhotoAdapter(mContext, this));
-        mClearPhoto.setOnClickListener(new ClearListener(new Runnable(){
+        mGridView.setAdapter(mAdapter = new RecentPhotoAdapter(mContext, this));
+        mClear.setOnClickListener(new ClearListener(new Runnable(){
             @Override
             public void run() {
                 mGridView.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
@@ -90,7 +96,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty {
                 SidebarController.getInstance(mContext).resumeTopView();
                 mContentView.setCurrent(ContentType.NONE);
             }
-        }));
+        }, R.string.title_confirm_delete_history_photo));
     }
 
     public void setContentView(ContentView cv){
@@ -221,5 +227,15 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty {
             }
         });
         mImageAnimTimeLine.start();
+    }
+
+    private void updateUI(){
+        mTitle.setText(R.string.title_photo);
+        mAdapter.updateUI();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        updateUI();
     }
 }

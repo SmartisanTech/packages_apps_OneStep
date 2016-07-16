@@ -10,15 +10,17 @@ import com.smartisanos.sidebar.R;
 
 public class ClearListener implements View.OnClickListener {
     private Runnable action;
-    public ClearListener(Runnable action) {
+    private int mTitleResId;
+    public ClearListener(Runnable action, int titleResId) {
         this.action = action;
+        mTitleResId = titleResId;
     }
 
     @Override
     public void onClick(View v) {
         MenuDialog dialog = new MenuDialog(v.getContext());
-        dialog.setTitle(R.string.title_confirm_delete_history);
-        dialog.setPositiveButton(R.string.delete, new OnClickListener() {
+        dialog.setTitle(mTitleResId);
+        dialog.setPositiveButton(R.string.clear, new OnClickListener() {
             @Override
             public void onClick(View v) {
                 action.run();

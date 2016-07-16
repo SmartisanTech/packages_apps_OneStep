@@ -1,25 +1,34 @@
 package com.smartisanos.sidebar.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
-public class AddItemViewGroup extends LinearLayout{
+public class AddItemViewGroup extends LinearLayout implements ContentView.ISubView {
     private static final LOG log = LOG.getInstance(AddItemViewGroup.class);
 
     private FullGridView mContacts, mResolveInfos;
-    private AddResolveInfoGroupAdapter mResolveInfoAdapter;
-    private Context mContext;
+    private BaseAdapter mAddContactAdapter, mResolveInfoAdapter;
+    private TextView mAddContactTitle, mAddResolveTitle;
 
     public AddItemViewGroup(Context context) {
         this(context, null);
@@ -37,23 +46,19 @@ public class AddItemViewGroup extends LinearLayout{
     public AddItemViewGroup(Context context, AttributeSet attrs,
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        mContext = context;
-        mSelf = this;
-    }
-
-    private static volatile AddItemViewGroup mSelf;
-    public static AddItemViewGroup getInstance() {
-        return mSelf;
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         mContacts = (FullGridView)findViewById(R.id.contact_gridview);
-        mContacts.setAdapter(new AddContactAdapter(mContext));
+        mAddContactAdapter = new AddContactAdapter(mContext);
+        mContacts.setAdapter(mAddContactAdapter);
         mResolveInfos = (FullGridView) findViewById(R.id.resolveinfo_gridview);
-        mResolveInfoAdapter = new AddResolveInfoGroupAdapter(mContext, findViewById(R.id.add_resolve));
+        mResolveInfoAdapter = new AddResolveInfoGroupAdapter(mContext, this, findViewById(R.id.add_resolve));
         mResolveInfos.setAdapter(mResolveInfoAdapter);
+        mAddContactTitle = (TextView) findViewById(R.id.add_contact_title_view);
+        mAddResolveTitle = (TextView) findViewById(R.id.add_resolve_title_view);
     }
 
     public void removeItemAtIndex(final int index, boolean withAnim) {
@@ -132,5 +137,80 @@ public class AddItemViewGroup extends LinearLayout{
             }
         });
         timeLine.start();
+    }
+
+    public void show(boolean anim){
+        setVisibility(View.VISIBLE);
+        if (anim) {
+            boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
+            ValueAnimator animator = new ValueAnimator();
+            animator.setFloatValues(0f, 1f);
+            animator.setDuration(300);
+            setPivotX(isLeft ? 0 : getWidth());
+            setPivotY(0);
+            animator.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    float percent = (Float) valueAnimator.getAnimatedValue();
+                    float scaleX = 0.6f + (0.4f * percent);
+                    float scaleY = 0.6f + (0.4f * percent);
+                    setScaleX(scaleX);
+                    setScaleY(scaleY);
+                    setAlpha(percent);
+                    setX(0);
+                }
+            });
+            animator.start();
+        }
+    }
+
+    public void dismiss(boolean anim){
+        if (anim) {
+            boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
+            SidebarController.getInstance(mContext).getSideView().clickAddButtonAnim(isLeft, false, null);
+            ValueAnimator animator = new ValueAnimator();
+            animator.setFloatValues(0f, 1f);
+            animator.setDuration(300);
+            setPivotX(isLeft ? 0 : getWidth());
+            setPivotY(0);
+            animator.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    float percent = (Float) valueAnimator.getAnimatedValue();
+                    float scaleX = 1 - (0.4f * percent);
+                    float scaleY = 1 - (0.4f * percent);
+                    setScaleX(scaleX);
+                    setScaleY(scaleY);
+                    setAlpha(1 - percent);
+                    setX(0);
+                }
+            });
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    setVisibility(View.INVISIBLE);
+                    setScaleX(1);
+                    setScaleY(1);
+                    setAlpha(1);
+                }
+            });
+            animator.start();
+        } else {
+            setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void updateUI(){
+        mAddContactTitle.setText(R.string.add_contact_shortcut);
+        mAddContactAdapter.notifyDataSetChanged();
+        mAddResolveTitle.setText(R.string.add_application_shortcut);
+        mResolveInfoAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        updateUI();
     }
 }

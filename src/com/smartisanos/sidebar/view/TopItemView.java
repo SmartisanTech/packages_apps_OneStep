@@ -1,26 +1,22 @@
 package com.smartisanos.sidebar.view;
 
-import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.util.anim.Anim;
-import com.smartisanos.sidebar.util.anim.AnimInterpolator;
-import com.smartisanos.sidebar.util.anim.AnimListener;
-import com.smartisanos.sidebar.util.anim.AnimTimeLine;
-import com.smartisanos.sidebar.util.anim.Vector3f;
-
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 
 public class TopItemView extends FrameLayout {
 
@@ -31,6 +27,8 @@ public class TopItemView extends FrameLayout {
     private ImageView mIcon;
     private View mBackDimView;
     private View mTopDimView;
+
+    private int mTextResId, mIconResId;
 
     private boolean mIsDim = false;
     private boolean mIsHighlight = false;
@@ -67,16 +65,14 @@ public class TopItemView extends FrameLayout {
         mTopDimView = findViewById(R.id.top_dim_view);
     }
 
-    public void setText(int resid) {
-        mTextView.setText(resid);
-    }
-
-    public void setText(CharSequence cs) {
-        mTextView.setText(cs);
+    public void setText(int resId) {
+        mTextResId = resId;
+        mTextView.setText(mTextResId);
     }
 
     public void setIconBackground(int resId) {
-        mIcon.setBackgroundResource(resId);
+        mIconResId = resId;
+        mIcon.setBackgroundResource(mIconResId);
     }
 
     public void dim(){
@@ -182,5 +178,19 @@ public class TopItemView extends FrameLayout {
 
     public void resetIconContent(){
         mIcon.setImageDrawable(null);
+    }
+
+    private void updateView() {
+        if (mTextResId != 0) {
+            mTextView.setText(mTextResId);
+        }
+        if (mIconResId != 0) {
+            mIcon.setBackgroundResource(mIconResId);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        updateView();
     }
 }

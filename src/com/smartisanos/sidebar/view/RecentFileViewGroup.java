@@ -8,18 +8,21 @@ import com.smartisanos.sidebar.util.anim.AnimUtils;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
-public class RecentFileViewGroup extends FrameLayout implements IEmpty {
+public class RecentFileViewGroup extends FrameLayout implements IEmpty, ContentView.ISubView {
 
     private ContentView mContentView;
 
     private EmptyView mEmptyView;
     private View mContainer;
     private ListView mRecentFileList;
+    private TextView mTitle;
     private View mClearFile;
 
     private boolean mIsEmpty = true;
@@ -51,6 +54,7 @@ public class RecentFileViewGroup extends FrameLayout implements IEmpty {
         mEmptyView.setHint(R.string.file_empty_hint);
 
         mContainer = findViewById(R.id.file_container);
+        mTitle = (TextView) findViewById(R.id.title);
         mClearFile = findViewById(R.id.clear);
         mRecentFileList = (ListView)findViewById(R.id.recentfile_listview);
         mRecentFileList.setAdapter(new RecentFileAdapter(mContext, this));
@@ -64,7 +68,7 @@ public class RecentFileViewGroup extends FrameLayout implements IEmpty {
                 SidebarController.getInstance(mContext).resumeTopView();
                 mContentView.setCurrent(ContentType.NONE);
             }
-        }));
+        }, R.string.title_confirm_delete_history_file));
     }
 
     public void setContentView(ContentView cv){
@@ -106,5 +110,14 @@ public class RecentFileViewGroup extends FrameLayout implements IEmpty {
         } else {
             setVisibility(View.INVISIBLE);
         }
+    }
+
+    private void updateUI(){
+        mTitle.setText(R.string.title_file);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        updateUI();
     }
 }

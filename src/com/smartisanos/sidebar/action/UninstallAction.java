@@ -36,14 +36,14 @@ public class UninstallAction {
         builder.setTitle(R.string.uninstall_app_dialog_title);
         builder.setMessage(content);
 
-        builder.setPositiveButton(R.string.uninstall_ok, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 mDragItem.delelte();
                 uninstallAnim();
             }
         });
-        builder.setNegativeButton(R.string.uninstall_cancel, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                     isCancelRun = true;

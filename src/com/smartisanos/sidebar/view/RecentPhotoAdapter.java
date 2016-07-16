@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import smartisanos.util.SidebarUtils;
 
@@ -36,6 +37,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
 
     private ImageLoader mImageLoader;
     private Handler mHandler;
+    private View mOpenGalleryView;
     private IEmpty mEmpty;
     public RecentPhotoAdapter(Context context, IEmpty empty) {
         mContext = context;
@@ -57,6 +59,33 @@ public class RecentPhotoAdapter extends BaseAdapter {
             }
         });
         notifyEmpty();
+    }
+
+    public void updateUI(){
+        TextView text = (TextView) getOpenGalleryView().findViewById(R.id.text);
+        text.setText(R.string.open_gallery);
+    }
+
+    private View getOpenGalleryView() {
+        if (mOpenGalleryView == null) {
+            mOpenGalleryView = LayoutInflater.from(mContext).inflate(R.layout.open_gallery_item, null);
+            mOpenGalleryView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.setPackage("com.android.gallery3d");
+                        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                        Utils.dismissAllDialog(mContext);
+                    } catch (ActivityNotFoundException e) {
+                        // NA
+                    }
+                }
+            });
+        }
+        return mOpenGalleryView;
     }
 
     private void notifyEmpty() {
@@ -90,24 +119,9 @@ public class RecentPhotoAdapter extends BaseAdapter {
     public View getView(final int position, View convertView,
             ViewGroup parent) {
         if(position == 0){
-            View ret = LayoutInflater.from(mContext).inflate(R.layout.open_gallery_item, null);
-            ret.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try{
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.setPackage("com.android.gallery3d");
-                        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
-                        Utils.dismissAllDialog(mContext);
-                    }catch (ActivityNotFoundException e) {
-                        // NA
-                    }
-                }
-            });
-            return ret;
+            return getOpenGalleryView();
         }
+
         final ImageInfo ii = mList.get(position - 1);
         View ret = null;
         final ImageView iv;

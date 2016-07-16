@@ -20,12 +20,12 @@ import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.CopyHistoryItem;
+import android.content.res.Configuration;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
@@ -40,7 +40,7 @@ import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 import smartisanos.util.SidebarUtils;
 
-public class ClipboardViewGroup extends FrameLayout implements IEmpty {
+public class ClipboardViewGroup extends FrameLayout implements IEmpty, ContentView.ISubView {
 
     private ContentView mContentView;
     private View mClearClipboard;
@@ -50,12 +50,14 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty {
     private TextView mClipboardFullText;
     private ScrollView mClipboardFullTextScrollView;
     private Button mClipboardCopyItemButton;
-    private LinearLayout mClipboardItemBack;
+    private View mClipboardItemBack;
 
-    private LinearLayout mClipboardListTitle;
-    private LinearLayout mClipboardItemTitle;
+    private View mClipboardListTitle;
+    private View mClipboardItemTitle;
 
     private View mContainer;
+    private TextView mTitle;
+
     private EmptyView mEmptyView;
     private boolean mIsEmpty = true;
 
@@ -89,17 +91,8 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty {
         mEmptyView.setText(R.string.clipboard_empty_text);
         mEmptyView.setHint(R.string.clipboard_empty_hint);
         mContainer = findViewById(R.id.clipboard_container);
+        mTitle = (TextView) findViewById(R.id.clipboard_title);
         mClearClipboard = findViewById(R.id.clear);
-        mClearClipboard.setOnClickListener(new ClearListener(new Runnable() {
-            @Override
-            public void run() {
-                mClipList.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
-                mClipList.startLayoutAnimation();
-                startAnimation(AnimUtils.getClearAnimationForContainer(ClipboardViewGroup.this, RecentClipManager.getInstance(mContext)));
-                SidebarController.getInstance(mContext).resumeTopView();
-                mContentView.setCurrent(ContentType.NONE);
-            }
-        }));
         mClipList = (ListView)findViewById(R.id.clipboard_listview);
         mClipboardAdapter = new ClipboardAdapter(mContext, this);
         mClipList.setAdapter(mClipboardAdapter);
@@ -107,10 +100,10 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty {
         mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
         mClipList.setOnItemLongClickListener(mOnClipBoardItemLongClickListener);
 
-        mClipboardItemBack = (LinearLayout) findViewById(R.id.back_button);
+        mClipboardItemBack = findViewById(R.id.back_button);
         mClipboardCopyItemButton = (Button) findViewById(R.id.copy_icon);
-        mClipboardListTitle = (LinearLayout) findViewById(R.id.clipboard_list_title);
-        mClipboardItemTitle = (LinearLayout) findViewById(R.id.clipboard_item_title);
+        mClipboardListTitle = findViewById(R.id.clipboard_list_title);
+        mClipboardItemTitle = findViewById(R.id.clipboard_item_title);
         mClipboardContentArea = (FrameLayout) findViewById(R.id.clipboard_content_area);
         mClipboardFullTextScrollView = (ScrollView) findViewById(R.id.full_text_scroll_view);
         mClipboardFullText = (TextView) findViewById(R.id.clipboard_full_content);
@@ -124,7 +117,7 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty {
                 SidebarController.getInstance(mContext).resumeTopView();
                 mContentView.setCurrent(ContentType.NONE);
             }
-        }));
+        }, R.string.title_confirm_delete_history_clipboard));
 
         mClipboardItemBack.setOnClickListener(mOnClickClipboardFullTextTitleBackButton);
         mClipboardCopyItemButton.setOnClickListener(mOnClickClipboardFullTextTitleCopyButton);
@@ -416,5 +409,14 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty {
         });
         animation.start();
         switchViewAnimRunning = true;
+    }
+
+    private void updateUI(){
+        mTitle.setText(R.string.title_clipboard);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        updateUI();
     }
 }

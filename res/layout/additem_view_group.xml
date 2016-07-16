@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.smartisanos.sidebar.view.AddItemViewGroup xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
-    android:id="@+id/addtosidebar_container"
+    android:id="@+id/additem_view_group"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"

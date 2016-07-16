@@ -1,4 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="text_copied">文字已複製</string>
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="topbar_photo">圖片</string>
+    <string name="topbar_file">文件</string>
+    <string name="topbar_clipboard">剪貼板</string>
+    <string name="title_photo">最近接收和處理的圖片</string>
+    <string name="title_file">最近接收和處理的文件</string>
+    <string name="title_clipboard">最近剪切和複製的文字</string>
+    <string name="add_contact_shortcut">點擊添加聯絡人快捷方式</string>
+    <string name="add_application_shortcut">點擊添加應用快捷方式</string>
+    <string name="add_contact_dingding">釘釘聯絡人</string>
+    <string name="add_contact_wechat">微信聯絡人</string>
+    <string name="add_contact_mail">郵件聯絡人</string>
+    <string name="add_contact_mms">簡訊聯絡人</string>
+    <string name="open_gallery">打開相簿</string>
+    <string name="title_confirm_delete_history_photo">清空記錄後不會刪除圖片</string>
+    <string name="title_confirm_delete_history_file">清空記錄後不會刪除檔案</string>
+    <string name="title_confirm_delete_history_clipboard">清空剪貼板內容將無法恢復</string>
+    <string name="clear">清空</string>
+    <string name="add_wechat_hint">進入微信，在微信好友詳情界面點擊右上角三點圖示，選擇將好友“添加到桌面”</string>
+
+    <string name="clipboard_fulltext_back">返回</string>
+
+    <!-- uninstall -->
+    <string name="uninstall_app_dialog_title">提示</string>
+    <string name="uninstall_app_dialog_text">是否從邊欄移除“%1$s”？</string>
+    <string name="text_copied">文本已複製</string>
+    <string name="photo_empty_text">圖片記錄為空</string>
+    <string name="photo_empty_hint">最近接收和處理的圖片將會出現在這裡</string>
+    <string name="file_empty_text">文件記錄為空</string>
+    <string name="file_empty_hint">最近接收和處理的文件將會出現在這裡</string>
+    <string name="clipboard_empty_text">剪贴板为空</string>
+    <string name="clipboard_empty_hint">最近剪切和复制的文字将会出现在这里</string>
 </resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="topbar_photo">Фото</string>
+    <string name="topbar_file">Файл</string>
+    <string name="topbar_clipboard">Буфер обмена</string>
+    <string name="title_photo">Последное фото</string>
+    <string name="title_file">Последние файлы</string>
+    <string name="title_clipboard">Последние тексты в будере обмене</string>
+    <string name="add_contact_shortcut">Кликать добавить ярлык контакта</string>
+    <string name="add_application_shortcut">Кликать добавить ярлык приложения</string>
+    <string name="add_contact_dingding">Контакт Dingding</string>
+    <string name="add_contact_wechat">Контакт Wechat</string>
+    <string name="add_contact_mail">Контакт почты</string>
+    <string name="add_contact_mms">Контакт СМС</string>
+    <string name="open_gallery">Открыть альбом</string>
+    <string name="title_confirm_delete_history_photo">Очистка истории не будет удалить фото</string>
+    <string name="title_confirm_delete_history_file">Очистка истории не будет удалить архив</string>
+    <string name="title_confirm_delete_history_clipboard">Очистка буфера обмены не восстановима</string>
+    <string name="clear">Очистить</string>
+    <string name="add_wechat_hint">Входив в Wechat, на странице детали друзьей кликать чтобы "добавить друга домой"</string>
+
+    <string name="clipboard_fulltext_back">назад</string>
+
+    <!-- uninstall -->
+    <string name="uninstall_app_dialog_title">Уведомление</string>
+    <string name="uninstall_app_dialog_text">Удалить из бокового отдела“%1$s”？</string>
+    <string name="text_copied">Текст скопирован</string>
+    <string name="photo_empty_text">История фото пустая</string>
+    <string name="photo_empty_hint">Последнее фото появится здесь</string>
+    <string name="file_empty_text">История архива пустая</string>
+    <string name="file_empty_hint">Последний архив появится здесь</string>
+    <string name="clipboard_empty_text">Буфер обмена пустой</string>
+    <string name="clipboard_empty_hint">Последний текст появится здесь</string>
+</resources>

@@ -24,9 +24,11 @@ public class AddResolveInfoGroupAdapter extends BaseAdapter{
     private List<ResolveInfoGroup> mInfos;
     private Handler mHandler;
     private View mView;
+    private AddItemViewGroup mViewGroup;
 
-    public AddResolveInfoGroupAdapter(Context context, View view){
+    public AddResolveInfoGroupAdapter(Context context, AddItemViewGroup viewGroup, View view){
         mContext = context;
+        mViewGroup = viewGroup;
         mView = view;
         mManager = ResolveInfoManager.getInstance(mContext);
         mInfos = mManager.getUnAddedResolveInfoGroup();
@@ -96,9 +98,7 @@ public class AddResolveInfoGroupAdapter extends BaseAdapter{
         ret.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (AddItemViewGroup.getInstance() != null) {
-                    AddItemViewGroup.getInstance().removeItemAtIndex(index, true);
-                }
+                mViewGroup.removeItemAtIndex(index, true);
             }
         });
         vh.restore();

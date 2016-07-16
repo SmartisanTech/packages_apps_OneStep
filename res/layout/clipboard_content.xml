@@ -6,18 +6,15 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/content_bg">
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:orientation="horizontal"
-        >
+        android:layout_height="30dp">
         <LinearLayout
             android:id="@+id/clipboard_list_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:layout_gravity="center_vertical"
-            >
+            android:layout_gravity="center_vertical">
             <TextView
                 android:id="@+id/clipboard_title"
                 android:layout_width="wrap_content"
@@ -27,15 +24,13 @@
                 android:textSize="13.5dp"
                 android:layout_marginLeft="12dp"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                />
+                android:layout_weight="1"/>
             <Button
                 android:id="@+id/clear"
                 android:background="@drawable/clear"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_gravity="center_vertical"
-                />
+                android:layout_gravity="center_vertical"/>
         </LinearLayout>
 
         <LinearLayout
@@ -44,16 +39,14 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:layout_gravity="center_vertical"
-            android:visibility="gone"
-            >
+            android:visibility="gone">
             <LinearLayout
                 android:id="@+id/back_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_gravity="left|center_vertical"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -61,8 +54,7 @@
                     android:text="@string/clipboard_fulltext_back"
                     android:textColor="#ccffffff"
                     android:textSize="12dp"
-                    android:gravity="left|center_vertical"
-                    />
+                    android:gravity="left|center_vertical"/>
             </LinearLayout>
             <Button
                 android:id="@+id/copy_icon"
@@ -71,7 +63,7 @@
                 android:background="@drawable/clipboard_copy_icon"
                 android:layout_gravity="right"/>
         </LinearLayout>
-     </LinearLayout>
+     </FrameLayout>
     <!-- divider -->
     <View
         android:layout_width="match_parent"
@@ -96,10 +88,7 @@
                 android:id="@+id/clipboard_full_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
+                android:padding="15dp"
                 android:textColor="#ccffffff"/>
         </ScrollView>
     </FrameLayout>
