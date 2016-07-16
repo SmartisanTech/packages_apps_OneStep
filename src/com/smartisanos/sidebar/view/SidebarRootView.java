@@ -289,16 +289,16 @@ public class SidebarRootView extends FrameLayout {
         final DragItem item = mDragView.getDragItem();
         final View view = mDragView.mView;
         ImageView icon = mDragView.mDragViewIcon;
-        final int[] iconLoc = new int[2];
         mDragView.hideBubble();
         int time = 200;
         int[] from = new int[2];
         int[] to = new int[2];
-        icon.getLocationOnScreen(iconLoc);
+        icon.getLocationOnScreen(from);
         item.mListItemView.getLocationOnScreen(to);
         int dragViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.drag_view_icon_size);
         int itemViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_list_item_img_size);
         float scale = (float) ((1.0 * itemViewSize) / (1.0 * dragViewSize));
+        log.error("dropDrag from ("+from[0]+", "+from[1]+"), to ("+to[0]+", "+to[1]+")");
         Anim moveAnim = new Anim(view, Anim.TRANSLATE, time, Anim.CUBIC_IN, new Vector3f(from[0], from[1]), new Vector3f(to[0], to[1]));
         Anim scaleAnim = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(scale, scale));
         AnimTimeLine timeLine = new AnimTimeLine();
