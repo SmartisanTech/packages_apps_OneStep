@@ -40,7 +40,6 @@ public class ClipboardAdapter extends BaseAdapter{
         mClipManager.addListener(new RecentUpdateListener(){
             @Override
             public void onUpdate() {
-                mList = mClipManager.getCopyList();
                 mHandler.post(new Runnable(){
                     @Override
                     public void run() {
