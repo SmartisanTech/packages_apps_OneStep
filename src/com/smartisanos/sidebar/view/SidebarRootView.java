@@ -1,8 +1,6 @@
 package com.smartisanos.sidebar.view;
 
 import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Paint;
@@ -23,14 +21,10 @@ import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
-import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.R;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SidebarRootView extends FrameLayout {
 
@@ -413,7 +407,7 @@ public class SidebarRootView extends FrameLayout {
         }
     }
 
-    public void exitSidebarMode() {
+    private void onDismiss() {
         if (mDragView != null) {
             View view = mDragView.mView;
             if (view != null) {
@@ -424,6 +418,16 @@ public class SidebarRootView extends FrameLayout {
         }
         if (mSideView != null) {
             mSideView.restoreView();
+        }
+    }
+
+    public void show(boolean show){
+        if(show){
+            setVisibility(View.VISIBLE);
+            mSideView.showAnimWhenSplitWindow();
+        }else{
+            setVisibility(View.GONE);
+            onDismiss();
         }
     }
 }

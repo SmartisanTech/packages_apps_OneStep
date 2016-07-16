@@ -13,7 +13,6 @@ import android.os.ServiceManager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -36,13 +35,10 @@ public class SidebarController {
     private Handler mHandler;
     private WindowManager mWindowManager;
 
-    private int mWindowFullWidth;
     private SidebarRootView mSidebarRoot;
     private SideView mSideView;
     private TopView mTopView;
     private ContentView mContentView;
-
-    private boolean mContentViewAdded = false;
 
     private int mSidbarMode = SidebarMode.MODE_LEFT;
 
@@ -88,7 +84,7 @@ public class SidebarController {
     }
 
     public void init() {
-        inflateView();
+        AddWindows();
         ISidebarService sidebarService = ISidebarService.Stub.asInterface(ServiceManager.getService(Context.SIDEBAR_SERVICE));
         if (sidebarService != null) {
             try {
@@ -117,75 +113,74 @@ public class SidebarController {
     }
 
     private void start(){
-        addTopView();
-        addSideView();
+        updateTopViewWindowBySidebarMode();
+        updateSideViewWindowBySidebarMode();
+        updateContentViewWindowBySidebarMode();
+        mTopView.show(true);
+        mSidebarRoot.show(true);
     }
 
     private void stop(){
-        mTopView.getViewTreeObserver().removeOnWindowShownListener(mTopWindowShownListener);
-        mWindowManager.removeView(mTopView);
-        mWindowManager.removeView(mSidebarRoot);
+        mTopView.show(false);
+        mSidebarRoot.show(false);
         dismissContent(false);
-        removeContentView();
-        if (mSidebarRoot != null) {
-            mSidebarRoot.exitSidebarMode();
-        }
     }
 
-    private void inflateView() {
-        mWindowFullWidth = mContext.getResources().getInteger(R.integer.window_width);
-        if (mSidebarRoot == null) {
-            mSidebarRoot = (SidebarRootView) View.inflate(mContext,R.layout.sidebar_view, null);
-            mSidebarRoot.setTrashView();
-            mSideView = (SideView) mSidebarRoot.findViewById(R.id.sidebar);
-            mSideView.setRootView(mSidebarRoot);
-            mSidebarRoot.setSideView(mSideView);
-        }
-
-        if(mTopView == null){
-            mTopView = (TopView) View.inflate(mContext, R.layout.topbar_view, null);
-        }
-
-        if(mContentView == null){
-            mContentView =(ContentView) View.inflate(mContext, R.layout.content_view, null);
-        }
+    private void AddWindows() {
+        addSideViewWindow();
+        addTopViewWindow();
+        addContentViewWindow();
     }
 
     public SidebarRootView getSidebarRootView() {
         return mSidebarRoot;
     }
+
     public SideView getSideView() {
         return mSideView;
     }
 
-    private void addSideView() {
-        if (mSidebarRoot != null) {
-            final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                    | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
-                    | WindowManager.LayoutParams.FLAG_FULLSCREEN
-                    | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                    PixelFormat.TRANSLUCENT);
-            if(getSidebarMode() == SidebarMode.MODE_LEFT){
-                lp.gravity = Gravity.LEFT | Gravity.FILL_VERTICAL;
-                FrameLayout.LayoutParams llp = (FrameLayout.LayoutParams)mSideView.getLayoutParams();
-                llp.gravity = Gravity.LEFT | Gravity.FILL_VERTICAL;
-            }else{
-                //lp.windowAnimations = R.style.Animation_SidebarWindowRightAnim;
-                lp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
-                FrameLayout.LayoutParams llp = (FrameLayout.LayoutParams)mSideView.getLayoutParams();
-                llp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
-            }
-            lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-            lp.setTitle("sidebar_sideview");
-            lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_NO_MOVE_ANIMATION;
-            lp.packageName = mContext.getPackageName();
-            mWindowManager.addView(mSidebarRoot, lp);
+    private void addSideViewWindow() {
+        mSidebarRoot = (SidebarRootView) View.inflate(mContext,
+                R.layout.sidebar_view, null);
+        mSidebarRoot.setTrashView();
+        mSideView = (SideView) mSidebarRoot.findViewById(R.id.sidebar);
+        mSideView.setRootView(mSidebarRoot);
+        mSidebarRoot.setSideView(mSideView);
+
+        final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
+                        | WindowManager.LayoutParams.FLAG_FULLSCREEN
+                        | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                PixelFormat.TRANSLUCENT);
+        lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+        lp.setTitle("sidebar_sideview");
+        lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_NO_MOVE_ANIMATION;
+        lp.packageName = mContext.getPackageName();
+        mSidebarRoot.setVisibility(View.GONE);
+        mWindowManager.addView(mSidebarRoot, lp);
+    }
+
+    private void updateSideViewWindowBySidebarMode(){
+        final WindowManager.LayoutParams lp = (WindowManager.LayoutParams)mSidebarRoot.getLayoutParams();
+        if (getSidebarMode() == SidebarMode.MODE_LEFT) {
+            lp.gravity = Gravity.LEFT | Gravity.FILL_VERTICAL;
+            FrameLayout.LayoutParams llp = (FrameLayout.LayoutParams) mSideView
+                    .getLayoutParams();
+            llp.gravity = Gravity.LEFT | Gravity.FILL_VERTICAL;
+        } else {
+            // lp.windowAnimations = R.style.Animation_SidebarWindowRightAnim;
+            lp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
+            FrameLayout.LayoutParams llp = (FrameLayout.LayoutParams) mSideView
+                    .getLayoutParams();
+            llp.gravity = Gravity.RIGHT | Gravity.FILL_VERTICAL;
         }
+        mWindowManager.updateViewLayout(mSidebarRoot, lp);
     }
 
     public void updateDragWindow(boolean toFullScreen) {
@@ -201,7 +196,7 @@ public class SidebarController {
             lp.flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR;
         } else {
             if (mSidebarRoot.getTrash() != null) {
-                mSidebarRoot.getTrash().hieTrashView();
+                mSidebarRoot.getTrash().hideTrashView();
             }
             lp.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR;
             lp.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
@@ -209,70 +204,61 @@ public class SidebarController {
         mWindowManager.updateViewLayout(mSidebarRoot, lp);
     }
 
-    private void addTopView() {
-        if (mTopView != null) {
-            final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    mTopViewWidth,
-                    mTopViewHeight,
-                    WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                    | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
-                    | WindowManager.LayoutParams.FLAG_FULLSCREEN
-                    | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                    PixelFormat.TRANSLUCENT);
-            if (getSidebarMode() == SidebarMode.MODE_LEFT) {
-                lp.gravity = Gravity.TOP | Gravity.RIGHT;
-            } else {
-                lp.gravity = Gravity.TOP | Gravity.LEFT;
-            }
-            lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-            lp.setTitle("sidebar_topview");
-            lp.packageName = mContext.getPackageName();
-            mWindowManager.addView(mTopView, lp);
-            mTopView.getViewTreeObserver().addOnWindowShownListener(mTopWindowShownListener);
-        }
+    private void addTopViewWindow() {
+        mTopView = (TopView) View.inflate(mContext, R.layout.topbar_view, null);
+        final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+                mTopViewWidth, mTopViewHeight,
+                WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
+                        | WindowManager.LayoutParams.FLAG_FULLSCREEN
+                        | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                PixelFormat.TRANSLUCENT);
+        lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+        lp.setTitle("sidebar_topview");
+        lp.packageName = mContext.getPackageName();
+        mTopView.setVisibility(View.GONE);
+        mWindowManager.addView(mTopView, lp);
     }
 
-    private TopWindowShownListener mTopWindowShownListener = new TopWindowShownListener();
-
-    private class TopWindowShownListener implements ViewTreeObserver.OnWindowShownListener {
-
-        public void onWindowShown() {
-            log.error("mTopWindowShownListener onWindowShown !");
+    private void updateTopViewWindowBySidebarMode(){
+        final WindowManager.LayoutParams lp = (WindowManager.LayoutParams) mTopView.getLayoutParams();
+        if (getSidebarMode() == SidebarMode.MODE_LEFT) {
+            lp.gravity = Gravity.TOP | Gravity.RIGHT;
+        } else {
+            lp.gravity = Gravity.TOP | Gravity.LEFT;
         }
+        mWindowManager.updateViewLayout(mTopView, lp);
     }
 
-    public void addContentView() {
-        if (mContentView != null && !mContentViewAdded) {
-            mContentViewAdded = true;
-            final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    mContentViewWidth,
-                    mContentViewHeight,
-                    WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                    | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
-                    | WindowManager.LayoutParams.FLAG_FULLSCREEN
-                    | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                    PixelFormat.TRANSLUCENT);
-            if (getSidebarMode() == SidebarMode.MODE_LEFT) {
-                lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-            } else {
-                lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
-            }
-            lp.setTitle("sidebar_contentview");
-            lp.packageName = mContext.getPackageName();
-            lp.isEatHomeKey = true;
-            mWindowManager.addView(mContentView, lp);
-        }
+    public void addContentViewWindow() {
+        mContentView = (ContentView) View.inflate(mContext,
+                R.layout.content_view, null);
+        final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+                mContentViewWidth, mContentViewHeight,
+                WindowManager.LayoutParams.TYPE_SIDEBAR_TOOLS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                        | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
+                        | WindowManager.LayoutParams.FLAG_FULLSCREEN
+                        | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                PixelFormat.TRANSLUCENT);
+        lp.setTitle("sidebar_contentview");
+        lp.packageName = mContext.getPackageName();
+        lp.isEatHomeKey = true;
+        mContentView.setVisibility(View.GONE);
+        mWindowManager.addView(mContentView, lp);
     }
 
-    public void removeContentView() {
-        if (mContentViewAdded) {
-            mWindowManager.removeView(mContentView);
-            mContentViewAdded = false;
+    private void updateContentViewWindowBySidebarMode() {
+        final WindowManager.LayoutParams lp = (WindowManager.LayoutParams) mContentView.getLayoutParams();
+        if (getSidebarMode() == SidebarMode.MODE_LEFT) {
+            lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+        } else {
+            lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
         }
+        mWindowManager.updateViewLayout(mContentView, lp);
     }
 
     public ContentType getCurrentContentType(){
@@ -297,11 +283,11 @@ public class SidebarController {
 
     private final ISidebar.Stub mBinder = new ISidebar.Stub() {
         @Override
-        public void onEnterSidebarModeStart(int sidebarMode) throws RemoteException {
-            setSidebarMode(sidebarMode);
+        public void onEnterSidebarModeStart(final int sidebarMode) throws RemoteException {
             mHandler.post(new Runnable(){
                 @Override
                 public void run() {
+                    setSidebarMode(sidebarMode);
                     start();
                 }
             });

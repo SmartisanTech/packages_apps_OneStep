@@ -16,17 +16,15 @@ import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
-import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.CopyHistoryItem;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -252,7 +250,7 @@ public class TopView extends LinearLayout {
         return super.dispatchTouchEvent(ev);
     }
 
-    public void showAnimWhenSplitWindow() {
+    private void doAnimWhenEnter() {
         int time = 200;
         int[] loc = new int[2];
         mPhotos.getLocationOnScreen(loc);
@@ -277,12 +275,12 @@ public class TopView extends LinearLayout {
         timeLine.start();
     }
 
-    @Override
-    protected void onWindowVisibilityChanged(int visibility) {
-        super.onWindowVisibilityChanged(visibility);
-        if (View.VISIBLE == visibility) {
-            log.error("onWindowVisibilityChanged !");
-            showAnimWhenSplitWindow();
+    public void show(boolean show){
+        if(show){
+            setVisibility(View.VISIBLE);
+            doAnimWhenEnter();
+        }else{
+            setVisibility(View.GONE);
         }
     }
 }

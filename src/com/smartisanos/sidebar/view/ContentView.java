@@ -1,15 +1,12 @@
 package com.smartisanos.sidebar.view;
 
 import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.ViewStub;
 import android.widget.RelativeLayout;
 
@@ -20,7 +17,6 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimInterpolator;
-import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimUtils;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
@@ -73,9 +69,8 @@ public class ContentView extends RelativeLayout {
         if (mCurType != ContentType.NONE) {
             return;
         }
-        setVisibility(View.VISIBLE);
-        SidebarController.getInstance(mContext).addContentView();
         mCurType = ct;
+        setVisibility(View.VISIBLE);
         Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, ANIMATION_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
         alphaAnim.start();
         switch (ct) {
@@ -255,9 +250,8 @@ public class ContentView extends RelativeLayout {
                     return ;
                 }
             }
-            setVisibility(View.INVISIBLE);
+            setVisibility(View.GONE);
             SidebarController.getInstance(mContext).resumeTopView();
-            SidebarController.getInstance(mContext).removeContentView();
         }
     }
 

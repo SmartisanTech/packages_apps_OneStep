@@ -5,8 +5,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -32,8 +30,6 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimInterpolator;
-import com.smartisanos.sidebar.util.anim.AnimListener;
-import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 public class SideView extends RelativeLayout {
@@ -257,17 +253,6 @@ public class SideView extends RelativeLayout {
         }
     };
 
-    private Bitmap drawableToBitmap(Drawable drawable, int width, int height) {
-        if (drawable == null) {
-            return null;
-        }
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, width, height);
-        drawable.draw(canvas);
-        return bitmap;
-    }
-
     public int[] appListLoc = new int[2];
     public int[] contactListLoc = new int[2];
     private Rect drawingRect = new Rect();
@@ -461,28 +446,20 @@ public class SideView extends RelativeLayout {
         return false;
     }
 
-    public void showAnimWhenSplitWindow(int windowWidth) {
+    public void showAnimWhenSplitWindow() {
         boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
-        int fromX = -67;
         int toX = 0;
-        if (!isLeft) {
-            fromX = windowWidth;
-        }
-        log.error("sidebarListShowAnim from ["+fromX+"] to ["+toX+"]");
+        int fromX = isLeft ? -mContactList.getWidth() : mContactList.getWidth();
 
         ObjectAnimator anim1 = ObjectAnimator.ofFloat(mContactList, Anim.TRANSLATE_X, fromX, toX);
         ObjectAnimator anim2 = ObjectAnimator.ofFloat(mShareList, Anim.TRANSLATE_X, fromX, toX);
-//        ObjectAnimator alpha1 = ObjectAnimator.ofFloat(mContactList, Anim.ALPHA, 0, 1);
-//        ObjectAnimator alpha2 = ObjectAnimator.ofFloat(mShareList, Anim.ALPHA, 0, 1);
-
         ObjectAnimator[] anims = new ObjectAnimator[] {
                 anim1, anim2
         };
 
-        AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(Anim.CUBIC_OUT);
         AnimatorSet set = new AnimatorSet();
         set.setDuration(200);
-        set.setInterpolator(interpolator);
+        set.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
         set.playTogether(anims);
         set.start();
     }
@@ -574,23 +551,4 @@ public class SideView extends RelativeLayout {
         });
         rotateAnim.start();
     }
-
-    @Override
-    protected void onVisibilityChanged(View changedView, int visibility) {
-        super.onVisibilityChanged(changedView, visibility);
-        if (View.VISIBLE == visibility) {
-            log.error("Sidebar onVisibilityChanged !!!!");
-        }
-    }
-
-    @Override
-    protected void onWindowVisibilityChanged(int visibility) {
-        super.onWindowVisibilityChanged(visibility);
-        if (View.VISIBLE == visibility) {
-            log.error("Sidebar onWindowVisibilityChanged !!!!");
-            int windowWidth = mContext.getResources().getInteger(R.integer.window_width);
-            showAnimWhenSplitWindow(windowWidth);
-        }
-    }
-
 }

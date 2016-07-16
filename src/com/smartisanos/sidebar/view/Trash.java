@@ -161,7 +161,7 @@ public class Trash {
         trash_uninstall_react_area[3] = bottom;
     }
 
-    public void hieTrashView() {
+    public void hideTrashView() {
         if (mTrashView == null) {
             return;
         }
