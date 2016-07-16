@@ -161,11 +161,11 @@ public class ContentView extends RelativeLayout {
                 initAddToSidebar();
             }
             if (anim) {
+                boolean isLeft = SidebarController.getInstance(mViewContext).getSidebarMode() == SidebarMode.MODE_LEFT;
                 if (SidebarController.getInstance(mViewContext).getSideView() != null) {
-                    SidebarController.getInstance(mViewContext).getSideView().clickAddButtonAnim(false, null);
+                    SidebarController.getInstance(mViewContext).getSideView().clickAddButtonAnim(isLeft, false, null);
                 }
                 mAddContainner.startAnimation(AnimUtils.getExitAnimationForContainer(mAddContainner));
-                boolean isLeft = SidebarController.getInstance(mViewContext).getSidebarMode() == SidebarMode.MODE_LEFT;
                 ValueAnimator animator = new ValueAnimator();
                 animator.setFloatValues(0f, 1f);
                 animator.setDuration(300);

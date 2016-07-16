@@ -58,7 +58,7 @@ public class Anim {
     public static final int SCALE       = 1003;
     public static final int TRANSPARENT = 1004;
 
-    private Object mView;
+    private View mView;
     private int animType;
     private int duration;
     private int mInOut;
@@ -150,6 +150,7 @@ public class Anim {
     private void initAlpha(float from, float to) {
         if (from != to) {
             ObjectAnimator alphaAnim = ObjectAnimator.ofFloat(mView, ALPHA, from, to);
+            mView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             mAnimList = new ArrayList<Animator>();
             mAnimList.add(alphaAnim);
         }

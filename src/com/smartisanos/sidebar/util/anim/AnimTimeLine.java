@@ -40,6 +40,10 @@ public class AnimTimeLine {
         mAnimationSet.start();
     }
 
+    public void stop() {
+        mAnimationSet.end();
+    }
+
     public boolean started() {
         return mAnimationSet.isStarted();
     }

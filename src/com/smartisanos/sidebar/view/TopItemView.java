@@ -83,30 +83,18 @@ public class TopItemView extends FrameLayout {
         if(!mIsDim){
             mIsDim = true;
             setClickable(false);
-            ObjectAnimator anim = ObjectAnimator.ofFloat(mTopDimView, Anim.ALPHA, 0, 1);
-            anim.setDuration(ANIM_DURA);
-            anim.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
-            anim.addListener(new Animator.AnimatorListener() {
+            Anim alphaAnim = new Anim(mTopDimView, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+            alphaAnim.setListener(new AnimListener() {
                 @Override
-                public void onAnimationStart(Animator animator) {
+                public void onStart() {
                     mTopDimView.setVisibility(View.VISIBLE);
                 }
 
                 @Override
-                public void onAnimationEnd(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-
+                public void onComplete() {
                 }
             });
-            anim.start();
+            alphaAnim.start();
         }
     }
 
@@ -155,7 +143,17 @@ public class TopItemView extends FrameLayout {
         if(mIsDim){
             mIsDim = false;
             setClickable(true);
-            mTopDimView.setVisibility(View.GONE);
+            Anim alphaAnim = new Anim(mTopDimView, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            alphaAnim.setListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                }
+                @Override
+                public void onComplete() {
+                    mTopDimView.setVisibility(View.GONE);
+                }
+            });
+            alphaAnim.start();
         }
     }
 

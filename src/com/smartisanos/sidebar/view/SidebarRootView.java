@@ -25,6 +25,7 @@ import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.R;
 
@@ -251,7 +252,6 @@ public class SidebarRootView extends FrameLayout {
         if (!mDragging) {
             return;
         }
-        mDragging = false;
         final View view = mDragView.mView;
         Vector3f from = new Vector3f(0, view.getY());
         Vector3f to = new Vector3f(0, mTrash.mTrashView.getY() + 20);
@@ -274,6 +274,7 @@ public class SidebarRootView extends FrameLayout {
                         rootView.resetSidebarWindow();
                     }
                 });
+                mDragging = false;
             }
         });
         anim.start();
@@ -284,62 +285,33 @@ public class SidebarRootView extends FrameLayout {
         if (!mDragging) {
             return;
         }
-        mDragging = false;
         log.error("dropDrag !");
-        mDragView.hideBubble();
         final DragItem item = mDragView.getDragItem();
         final View view = mDragView.mView;
+        ImageView icon = mDragView.mDragViewIcon;
+        final int[] iconLoc = new int[2];
+        mDragView.hideBubble();
         int time = 200;
-        AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(Anim.CUBIC_OUT);
-        List<Animator> anims = new ArrayList<Animator>();
         int[] from = new int[2];
         int[] to = new int[2];
-        if (loc == null) {
-            view.getLocationOnScreen(from);
-        } else {
-            from = loc;
-        }
-
-        log.error("drag icon size ("+mDragView.iconWidth+", "+mDragView.iconHeight+")");
-        from[0] = from[0] - mDragView.iconWidth / 2;
-        from[1] = from[1] - mDragView.iconHeight / 2;
-
-
-        log.error("dropDrag start loc => ("+from[0]+", "+from[1]+")");
+        icon.getLocationOnScreen(iconLoc);
         item.mListItemView.getLocationOnScreen(to);
-        //drag view move anim
-        ObjectAnimator moveAnimX = ObjectAnimator.ofFloat(view, Anim.TRANSLATE_X, from[0], to[0]);
-        moveAnimX.setDuration(time);
-        moveAnimX.setInterpolator(interpolator);
-        anims.add(moveAnimX);
-        ObjectAnimator moveAnimY = ObjectAnimator.ofFloat(view, Anim.TRANSLATE_Y, from[1], to[1]);
-        moveAnimY.setDuration(time);
-        moveAnimY.setInterpolator(interpolator);
-        anims.add(moveAnimY);
-        //drag view scale anim
         int dragViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.drag_view_icon_size);
         int itemViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_list_item_img_size);
         float scale = (float) ((1.0 * itemViewSize) / (1.0 * dragViewSize));
-//        log.error("dragViewSize ["+dragViewSize+"], itemViewSize ["+itemViewSize+"], scale size ==> " + scale);
-        ObjectAnimator scaleAnimX = ObjectAnimator.ofFloat(view, Anim.SCALE_X, 1, scale);
-        scaleAnimX.setDuration(time);
-        scaleAnimX.setInterpolator(interpolator);
-        anims.add(scaleAnimX);
-        ObjectAnimator scaleAnimY = ObjectAnimator.ofFloat(view, Anim.SCALE_Y, 1, scale);
-        scaleAnimY.setDuration(time);
-        scaleAnimY.setInterpolator(interpolator);
-        anims.add(scaleAnimY);
-
-        AnimatorSet set = new AnimatorSet();
-        set.setDuration(time);
-        set.addListener(new Animator.AnimatorListener() {
+        Anim moveAnim = new Anim(view, Anim.TRANSLATE, time, Anim.CUBIC_IN, new Vector3f(from[0], from[1]), new Vector3f(to[0], to[1]));
+        Anim scaleAnim = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(scale, scale));
+        AnimTimeLine timeLine = new AnimTimeLine();
+        timeLine.addAnim(moveAnim);
+        timeLine.addAnim(scaleAnim);
+        timeLine.setAnimListener(new AnimListener() {
             @Override
-            public void onAnimationStart(Animator animator) {
+            public void onStart() {
                 mDragDroping = true;
             }
 
             @Override
-            public void onAnimationEnd(Animator animator) {
+            public void onComplete() {
                 mDragDroping = false;
                 view.setVisibility(View.INVISIBLE);
                 removeView(view);
@@ -357,18 +329,10 @@ public class SidebarRootView extends FrameLayout {
                 SidebarController controller = SidebarController.getInstance(mContext);
                 SidebarRootView rootView = controller.getSidebarRootView();
                 rootView.resetSidebarWindow();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
+                mDragging = false;
             }
         });
-        set.playTogether(anims);
-        set.start();
+        timeLine.start();
     }
 
     public DragView getDraggedView() {
@@ -436,10 +400,10 @@ public class SidebarRootView extends FrameLayout {
                 break;
             }
             case MotionEvent.ACTION_MOVE : {
+                if (ENABLE_TOUCH_LOG) log.error("ACTION_MOVE");
                 mDragView.move(x, y);
                 mSideView.dragObjectMove(x, y, eventTime);
                 mTrash.dragObjectMoveTo(x, y);
-                if (ENABLE_TOUCH_LOG) log.error("ACTION_MOVE");
                 break;
             }
             case MotionEvent.ACTION_SCROLL : {

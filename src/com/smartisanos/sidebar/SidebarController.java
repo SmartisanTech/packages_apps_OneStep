@@ -229,8 +229,8 @@ public class SidebarController {
             lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
             lp.setTitle("sidebar_topview");
             lp.packageName = mContext.getPackageName();
-            mTopView.getViewTreeObserver().addOnWindowShownListener(mTopWindowShownListener);
             mWindowManager.addView(mTopView, lp);
+            mTopView.getViewTreeObserver().addOnWindowShownListener(mTopWindowShownListener);
         }
     }
 

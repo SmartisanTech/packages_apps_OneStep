@@ -59,6 +59,34 @@ public class AnimUtils {
         return scaleAnim;
     }
 
+    public static void contentViewExitAnim(final View view) {
+        if (view == null) {
+            return;
+        }
+        view.setPivotY(0);
+        int time = 200;
+        Anim scaleAnim = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(1, 0.6f));
+        Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+        AnimTimeLine timeLine = new AnimTimeLine();
+        timeLine.addAnim(scaleAnim);
+        timeLine.addAnim(alphaAnim);
+        timeLine.setAnimListener(new AnimListener() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onComplete() {
+                view.setVisibility(View.INVISIBLE);
+                view.setAlpha(1);
+                view.setScaleX(1);
+                view.setScaleY(1);
+            }
+        });
+        timeLine.start();
+    }
+
     public static final class DismissAnimationListener implements Animation.AnimationListener{
 
         private View view;

@@ -179,16 +179,16 @@ public class SidebarListView extends ListView {
                 @Override
                 public boolean onPreDraw() {
                     getViewTreeObserver().removeOnPreDrawListener(this);
-                    final long animDelay = 20;
+                    final long animDelay = 15;
                     final List<View> childs = getChildViews();
                     for (int i = 0; i < childs.size(); ++i) {
                         final View child = childs.get(i);
                         child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
                         child.setDrawingCacheEnabled(false);
                         child.setAlpha(0);
-                        child.setTranslationY(30f);
+                        child.setTranslationY(-20f);
                         ViewPropertyAnimator anim = child.animate()
-                        .alpha(1).translationY(0).setDuration(ANIM_DURA).setInterpolator(new DecelerateInterpolator());
+                        .alpha(1).translationY(0).setDuration(ANIM_DURA).setInterpolator(new DecelerateInterpolator(1.5f));
                         if (i == childs.size() - 1) {
                              anim.setListener(new AnimatorListenerAdapter() {
                                  @Override
@@ -235,14 +235,14 @@ public class SidebarListView extends ListView {
                 @Override
                 public boolean onPreDraw() {
                     getViewTreeObserver().removeOnPreDrawListener(this);
-                    final long animDelay = 20;
+                    final long animDelay = 15;
                     final List<View> childs = getChildViews();
                     for (int i = 0; i < childs.size(); ++i) {
                         final View child = childs.get(i);
                         child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
                         child.setDrawingCacheEnabled(false);
                         child.setAlpha(0);
-                        child.setTranslationY(30f);
+                        child.setTranslationY(-20f);
                         ViewPropertyAnimator anim = child.animate().alpha(1).translationY(0).setDuration(ANIM_DURA).setInterpolator(new DecelerateInterpolator());
                         if (i == childs.size() - 1) {
                             anim.setListener(new AnimatorListenerAdapter() {
@@ -273,8 +273,7 @@ public class SidebarListView extends ListView {
     }
 
     public void dismiss(final DragEvent event) {
-        final long delayStep = 20;
-
+        final long delayStep = 15;
         final List<View> childs = getChildViews();
         for (int i = 0; i < childs.size(); ++i) {
             final View child = childs.get(i);
@@ -283,7 +282,7 @@ public class SidebarListView extends ListView {
             child.setAlpha(1);
             child.setTranslationY(0);
             ViewPropertyAnimator anim = child.animate().alpha(0)
-                    .translationY(30).setDuration(ANIM_DURA)
+                    .translationY(-20).setDuration(ANIM_DURA)
                     .setInterpolator(new DecelerateInterpolator());
             if (i == childs.size() - 1) {
                 anim.setListener(new AnimatorListenerAdapter() {

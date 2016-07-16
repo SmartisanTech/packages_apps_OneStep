@@ -101,7 +101,8 @@ public class SideView extends RelativeLayout {
             public void onClick(View v) {
                 SidebarController sc = SidebarController.getInstance(mContext);
                 if(sc.getCurrentContentType() == ContentType.NONE){
-                    clickAddButtonAnim(true, null);
+                    boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
+                    clickAddButtonAnim(isLeft, true, null);
                     sc.dimTopView();
                     sc.showContent(ContentType.ADDTOSIDEBAR);
                 }else if(sc.getCurrentContentType() == ContentType.ADDTOSIDEBAR){
@@ -461,12 +462,8 @@ public class SideView extends RelativeLayout {
     }
 
     public void showAnimWhenSplitWindow(int windowWidth) {
-        int listWidth = mScrollList.getWidth();
-        if (listWidth == 0) {
-            return;
-        }
         boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
-        int fromX = -listWidth;
+        int fromX = -67;
         int toX = 0;
         if (!isLeft) {
             fromX = windowWidth;
@@ -475,12 +472,18 @@ public class SideView extends RelativeLayout {
 
         ObjectAnimator anim1 = ObjectAnimator.ofFloat(mContactList, Anim.TRANSLATE_X, fromX, toX);
         ObjectAnimator anim2 = ObjectAnimator.ofFloat(mShareList, Anim.TRANSLATE_X, fromX, toX);
+//        ObjectAnimator alpha1 = ObjectAnimator.ofFloat(mContactList, Anim.ALPHA, 0, 1);
+//        ObjectAnimator alpha2 = ObjectAnimator.ofFloat(mShareList, Anim.ALPHA, 0, 1);
+
+        ObjectAnimator[] anims = new ObjectAnimator[] {
+                anim1, anim2
+        };
 
         AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(Anim.CUBIC_OUT);
         AnimatorSet set = new AnimatorSet();
         set.setDuration(200);
         set.setInterpolator(interpolator);
-        set.play(anim1).with(anim2);
+        set.playTogether(anims);
         set.start();
     }
 
@@ -514,7 +517,7 @@ public class SideView extends RelativeLayout {
     private static final boolean DISABLE_ADD_BUTTON_CLICK_ANIM = false;
     private boolean mAddButtonAnimRunning = false;
 
-    public void clickAddButtonAnim(boolean isAdd, final Runnable taskForComplete) {
+    public void clickAddButtonAnim(boolean isLeft, boolean isEnter, final Runnable taskForComplete) {
         if (DISABLE_ADD_BUTTON_CLICK_ANIM) {
             return;
         }
@@ -527,11 +530,20 @@ public class SideView extends RelativeLayout {
         mAddButtonAnimRunning = true;
         int from = 0;
         int to = 0;
-        if (isAdd) {
-            to = -45;
+        if (isLeft) {
+            if (isEnter) {
+                to = 45;
+            } else {
+                from = 45;
+            }
         } else {
-            from = -45;
+            if (isEnter) {
+                to = -45;
+            } else {
+                from = -45;
+            }
         }
+//        log.error("clickAddButtonAnim from ["+from+", "+to+"]");
         int width = mAdd.getWidth();
         int height = mAdd.getHeight();
         mAdd.setPivotX(width / 2);
