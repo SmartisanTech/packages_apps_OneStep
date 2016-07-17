@@ -350,17 +350,6 @@ public class SidebarListView extends ListView {
             }
             toY += view.getHeight();
         }
-        moveAnimTimeLine.setAnimListener(new AnimListener() {
-            @Override
-            public void onStart() {
-                log.error("move anim start");
-            }
-
-            @Override
-            public void onComplete() {
-                log.error("move anim end");
-            }
-        });
         moveAnimTimeLine.start();
     }
 }

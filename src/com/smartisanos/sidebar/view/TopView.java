@@ -7,6 +7,7 @@ import java.util.Map;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.BitmapUtils;
+import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.ImageInfo;
 import com.smartisanos.sidebar.util.LOG;
@@ -24,7 +25,6 @@ import android.content.Context;
 import android.content.CopyHistoryItem;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -49,6 +49,7 @@ public class TopView extends LinearLayout {
     private int mTopbarFileIconContentPaddingTop;
 
     private boolean mFinishInflated = false;
+    private Context mContext;
 
     public TopView(Context context) {
         this(context, null);
@@ -65,6 +66,7 @@ public class TopView extends LinearLayout {
     public TopView(Context context, AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        mContext = context;
         mController = SidebarController.getInstance(mContext);
         mTopbarPhotoIconContentSize = context.getResources().getDimensionPixelSize(R.dimen.topbar_photo_icon_content_size);
         mTopbarPhotoIconContentPaddingTop = context.getResources().getDimensionPixelSize(R.dimen.topbar_photo_icon_content_paddingTop);
@@ -111,25 +113,25 @@ public class TopView extends LinearLayout {
             public void onClick(View v) {
                 if (!(v instanceof TopItemView)) {
                     // error !
-                } else {
-                    TopItemView itemView = (TopItemView) v;
-                    if (mController.getCurrentContentType() == ContentType.NONE) {
-                        mController.showContent(mViewToType.get(itemView));
-                        for (TopItemView view : mViewToType.keySet()) {
-                            if (view == itemView) {
-                                view.highlight();
-                            } else {
-                                view.dim();
-                            }
-                        }
-                    } else {
-                        if (mController.getCurrentContentType() == mViewToType
-                                .get(itemView)) {
-                            mController.dismissContent(true);
-                            resumeToNormal();
+                    return;
+                }
+                TopItemView itemView = (TopItemView) v;
+                if (mController.getCurrentContentType() == ContentType.NONE) {
+                    mController.showContent(mViewToType.get(itemView));
+                    for (TopItemView view : mViewToType.keySet()) {
+                        if (view == itemView) {
+                            view.highlight();
                         } else {
-                            // never happen !
+                            view.dim();
                         }
+                    }
+                } else {
+                    if (mController.getCurrentContentType() == mViewToType
+                            .get(itemView)) {
+                        mController.dismissContent(true);
+                        resumeToNormal();
+                    } else {
+                        // never happen !
                     }
                 }
             }
@@ -252,34 +254,33 @@ public class TopView extends LinearLayout {
 
     private void doAnimWhenEnter() {
         int time = 200;
-        int[] loc = new int[2];
-        mPhotos.getLocationOnScreen(loc);
-        int fromY = - 50;
-        int toY = 0;
-//        Anim photoMove = new Anim(mPhotos, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
-//        Anim fileMove = new Anim(mFile, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
-//        Anim clipboardMove = new Anim(mClipboard, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
+        int delta = 67;
+        int y = mPhotos.getTop();
+        int fromY = y - delta;
+        int toY = y;
+        Anim photoMove = new Anim(mPhotos, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
+        Anim fileMove = new Anim(mFile, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
+        Anim clipboardMove = new Anim(mClipboard, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
 
         Anim photoAlpha = new Anim(mPhotos, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
         Anim fileAlpha = new Anim(mFile, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
         Anim clipboardAlpha = new Anim(mClipboard, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
 
         AnimTimeLine timeLine = new AnimTimeLine();
-//        timeLine.addAnim(photoMove);
-//        timeLine.addAnim(fileMove);
-//        timeLine.addAnim(clipboardMove);
+        timeLine.addAnim(photoMove);
+        timeLine.addAnim(fileMove);
+        timeLine.addAnim(clipboardMove);
         timeLine.addAnim(photoAlpha);
         timeLine.addAnim(fileAlpha);
         timeLine.addAnim(clipboardAlpha);
-
         timeLine.start();
     }
 
-    public void show(boolean show){
-        if(show){
+    public void show(boolean show) {
+        if (show) {
             setVisibility(View.VISIBLE);
             doAnimWhenEnter();
-        }else{
+        } else {
             setVisibility(View.GONE);
         }
     }

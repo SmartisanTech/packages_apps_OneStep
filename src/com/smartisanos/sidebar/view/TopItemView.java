@@ -89,9 +89,8 @@ public class TopItemView extends FrameLayout {
                 public void onStart() {
                     mTopDimView.setVisibility(View.VISIBLE);
                 }
-
                 @Override
-                public void onComplete() {
+                public void onComplete(int type) {
                 }
             });
             alphaAnim.start();
@@ -112,7 +111,7 @@ public class TopItemView extends FrameLayout {
                     mBackDimView.setVisibility(View.VISIBLE);
                 }
                 @Override
-                public void onComplete() {
+                public void onComplete(int type) {
                 }
             });
             timeLine.start();
@@ -134,7 +133,7 @@ public class TopItemView extends FrameLayout {
                 }
 
                 @Override
-                public void onComplete() {
+                public void onComplete(int type) {
                     mBackDimView.setVisibility(View.GONE);
                 }
             });
@@ -149,7 +148,7 @@ public class TopItemView extends FrameLayout {
                 public void onStart() {
                 }
                 @Override
-                public void onComplete() {
+                public void onComplete(int type) {
                     mTopDimView.setVisibility(View.GONE);
                 }
             });

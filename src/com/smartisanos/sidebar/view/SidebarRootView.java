@@ -257,7 +257,7 @@ public class SidebarRootView extends FrameLayout {
             }
 
             @Override
-            public void onComplete() {
+            public void onComplete(int type) {
                 mDragDeleting = false;
                 view.setVisibility(View.INVISIBLE);
                 removeView(view);
@@ -305,7 +305,7 @@ public class SidebarRootView extends FrameLayout {
             }
 
             @Override
-            public void onComplete() {
+            public void onComplete(int type) {
                 mDragDroping = false;
                 view.setVisibility(View.INVISIBLE);
                 removeView(view);

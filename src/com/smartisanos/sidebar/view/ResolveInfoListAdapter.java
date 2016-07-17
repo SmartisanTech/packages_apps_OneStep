@@ -37,19 +37,21 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
         mManager = ResolveInfoManager.getInstance(context);
         mResolveInfos = mManager.getAddedResolveInfoGroup();
         mAcceptableResolveInfos.addAll(mResolveInfos);
-        mManager.addListener(new ResolveInfoManager.ResolveInfoUpdateListener() {
-            @Override
-            public void onUpdate() {
-                new Handler(Looper.getMainLooper()).post(new Runnable(){
-                    @Override
-                    public void run() {
-                        mResolveInfos = mManager.getAddedResolveInfoGroup();
-                        updateAcceptableResolveInfos();
-                    }
-                });
-            }
-        });
+        mManager.addListener(resolveInfoUpdateListener);
     }
+
+    private ResolveInfoManager.ResolveInfoUpdateListener resolveInfoUpdateListener = new ResolveInfoManager.ResolveInfoUpdateListener() {
+        @Override
+        public void onUpdate() {
+            new Handler(Looper.getMainLooper()).post(new Runnable(){
+                @Override
+                public void run() {
+                    mResolveInfos = mManager.getAddedResolveInfoGroup();
+                    updateAcceptableResolveInfos();
+                }
+            });
+        }
+    };
 
     private void updateAcceptableResolveInfos() {
         mAcceptableResolveInfos.clear();
@@ -121,6 +123,7 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+        log.error("getView index " + position);
         final ViewHolder holder;
         ResolveInfoGroup resolveInfoGroup = mAcceptableResolveInfos.get(position);
         if (convertView == null || !(convertView instanceof RelativeLayout)) {
@@ -137,6 +140,9 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
             view.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
+        }
+        if (resolveInfoGroup.isNewAdd) {
+            //do anim
         }
         holder.restore();
         holder.setInfo(resolveInfoGroup, mDragEvent != null);

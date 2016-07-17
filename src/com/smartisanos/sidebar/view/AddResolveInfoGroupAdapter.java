@@ -13,10 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 
 public class AddResolveInfoGroupAdapter extends BaseAdapter{
+    private static final LOG log = LOG.getInstance(AddResolveInfoGroupAdapter.class);
     private Context mContext;
     private ResolveInfoManager mManager;
     private List<ResolveInfoGroup> mInfos;
@@ -29,16 +31,19 @@ public class AddResolveInfoGroupAdapter extends BaseAdapter{
         mManager = ResolveInfoManager.getInstance(mContext);
         mInfos = mManager.getUnAddedResolveInfoGroup();
         mHandler = new Handler(Looper.getMainLooper());
-        mManager.addListener(new ResolveInfoManager.ResolveInfoUpdateListener() {
-            @Override
-            public void onUpdate() {
-                postUpdate();
-            }
-        });
+        mManager.addListener(mResolveInfoUpdateListener);
         postUpdate();
     }
 
+    private ResolveInfoManager.ResolveInfoUpdateListener mResolveInfoUpdateListener = new ResolveInfoManager.ResolveInfoUpdateListener() {
+        @Override
+        public void onUpdate() {
+            postUpdate();
+        }
+    };
+
     private void postUpdate() {
+        log.error("postUpdate !");
         mHandler.post(new Runnable() {
             @Override
             public void run() {

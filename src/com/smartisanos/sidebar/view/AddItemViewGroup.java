@@ -92,6 +92,9 @@ public class AddItemViewGroup extends LinearLayout{
         }
         removeAnimRunning = true;
         int childCount = mResolveInfos.getChildCount();
+        if (childCount == 0) {
+            return;
+        }
         final View child = mResolveInfos.getChildAt(index);
         child.setScaleX(1.1f);
         child.setScaleY(1.1f);
@@ -121,7 +124,7 @@ public class AddItemViewGroup extends LinearLayout{
             }
 
             @Override
-            public void onComplete() {
+            public void onComplete(int type) {
                 if (runnable != null) {
                     runnable.run();
                 }

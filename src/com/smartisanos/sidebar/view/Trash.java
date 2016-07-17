@@ -192,7 +192,7 @@ public class Trash {
                 mTrashView.setTranslationX(mWindowWidth / 2 - width / 2);
             }
             @Override
-            public void onComplete() {
+            public void onComplete(int type) {
                 trashAnimRunning = false;
                 mTrashStatus = TRASH_SHOW;
                 log.error("trashAppearWithAnim onComplete");
@@ -218,7 +218,7 @@ public class Trash {
                 trashAnimRunning = true;
             }
             @Override
-            public void onComplete() {
+            public void onComplete(int type) {
                 trashAnimRunning = false;
                 mTrashStatus = TRASH_HIDE;
                 if (callback != null) {
@@ -252,7 +252,7 @@ public class Trash {
             }
 
             @Override
-            public void onComplete() {
+            public void onComplete(int type) {
                 mTrashStatus = TRASH_FLOAT;
                 mTrashUpAnimRunning = false;
                 if (runnable != null) {
@@ -282,7 +282,7 @@ public class Trash {
             }
 
             @Override
-            public void onComplete() {
+            public void onComplete(int type) {
                 mTrashDownAnimRunning = false;
                 mTrashStatus = TRASH_SHOW;
             }
@@ -315,7 +315,7 @@ public class Trash {
             }
 
             @Override
-            public void onComplete() {
+            public void onComplete(int type) {
                 if (dragView == null) {
                     log.error("moveIconToTrash view is null when anim complete");
                     return;
@@ -331,7 +331,6 @@ public class Trash {
                 } else {
                     rockOnTrash(dragView.mView);
                 }
-
             }
         });
         anim.start();

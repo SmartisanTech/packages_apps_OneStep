@@ -73,11 +73,10 @@ public class AnimUtils {
         timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
-
             }
 
             @Override
-            public void onComplete() {
+            public void onComplete(int type) {
                 view.setVisibility(View.INVISIBLE);
                 view.setAlpha(1);
                 view.setScaleX(1);

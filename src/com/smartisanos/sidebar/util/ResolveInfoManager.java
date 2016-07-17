@@ -130,7 +130,12 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
     }
 
     public void addListener(ResolveInfoUpdateListener listener){
-        mListeners.add(listener);
+        if (listener == null) {
+            return;
+        }
+        if (!mListeners.contains(listener)) {
+            mListeners.add(listener);
+        }
     }
 
     public void removeListener(ResolveInfoUpdateListener listener){

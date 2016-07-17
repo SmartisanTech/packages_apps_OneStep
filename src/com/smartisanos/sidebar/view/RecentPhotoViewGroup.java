@@ -1,5 +1,6 @@
 package com.smartisanos.sidebar.view;
 
+import android.animation.ObjectAnimator;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -11,12 +12,21 @@ import android.widget.GridView;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.IEmpty;
+import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.AnimUtils;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RecentPhotoViewGroup extends FrameLayout implements IEmpty {
+    private static final LOG log = LOG.getInstance(RecentPhotoViewGroup.class);
 
     private ContentView mContentView;
     private View mContainer, mClearPhoto;
@@ -107,6 +117,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty {
             if (!mIsEmpty) {
                 mGridView.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
                 mGridView.startLayoutAnimation();
+                imageAnim(true);
             }
             startAnimation(AnimUtils.getEnterAnimationForContainer());
         }
@@ -117,10 +128,98 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty {
             if (!mIsEmpty) {
                 mGridView.setLayoutAnimation(AnimUtils.getExitLayoutAnimationForListView());
                 mGridView.startLayoutAnimation();
+                imageAnim(false);
             }
             startAnimation(AnimUtils.getExitAnimationForContainer(this));
         } else {
             setVisibility(View.INVISIBLE);
         }
+    }
+
+    private AnimTimeLine mImageAnimTimeLine = null;
+
+    private void imageAnim(final boolean isShow) {
+        int count = mGridView.getCount();
+        Vector3f loc00 = new Vector3f();
+        Vector3f alphaFrom = new Vector3f();
+        Vector3f alphaTo = new Vector3f();
+        final int time = 600;
+        int easeInOut = Anim.CUBIC_OUT;
+        final List<Anim> anims = new ArrayList<Anim>();
+        for (int i = 0; i < count; i++) {
+            final View view = mGridView.getChildAt(i);
+            if (view == null) {
+                continue;
+            }
+            int x = view.getLeft();
+            int y = view.getTop();
+            if (i == 0) {
+                loc00.x = x;
+                loc00.y = y;
+                continue;
+            }
+            Vector3f from = new Vector3f();
+            Vector3f to = new Vector3f();
+            if (isShow) {
+                view.setTranslationX(loc00.x);
+                view.setTranslationX(loc00.y);
+                view.setAlpha(0);
+                from.x = loc00.x;
+                from.y = loc00.y;
+                to.x = x;
+                to.y = y;
+                alphaFrom.z = 0;
+                alphaTo.z = 1;
+            } else {
+                from.x = x;
+                from.y = y;
+                to.x = loc00.x;
+                to.y = loc00.y;
+                alphaFrom.z = 1;
+                alphaTo.z = 0;
+            }
+            log.error("imageAnim show ["+isShow+"] from "+ from + ", to " + to);
+            Anim moveAnim = new Anim(view, Anim.TRANSLATE, time, easeInOut, from, to);
+            Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time, easeInOut, alphaFrom, alphaTo);
+            anims.add(moveAnim);
+            anims.add(alphaAnim);
+        }
+        if (mImageAnimTimeLine != null) {
+            mImageAnimTimeLine.cancel();
+        }
+        mImageAnimTimeLine = new AnimTimeLine();
+        for (Anim anim : anims) {
+            mImageAnimTimeLine.addAnim(anim);
+        }
+        mImageAnimTimeLine.setAnimListener(new AnimListener() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onComplete(int type) {
+                if (type == Anim.ANIM_FINISH_TYPE_CANCELED) {
+                    for (Anim anim : anims) {
+                        if (anim == null) {
+                            continue;
+                        }
+                        if (anim.getAnimType() == Anim.TRANSLATE) {
+                            Vector3f loc = null;
+                            if (isShow) {
+                                loc = anim.getTo();
+                            } else {
+                                loc = anim.getFrom();
+                            }
+                            View view = anim.getView();
+                            if (view != null) {
+                                view.setX(loc.x);
+                                view.setY(loc.y);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        mImageAnimTimeLine.start();
     }
 }

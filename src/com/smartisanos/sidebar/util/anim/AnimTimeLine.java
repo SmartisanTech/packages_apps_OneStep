@@ -16,7 +16,7 @@ public class AnimTimeLine {
         if (!DBG_ANIM) {log.close();}
     }
 
-    private List<Animator> mAnimList = new ArrayList<Animator>();
+    private List<Anim> mAnimList = new ArrayList<Anim>();
     private AnimatorSet mAnimationSet = new AnimatorSet();
     private AnimListener mListener;
 
@@ -24,10 +24,11 @@ public class AnimTimeLine {
         if (anim == null) {
             return;
         }
-        List<ObjectAnimator> list = anim.getAnimList();
-        if (list != null) {
-            mAnimList.addAll(list);
-        }
+        mAnimList.add(anim);
+    }
+
+    public List<Anim> getAnimList() {
+        return mAnimList;
     }
 
     public void start() {
@@ -35,13 +36,21 @@ public class AnimTimeLine {
             return;
         }
         AnimatorSetListener listener = new AnimatorSetListener();
-        mAnimationSet.playTogether(mAnimList);
+        List<Animator> animators = new ArrayList<Animator>();
+        for (Anim anim : mAnimList) {
+            animators.addAll(anim.getAnimatorList());
+        }
+        mAnimationSet.playTogether(animators);
         mAnimationSet.addListener(listener);
         mAnimationSet.start();
     }
 
     public void stop() {
         mAnimationSet.end();
+    }
+
+    public void cancel() {
+        mAnimationSet.cancel();
     }
 
     public boolean started() {
@@ -71,15 +80,17 @@ public class AnimTimeLine {
         @Override
         public void onAnimationEnd(Animator animator) {
             endTime = System.currentTimeMillis();
-            if (mListener != null) {
-                mListener.onComplete();
-            }
 //            log.error("anim spend time ["+(endTime - startTime)+"]");
+            if (mListener != null) {
+                mListener.onComplete(Anim.ANIM_FINISH_TYPE_COMPLETE);
+            }
         }
 
         @Override
         public void onAnimationCancel(Animator animator) {
-
+            if (mListener != null) {
+                mListener.onComplete(Anim.ANIM_FINISH_TYPE_CANCELED);
+            }
         }
 
         @Override

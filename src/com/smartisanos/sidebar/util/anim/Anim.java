@@ -57,6 +57,10 @@ public class Anim {
     public static final int ROTATE      = 1002;
     public static final int SCALE       = 1003;
     public static final int TRANSPARENT = 1004;
+    public static final int MOVE        = 1005;
+
+    public static final int ANIM_FINISH_TYPE_COMPLETE = 1;
+    public static final int ANIM_FINISH_TYPE_CANCELED = 2;
 
     private View mView;
     private int animType;
@@ -74,7 +78,8 @@ public class Anim {
         if (type != TRANSLATE
                 && type != ROTATE
                 && type != SCALE
-                && type != TRANSPARENT) {
+                && type != TRANSPARENT
+                && type != MOVE) {
             throw new IllegalArgumentException("error anim type ["+type+"]");
         }
         if (from == null || to == null) {
@@ -103,7 +108,27 @@ public class Anim {
                 initAlpha(mFrom.z, mTo.z);
                 break;
             }
+            case MOVE : {
+                initMove(mFrom, mTo);
+                break;
+            }
         }
+    }
+
+    public Vector3f getFrom() {
+        return mFrom;
+    }
+
+    public Vector3f getTo() {
+        return mTo;
+    }
+
+    public int getAnimType() {
+        return animType;
+    }
+
+    public View getView() {
+        return mView;
     }
 
     private void initTranslate(Vector3f from, Vector3f to) {
@@ -156,6 +181,21 @@ public class Anim {
         }
     }
 
+    private void initMove(Vector3f from, Vector3f to) {
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("something is null ["+from+"]["+to+"]");
+        }
+        mAnimList = new ArrayList<Animator>();
+        if (from.x != to.x) {
+            ObjectAnimator animatorX = ObjectAnimator.ofFloat(mView, TRANSLATE_X, from.x, to.x);
+            mAnimList.add(animatorX);
+        }
+        if (from.y != to.y) {
+            ObjectAnimator animatorY = ObjectAnimator.ofFloat(mView, TRANSLATE_Y, from.y, to.y);
+            mAnimList.add(animatorY);
+        }
+    }
+
     public void start() {
         if (mAnimList == null || mAnimList.size() == 0) {
 //            throw new IllegalArgumentException("anim size is 0");
@@ -172,7 +212,7 @@ public class Anim {
         mAnimationSet.start();
     }
 
-    public List<ObjectAnimator> getAnimList() {
+    public List<ObjectAnimator> getAnimatorList() {
         if (mAnimList == null || mAnimList.size() == 0) {
             return null;
         }
@@ -206,14 +246,16 @@ public class Anim {
         public void onAnimationEnd(Animator animator) {
             endTime = System.currentTimeMillis();
             if (mListener != null) {
-                mListener.onComplete();
+                mListener.onComplete(ANIM_FINISH_TYPE_COMPLETE);
             }
 //            log.error("anim spend time ["+(endTime - startTime)+"]");
         }
 
         @Override
         public void onAnimationCancel(Animator animator) {
-
+            if (mListener != null) {
+                mListener.onComplete(ANIM_FINISH_TYPE_CANCELED);
+            }
         }
 
         @Override

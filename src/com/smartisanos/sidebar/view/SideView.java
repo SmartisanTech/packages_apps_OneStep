@@ -1,7 +1,6 @@
 package com.smartisanos.sidebar.view;
 
 import android.animation.Animator;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -29,7 +28,7 @@ import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.anim.Anim;
-import com.smartisanos.sidebar.util.anim.AnimInterpolator;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 public class SideView extends RelativeLayout {
@@ -157,20 +156,8 @@ public class SideView extends RelativeLayout {
         return mResolveAdapter;
     }
 
-    public void notifyAppListDataSetChanged() {
-        if (mResolveAdapter != null) {
-            mResolveAdapter.notifyDataSetChanged();
-        }
-    }
-
     public ContactListAdapter getContactListAdapter() {
         return mContactAdapter;
-    }
-
-    public void notifyContactListDataSetChanged() {
-        if (mContactAdapter != null) {
-            mContactAdapter.notifyDataSetChanged();
-        }
     }
 
     private void updateExitButtonBackground() {
@@ -446,22 +433,18 @@ public class SideView extends RelativeLayout {
         return false;
     }
 
+    public void initViewAnim() {
+        mScrollList.setVisibility(INVISIBLE);
+    }
+
     public void showAnimWhenSplitWindow() {
+        mScrollList.setVisibility(VISIBLE);
         boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
-        int toX = 0;
         int fromX = isLeft ? -mContactList.getWidth() : mContactList.getWidth();
-
-        ObjectAnimator anim1 = ObjectAnimator.ofFloat(mContactList, Anim.TRANSLATE_X, fromX, toX);
-        ObjectAnimator anim2 = ObjectAnimator.ofFloat(mShareList, Anim.TRANSLATE_X, fromX, toX);
-        ObjectAnimator[] anims = new ObjectAnimator[] {
-                anim1, anim2
-        };
-
-        AnimatorSet set = new AnimatorSet();
-        set.setDuration(200);
-        set.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
-        set.playTogether(anims);
-        set.start();
+        int toX = 0;
+        log.error("sidebarListShowAnim from ["+fromX+"] to ["+toX+"]");
+        Anim anim = new Anim(mScrollList, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, new Vector3f(fromX, 0), new Vector3f(toX, 0));
+        anim.start();
     }
 
     private void restoreListItemView(SidebarListView listView) {
