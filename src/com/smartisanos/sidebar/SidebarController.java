@@ -127,8 +127,8 @@ public class SidebarController {
     }
 
     private void AddWindows() {
-        addSideViewWindow();
         addTopViewWindow();
+        addSideViewWindow();
         addContentViewWindow();
     }
 
