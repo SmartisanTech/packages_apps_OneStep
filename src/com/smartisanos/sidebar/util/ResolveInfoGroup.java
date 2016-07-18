@@ -185,6 +185,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
                             intent.setComponent(new ComponentName(
                                     ri1.activityInfo.packageName,
                                     ri1.activityInfo.name));
+                            Utils.dismissAllDialog(mContext);
                             context.startActivity(intent);
                             return true;
                         }
@@ -215,7 +216,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
                         for (ResolveInfo ri2 : infos) {
                             if (sameComponet(ri1, ri2)) {
                                 intent.setComponent(new ComponentName(ri1.activityInfo.packageName, ri1.activityInfo.name));
-                                Log.d(TAG, "to start intent -> " + intent);
+                                Utils.dismissAllDialog(mContext);
                                 context.startActivity(intent);
                                 return true;
                             }

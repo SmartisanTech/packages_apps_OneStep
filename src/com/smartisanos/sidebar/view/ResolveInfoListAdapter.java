@@ -172,11 +172,7 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
                     case DragEvent.ACTION_DROP:
                         log.d("ACTION_DRAG_DROP");
                         holder.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
-                        boolean ret =  holder.resolveInfoGroup.handleEvent(mContext, event);
-                        if(ret){
-                            Utils.dismissAllDialog(mContext);
-                        }
-                        return ret;
+                        return holder.resolveInfoGroup.handleEvent(mContext, event);
                     case DragEvent.ACTION_DRAG_ENDED:
                         return true;
                 }
