@@ -140,13 +140,13 @@ public class SideView extends RelativeLayout {
         int action = event.getAction();
         switch(action){
         case DragEvent.ACTION_DRAG_STARTED:
-            mShareList.onDragStart(event);
             mContactList.onDragStart(event);
+            mShareList.onDragStart(event);
             return super.dispatchDragEvent(event);
         case DragEvent.ACTION_DRAG_ENDED:
             boolean ret = super.dispatchDragEvent(event);
-            mShareList.onDragEnd();
             mContactList.onDragEnd();
+            mShareList.onDragEnd();
             return ret;
         }
         return super.dispatchDragEvent(event);

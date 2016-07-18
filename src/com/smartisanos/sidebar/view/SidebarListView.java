@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,6 +84,7 @@ public class SidebarListView extends ListView {
                 removeFooterView(mFootView);
             }
         }
+
     }
 
     public void setCanAccpetDrag(boolean can){
@@ -162,6 +165,36 @@ public class SidebarListView extends ListView {
     }
 
     private static final int ANIM_DURA = 200;
+
+    private void showAnimWhenIn(final AnimatorListener listener) {
+        getRootView().getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        getRootView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        final long animDelay = 15;
+                        final List<View> childs = getChildViews();
+                        for (int i = 0; i < childs.size(); ++i) {
+                            final View child = childs.get(i);
+                            child.setAlpha(0);
+                            child.setTranslationY(-20f);
+                            ViewPropertyAnimator anim = child
+                                    .animate()
+                                    .alpha(1)
+                                    .translationY(0)
+                                    .setDuration(ANIM_DURA)
+                                    .setInterpolator(
+                                            new DecelerateInterpolator(1.5f));
+                            if (i == childs.size() - 1) {
+                                anim.setListener(listener);
+                            }
+                            anim.setStartDelay(animDelay * i + 200);
+                            anim.start();
+                        }
+                    }
+                });
+    }
+
     public void onDragStart(DragEvent event) {
         if(mDragEvent != null){
             mDragEvent.recycle();
@@ -174,38 +207,12 @@ public class SidebarListView extends ListView {
                 // no anim!;
                 return ;
             }
-
-            getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            showAnimWhenIn(new AnimatorListenerAdapter() {
                 @Override
-                public boolean onPreDraw() {
-                    getViewTreeObserver().removeOnPreDrawListener(this);
-                    final long animDelay = 15;
-                    final List<View> childs = getChildViews();
-                    for (int i = 0; i < childs.size(); ++i) {
-                        final View child = childs.get(i);
-                        child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-                        child.setDrawingCacheEnabled(false);
-                        child.setAlpha(0);
-                        child.setTranslationY(-20f);
-                        ViewPropertyAnimator anim = child.animate()
-                        .alpha(1).translationY(0).setDuration(ANIM_DURA).setInterpolator(new DecelerateInterpolator(1.5f));
-                        if (i == childs.size() - 1) {
-                             anim.setListener(new AnimatorListenerAdapter() {
-                                 @Override
-                                 public void onAnimationEnd(Animator animation) {
-                                     for (View view : childs) {
-                                         view.setLayerType(View.LAYER_TYPE_NONE, null);
-                                         view.setDrawingCacheEnabled(true);
-                                     }
-                                     if (mDragEvent != null) {
-                                         mFake.onDragStart(mDragEvent);
-                                     }
-                                 }
-                             });
-                        }
-                        anim.setStartDelay(animDelay * i + 200);
+                public void onAnimationEnd(Animator animation) {
+                    if (mDragEvent != null) {
+                        mFake.onDragStart(mDragEvent);
                     }
-                    return true;
                 }
             });
 
@@ -231,34 +238,10 @@ public class SidebarListView extends ListView {
                 return ;
             }
 
-            getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            showAnimWhenIn(new AnimatorListenerAdapter() {
                 @Override
-                public boolean onPreDraw() {
-                    getViewTreeObserver().removeOnPreDrawListener(this);
-                    final long animDelay = 15;
-                    final List<View> childs = getChildViews();
-                    for (int i = 0; i < childs.size(); ++i) {
-                        final View child = childs.get(i);
-                        child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-                        child.setDrawingCacheEnabled(false);
-                        child.setAlpha(0);
-                        child.setTranslationY(-20f);
-                        ViewPropertyAnimator anim = child.animate().alpha(1).translationY(0).setDuration(ANIM_DURA).setInterpolator(new DecelerateInterpolator());
-                        if (i == childs.size() - 1) {
-                            anim.setListener(new AnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    for (View view : childs) {
-                                        view.setLayerType(View.LAYER_TYPE_NONE,null);
-                                        view.setDrawingCacheEnabled(true);
-                                    }
-                                    mFake.onDragEnd();
-                                }
-                            });
-                        }
-                        anim.setStartDelay(animDelay * i + 200);
-                    }
-                    return true;
+                public void onAnimationEnd(Animator animation) {
+                    mFake.onDragEnd();
                 }
             });
 

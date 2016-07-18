@@ -65,6 +65,7 @@ public class Anim {
     private View mView;
     private int animType;
     private int duration;
+    private int mDelay;
     private int mInOut;
     private Vector3f mFrom;
     private Vector3f mTo;
@@ -75,6 +76,10 @@ public class Anim {
     private List<Animator> mAnimList;
 
     public Anim(View view, int type, int time, int easeInOut, Vector3f from, Vector3f to) {
+        this(view, type, time, 0, easeInOut, from, to);
+    }
+
+    public Anim(View view, int type, int time, int delay, int easeInOut, Vector3f from, Vector3f to) {
         if (type != TRANSLATE
                 && type != ROTATE
                 && type != SCALE
@@ -88,6 +93,7 @@ public class Anim {
         mView = view;
         animType = type;
         duration = time;
+        mDelay = delay;
         mInOut = easeInOut;
         mFrom = from;
         mTo = to;
@@ -207,6 +213,7 @@ public class Anim {
         mAnimationSet = new AnimatorSet();
         mAnimationSet.playTogether(mAnimList);
         mAnimationSet.setDuration(duration);
+        mAnimationSet.setStartDelay(mDelay);
         mAnimationSet.setInterpolator(interpolator);
         mAnimationSet.addListener(listener);
         mAnimationSet.start();
@@ -223,6 +230,7 @@ public class Anim {
             ObjectAnimator anim = (ObjectAnimator) mAnimList.get(i);
             if (anim != null) {
                 anim.setDuration(duration);
+                anim.setStartDelay(mDelay);
                 anim.setInterpolator(interpolator);
                 list.add(anim);
             }

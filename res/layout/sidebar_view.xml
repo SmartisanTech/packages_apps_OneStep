@@ -20,12 +20,12 @@
             android:layout_marginTop="86dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            <LinearLayout
-                android:orientation="vertical"
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-                <FrameLayout
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                     <com.smartisanos.sidebar.view.SidebarListView
                         android:id="@+id/contactlist_fake"
@@ -33,27 +33,31 @@
                         android:layout_height="wrap_content"
                         android:visibility="gone"/>
                     <com.smartisanos.sidebar.view.SidebarListView
-                        android:id="@+id/contactlist"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </FrameLayout>
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <com.smartisanos.sidebar.view.SidebarListView
                         android:id="@+id/sharelist_fake"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="gone"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <com.smartisanos.sidebar.view.SidebarListView
+                        android:id="@+id/contactlist"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
                     <com.smartisanos.sidebar.view.SidebarListView
                         android:id="@+id/sharelist"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-                </FrameLayout>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"/>
-            </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"/>
+                </LinearLayout>
+        </FrameLayout>
         </com.smartisanos.sidebar.view.DragScrollView>
         <View
             android:layout_width="48dp"
