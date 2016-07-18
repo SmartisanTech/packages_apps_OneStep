@@ -112,9 +112,6 @@ public class SidebarRootView extends FrameLayout {
         public ImageView mDragViewIcon;
         public TextView mBubbleText;
 
-//        private int bubbleTextWidth;
-//        private int bubbleTextHeight;
-
         private int[] initLoc;
 
         private boolean mAlreadyInit = false;
@@ -128,13 +125,6 @@ public class SidebarRootView extends FrameLayout {
             mItem = item;
             mIcon = item.iconOrig;
             mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
-//            final float offsetX = 0;
-//            final float offsetY = 0;
-//            final float initialScale = 1;
-//            int iconSize = context.getResources().getDimensionPixelSize(R.dimen.drag_view_icon_size);
-//            Resources resources = context.getResources();
-//            final float scaleDps = resources.getDimensionPixelSize(R.dimen.dragViewScale);
-//            final float scale = (iconWidth + scaleDps) / iconWidth;
 
             mDragViewIcon = (ImageView) mView.findViewById(R.id.drag_view_icon);
             mDragViewIcon.setBackground(mIcon);
@@ -246,6 +236,10 @@ public class SidebarRootView extends FrameLayout {
         if (!mDragging) {
             return;
         }
+
+        setChildrenDrawingOrderEnabled(true);
+        mEnableUninstallAnim = true;
+        requestLayout();
         final View view = mDragView.mView;
         Vector3f from = new Vector3f(0, view.getY());
         Vector3f to = new Vector3f(0, mTrash.mTrashView.getY() + 20);
@@ -259,6 +253,8 @@ public class SidebarRootView extends FrameLayout {
             @Override
             public void onComplete(int type) {
                 mDragDeleting = false;
+                setChildrenDrawingOrderEnabled(false);
+                mEnableUninstallAnim = false;
                 view.setVisibility(View.INVISIBLE);
                 removeView(view);
                 mTrash.trashDisappearWithAnim(new Runnable() {
@@ -292,7 +288,7 @@ public class SidebarRootView extends FrameLayout {
         int dragViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.drag_view_icon_size);
         int itemViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_list_item_img_size);
         float scale = (float) ((1.0 * itemViewSize) / (1.0 * dragViewSize));
-        log.error("dropDrag from ("+from[0]+", "+from[1]+"), to ("+to[0]+", "+to[1]+")");
+//        log.error("dropDrag from ("+from[0]+", "+from[1]+"), to ("+to[0]+", "+to[1]+")");
         Anim moveAnim = new Anim(view, Anim.TRANSLATE, time, Anim.CUBIC_IN, new Vector3f(from[0], from[1]), new Vector3f(to[0], to[1]));
         Anim scaleAnim = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(scale, scale));
         AnimTimeLine timeLine = new AnimTimeLine();
@@ -425,5 +421,22 @@ public class SidebarRootView extends FrameLayout {
             setVisibility(View.GONE);
             onDismiss();
         }
+    }
+
+    public boolean mEnableUninstallAnim = false;
+
+    @Override
+    protected int getChildDrawingOrder(int childCount, int index) {
+        if (mEnableUninstallAnim) {
+            int count = getChildCount();
+            View view = getChildAt(index);
+            int id = view.getId();
+            if (id == R.id.trash) {
+                return (count - 1);
+            } else if (id == -1) {
+                return (count - 2);
+            }
+        }
+        return super.getChildDrawingOrder(childCount, index);
     }
 }
