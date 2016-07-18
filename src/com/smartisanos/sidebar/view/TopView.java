@@ -282,6 +282,7 @@ public class TopView extends LinearLayout {
             doAnimWhenEnter();
         } else {
             setVisibility(View.GONE);
+            resumeToNormal();
         }
     }
 }
