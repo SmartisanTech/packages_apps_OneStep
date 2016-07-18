@@ -43,7 +43,7 @@ import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 import smartisanos.util.SidebarUtils;
 
-public class ClipboardViewGroup extends FrameLayout implements IEmpty, ContentView.ISubView {
+public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView {
 
     private ContentView mContentView;
     private View mClearClipboard;
@@ -181,7 +181,7 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty, ContentVi
                 @Override
                 public void onComplete(int type) {
                     setScaleY(1);
-                    setVisibility(View.INVISIBLE);
+                    setVisibility(View.GONE);
                     int count = getChildCount();
                     for (int i = 0; i < count; i++) {
                         View view = getChildAt(i);
@@ -193,7 +193,7 @@ public class ClipboardViewGroup extends FrameLayout implements IEmpty, ContentVi
             });
             timeLine.start();
         } else {
-            setVisibility(View.INVISIBLE);
+            setVisibility(View.GONE);
         }
     }
 

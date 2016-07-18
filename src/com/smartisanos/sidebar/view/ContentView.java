@@ -71,7 +71,6 @@ public class ContentView extends RelativeLayout {
             return;
         }
         mCurType = ct;
-        setVisibility(View.VISIBLE);
         mMapTypeToView.get(ct).show(anim);
         if (anim) {
             Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, ANIMATION_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
@@ -123,6 +122,8 @@ public class ContentView extends RelativeLayout {
                 }
             }
             setVisibility(View.GONE);
+        }else{
+            setVisibility(View.VISIBLE);
         }
     }
 

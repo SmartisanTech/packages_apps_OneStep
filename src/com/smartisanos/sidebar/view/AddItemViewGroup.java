@@ -192,7 +192,7 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
 
                 @Override
                 public void onComplete(int type) {
-                    setVisibility(View.INVISIBLE);
+                    setVisibility(View.GONE);
                     setScaleX(1);
                     setScaleY(1);
                     setAlpha(1);
@@ -200,7 +200,7 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
             });
             timeLine.start();
         } else {
-            setVisibility(View.INVISIBLE);
+            setVisibility(View.GONE);
         }
     }
 

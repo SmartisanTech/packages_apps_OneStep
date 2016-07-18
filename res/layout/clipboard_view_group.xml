@@ -4,6 +4,7 @@
     android:id="@+id/clipboard_view_group"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/content_bg"
     android:orientation="vertical">
     <include
         layout="@layout/clipboard_content"

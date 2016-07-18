@@ -11,4 +11,5 @@
     <dimen name="drag_scroll_view_bottom_area">72dp</dimen>
     <!-- drag view values -->
     <dimen name="dragViewScale">12dp</dimen>
+    <dimen name="clip_radius">6dp</dimen>
 </resources>

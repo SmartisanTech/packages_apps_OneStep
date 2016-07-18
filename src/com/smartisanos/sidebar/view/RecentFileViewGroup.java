@@ -15,11 +15,10 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class RecentFileViewGroup extends FrameLayout implements IEmpty, ContentView.ISubView {
+public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView {
 
     private ContentView mContentView;
 
@@ -131,7 +130,7 @@ public class RecentFileViewGroup extends FrameLayout implements IEmpty, ContentV
                 @Override
                 public void onComplete(int type) {
                     setScaleY(1);
-                    setVisibility(View.INVISIBLE);
+                    setVisibility(View.GONE);
                     int count = getChildCount();
                     for (int i = 0; i < count; i++) {
                         View view = getChildAt(i);
@@ -143,7 +142,7 @@ public class RecentFileViewGroup extends FrameLayout implements IEmpty, ContentV
             });
             timeLine.start();
         } else {
-            setVisibility(View.INVISIBLE);
+            setVisibility(View.GONE);
         }
     }
 

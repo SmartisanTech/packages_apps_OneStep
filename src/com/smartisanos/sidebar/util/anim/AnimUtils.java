@@ -107,7 +107,7 @@ public class AnimUtils {
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            view.setVisibility(View.INVISIBLE);
+            view.setVisibility(View.GONE);
             if(clear != null){
                 clear.clear();
             }

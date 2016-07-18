@@ -1,6 +1,5 @@
 package com.smartisanos.sidebar.view;
 
-import android.animation.ObjectAnimator;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -134,7 +133,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
             }
             startAnimation(AnimUtils.getExitAnimationForContainer(this));
         } else {
-            setVisibility(View.INVISIBLE);
+            setVisibility(View.GONE);
         }
     }
 
