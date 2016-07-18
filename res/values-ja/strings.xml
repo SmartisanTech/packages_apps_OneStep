@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="topbar_photo">画像</string>
+    <string name="topbar_file">ファイル</string>
+    <string name="topbar_clipboard">クリップボード</string>
+    <string name="title_photo">最近の画像</string>
+    <string name="title_file">最近のファイル</string>
+    <string name="title_clipboard">最近のクリップボードテキスト</string>
+    <string name="add_contact_shortcut">連絡先ショートカット作成</string>
+    <string name="add_application_shortcut">アプリショートカット作成</string>
+    <string name="add_contact_dingding">Dingding連絡先</string>
+    <string name="add_contact_wechat">WeChar連絡先</string>
+    <string name="add_contact_mail">メール連絡先</string>
+    <string name="add_contact_mms">SMS連絡先</string>
+    <string name="open_gallery">アルバムを開く</string>
+    <string name="title_confirm_delete_history_photo">履歴のクリアでは画像は削除されません</string>
+    <string name="title_confirm_delete_history_file">履歴のクリアではファイルは削除されません</string>
+    <string name="title_confirm_delete_history_clipboard">クリップボードをクリアすると復元できません</string>
+    <string name="clear">消去</string>
+    <string name="add_wechat_hint">WeChatを開き友人詳細ページの左上の三角アイコンから「ホーム画面に追加」を選択</string>
+
+    <string name="clipboard_fulltext_back">戻る</string>
+
+    <!-- uninstall -->
+    <string name="uninstall_app_dialog_title">ヒント</string>
+    <string name="uninstall_app_dialog_text">"%1$s"をサイドパネルから削除しますか？</string>
+    <string name="text_copied">テキストコピー済み</string>
+    <string name="photo_empty_text">画像履歴はありません</string>
+    <string name="photo_empty_hint">最近受け取ったり編集した画像はここに表示されます</string>
+    <string name="file_empty_text">ファイル履歴はありません</string>
+    <string name="file_empty_hint">最近受け取ったり編集したファイルはここに表示されます</string>
+    <string name="clipboard_empty_text">クリップボードなし</string>
+    <string name="clipboard_empty_hint">最近切り取ったりコピーしたテキストはここに表示されます</string>
+</resources>
