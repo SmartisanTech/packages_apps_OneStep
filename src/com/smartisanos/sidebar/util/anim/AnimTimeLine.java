@@ -61,6 +61,13 @@ public class AnimTimeLine {
         return mAnimationSet.isRunning();
     }
 
+    public void addAnimatorListener(Animator.AnimatorListener listener) {
+        if (listener == null) {
+            return;
+        }
+        mAnimationSet.addListener(listener);
+    }
+
     public void setAnimListener(AnimListener listener) {
         mListener = listener;
     }

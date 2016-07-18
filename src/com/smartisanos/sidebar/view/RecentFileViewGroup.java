@@ -4,7 +4,11 @@ import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.RecentFileManager;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.AnimUtils;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 import android.content.Context;
@@ -102,11 +106,42 @@ public class RecentFileViewGroup extends FrameLayout implements IEmpty, ContentV
 
     public void dismiss(boolean anim) {
         if (anim) {
+            setPivotY(0);
+            AnimTimeLine timeLine = new AnimTimeLine();
             if (mIsEmpty) {
                 mRecentFileList.setLayoutAnimation(AnimUtils.getExitLayoutAnimationForListView());
                 mRecentFileList.startLayoutAnimation();
+            } else {
+                int count = getChildCount();
+                if (count > 0) {
+                    for (int i = 0; i < count; i++) {
+                        View view = getChildAt(i);
+                        Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+                        timeLine.addAnim(alphaAnim);
+                    }
+                }
             }
-            startAnimation(AnimUtils.getExitAnimationForContainer(this));
+            Anim scaleAnim = new Anim(this, Anim.SCALE, 200, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(1, 0.6f));
+            timeLine.addAnim(scaleAnim);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    setScaleY(1);
+                    setVisibility(View.INVISIBLE);
+                    int count = getChildCount();
+                    for (int i = 0; i < count; i++) {
+                        View view = getChildAt(i);
+                        if (view != null) {
+                            view.setAlpha(1);
+                        }
+                    }
+                }
+            });
+            timeLine.start();
         } else {
             setVisibility(View.INVISIBLE);
         }

@@ -137,6 +137,18 @@ public class Anim {
         return mView;
     }
 
+    public void setDelay(long delay) {
+        if (mAnimList == null) {
+            return;
+        }
+        if (delay == 0) {
+            return;
+        }
+        for (Animator animator : mAnimList) {
+            animator.setStartDelay(delay);
+        }
+    }
+
     private void initTranslate(Vector3f from, Vector3f to) {
         if (from == null || to == null) {
             throw new IllegalArgumentException("something is null ["+from+"]["+to+"]");
@@ -208,13 +220,15 @@ public class Anim {
             log.error("anim array is empty !");
             return;
         }
-        AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(mInOut);
         AnimatorSetListener listener = new AnimatorSetListener();
         mAnimationSet = new AnimatorSet();
         mAnimationSet.playTogether(mAnimList);
         mAnimationSet.setDuration(duration);
         mAnimationSet.setStartDelay(mDelay);
-        mAnimationSet.setInterpolator(interpolator);
+        if (mInOut != 0) {
+            AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(mInOut);
+            mAnimationSet.setInterpolator(interpolator);
+        }
         mAnimationSet.addListener(listener);
         mAnimationSet.start();
     }

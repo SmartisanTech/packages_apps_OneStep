@@ -3,7 +3,11 @@ package com.smartisanos.sidebar.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,7 +15,12 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -22,6 +31,11 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimInterpolator;
+import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 
 public class ResolveInfoListAdapter extends DragEventAdapter {
     private static final LOG log = LOG.getInstance(ResolveInfoListAdapter.class);
@@ -32,12 +46,19 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
     private List<ResolveInfoGroup> mAcceptableResolveInfos = new ArrayList<ResolveInfoGroup>();
     private DragEvent mDragEvent;
     private ResolveInfoManager mManager;
+    private SidebarListView mListView;
+
     public ResolveInfoListAdapter(Context context) {
+        this(context, null);
+    }
+
+    public ResolveInfoListAdapter(Context context, SidebarListView listView) {
         mContext = context;
         mManager = ResolveInfoManager.getInstance(context);
         mResolveInfos = mManager.getAddedResolveInfoGroup();
         mAcceptableResolveInfos.addAll(mResolveInfos);
         mManager.addListener(resolveInfoUpdateListener);
+        mListView = listView;
     }
 
     private ResolveInfoManager.ResolveInfoUpdateListener resolveInfoUpdateListener = new ResolveInfoManager.ResolveInfoUpdateListener() {
@@ -123,7 +144,6 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        log.error("getView index " + position);
         final ViewHolder holder;
         ResolveInfoGroup resolveInfoGroup = mAcceptableResolveInfos.get(position);
         if (convertView == null || !(convertView instanceof RelativeLayout)) {
@@ -140,9 +160,6 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
             view.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
-        }
-        if (resolveInfoGroup.isNewAdd) {
-            //do anim
         }
         holder.restore();
         holder.setInfo(resolveInfoGroup, mDragEvent != null);

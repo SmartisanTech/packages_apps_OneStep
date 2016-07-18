@@ -71,11 +71,19 @@
                 android:id="@+id/exit"
                 android:layout_width="48dp"
                 android:layout_height="43dp"/>
-            <Button
+            <ImageView
                 android:id="@+id/add"
-                android:layout_width="48dp"
-                android:layout_height="43dp"
-                android:background="@drawable/add"/>
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/add"
+                android:layout_gravity="center"
+                android:layout_marginTop="0dp"
+                />
+            <!--<Button-->
+                <!--android:id="@+id/add"-->
+                <!--android:layout_width="48dp"-->
+                <!--android:layout_height="43dp"-->
+                <!--android:background="@drawable/add"/>-->
         </LinearLayout>
     </com.smartisanos.sidebar.view.SideView>
     <FrameLayout

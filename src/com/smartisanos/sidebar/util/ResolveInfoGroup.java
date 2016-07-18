@@ -28,7 +28,6 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
     private Context mContext;
     private SoftReference<Bitmap> mBlackWhiteIcon = null;
     private int mIndex = -1;
-    public boolean isNewAdd = false;
 
     public ResolveInfoGroup(Context context){
         super();

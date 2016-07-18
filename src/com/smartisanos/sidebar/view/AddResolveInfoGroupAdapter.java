@@ -45,7 +45,6 @@ public class AddResolveInfoGroupAdapter extends BaseAdapter{
     };
 
     private void postUpdate() {
-        log.error("postUpdate !");
         mHandler.post(new Runnable() {
             @Override
             public void run() {

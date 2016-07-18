@@ -275,7 +275,7 @@ public class SidebarRootView extends FrameLayout {
     }
 
     private boolean mDragDroping = false;
-    public void dropDrag(int[] loc) {
+    public void dropDrag() {
         if (!mDragging) {
             return;
         }
@@ -368,14 +368,10 @@ public class SidebarRootView extends FrameLayout {
         return false;
     }
 
-    private int[] touchLoc = new int[2];
-
     private void precessTouch(MotionEvent event) {
         int action = event.getAction();
         int x = (int) event.getRawX();
         int y = (int) event.getRawY();
-        touchLoc[0] = x;
-        touchLoc[1] = y;
         long eventTime = event.getEventTime();
         switch (action) {
             case MotionEvent.ACTION_DOWN : {
@@ -388,7 +384,7 @@ public class SidebarRootView extends FrameLayout {
                 if (mTrash.dragObjectUpOnUp(x, y)) {
                     //handle uninstall
                 } else {
-                    dropDrag(touchLoc);
+                    dropDrag();
                     mTrash.trashDisappearWithAnim(null);
                 }
                 break;

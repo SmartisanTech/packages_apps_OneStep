@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
@@ -28,6 +29,7 @@ import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
@@ -35,7 +37,7 @@ public class SideView extends RelativeLayout {
     private static final LOG log = LOG.getInstance(SideView.class);
 
     private Button mExit;
-    private Button mAdd;
+    private ImageView mAdd;
 
     private SidebarListView mShareList, mContactList;
     private SidebarListView mShareListFake, mContactListFake;
@@ -90,7 +92,7 @@ public class SideView extends RelativeLayout {
             }
         });
 
-        mAdd = (Button)findViewById(R.id.add);
+        mAdd = (ImageView) findViewById(R.id.add);
         mAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,16 +124,15 @@ public class SideView extends RelativeLayout {
 
         //resolve
         mShareList = (SidebarListView) findViewById(R.id.sharelist);
-        mResolveAdapter = new ResolveInfoListAdapter(mContext);
+        mResolveAdapter = new ResolveInfoListAdapter(mContext, mShareList);
         mShareList.setAdapter(mResolveAdapter);
         mShareList.setOnItemLongClickListener(mShareItemOnLongClickListener);
 
         mShareListFake = (SidebarListView) findViewById(R.id.sharelist_fake);
-        mShareListFake.setCanAccpetDrag(false);
+        mShareListFake.setCanAcceptDrag(false);
         mShareListFake.setAdapter(new ResolveInfoListAdapter(mContext));
 
         mShareList.setFake(mShareListFake);
-
         mScrollList = (ScrollView) findViewById(R.id.sideview_scroll_list);
     }
 
@@ -508,30 +509,26 @@ public class SideView extends RelativeLayout {
         int height = mAdd.getHeight();
         mAdd.setPivotX(width / 2);
         mAdd.setPivotY(height / 2);
-        ObjectAnimator rotateAnim = ObjectAnimator.ofFloat(mAdd, Anim.ROTATION, from, to);
-        rotateAnim.setDuration(300);
-        rotateAnim.addListener(new Animator.AnimatorListener() {
+        mAdd.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        mAdd.setDrawingCacheEnabled(false);
+
+
+        final Anim anim = new Anim(mAdd, Anim.ROTATE, 300, Anim.CUBIC_OUT, new Vector3f(0, 0, from), new Vector3f(0, 0, to));
+        anim.setListener(new AnimListener() {
             @Override
-            public void onAnimationStart(Animator animator) {
+            public void onStart() {
             }
 
             @Override
-            public void onAnimationEnd(Animator animator) {
+            public void onComplete(int type) {
+                View view = anim.getView();
+                view.setRotation(anim.getTo().z);
                 mAddButtonAnimRunning = false;
                 if (taskForComplete != null) {
                     taskForComplete.run();
                 }
             }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-                mAddButtonAnimRunning = false;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-            }
         });
-        rotateAnim.start();
+        anim.start();
     }
 }

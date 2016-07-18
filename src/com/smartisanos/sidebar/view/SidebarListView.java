@@ -8,7 +8,6 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,10 +27,6 @@ import com.smartisanos.sidebar.util.anim.Vector3f;
 
 public class SidebarListView extends ListView {
     private static final LOG log = LOG.getInstance(SidebarListView.class);
-    private static final boolean DBG = false;
-    static {
-        if (!DBG) {log.close();}
-    }
 
     private boolean mNeedFootView = false;
     private View mFootView;
@@ -87,7 +82,7 @@ public class SidebarListView extends ListView {
 
     }
 
-    public void setCanAccpetDrag(boolean can){
+    public void setCanAcceptDrag(boolean can){
         mCanAccpeeDrag = can;
     }
 
@@ -164,7 +159,7 @@ public class SidebarListView extends ListView {
         return ret;
     }
 
-    private static final int ANIM_DURA = 200;
+    private static final int ANIM_DURA = 150;
 
     private void showAnimWhenIn(final AnimatorListener listener) {
         getRootView().getViewTreeObserver().addOnGlobalLayoutListener(
@@ -258,32 +253,45 @@ public class SidebarListView extends ListView {
     public void dismiss(final DragEvent event) {
         final long delayStep = 15;
         final List<View> childs = getChildViews();
-        for (int i = 0; i < childs.size(); ++i) {
-            final View child = childs.get(i);
+        AnimTimeLine timeLine = new AnimTimeLine();
+        int count = childs.size();
+        for (int i = 0; i < count; i++) {
+            View child = childs.get(i);
             child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             child.setDrawingCacheEnabled(false);
             child.setAlpha(1);
             child.setTranslationY(0);
-            ViewPropertyAnimator anim = child.animate().alpha(0)
-                    .translationY(-20).setDuration(ANIM_DURA)
-                    .setInterpolator(new DecelerateInterpolator());
-            if (i == childs.size() - 1) {
-                anim.setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        setVisibility(View.GONE);
-                        for (View child : childs) {
-                            child.setLayerType(View.LAYER_TYPE_NONE, null);
-                            child.setDrawingCacheEnabled(true);
-                            child.setAlpha(1);
-                            child.setTranslationY(0);
-                        }
-                    }
-                });
-            }
-            anim.setStartDelay(delayStep * i);
-            anim.start();
+
+            long moveDelay = delayStep * i;
+            long alphaDelay = delayStep * (count - i);
+
+            int fromY = 0;
+            int toY = -20;
+            Anim moveAnim = new Anim(child, Anim.MOVE, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
+            moveAnim.setDelay(moveDelay);
+            Anim alphaAnim = new Anim(child, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            alphaAnim.setDelay(alphaDelay);
+
+            timeLine.addAnim(moveAnim);
+            timeLine.addAnim(alphaAnim);
         }
+        timeLine.setAnimListener(new AnimListener() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onComplete(int type) {
+                setVisibility(View.GONE);
+                for (View child : childs) {
+                    child.setLayerType(View.LAYER_TYPE_NONE, null);
+                    child.setDrawingCacheEnabled(true);
+                    child.setAlpha(1);
+                    child.setTranslationY(0);
+                }
+            }
+        });
+        timeLine.start();
     }
 
     private int mPrePosition = -1;

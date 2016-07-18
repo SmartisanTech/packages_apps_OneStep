@@ -142,26 +142,31 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
     public void show(boolean anim){
         setVisibility(View.VISIBLE);
         if (anim) {
+            int time = 300;
             boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
-            ValueAnimator animator = new ValueAnimator();
-            animator.setFloatValues(0f, 1f);
-            animator.setDuration(300);
+            setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            setDrawingCacheEnabled(false);
             setPivotX(isLeft ? 0 : getWidth());
             setPivotY(0);
-            animator.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            AnimTimeLine timeLine = new AnimTimeLine();
+            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0.6f, 0.6f), new Vector3f(1, 1));
+            Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+            timeLine.addAnim(scaleAnim);
+            timeLine.addAnim(alphaAnim);
+            timeLine.setAnimListener(new AnimListener() {
                 @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    float percent = (Float) valueAnimator.getAnimatedValue();
-                    float scaleX = 0.6f + (0.4f * percent);
-                    float scaleY = 0.6f + (0.4f * percent);
-                    setScaleX(scaleX);
-                    setScaleY(scaleY);
-                    setAlpha(percent);
-                    setX(0);
+                public void onStart() {
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    setScaleX(1);
+                    setScaleY(1);
+                    setAlpha(1);
                 }
             });
-            animator.start();
+            timeLine.start();
         }
     }
 
@@ -169,34 +174,31 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
         if (anim) {
             boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
             SidebarController.getInstance(mContext).getSideView().clickAddButtonAnim(isLeft, false, null);
-            ValueAnimator animator = new ValueAnimator();
-            animator.setFloatValues(0f, 1f);
-            animator.setDuration(300);
+            setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            setDrawingCacheEnabled(false);
             setPivotX(isLeft ? 0 : getWidth());
             setPivotY(0);
-            animator.setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            int time = 300;
+            AnimTimeLine timeLine = new AnimTimeLine();
+            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(0.6f, 0.6f));
+            Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            timeLine.addAnim(scaleAnim);
+            timeLine.addAnim(alphaAnim);
+            timeLine.setAnimListener(new AnimListener() {
                 @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    float percent = (Float) valueAnimator.getAnimatedValue();
-                    float scaleX = 1 - (0.4f * percent);
-                    float scaleY = 1 - (0.4f * percent);
-                    setScaleX(scaleX);
-                    setScaleY(scaleY);
-                    setAlpha(1 - percent);
-                    setX(0);
+                public void onStart() {
                 }
-            });
-            animator.addListener(new AnimatorListenerAdapter() {
+
                 @Override
-                public void onAnimationEnd(Animator animator) {
+                public void onComplete(int type) {
                     setVisibility(View.INVISIBLE);
                     setScaleX(1);
                     setScaleY(1);
                     setAlpha(1);
                 }
             });
-            animator.start();
+            timeLine.start();
         } else {
             setVisibility(View.INVISIBLE);
         }

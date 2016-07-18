@@ -121,8 +121,6 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
         setVisibility(View.VISIBLE);
         if (anim) {
             if (!mIsEmpty) {
-                mGridView.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
-                mGridView.startLayoutAnimation();
                 imageAnim(true);
             }
             startAnimation(AnimUtils.getEnterAnimationForContainer());
@@ -132,8 +130,6 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
     public void dismiss(boolean anim) {
         if (anim) {
             if (!mIsEmpty) {
-                mGridView.setLayoutAnimation(AnimUtils.getExitLayoutAnimationForListView());
-                mGridView.startLayoutAnimation();
                 imageAnim(false);
             }
             startAnimation(AnimUtils.getExitAnimationForContainer(this));
@@ -149,7 +145,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
         Vector3f loc00 = new Vector3f();
         Vector3f alphaFrom = new Vector3f();
         Vector3f alphaTo = new Vector3f();
-        final int time = 600;
+        final int time = 200;
         int easeInOut = Anim.CUBIC_OUT;
         final List<Anim> anims = new ArrayList<Anim>();
         for (int i = 0; i < count; i++) {
@@ -166,6 +162,8 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
             }
             Vector3f from = new Vector3f();
             Vector3f to = new Vector3f();
+            int moveDelay = 0;
+            int alphaDelay = 0;
             if (isShow) {
                 view.setTranslationX(loc00.x);
                 view.setTranslationX(loc00.y);
@@ -176,6 +174,8 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
                 to.y = y;
                 alphaFrom.z = 0;
                 alphaTo.z = 1;
+                moveDelay = i * 5;
+                alphaDelay = moveDelay + 20;
             } else {
                 from.x = x;
                 from.y = y;
@@ -187,6 +187,8 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
             log.error("imageAnim show ["+isShow+"] from "+ from + ", to " + to);
             Anim moveAnim = new Anim(view, Anim.TRANSLATE, time, easeInOut, from, to);
             Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time, easeInOut, alphaFrom, alphaTo);
+            moveAnim.setDelay(moveDelay);
+            alphaAnim.setDelay(alphaDelay);
             anims.add(moveAnim);
             anims.add(alphaAnim);
         }
