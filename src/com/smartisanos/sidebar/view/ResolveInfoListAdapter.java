@@ -46,19 +46,13 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
     private List<ResolveInfoGroup> mAcceptableResolveInfos = new ArrayList<ResolveInfoGroup>();
     private DragEvent mDragEvent;
     private ResolveInfoManager mManager;
-    private SidebarListView mListView;
 
     public ResolveInfoListAdapter(Context context) {
-        this(context, null);
-    }
-
-    public ResolveInfoListAdapter(Context context, SidebarListView listView) {
         mContext = context;
         mManager = ResolveInfoManager.getInstance(context);
         mResolveInfos = mManager.getAddedResolveInfoGroup();
         mAcceptableResolveInfos.addAll(mResolveInfos);
         mManager.addListener(resolveInfoUpdateListener);
-        mListView = listView;
     }
 
     private ResolveInfoManager.ResolveInfoUpdateListener resolveInfoUpdateListener = new ResolveInfoManager.ResolveInfoUpdateListener() {
@@ -214,6 +208,7 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
         public ImageView iconImageView;
         public Drawable icon;
         public ResolveInfoGroup resolveInfoGroup;
+        public boolean isNewAdded = false;
 
         public void setInfo(ResolveInfoGroup info, boolean color) {
             resolveInfoGroup = info;

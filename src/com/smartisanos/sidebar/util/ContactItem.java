@@ -14,6 +14,8 @@ public abstract class ContactItem implements SidebarItem{
     protected CharSequence mDisplayName;
     protected int mIndex;
 
+    public boolean isNewAdd = false;
+
     public ContactItem(Context context, Bitmap avatar, CharSequence displayName) {
         mContext = context;
         mAvatar = avatar;

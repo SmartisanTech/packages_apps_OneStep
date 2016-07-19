@@ -19,7 +19,10 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
+import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
@@ -31,6 +34,7 @@ public class SidebarListView extends ListView {
     private boolean mNeedFootView = false;
     private View mFootView;
     private boolean mCanAccpeeDrag = true;
+    private boolean mIsFake = false;
 
     public SidebarListView(Context context) {
         super(context, null);
@@ -81,6 +85,78 @@ public class SidebarListView extends ListView {
         }
 
     }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (mIsFake) {
+            return;
+        }
+        getViewTreeObserver().addOnGlobalLayoutListener(mAddItemWithAnimListener);
+    }
+
+    public void setIsFake(boolean isFake) {
+        mIsFake = isFake;
+    }
+
+    private ViewTreeObserver.OnGlobalLayoutListener mAddItemWithAnimListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            //show anim
+            int count = getChildCount();
+            if (count == 0) {
+                return;
+            }
+            View view = getChildAt(0);
+            if (view.getTag() == null) {
+                return;
+            }
+            boolean isNewAdded = false;
+            if (view.getTag() instanceof ResolveInfoListAdapter.ViewHolder) {
+                ResolveInfoGroup data = ((ResolveInfoListAdapter.ViewHolder) view.getTag()).resolveInfoGroup;
+                if (data != null) {
+                    if (data.isNewAdd) {
+                        data.isNewAdd = false;
+                        isNewAdded = true;
+                    }
+                }
+            } else if (view.getTag() instanceof ContactListAdapter.ViewHolder) {
+                ContactItem data = ((ContactListAdapter.ViewHolder) view.getTag()).mItem;
+                if (data != null) {
+                    if (data.isNewAdd) {
+                        data.isNewAdd = false;
+                        isNewAdded = true;
+                    }
+                }
+            }
+            if (!isNewAdded) {
+                return;
+            }
+            int time = 200;
+            AnimTimeLine timeLine = new AnimTimeLine();
+            Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+            Anim scaleBigAnim = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0.3f, 0.3f), new Vector3f(1.2f, 1.2f));
+            Anim scaleNormal = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1.2f, 1.2f), new Vector3f(1, 1));
+            scaleNormal.setDelay(time);
+
+            timeLine.addAnim(scaleBigAnim);
+            timeLine.addAnim(alphaAnim);
+            timeLine.addAnim(scaleNormal);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                    log.error("anim start !");
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    log.error("anim complete !");
+                }
+            });
+            timeLine.start();
+        }
+    };
 
     public void setCanAcceptDrag(boolean can){
         mCanAccpeeDrag = can;
@@ -140,23 +216,6 @@ public class SidebarListView extends ListView {
             views.add(child);
         }
         return views;
-    }
-
-    public List<View> getVisibleChild() {
-        List<View> ret = new ArrayList<View>();
-        int parentScrollY = getScrollViewParent().getScrollY();
-        int parentHeight = getScrollViewParent().getHeight();
-        int parentTop = getTopUtilScrollView(SidebarListView.this);
-        for (int i = 0; i < getChildCount(); ++i) {
-            View child = getChildAt(i);
-            int myTop = parentTop + child.getTop();
-            int relate = myTop - parentScrollY;
-            if (relate + child.getHeight() <= 0 || relate > parentHeight) {
-                continue;
-            }
-            ret.add(child);
-        }
-        return ret;
     }
 
     private static final int ANIM_DURA = 150;

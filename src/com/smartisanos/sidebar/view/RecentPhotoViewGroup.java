@@ -143,7 +143,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
     private AnimTimeLine mImageAnimTimeLine = null;
 
     private void imageAnim(final boolean isShow) {
-        int count = mGridView.getCount();
+        int count = mGridView.getChildCount();
         Vector3f loc00 = new Vector3f();
         Vector3f alphaFrom = new Vector3f();
         Vector3f alphaTo = new Vector3f();

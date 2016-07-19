@@ -239,13 +239,18 @@ public class Anim {
         }
         List<ObjectAnimator> list = new ArrayList<ObjectAnimator>();
         int size = mAnimList.size();
-        AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(mInOut);
+        AnimInterpolator.Interpolator interpolator = null;
+        if (mInOut != 0) {
+            interpolator = new AnimInterpolator.Interpolator(mInOut);
+        }
         for (int i = 0; i < size; i++) {
             ObjectAnimator anim = (ObjectAnimator) mAnimList.get(i);
             if (anim != null) {
                 anim.setDuration(duration);
                 anim.setStartDelay(mDelay);
-                anim.setInterpolator(interpolator);
+                if (interpolator != null) {
+                    anim.setInterpolator(interpolator);
+                }
                 list.add(anim);
             }
         }
@@ -270,7 +275,6 @@ public class Anim {
             if (mListener != null) {
                 mListener.onComplete(ANIM_FINISH_TYPE_COMPLETE);
             }
-//            log.error("anim spend time ["+(endTime - startTime)+"]");
         }
 
         @Override
@@ -290,9 +294,7 @@ public class Anim {
         if (mAnimationSet == null) {
             return;
         }
-        if (mAnimationSet.isRunning()) {
-            mAnimationSet.cancel();
-        }
+        mAnimationSet.cancel();
     }
 
     public void setListener(AnimListener l) {

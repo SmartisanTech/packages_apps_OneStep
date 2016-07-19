@@ -57,7 +57,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"/>
                 </LinearLayout>
-        </FrameLayout>
+            </FrameLayout>
         </com.smartisanos.sidebar.view.DragScrollView>
         <View
             android:layout_width="48dp"

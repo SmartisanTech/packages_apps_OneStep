@@ -83,6 +83,7 @@ public class ContactManager extends DataManager{
                 }
                 ci.setIndex(maxIndex);
             }
+            ci.isNewAdd = true;
             mContacts.add(0, ci);
             notifyListener();
             saveContact(ci);

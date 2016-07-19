@@ -307,7 +307,6 @@ public class Trash {
         float toY = mWindowHeight - mTrashDisplayHeight - mTrashFloatUpHeight - viewHeight;
         Vector3f from = new Vector3f(fromX, fromY);
         Vector3f to = new Vector3f(toX, toY);
-//        log.error("moveIconToTrash move from " + from + ", to " + to);
         Anim anim = new Anim(view, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
         anim.setListener(new AnimListener() {
             @Override

@@ -3,7 +3,6 @@ package com.smartisanos.sidebar.action;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.view.View;
 import android.view.WindowManager;
 
 import com.smartisanos.sidebar.SidebarController;
@@ -86,7 +85,7 @@ public class UninstallAction {
     }
 
     private void uninstallAnim() {
-        final SidebarRootView rootView = SidebarController.getInstance(mContext).getSidebarRootView();
+        SidebarRootView rootView = SidebarController.getInstance(mContext).getSidebarRootView();
         if (rootView == null) {
             log.error("uninstallAnim failed by rootView is null");
             return;

@@ -96,10 +96,11 @@ public class SideView extends RelativeLayout {
         mAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mAddButtonRotateAnim != null) {
+                    return;
+                }
                 SidebarController sc = SidebarController.getInstance(mContext);
                 if(sc.getCurrentContentType() == ContentType.NONE){
-                    boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
-                    clickAddButtonAnim(isLeft, true, null);
                     sc.dimTopView();
                     sc.showContent(ContentType.ADDTOSIDEBAR);
                 }else if(sc.getCurrentContentType() == ContentType.ADDTOSIDEBAR){
@@ -118,17 +119,19 @@ public class SideView extends RelativeLayout {
 
         mContactListFake = (SidebarListView) findViewById(R.id.contactlist_fake);
         mContactListFake.setNeedFootView(true);
+        mContactListFake.setIsFake(true);
         mContactListFake.setAdapter(new ContactListAdapter(mContext));
 
         mContactList.setFake(mContactListFake);
 
         //resolve
         mShareList = (SidebarListView) findViewById(R.id.sharelist);
-        mResolveAdapter = new ResolveInfoListAdapter(mContext, mShareList);
+        mResolveAdapter = new ResolveInfoListAdapter(mContext);
         mShareList.setAdapter(mResolveAdapter);
         mShareList.setOnItemLongClickListener(mShareItemOnLongClickListener);
 
         mShareListFake = (SidebarListView) findViewById(R.id.sharelist_fake);
+        mShareListFake.setIsFake(true);
         mShareListFake.setCanAcceptDrag(false);
         mShareListFake.setAdapter(new ResolveInfoListAdapter(mContext));
 
@@ -452,14 +455,16 @@ public class SideView extends RelativeLayout {
         if (listView != null) {
             try {
                 int count = listView.getCount();
-                if (count > 0) {
-                    for (int i = 0; i < count; i++) {
-                        View view = listView.getChildAt(i);
-                        if (view != null) {
-                            view.setScaleX(1);
-                            view.setScaleY(1);
-                        }
+                if (count == 0) {
+                    return;
+                }
+                for (int i = 0; i < count; i++) {
+                    View view = listView.getChildAt(i);
+                    if (view == null) {
+                        continue;
                     }
+                    view.setScaleX(1);
+                    view.setScaleY(1);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -475,20 +480,14 @@ public class SideView extends RelativeLayout {
         mAdd.setRotation(0);
     }
 
-    private static final boolean DISABLE_ADD_BUTTON_CLICK_ANIM = false;
-    private boolean mAddButtonAnimRunning = false;
-
+    private Anim mAddButtonRotateAnim = null;
     public void clickAddButtonAnim(boolean isLeft, boolean isEnter, final Runnable taskForComplete) {
-        if (DISABLE_ADD_BUTTON_CLICK_ANIM) {
-            return;
-        }
         if (mAdd == null) {
             return;
         }
-        if (mAddButtonAnimRunning) {
-            return;
+        if (mAddButtonRotateAnim != null) {
+            mAddButtonRotateAnim.cancel();
         }
-        mAddButtonAnimRunning = true;
         int from = 0;
         int to = 0;
         if (isLeft) {
@@ -504,7 +503,6 @@ public class SideView extends RelativeLayout {
                 from = -45;
             }
         }
-//        log.error("clickAddButtonAnim from ["+from+", "+to+"]");
         int width = mAdd.getWidth();
         int height = mAdd.getHeight();
         mAdd.setPivotX(width / 2);
@@ -512,23 +510,24 @@ public class SideView extends RelativeLayout {
         mAdd.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         mAdd.setDrawingCacheEnabled(false);
 
-
-        final Anim anim = new Anim(mAdd, Anim.ROTATE, 300, Anim.CUBIC_OUT, new Vector3f(0, 0, from), new Vector3f(0, 0, to));
-        anim.setListener(new AnimListener() {
+        mAddButtonRotateAnim = new Anim(mAdd, Anim.ROTATE, 300, Anim.CUBIC_OUT, new Vector3f(0, 0, from), new Vector3f(0, 0, to));
+        mAddButtonRotateAnim.setListener(new AnimListener() {
             @Override
             public void onStart() {
             }
 
             @Override
             public void onComplete(int type) {
-                View view = anim.getView();
-                view.setRotation(anim.getTo().z);
-                mAddButtonAnimRunning = false;
+                if (mAddButtonRotateAnim == null) {
+                    return;
+                }
+                mAdd.setRotation(mAddButtonRotateAnim.getTo().z);
                 if (taskForComplete != null) {
                     taskForComplete.run();
                 }
+                mAddButtonRotateAnim = null;
             }
         });
-        anim.start();
+        mAddButtonRotateAnim.start();
     }
 }

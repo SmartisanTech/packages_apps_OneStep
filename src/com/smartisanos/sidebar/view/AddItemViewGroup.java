@@ -73,6 +73,7 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
         }
 
         final ResolveInfoGroup item = (ResolveInfoGroup) mResolveInfoAdapter.getItem(index);
+        item.isNewAdd = true;
         log.error("remove item ["+item.getDisplayName()+"], index ["+index+"]");
         Runnable runnable = new Runnable() {
             @Override
@@ -144,6 +145,7 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
         if (anim) {
             int time = 300;
             boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
+            SidebarController.getInstance(mContext).getSideView().clickAddButtonAnim(isLeft, true, null);
             setLayerType(View.LAYER_TYPE_HARDWARE, null);
             setDrawingCacheEnabled(false);
             setPivotX(isLeft ? 0 : getWidth());
