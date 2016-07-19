@@ -142,6 +142,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
         updateUI();
     }
 }

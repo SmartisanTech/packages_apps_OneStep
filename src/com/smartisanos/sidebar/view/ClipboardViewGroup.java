@@ -449,6 +449,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
         updateUI();
     }
 }
