@@ -7,7 +7,6 @@ import java.util.Map;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.BitmapUtils;
-import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.ImageInfo;
 import com.smartisanos.sidebar.util.LOG;
@@ -27,9 +26,9 @@ import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 
-public class TopView extends LinearLayout {
+public class TopView extends FrameLayout {
     private static final LOG log = LOG.getInstance(TopView.class);
 
     private static final String TAG = TopView.class.getName();

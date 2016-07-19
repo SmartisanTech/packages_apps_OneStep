@@ -3,14 +3,22 @@
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
     android:descendantFocusability="afterDescendants"
     android:fitsSystemWindows="true"
-    android:gravity="center_vertical"
-    android:background="@drawable/background"
-    android:orientation="horizontal" >
-
-    <include layout="@layout/top_item_view"
-        android:id="@+id/photo"/>
-    <include layout="@layout/top_item_view"
-        android:id="@+id/file"/>
-    <include layout="@layout/top_item_view"
-        android:id="@+id/clipboard"/>
+    android:background="@drawable/background">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+        <include layout="@layout/top_item_view"
+            android:id="@+id/photo"/>
+        <include layout="@layout/top_item_view"
+            android:id="@+id/file"/>
+        <include layout="@layout/top_item_view"
+            android:id="@+id/clipboard"/>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/top_shadow"
+        android:layout_gravity="bottom"/>
 </com.smartisanos.sidebar.view.TopView>

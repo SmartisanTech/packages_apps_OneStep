@@ -1,7 +1,5 @@
 package com.smartisanos.sidebar.view;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
@@ -16,7 +14,6 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -36,8 +33,9 @@ import com.smartisanos.sidebar.view.ContentView.ContentType;
 public class SideView extends RelativeLayout {
     private static final LOG log = LOG.getInstance(SideView.class);
 
-    private Button mExit;
-    private ImageView mAdd;
+    private View mExitAndAdd;
+    private View mLeftShadow, mRightShadow;
+    private ImageView mExit, mAdd;
 
     private SidebarListView mShareList, mContactList;
     private SidebarListView mShareListFake, mContactListFake;
@@ -76,8 +74,11 @@ public class SideView extends RelativeLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mExit = (Button) findViewById(R.id.exit);
-        updateExitButtonBackground();
+        mExitAndAdd = findViewById(R.id.exit_and_add);
+        mExit = (ImageView) findViewById(R.id.exit);
+        mLeftShadow = findViewById(R.id.left_shadow);
+        mRightShadow = findViewById(R.id.right_shadow);
+        updateUIBySIdebarMode();
         mExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,16 +165,24 @@ public class SideView extends RelativeLayout {
         return mContactAdapter;
     }
 
-    private void updateExitButtonBackground() {
+    private void updateUIBySIdebarMode() {
         if (SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT) {
-            mExit.setBackgroundResource(R.drawable.exit_icon_left);
+            //mExit.setBackgroundResource(R.drawable.exit_icon_left);
+            mExit.setImageResource(R.drawable.exit_icon_left);
+            mExitAndAdd.setBackgroundResource(R.drawable.exitandadd_bg_left);
+            mLeftShadow.setVisibility(View.VISIBLE);
+            mRightShadow.setVisibility(View.GONE);
         } else {
-            mExit.setBackgroundResource(R.drawable.exit_icon_right);
+            //mExit.setBackgroundResource(R.drawable.exit_icon_right);
+            mExit.setImageResource(R.drawable.exit_icon_right);
+            mExitAndAdd.setBackgroundResource(R.drawable.exitandadd_bg_right);
+            mLeftShadow.setVisibility(View.GONE);
+            mRightShadow.setVisibility(View.VISIBLE);
         }
     }
 
     public void onSidebarModeChanged(){
-        updateExitButtonBackground();
+        updateUIBySIdebarMode();
         mResolveAdapter.notifyDataSetChanged();
     }
 
