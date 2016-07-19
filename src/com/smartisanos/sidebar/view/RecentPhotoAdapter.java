@@ -158,7 +158,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
                 try {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setPackage("com.android.gallery3d");
-                    intent.setDataAndType(Uri.fromFile(new File(ii.filePath)), ii.mimeType);
+                    intent.setDataAndType(ii.getContentUri(mContext), ii.mimeType);
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
