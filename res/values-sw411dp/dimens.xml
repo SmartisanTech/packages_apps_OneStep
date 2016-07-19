@@ -8,4 +8,9 @@
     <integer name="trash_float_up_height">75</integer>
     <dimen name="drag_view_icon_size">48dp</dimen>
     <dimen name="sidebar_list_item_img_size">32dp</dimen>
+    <dimen name="top_view_space_left">10dp</dimen>
+    <dimen name="top_view_space_right">4dp</dimen>
+    <dimen name="recent_photo_size">96dp</dimen>
+    <dimen name="recent_photo_padding">6dp</dimen>
+    <dimen name="open_gallery_item_text_bottom">11dp</dimen>
 </resources>

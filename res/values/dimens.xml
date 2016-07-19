@@ -2,6 +2,7 @@
 <resources>
     <dimen name="sidebar_width">48dp</dimen>
     <dimen name="recent_photo_size">80dp</dimen>
+    <dimen name="recent_photo_padding">5dp</dimen>
     <dimen name="topbar_photo_icon_content_size">33dp</dimen>
     <dimen name="topbar_photo_icon_content_paddingTop">14dp</dimen>
     <dimen name="topbar_file_icon_content_paddingTop">10dp</dimen>
@@ -12,4 +13,7 @@
     <!-- drag view values -->
     <dimen name="dragViewScale">12dp</dimen>
     <dimen name="clip_radius">6dp</dimen>
+    <dimen name="top_view_space_left">0dp</dimen>
+    <dimen name="top_view_space_right">16dp</dimen>
+    <dimen name="open_gallery_item_text_bottom">9dp</dimen>
 </resources>

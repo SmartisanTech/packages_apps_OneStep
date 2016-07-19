@@ -33,13 +33,12 @@ import android.widget.FrameLayout;
 public class TopView extends FrameLayout {
     private static final LOG log = LOG.getInstance(TopView.class);
 
-    private static final String TAG = TopView.class.getName();
-
     private SidebarController mController;
 
+    private DimSpaceView mLeft, mRight;
     private TopItemView mPhotos, mFile, mClipboard;
 
-    private Map<TopItemView, ContentType> mViewToType;
+    private Map<ITopItem, ContentType> mViewToType;
 
     private RecentPhotoManager mPhotoManager;
     private RecentFileManager mFileManager;
@@ -97,6 +96,9 @@ public class TopView extends FrameLayout {
 
         mFinishInflated = true;
 
+        mLeft = (DimSpaceView) findViewById(R.id.top_dim_view_left);
+        mRight = (DimSpaceView) findViewById(R.id.top_dim_view_right);
+
         mPhotos = (TopItemView) findViewById(R.id.photo);
         mPhotos.setText(R.string.topbar_photo);
         mFile = (TopItemView) findViewById(R.id.file);
@@ -104,10 +106,12 @@ public class TopView extends FrameLayout {
         mClipboard = (TopItemView) findViewById(R.id.clipboard);
         mClipboard.setText(R.string.topbar_clipboard);
 
-        mViewToType = new HashMap<TopItemView, ContentType>();
+        mViewToType = new HashMap<ITopItem, ContentType>();
+        mViewToType.put(mLeft, ContentType.NONE);
         mViewToType.put(mPhotos, ContentType.PHOTO);
         mViewToType.put(mFile, ContentType.FILE);
         mViewToType.put(mClipboard, ContentType.CLIPBOARD);
+        mViewToType.put(mRight, ContentType.NONE);
 
         mPhotos.setOnClickListener(mItemOnClickListener);
         mFile.setOnClickListener(mItemOnClickListener);
@@ -182,14 +186,11 @@ public class TopView extends FrameLayout {
                 AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_CLICK, true);
                 AnimTimeLine animTimeLine = new AnimTimeLine();
                 mController.showContent(mViewToType.get(itemView));
-                for (TopItemView view : mViewToType.keySet()) {
+                for (ITopItem view : mViewToType.keySet()) {
                     if (view == itemView) {
                         animTimeLine.addTimeLine(view.highlight());
                     } else {
-                        Anim anim = view.dim();
-                        if (anim != null) {
-                            animTimeLine.addAnim(anim);
-                        }
+                        animTimeLine.addTimeLine(view.dim());
                     }
                 }
                 animTimeLine.setAnimListener(new AnimListener() {
@@ -252,15 +253,15 @@ public class TopView extends FrameLayout {
 
     public void dimAll(){
         AnimTimeLine timeLine = new AnimTimeLine();
-        for (TopItemView view : mViewToType.keySet()) {
-            timeLine.addAnim(view.dim());
+        for (ITopItem view : mViewToType.keySet()) {
+            timeLine.addTimeLine(view.dim());
         }
         timeLine.start();
     }
 
     public void resumeToNormal() {
         AnimTimeLine timeLine = new AnimTimeLine();
-        for (TopItemView view : mViewToType.keySet()) {
+        for (ITopItem view : mViewToType.keySet()) {
             timeLine.addTimeLine(view.resume());
         }
         timeLine.setAnimListener(new AnimListener() {

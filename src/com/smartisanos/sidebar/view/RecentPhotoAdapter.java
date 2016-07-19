@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.graphics.drawable.BitmapDrawable;
 
 import smartisanos.util.SidebarUtils;
 
@@ -133,7 +134,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
             iv = (ImageView) ret.findViewById(R.id.image);
             ret.setTag(iv);
         }
-        iv.setImageBitmap(null);
+        iv.setBackground(null);
         iv.setTag(ii.filePath);
         mImageLoader.loadImage(ii.filePath, iv, new ImageLoader.Callback() {
             @Override
@@ -143,7 +144,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
                         @Override
                         public void run() {
                             if(ii.filePath != null && ii.filePath.equals(iv.getTag())){
-                                iv.setImageBitmap(bitmap);
+                                iv.setBackground(new BitmapDrawable(mContext.getResources(), bitmap));
                             }
                         }
                     });

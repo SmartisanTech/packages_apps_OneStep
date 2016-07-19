@@ -18,7 +18,7 @@ import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
-public class TopItemView extends FrameLayout {
+public class TopItemView extends FrameLayout implements ITopItem {
 
     private static final int ANIM_DURA = 300;
 
@@ -72,11 +72,13 @@ public class TopItemView extends FrameLayout {
         mIcon.setBackgroundResource(mIconResId);
     }
 
-    public Anim dim(){
+    public AnimTimeLine dim(){
         setClickable(false);
         mBackDimView.setVisibility(View.GONE);
         Anim anim = new Anim(mTopDimView, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
-        anim.setListener(new AnimListener() {
+        AnimTimeLine timeLine = new AnimTimeLine();
+        timeLine.addAnim(anim);
+        timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
                 mTopDimView.setVisibility(View.VISIBLE);
@@ -85,7 +87,7 @@ public class TopItemView extends FrameLayout {
             public void onComplete(int type) {
             }
         });
-        return anim;
+        return timeLine;
     }
 
     public AnimTimeLine highlight() {

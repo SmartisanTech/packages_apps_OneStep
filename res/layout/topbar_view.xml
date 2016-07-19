@@ -9,12 +9,22 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
+        <com.smartisanos.sidebar.view.DimSpaceView
+            android:id="@+id/top_dim_view_left"
+            android:background="@color/dim_color"
+            android:layout_width="@dimen/top_view_space_left"
+            android:layout_height="match_parent"/>
         <include layout="@layout/top_item_view"
             android:id="@+id/photo"/>
         <include layout="@layout/top_item_view"
             android:id="@+id/file"/>
         <include layout="@layout/top_item_view"
             android:id="@+id/clipboard"/>
+        <com.smartisanos.sidebar.view.DimSpaceView
+            android:id="@+id/top_dim_view_right"
+            android:background="@color/dim_color"
+            android:layout_width="@dimen/top_view_space_right"
+            android:layout_height="match_parent"/>
     </LinearLayout>
     <View
         android:layout_width="match_parent"

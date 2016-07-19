@@ -33,8 +33,13 @@
         android:background="#14ffffff"/>
     <GridView
         android:id="@+id/recentphoto_gridview"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="2dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:padding="@dimen/recent_photo_padding"
+        android:verticalSpacing="0dp"
+        android:horizontalSpacing="0dp"
         android:numColumns="3"/>
 </LinearLayout>
