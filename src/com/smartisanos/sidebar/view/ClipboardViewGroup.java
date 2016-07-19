@@ -154,24 +154,26 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     }
 
     public void dismiss(boolean anim) {
-        resetClipboardFullTextStatus();
         if (anim) {
-            setPivotY(0);
-            AnimTimeLine timeLine = new AnimTimeLine();
-            if (mIsEmpty) {
-                mClipList.setLayoutAnimation(AnimUtils.getExitLayoutAnimationForListView());
-                mClipList.startLayoutAnimation();
-            } else {
-                int count = getChildCount();
-                if (count > 0) {
-                    for (int i = 0; i < count; i++) {
-                        View view = getChildAt(i);
-                        Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
-                        timeLine.addAnim(alphaAnim);
-                    }
-                }
+            boolean isFullTextShown = false;
+            if (mClipboardFullTextScrollView != null
+                    && mClipboardFullTextScrollView.getVisibility() == View.VISIBLE) {
+                isFullTextShown = true;
             }
-            Anim scaleAnim = new Anim(this, Anim.SCALE, 200, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(1, 0.6f));
+            AnimTimeLine timeLine = new AnimTimeLine();
+            final View view;
+            if (mIsEmpty) {
+                view = mEmptyView;
+            } else if (isFullTextShown) {
+                view = mClipboardFullTextScrollView;
+            } else {
+                view = mClipList;
+            }
+            view.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            view.setPivotY(0);
+            Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            Anim scaleAnim = new Anim(view, Anim.SCALE, 200, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(1, 0.6f));
+            timeLine.addAnim(alphaAnim);
             timeLine.addAnim(scaleAnim);
             timeLine.setAnimListener(new AnimListener() {
                 @Override
@@ -180,19 +182,15 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
 
                 @Override
                 public void onComplete(int type) {
-                    setScaleY(1);
+                    view.setScaleY(1);
+                    view.setAlpha(1);
+                    resetClipboardFullTextStatus();
                     setVisibility(View.GONE);
-                    int count = getChildCount();
-                    for (int i = 0; i < count; i++) {
-                        View view = getChildAt(i);
-                        if (view != null) {
-                            view.setAlpha(1);
-                        }
-                    }
                 }
             });
             timeLine.start();
         } else {
+            resetClipboardFullTextStatus();
             setVisibility(View.GONE);
         }
     }

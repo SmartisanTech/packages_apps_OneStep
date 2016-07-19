@@ -105,22 +105,18 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
 
     public void dismiss(boolean anim) {
         if (anim) {
-            setPivotY(0);
             AnimTimeLine timeLine = new AnimTimeLine();
+            final View view;
             if (mIsEmpty) {
-                mRecentFileList.setLayoutAnimation(AnimUtils.getExitLayoutAnimationForListView());
-                mRecentFileList.startLayoutAnimation();
+                view = mEmptyView;
             } else {
-                int count = getChildCount();
-                if (count > 0) {
-                    for (int i = 0; i < count; i++) {
-                        View view = getChildAt(i);
-                        Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
-                        timeLine.addAnim(alphaAnim);
-                    }
-                }
+                view = mRecentFileList;
             }
-            Anim scaleAnim = new Anim(this, Anim.SCALE, 200, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(1, 0.6f));
+            int time = 200;
+            view.setPivotY(0);
+            Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            Anim scaleAnim = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(1, 0.6f));
+            timeLine.addAnim(alphaAnim);
             timeLine.addAnim(scaleAnim);
             timeLine.setAnimListener(new AnimListener() {
                 @Override
@@ -129,15 +125,9 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
 
                 @Override
                 public void onComplete(int type) {
-                    setScaleY(1);
+                    view.setScaleY(1);
+                    view.setAlpha(1);
                     setVisibility(View.GONE);
-                    int count = getChildCount();
-                    for (int i = 0; i < count; i++) {
-                        View view = getChildAt(i);
-                        if (view != null) {
-                            view.setAlpha(1);
-                        }
-                    }
                 }
             });
             timeLine.start();
