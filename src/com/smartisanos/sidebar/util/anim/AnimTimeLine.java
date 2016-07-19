@@ -38,7 +38,10 @@ public class AnimTimeLine {
         AnimatorSetListener listener = new AnimatorSetListener();
         List<Animator> animators = new ArrayList<Animator>();
         for (Anim anim : mAnimList) {
-            animators.addAll(anim.getAnimatorList());
+            List<ObjectAnimator> list = anim.getAnimatorList();
+            if (list != null && list.size() > 0) {
+                animators.addAll(list);
+            }
         }
         mAnimationSet.playTogether(animators);
         mAnimationSet.addListener(listener);
