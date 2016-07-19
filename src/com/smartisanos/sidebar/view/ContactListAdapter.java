@@ -12,6 +12,8 @@ import com.smartisanos.sidebar.util.Utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -32,17 +34,23 @@ public class ContactListAdapter extends DragEventAdapter {
     private List<ContactItem> mContacts;
     private List<ContactItem> mAcceptableContacts = new ArrayList<ContactItem>();
     private DragEvent mDragEvent;
-
+    private Handler mHandler;
     public ContactListAdapter(Context context) {
         mContext = context;
+        mHandler = new Handler(Looper.getMainLooper());
         mManager = ContactManager.getInstance(mContext);
         mContacts = mManager.getContactList();
         mAcceptableContacts.addAll(mContacts);
         mManager.addListener(new RecentUpdateListener() {
             @Override
             public void onUpdate() {
-                mContacts = mManager.getContactList();
-                updateAcceptableResolveInfos();
+                mHandler.post(new Runnable(){
+                    @Override
+                    public void run() {
+                        mContacts = mManager.getContactList();
+                        updateAcceptableResolveInfos();
+                    }
+                });
             }
         });
     }
