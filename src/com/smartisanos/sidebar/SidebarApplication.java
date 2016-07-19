@@ -3,6 +3,7 @@ package com.smartisanos.sidebar;
 import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.MailContactsHelper;
+import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.ThreadVerify;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 
@@ -47,5 +48,11 @@ public class SidebarApplication extends Application {
                 .penaltyDeath()
                 .build();
         StrictMode.setVmPolicy(vmPolicy);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        RecentFileManager.getInstance(getApplicationContext()).stopFileObserver();
     }
 }

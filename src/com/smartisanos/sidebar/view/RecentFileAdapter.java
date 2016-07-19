@@ -42,7 +42,6 @@ public class RecentFileAdapter extends BaseAdapter {
         mFileManager.addListener(new RecentUpdateListener() {
             @Override
             public void onUpdate() {
-                mList = mFileManager.getFileList();
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {

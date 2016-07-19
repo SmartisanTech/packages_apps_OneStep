@@ -95,6 +95,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
     }
 
     public void show(boolean anim) {
+        RecentFileManager.getInstance(mContext).startSearchFile();
         setVisibility(VISIBLE);
         if (anim) {
             if (!mIsEmpty) {

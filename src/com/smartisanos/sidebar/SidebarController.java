@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 import com.android.internal.sidebar.ISidebar;
 import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.util.LOG;
+import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.view.ContentView;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
@@ -119,12 +120,14 @@ public class SidebarController {
         updateContentViewWindowBySidebarMode();
         mTopView.show(true);
         mSidebarRoot.show(true);
+        RecentFileManager.getInstance(mContext).startFileObserver();
     }
 
     private void stop(){
         mTopView.show(false);
         mSidebarRoot.show(false);
         dismissContent(false);
+        RecentFileManager.getInstance(mContext).stopFileObserver();
     }
 
     private void AddWindows() {

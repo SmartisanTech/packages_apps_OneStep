@@ -1,16 +1,28 @@
 package com.smartisanos.sidebar.util;
 
-import java.io.File;
-
-import android.content.ClipDescription;
+import android.os.Environment;
 import android.text.TextUtils;
 
-import com.smartisanos.sidebar.R;
+import java.io.File;
 
 public class FileInfo {
-    public String filePath;
-    public String mimeType;
-    public int id;
+    public String filePath = "";
+    public String mimeType = null;
+    public int id = 0;
+    public String title;
+    public long time = 0;
+    public int size = 0;
+    public String pathID;
+    private final String log = "log";
+    public static final String[] MIMETYPE_BLACKLIST = new String[] { "image/*" };
+
+    private static final String[] mFilePathBlackList = new String[]{
+        Environment.getExternalStorageDirectory().getAbsolutePath()+"/OpenMaster/plugins/",
+        Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/MobileQQ/.apollo/role/",
+        Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/MobileQQ/qbiz/html5/",
+        Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/MobileQQ/PhotoPlus/",
+        Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/MobileQQ/ar_model/"
+    };
 
     public boolean valid() {
         if (TextUtils.isEmpty(filePath) || TextUtils.isEmpty(mimeType)) {
@@ -22,11 +34,19 @@ public class FileInfo {
             return false;
         }
 
-        for (String str : MIMETYPE_BLACKLIST) {
-            if (ClipDescription.compareMimeTypes(mimeType, str)) {
+        title = file.getName();
+        if(title.toLowerCase().contains(log) || (size == 0) ){
+            return false;
+        }
+
+        for(int i = 0; i <mFilePathBlackList.length ; i++ ){
+            if(filePath.contains(mFilePathBlackList[i])){
                 return false;
             }
         }
+
+        time = file.lastModified();
+        pathID = filePath + time;
         return true;
     }
 
@@ -42,5 +62,4 @@ public class FileInfo {
         return MimeUtils.getResId(mimeType, suffix);
     }
 
-    public static final String[] MIMETYPE_BLACKLIST = new String[] { "image/*" };
 }
