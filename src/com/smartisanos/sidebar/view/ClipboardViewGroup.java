@@ -111,22 +111,23 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
         mClipboardFullTextScrollView = (ScrollView) findViewById(R.id.full_text_scroll_view);
         mClipboardFullText = (TextView) findViewById(R.id.clipboard_full_content);
 
-        mClearClipboard.setOnClickListener(new ClearListener(new Runnable() {
-            @Override
-            public void run() {
-                mClipList.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
-                mClipList.startLayoutAnimation();
-                startAnimation(AnimUtils.getClearAnimationForContainer(ClipboardViewGroup.this, RecentClipManager.getInstance(mContext)));
-                SidebarController.getInstance(mContext).resumeTopView();
-                mContentView.setCurrent(ContentType.NONE);
-            }
-        }, R.string.title_confirm_delete_history_clipboard));
-
+        mClearClipboard.setOnClickListener(mClearListener);
         mClipboardItemBack.setOnClickListener(mOnClickClipboardFullTextTitleBackButton);
         mClipboardCopyItemButton.setOnClickListener(mOnClickClipboardFullTextTitleCopyButton);
 
         mClipboardFullText.setOnLongClickListener(mOnClipBoardFullTextItemLongClickListener);
     }
+
+    private ClearListener mClearListener = new ClearListener(new Runnable() {
+        @Override
+        public void run() {
+            mClipList.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
+            mClipList.startLayoutAnimation();
+            startAnimation(AnimUtils.getClearAnimationForContainer(ClipboardViewGroup.this, RecentClipManager.getInstance(mContext)));
+            SidebarController.getInstance(mContext).resumeTopView();
+            mContentView.setCurrent(ContentType.NONE);
+        }
+    }, R.string.title_confirm_delete_history_clipboard);
 
     @Override
     public void setEmpty(boolean isEmpty) {
@@ -154,6 +155,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     }
 
     public void dismiss(boolean anim) {
+        mClearListener.dismiss();
         if (anim) {
             boolean isFullTextShown = false;
             if (mClipboardFullTextScrollView != null

@@ -11,6 +11,8 @@ import com.smartisanos.sidebar.R;
 public class ClearListener implements View.OnClickListener {
     private Runnable action;
     private int mTitleResId;
+    private MenuDialog mDialog;
+
     public ClearListener(Runnable action, int titleResId) {
         this.action = action;
         mTitleResId = titleResId;
@@ -18,16 +20,26 @@ public class ClearListener implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        MenuDialog dialog = new MenuDialog(v.getContext());
-        dialog.setTitle(mTitleResId);
-        dialog.setPositiveButton(R.string.clear, new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                action.run();
-            }
-        });
-        dialog.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
-        dialog.getWindow().getAttributes().token = v.getWindowToken();
-        dialog.show();
+        if (mDialog == null) {
+            mDialog = new MenuDialog(v.getContext());
+            mDialog.setTitle(mTitleResId);
+            mDialog.setPositiveButton(R.string.clear, new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    action.run();
+                }
+            });
+            mDialog.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
+            mDialog.getWindow().getAttributes().token = v.getWindowToken();
+        }
+        if (!mDialog.isShowing()) {
+            mDialog.show();
+        }
+    }
+
+    public void dismiss() {
+        if (mDialog != null && mDialog.isShowing()) {
+            mDialog.dismiss();
+        }
     }
 }

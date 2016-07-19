@@ -86,17 +86,19 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
         mClear = findViewById(R.id.clear);
         mGridView = (GridView)findViewById(R.id.recentphoto_gridview);
         mGridView.setAdapter(mAdapter = new RecentPhotoAdapter(mContext, this));
-        mClear.setOnClickListener(new ClearListener(new Runnable(){
-            @Override
-            public void run() {
-                mGridView.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
-                mGridView.startLayoutAnimation();
-                startAnimation(AnimUtils.getClearAnimationForContainer(RecentPhotoViewGroup.this, RecentPhotoManager.getInstance(mContext)));
-                SidebarController.getInstance(mContext).resumeTopView();
-                mContentView.setCurrent(ContentType.NONE);
-            }
-        }, R.string.title_confirm_delete_history_photo));
+        mClear.setOnClickListener(mClearListener);
     }
+
+    private ClearListener mClearListener = new ClearListener(new Runnable() {
+        @Override
+        public void run() {
+            mGridView.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
+            mGridView.startLayoutAnimation();
+            startAnimation(AnimUtils.getClearAnimationForContainer(RecentPhotoViewGroup.this, RecentPhotoManager.getInstance(mContext)));
+            SidebarController.getInstance(mContext).resumeTopView();
+            mContentView.setCurrent(ContentType.NONE);
+        }
+    }, R.string.title_confirm_delete_history_photo);
 
     public void setContentView(ContentView cv){
         mContentView = cv;
@@ -127,6 +129,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
     }
 
     public void dismiss(boolean anim) {
+        mClearListener.dismiss();
         if (anim) {
             if (!mIsEmpty) {
                 imageAnim(false);

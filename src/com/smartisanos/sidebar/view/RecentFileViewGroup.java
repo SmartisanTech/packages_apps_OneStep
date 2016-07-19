@@ -62,17 +62,19 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
         mRecentFileList = (ListView)findViewById(R.id.recentfile_listview);
         mRecentFileList.setAdapter(new RecentFileAdapter(mContext, this));
 
-        mClearFile.setOnClickListener(new ClearListener(new Runnable() {
-            @Override
-            public void run() {
-                mRecentFileList.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
-                mRecentFileList.startLayoutAnimation();
-                startAnimation(AnimUtils.getClearAnimationForContainer(RecentFileViewGroup.this, RecentFileManager.getInstance(mContext)));
-                SidebarController.getInstance(mContext).resumeTopView();
-                mContentView.setCurrent(ContentType.NONE);
-            }
-        }, R.string.title_confirm_delete_history_file));
+        mClearFile.setOnClickListener(mClearListener);
     }
+
+    private ClearListener mClearListener = new ClearListener(new Runnable() {
+        @Override
+        public void run() {
+            mRecentFileList.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
+            mRecentFileList.startLayoutAnimation();
+            startAnimation(AnimUtils.getClearAnimationForContainer(RecentFileViewGroup.this, RecentFileManager.getInstance(mContext)));
+            SidebarController.getInstance(mContext).resumeTopView();
+            mContentView.setCurrent(ContentType.NONE);
+        }
+    }, R.string.title_confirm_delete_history_file);
 
     public void setContentView(ContentView cv){
         mContentView = cv;
@@ -104,6 +106,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
     }
 
     public void dismiss(boolean anim) {
+        mClearListener.dismiss();
         if (anim) {
             AnimTimeLine timeLine = new AnimTimeLine();
             final View view;
