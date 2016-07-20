@@ -12,7 +12,7 @@ public class LOG {
     private static boolean ENABLE_DETAIL_INFO = false;
     private boolean ENABLE_DETAIL_INFO_BY_CLASS = false;
     private static final boolean ENABLE_TRACE = true;
-    public static boolean DISABLE_INFO_LOG = true;
+    public static boolean DISABLE_INFO_LOG = false;
     public static boolean ENABLE_DEBUG = (SystemProperties.getInt("ro.debuggable", 0) == 1);
     public static final boolean IS_USER = !(SystemProperties.getInt("ro.debuggable", 0) == 1);
 

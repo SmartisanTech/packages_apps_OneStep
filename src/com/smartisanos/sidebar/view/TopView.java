@@ -16,10 +16,15 @@ import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.CopyHistoryItem;
 import android.graphics.Bitmap;
@@ -107,38 +112,9 @@ public class TopView extends FrameLayout {
         mViewToType.put(mFile, ContentType.FILE);
         mViewToType.put(mClipboard, ContentType.CLIPBOARD);
 
-        View.OnClickListener mListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!(v instanceof TopItemView)) {
-                    // error !
-                    return;
-                }
-                TopItemView itemView = (TopItemView) v;
-                if (mController.getCurrentContentType() == ContentType.NONE) {
-                    mController.showContent(mViewToType.get(itemView));
-                    for (TopItemView view : mViewToType.keySet()) {
-                        if (view == itemView) {
-                            view.highlight();
-                        } else {
-                            view.dim();
-                        }
-                    }
-                } else {
-                    if (mController.getCurrentContentType() == mViewToType
-                            .get(itemView)) {
-                        mController.dismissContent(true);
-                        resumeToNormal();
-                    } else {
-                        // never happen !
-                    }
-                }
-            }
-        };
-
-        mPhotos.setOnClickListener(mListener);
-        mFile.setOnClickListener(mListener);
-        mClipboard.setOnClickListener(mListener);
+        mPhotos.setOnClickListener(mItemOnClickListener);
+        mFile.setOnClickListener(mItemOnClickListener);
+        mClipboard.setOnClickListener(mItemOnClickListener);
 
         // update icon content
         mPhotos.setIconContentPaddingTop(mTopbarPhotoIconContentPaddingTop);
@@ -192,6 +168,57 @@ public class TopView extends FrameLayout {
         });
     }
 
+    private View.OnClickListener mItemOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (!(v instanceof TopItemView)) {
+                // error !
+                return;
+            }
+            if (!AnimStatusManager.getInstance().canShowContentView()) {
+                AnimStatusManager.getInstance().dumpStatus();
+                return;
+            }
+
+            TopItemView itemView = (TopItemView) v;
+            if (mController.getCurrentContentType() == ContentType.NONE) {
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_CLICK, true);
+                AnimTimeLine animTimeLine = new AnimTimeLine();
+                mController.showContent(mViewToType.get(itemView));
+                for (TopItemView view : mViewToType.keySet()) {
+                    if (view == itemView) {
+                        animTimeLine.addTimeLine(view.highlight());
+                    } else {
+                        Anim anim = view.dim();
+                        if (anim != null) {
+                            animTimeLine.addAnim(anim);
+                        }
+                    }
+                }
+                animTimeLine.setAnimListener(new AnimListener() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onComplete(int type) {
+                        AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_CLICK, false);
+                    }
+                });
+                animTimeLine.start();
+            } else {
+                if (mController.getCurrentContentType() == mViewToType
+                        .get(itemView)) {
+                    mController.dismissContent(true);
+                    resumeToNormal();
+                } else {
+                    // never happen !
+                }
+            }
+        }
+    };
+
     private void updatePhotoIconContent() {
         List<ImageInfo> mList = mPhotoManager.getImageList();
         if (mList.size() > 0) {
@@ -227,12 +254,14 @@ public class TopView extends FrameLayout {
     }
 
     public void dimAll(){
+        AnimTimeLine timeLine = new AnimTimeLine();
         for (TopItemView view : mViewToType.keySet()) {
-            view.dim();
+            timeLine.addAnim(view.dim());
         }
+        timeLine.start();
     }
 
-    public void resumeToNormal(){
+    public void resumeToNormal() {
         for (TopItemView view : mViewToType.keySet()) {
             view.resume();
         }
@@ -243,9 +272,11 @@ public class TopView extends FrameLayout {
         switch (ev.getAction()) {
         case MotionEvent.ACTION_DOWN:
             if (mController.getCurrentContentType() != ContentType.NONE) {
-                Utils.resumeSidebar(mContext);
-                log.error("content not none ! resume sidebar...");
-                return true;
+                if (AnimStatusManager.getInstance().canShowContentView()) {
+                    Utils.resumeSidebar(mContext);
+                    log.error("content not none ! resume sidebar...");
+                    return true;
+                }
             }
         }
         return super.dispatchTouchEvent(ev);

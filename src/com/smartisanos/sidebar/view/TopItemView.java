@@ -75,12 +75,13 @@ public class TopItemView extends FrameLayout {
         mIcon.setBackgroundResource(mIconResId);
     }
 
-    public void dim(){
+    public Anim dim(){
+        Anim anim = null;
         if(!mIsDim){
             mIsDim = true;
             setClickable(false);
-            Anim alphaAnim = new Anim(mTopDimView, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
-            alphaAnim.setListener(new AnimListener() {
+            anim = new Anim(mTopDimView, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+            anim.setListener(new AnimListener() {
                 @Override
                 public void onStart() {
                     mTopDimView.setVisibility(View.VISIBLE);
@@ -89,16 +90,17 @@ public class TopItemView extends FrameLayout {
                 public void onComplete(int type) {
                 }
             });
-            alphaAnim.start();
         }
+        return anim;
     }
 
-    public void highlight() {
+    public AnimTimeLine highlight() {
+        AnimTimeLine timeLine = new AnimTimeLine();
         if (!mIsHighlight) {
             mIsHighlight = true;
             Anim scaleAnim = new Anim(mContentGroup, Anim.SCALE, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(1.05f, 1.05f));
             Anim alphaAnim = new Anim(mBackDimView, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
-            AnimTimeLine timeLine = new AnimTimeLine();
+
             timeLine.addAnim(scaleAnim);
             timeLine.addAnim(alphaAnim);
             timeLine.setAnimListener(new AnimListener() {
@@ -110,8 +112,8 @@ public class TopItemView extends FrameLayout {
                 public void onComplete(int type) {
                 }
             });
-            timeLine.start();
         }
+        return timeLine;
     }
 
     public void resume() {

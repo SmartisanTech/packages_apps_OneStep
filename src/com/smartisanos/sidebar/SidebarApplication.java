@@ -4,6 +4,7 @@ import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.MailContactsHelper;
 import com.smartisanos.sidebar.util.ThreadVerify;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 
 import android.app.Application;
 import android.os.Process;
@@ -18,6 +19,7 @@ public class SidebarApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Constants.init(this);
+        AnimStatusManager.getInstance().reset();
         ThreadVerify.PROCESS_ID = Process.myTid();
         setStrictMode();
         // this is necessary ! init it to make its inner data be filled
