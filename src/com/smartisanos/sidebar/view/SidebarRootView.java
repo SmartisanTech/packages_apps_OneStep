@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.action.UninstallAction;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
@@ -50,7 +51,11 @@ public class SidebarRootView extends FrameLayout {
     }
 
     public void resetSidebarWindow() {
-        removeView(mDragView.mView);
+        if (mDragView != null) {
+            if (mDragView.mView != null) {
+                removeView(mDragView.mView);
+            }
+        }
         mDragView = null;
         SidebarController.getInstance(mContext).updateDragWindow(false);
     }
@@ -401,12 +406,25 @@ public class SidebarRootView extends FrameLayout {
 
     private void onDismiss() {
         if (mDragView != null) {
+            DragItem item = mDragView.mItem;
+            if (item != null) {
+                item.mListItemView.setVisibility(View.VISIBLE);
+                if (item.itemType == DragItem.TYPE_APPLICATION) {
+                    mSideView.getAppListAdapter().moveItemPostion((ResolveInfoGroup) item.sidebarItem, item.viewIndex);
+                } else if (item.itemType == DragItem.TYPE_SHORTCUT) {
+                    mSideView.getContactListAdapter().moveItemPostion((ContactItem) item.sidebarItem, item.viewIndex);
+                }
+            }
+            mDragging = false;
+            mDragDeleting = false;
+            mDragDroping = false;
+            UninstallAction.dismissDialog();
             View view = mDragView.mView;
             if (view != null) {
-                mDragDroping = false;
                 view.setVisibility(View.GONE);
                 removeView(view);
             }
+            resetSidebarWindow();
         }
         if (mSideView != null) {
             mSideView.restoreView();

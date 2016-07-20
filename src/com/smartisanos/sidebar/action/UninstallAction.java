@@ -17,12 +17,18 @@ public class UninstallAction {
 
     private Context mContext;
     private DragItem mDragItem;
-    private AlertDialog mUninstallDialog;
+    private static AlertDialog mUninstallDialog;
     private boolean isCancelRun = false;
 
     public UninstallAction(Context context, DragItem dragItem) {
         mContext = context;
         mDragItem = dragItem;
+    }
+
+    public static void dismissDialog() {
+        if (mUninstallDialog != null) {
+            mUninstallDialog.dismiss();
+        }
     }
 
     public void showUninstallDialog() {
