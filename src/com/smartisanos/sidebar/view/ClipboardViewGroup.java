@@ -11,12 +11,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.View.OnLongClickListener;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.LayoutAnimationController;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -29,14 +24,13 @@ import android.content.res.Configuration;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
-import com.smartisanos.sidebar.util.IClear;
 import com.smartisanos.sidebar.util.IEmpty;
+import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentClipManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
-import com.smartisanos.sidebar.util.anim.AnimUtils;
 import com.smartisanos.sidebar.util.anim.ExpandableCollapsedTextViewHeightAnim;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
@@ -44,6 +38,7 @@ import com.smartisanos.sidebar.view.ContentView.ContentType;
 import smartisanos.util.SidebarUtils;
 
 public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView {
+    private static final LOG log = LOG.getInstance(ClipboardViewGroup.class);
 
     private ContentView mContentView;
     private View mClearClipboard;
@@ -121,9 +116,27 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     private ClearListener mClearListener = new ClearListener(new Runnable() {
         @Override
         public void run() {
-            mClipList.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
-            mClipList.startLayoutAnimation();
-            startAnimation(AnimUtils.getClearAnimationForContainer(ClipboardViewGroup.this, RecentClipManager.getInstance(mContext)));
+            Anim clearContentViewAnim = new Anim(ClipboardViewGroup.this, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            int width = mClipList.getWidth();
+            Anim clipListAnim = new Anim(mClipList, Anim.TRANSLATE, 125, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(width, 0));
+            AnimTimeLine timeLine = new AnimTimeLine();
+            timeLine.addAnim(clipListAnim);
+            timeLine.addAnim(clearContentViewAnim);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    mClipList.setX(0);
+                    ClipboardViewGroup.this.setAlpha(1);
+                    RecentClipManager.getInstance(mContext).clear();
+                    ClipboardViewGroup.this.setVisibility(View.GONE);
+                }
+            });
+            timeLine.start();
             SidebarController.getInstance(mContext).resumeTopView();
             mContentView.setCurrent(ContentType.NONE);
         }
@@ -146,11 +159,30 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     public void show(boolean anim) {
         setVisibility(View.VISIBLE);
         if (anim) {
-            if (mIsEmpty) {
-                mClipList.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
-                mClipList.startLayoutAnimation();
+            AnimTimeLine timeLine = new AnimTimeLine();
+            int time = 200;
+            if (!mIsEmpty) {
+                int height = mClipList.getHeight();
+                mClipList.setPivotY(0);
+                Anim moveAnim = new Anim(mClipList, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, -height), new Vector3f());
+                timeLine.addAnim(moveAnim);
             }
-            startAnimation(AnimUtils.getEnterAnimationForContainer());
+            setPivotY(0);
+            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 0.6f), new Vector3f(0, 1));
+            timeLine.addAnim(scaleAnim);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    mClipList.setY(0);
+                    setScaleY(1);
+                }
+            });
+            timeLine.start();
         }
     }
 

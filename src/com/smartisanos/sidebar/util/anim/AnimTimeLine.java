@@ -24,18 +24,59 @@ public class AnimTimeLine {
         if (anim == null) {
             return;
         }
+        anim.setAnimCallbackListener();
         mAnimList.add(anim);
+    }
+
+    public void addTimeLine(AnimTimeLine timeLine) {
+        if (timeLine == null) {
+            return;
+        }
+        List<Anim> animList = timeLine.getAnimList();
+        if (animList != null) {
+            timeLine.setAnimCallbackListener();
+            mAnimList.addAll(animList);
+        }
     }
 
     public List<Anim> getAnimList() {
         return mAnimList;
     }
 
+    public void setAnimCallbackListener() {
+        if (mAnimList == null || mAnimList.size() == 0) {
+            return;
+        }
+        if (mListener == null) {
+            return;
+        }
+        AnimatorCallbackListener listener = new AnimatorCallbackListener(mListener);
+        ObjectAnimator lastAnim = null;
+        long totalTime = 0;
+        for (Anim anim : mAnimList) {
+            List<ObjectAnimator> list = anim.getAnimatorList();
+            if (list == null) {
+                continue;
+            }
+            for (ObjectAnimator animator : list) {
+                long delta = animator.getDuration() + animator.getStartDelay();
+                if (delta >= totalTime) {
+                    totalTime = delta;
+                    lastAnim = animator;
+                }
+            }
+        }
+        if (lastAnim != null) {
+            lastAnim.addListener(listener);
+        } else {
+            log.error("lose last anim, can't set anim listener to time line");
+        }
+    }
+
     public void start() {
         if (mAnimList == null || mAnimList.size() == 0) {
             return;
         }
-        AnimatorSetListener listener = new AnimatorSetListener();
         List<Animator> animators = new ArrayList<Animator>();
         for (Anim anim : mAnimList) {
             List<ObjectAnimator> list = anim.getAnimatorList();
@@ -43,8 +84,8 @@ public class AnimTimeLine {
                 animators.addAll(list);
             }
         }
+        setAnimCallbackListener();
         mAnimationSet.playTogether(animators);
-        mAnimationSet.addListener(listener);
         mAnimationSet.start();
     }
 
@@ -64,42 +105,38 @@ public class AnimTimeLine {
         return mAnimationSet.isRunning();
     }
 
-    public void addAnimatorListener(Animator.AnimatorListener listener) {
+    public void setAnimListener(AnimListener listener) {
         if (listener == null) {
             return;
         }
-        mAnimationSet.addListener(listener);
-    }
-
-    public void setAnimListener(AnimListener listener) {
         mListener = listener;
     }
 
-    private class AnimatorSetListener implements Animator.AnimatorListener {
-        private long startTime;
-        private long endTime;
+    private class AnimatorCallbackListener implements Animator.AnimatorListener {
+        private AnimListener mAnimListener;
+
+        public AnimatorCallbackListener(AnimListener listener) {
+            mAnimListener = listener;
+        }
 
         @Override
         public void onAnimationStart(Animator animator) {
-            startTime = System.currentTimeMillis();
-            if (mListener != null) {
-                mListener.onStart();
+            if (mAnimListener != null) {
+                mAnimListener.onStart();
             }
         }
 
         @Override
         public void onAnimationEnd(Animator animator) {
-            endTime = System.currentTimeMillis();
-//            log.error("anim spend time ["+(endTime - startTime)+"]");
-            if (mListener != null) {
-                mListener.onComplete(Anim.ANIM_FINISH_TYPE_COMPLETE);
+            if (mAnimListener != null) {
+                mAnimListener.onComplete(Anim.ANIM_FINISH_TYPE_COMPLETE);
             }
         }
 
         @Override
         public void onAnimationCancel(Animator animator) {
-            if (mListener != null) {
-                mListener.onComplete(Anim.ANIM_FINISH_TYPE_CANCELED);
+            if (mAnimListener != null) {
+                mAnimListener.onComplete(Anim.ANIM_FINISH_TYPE_CANCELED);
             }
         }
 

@@ -97,26 +97,68 @@ public class Anim {
         mInOut = easeInOut;
         mFrom = from;
         mTo = to;
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("something is null ["+from+"]["+to+"]");
+        }
+        mAnimList = new ArrayList<Animator>();
         switch (animType) {
             case TRANSLATE : {
-                initTranslate(mFrom, mTo);
+                if (from.x != to.x) {
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(mView, X, from.x, to.x);
+                    mAnimList.add(animator);
+                }
+                if (from.y != to.y) {
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(mView, Y, from.y, to.y);
+                    mAnimList.add(animator);
+                }
                 break;
             }
             case ROTATE : {
-                initRotate(mFrom, mTo);
+                if (from.z != to.z) {
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(mView, ROTATION, from.z, to.z);
+                    mAnimList.add(animator);
+                }
                 break;
             }
             case SCALE : {
-                initScale(mFrom, mTo);
+                if (from.x != to.x) {
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(mView, SCALE_X, from.x, to.x);
+                    mAnimList.add(animator);
+                }
+                if (from.y != to.y) {
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(mView, SCALE_Y, from.y, to.y);
+                    mAnimList.add(animator);
+                }
                 break;
             }
             case TRANSPARENT : {
-                initAlpha(mFrom.z, mTo.z);
+                if (mFrom.z != mTo.z) {
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(mView, ALPHA, mFrom.z, mTo.z);
+                    mView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                    mAnimList.add(animator);
+                }
                 break;
             }
             case MOVE : {
-                initMove(mFrom, mTo);
+                if (from.x != to.x) {
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(mView, TRANSLATE_X, from.x, to.x);
+                    mAnimList.add(animator);
+                }
+                if (from.y != to.y) {
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(mView, TRANSLATE_Y, from.y, to.y);
+                    mAnimList.add(animator);
+                }
                 break;
+            }
+        }
+        AnimInterpolator.Interpolator interpolator = null;
+        if (mInOut != 0) {
+            interpolator = new AnimInterpolator.Interpolator(mInOut);
+        }
+        for (Animator animator : mAnimList) {
+            animator.setDuration(duration);
+            if (interpolator != null) {
+                animator.setInterpolator(interpolator);
             }
         }
     }
@@ -149,68 +191,27 @@ public class Anim {
         }
     }
 
-    private void initTranslate(Vector3f from, Vector3f to) {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("something is null ["+from+"]["+to+"]");
+    public void setAnimCallbackListener() {
+        if (mAnimList == null || mAnimList.size() == 0) {
+            return;
         }
-        mAnimList = new ArrayList<Animator>();
-        if (from.x != to.x) {
-            ObjectAnimator animatorX = ObjectAnimator.ofFloat(mView, X, from.x, to.x);
-            mAnimList.add(animatorX);
-        }
-        if (from.y != to.y) {
-            ObjectAnimator animatorY = ObjectAnimator.ofFloat(mView, Y, from.y, to.y);
-            mAnimList.add(animatorY);
-        }
-    }
-
-    private void initRotate(Vector3f from, Vector3f to) {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("something is null ["+from+"]["+to+"]");
-        }
-        mAnimList = new ArrayList<Animator>();
-        if (from.z != to.z) {
-            ObjectAnimator rotateZ = ObjectAnimator.ofFloat(mView, ROTATION, from.z, to.z);
-            mAnimList.add(rotateZ);
-        }
-    }
-
-    private void initScale(Vector3f from, Vector3f to) {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("something is null ["+from+"]["+to+"]");
-        }
-        mAnimList = new ArrayList<Animator>();
-        if (from.x != to.x) {
-            ObjectAnimator animatorX = ObjectAnimator.ofFloat(mView, SCALE_X, from.x, to.x);
-            mAnimList.add(animatorX);
-        }
-        if (from.y != to.y) {
-            ObjectAnimator animatorY = ObjectAnimator.ofFloat(mView, SCALE_Y, from.y, to.y);
-            mAnimList.add(animatorY);
-        }
-    }
-
-    private void initAlpha(float from, float to) {
-        if (from != to) {
-            ObjectAnimator alphaAnim = ObjectAnimator.ofFloat(mView, ALPHA, from, to);
-            mView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            mAnimList = new ArrayList<Animator>();
-            mAnimList.add(alphaAnim);
-        }
-    }
-
-    private void initMove(Vector3f from, Vector3f to) {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("something is null ["+from+"]["+to+"]");
-        }
-        mAnimList = new ArrayList<Animator>();
-        if (from.x != to.x) {
-            ObjectAnimator animatorX = ObjectAnimator.ofFloat(mView, TRANSLATE_X, from.x, to.x);
-            mAnimList.add(animatorX);
-        }
-        if (from.y != to.y) {
-            ObjectAnimator animatorY = ObjectAnimator.ofFloat(mView, TRANSLATE_Y, from.y, to.y);
-            mAnimList.add(animatorY);
+        if (mListener != null) {
+            //need do some callback
+            long totalTime = 0;
+            Animator lastAnim = null;
+            for (Animator animator : mAnimList) {
+                long delta = animator.getDuration() + animator.getStartDelay();
+                if (delta >= totalTime) {
+                    totalTime = delta;
+                    lastAnim = animator;
+                }
+            }
+            if (lastAnim != null) {
+                AnimatorCallbackListener listener = new AnimatorCallbackListener(mListener);
+                lastAnim.addListener(listener);
+            } else {
+                throw new IllegalArgumentException("set anim listener err !");
+            }
         }
     }
 
@@ -220,16 +221,9 @@ public class Anim {
             log.error("anim array is empty !");
             return;
         }
-        AnimatorSetListener listener = new AnimatorSetListener();
+        setAnimCallbackListener();
         mAnimationSet = new AnimatorSet();
         mAnimationSet.playTogether(mAnimList);
-        mAnimationSet.setDuration(duration);
-        mAnimationSet.setStartDelay(mDelay);
-        if (mInOut != 0) {
-            AnimInterpolator.Interpolator interpolator = new AnimInterpolator.Interpolator(mInOut);
-            mAnimationSet.setInterpolator(interpolator);
-        }
-        mAnimationSet.addListener(listener);
         mAnimationSet.start();
     }
 
@@ -239,48 +233,40 @@ public class Anim {
         }
         List<ObjectAnimator> list = new ArrayList<ObjectAnimator>();
         int size = mAnimList.size();
-        AnimInterpolator.Interpolator interpolator = null;
-        if (mInOut != 0) {
-            interpolator = new AnimInterpolator.Interpolator(mInOut);
-        }
         for (int i = 0; i < size; i++) {
             ObjectAnimator anim = (ObjectAnimator) mAnimList.get(i);
             if (anim != null) {
-                anim.setDuration(duration);
-                anim.setStartDelay(mDelay);
-                if (interpolator != null) {
-                    anim.setInterpolator(interpolator);
-                }
                 list.add(anim);
             }
         }
         return list;
     }
 
-    private class AnimatorSetListener implements Animator.AnimatorListener {
-        private long startTime;
-        private long endTime;
+    private class AnimatorCallbackListener implements Animator.AnimatorListener {
+        private AnimListener mAnimListener;
+
+        public AnimatorCallbackListener(AnimListener listener) {
+            mAnimListener = listener;
+        }
 
         @Override
         public void onAnimationStart(Animator animator) {
-            startTime = System.currentTimeMillis();
-            if (mListener != null) {
-                mListener.onStart();
+            if (mAnimListener != null) {
+                mAnimListener.onStart();
             }
         }
 
         @Override
         public void onAnimationEnd(Animator animator) {
-            endTime = System.currentTimeMillis();
-            if (mListener != null) {
-                mListener.onComplete(ANIM_FINISH_TYPE_COMPLETE);
+            if (mAnimListener != null) {
+                mAnimListener.onComplete(ANIM_FINISH_TYPE_COMPLETE);
             }
         }
 
         @Override
         public void onAnimationCancel(Animator animator) {
-            if (mListener != null) {
-                mListener.onComplete(ANIM_FINISH_TYPE_CANCELED);
+            if (mAnimListener != null) {
+                mAnimListener.onComplete(ANIM_FINISH_TYPE_CANCELED);
             }
         }
 
