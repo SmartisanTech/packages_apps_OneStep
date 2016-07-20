@@ -391,6 +391,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
         switchViewAnimRunning = true;
         mEnableClipboardFullTextTitleBackButton = false;
         mClipboardItemTitle.setVisibility(View.GONE);
+        mClipboardFullTextScrollView.setVerticalScrollBarEnabled(false);
         Rect rect = new Rect();
         mClipList.getDrawingRect(rect);
         final int viewWidth = mClipList.getWidth();
@@ -421,6 +422,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                     @Override
                     public void onAnimationEnd(Animator animator) {
                         mClipboardListTitle.setVisibility(View.VISIBLE);
+                        mClipboardFullTextScrollView.setVerticalScrollBarEnabled(true);
                         mClipboardFullTextScrollView.setVisibility(View.GONE);
                         switchViewAnimRunning = false;
                         clipboardItemClicked = false;
