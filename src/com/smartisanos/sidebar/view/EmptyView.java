@@ -3,6 +3,7 @@ package com.smartisanos.sidebar.view;
 import com.smartisanos.sidebar.R;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,6 +15,9 @@ public class EmptyView extends LinearLayout {
     private ImageView mImageView;
     private TextView mText, mHint;
     private Button mButton;
+
+    private int mTextResId, mHintResId;
+    private int mButtonTextResId, mButtonBackgroundResId;
 
     public EmptyView(Context context) {
         super(context, null);
@@ -42,29 +46,48 @@ public class EmptyView extends LinearLayout {
     }
 
     public void setImageView(int resId) {
-        if (mImageView != null) {
-            mImageView.setImageResource(resId);
-        }
+        mImageView.setImageResource(resId);
     }
 
     public void setText(int resId) {
-        if (mText != null) {
-            mText.setText(resId);
-        }
+        mTextResId = resId;
+        mText.setText(mTextResId);
     }
 
     public void setHint(int resId) {
-        if (mHint != null) {
-            mHint.setText(resId);
+        mHintResId = resId;
+        mHint.setText(mHintResId);
+    }
+
+    public void setButton(int textResId, int backgroundResId, OnClickListener mOnClickListener) {
+        mButtonTextResId = textResId;
+        mButtonBackgroundResId = backgroundResId;
+        mButton.setVisibility(VISIBLE);
+        mButton.setText(mButtonTextResId);
+        mButton.setBackgroundResource(mButtonBackgroundResId);
+        mButton.setOnClickListener(mOnClickListener);
+    }
+
+    private void updateUI() {
+        if (mTextResId != 0) {
+            mText.setText(mTextResId);
+        }
+
+        if (mHintResId != 0) {
+            mHint.setText(mHintResId);
+        }
+
+        if (mButtonTextResId != 0) {
+            mButton.setText(mButtonTextResId);
+        }
+        if (mButtonBackgroundResId != 0) {
+            mButton.setBackgroundResource(mButtonBackgroundResId);
         }
     }
 
-    public void setButton(int textResid, int backgroundResId, OnClickListener mOnClickListener){
-        if(mButton != null){
-            mButton.setVisibility(VISIBLE);
-            mButton.setText(textResid);
-            mButton.setBackgroundResource(backgroundResId);
-            mButton.setOnClickListener(mOnClickListener);
-        }
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateUI();
     }
 }

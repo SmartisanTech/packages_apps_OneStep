@@ -30,6 +30,6 @@
     <string name="photo_empty_hint">最近接收和處理的圖片將會出現在這裡</string>
     <string name="file_empty_text">文件記錄為空</string>
     <string name="file_empty_hint">最近接收和處理的文件將會出現在這裡</string>
-    <string name="clipboard_empty_text">剪贴板为空</string>
-    <string name="clipboard_empty_hint">最近剪切和复制的文字将会出现在这里</string>
+    <string name="clipboard_empty_text">剪貼板為空</string>
+    <string name="clipboard_empty_hint">最近剪切和複製的文字將會出現在這裡</string>
 </resources>
