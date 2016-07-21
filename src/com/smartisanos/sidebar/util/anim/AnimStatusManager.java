@@ -9,12 +9,24 @@ import java.util.Map;
 public class AnimStatusManager {
     private static final LOG log = LOG.getInstance(AnimStatusManager.class);
 
-    public static int ON_TOP_VIEW_CLICK      = 0x1;
-    public static int ON_SIDE_VIEW_ADD_CLICK = 0x1 << 1;
+    public static int ON_TOP_VIEW_CLICK         = 0x1;
+    public static int ON_SIDE_VIEW_ADD_CLICK    = 0x1 << 1;
+    public static int ON_RECENT_PHOTO_LIST_ANIM = 0x1 << 2;
+    public static int ON_FILE_LIST_ANIM         = 0x1 << 3;
+    public static int ON_CLIPBOARD_LIST_ANIM    = 0x1 << 4;
+    public static int ON_ADD_ITEM_VIEW_ANIM     = 0x1 << 5;
+    public static int ON_ADD_ITEM_ANIM          = 0x1 << 6;
+    public static int ON_TOP_VIEW_RESUME        = 0x1 << 7;
 
     public static final int [] STATUS_ARR = new int[] {
             ON_TOP_VIEW_CLICK,
             ON_SIDE_VIEW_ADD_CLICK,
+            ON_RECENT_PHOTO_LIST_ANIM,
+            ON_FILE_LIST_ANIM,
+            ON_CLIPBOARD_LIST_ANIM,
+            ON_ADD_ITEM_VIEW_ANIM,
+            ON_ADD_ITEM_ANIM,
+            ON_TOP_VIEW_RESUME
     };
 
     public static final Map<Integer, String> statusNameMap = new HashMap<Integer, String>();
@@ -87,7 +99,14 @@ public class AnimStatusManager {
         return (mStatus & status) == status;
     }
 
-    private static final int SHOW_CONTENT_FLAG = ON_TOP_VIEW_CLICK | ON_SIDE_VIEW_ADD_CLICK;
+    private static final int SHOW_CONTENT_FLAG = ON_TOP_VIEW_CLICK
+            | ON_SIDE_VIEW_ADD_CLICK
+            | ON_RECENT_PHOTO_LIST_ANIM
+            | ON_FILE_LIST_ANIM
+            | ON_CLIPBOARD_LIST_ANIM
+            | ON_ADD_ITEM_ANIM
+            | ON_ADD_ITEM_VIEW_ANIM
+            | ON_TOP_VIEW_RESUME;
 
     public boolean canShowContentView() {
         return (mStatus & SHOW_CONTENT_FLAG) == 0;

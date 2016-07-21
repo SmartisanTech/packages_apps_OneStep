@@ -14,6 +14,8 @@ import android.view.View;
 import com.smartisanos.sidebar.SidebarController;
 
 public class Utils {
+    private static final LOG log = LOG.getInstance(Utils.class);
+
     static void sendCloseSystemWindows(Context context, String reason) {
         if (ActivityManagerNative.isSystemReady()) {
             try {
@@ -24,6 +26,7 @@ public class Utils {
     }
 
     public static void resumeSidebar(Context context){
+        log.error("super method resumeSidebar !");
         SidebarController.getInstance(context).resumeTopView();
         SidebarController.getInstance(context).dismissContent(true);
     }

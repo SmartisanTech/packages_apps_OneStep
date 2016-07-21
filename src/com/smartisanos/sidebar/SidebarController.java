@@ -22,6 +22,7 @@ import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.view.ContentView;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 import com.smartisanos.sidebar.view.SideView;
@@ -124,6 +125,7 @@ public class SidebarController {
     }
 
     private void stop(){
+        AnimStatusManager.getInstance().reset();
         mTopView.show(false);
         mSidebarRoot.show(false);
         dismissContent(false);

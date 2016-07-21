@@ -18,6 +18,7 @@ import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.AnimUtils;
 import com.smartisanos.sidebar.util.anim.Vector3f;
@@ -121,28 +122,61 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
     public void show(boolean anim) {
         setVisibility(View.VISIBLE);
         if (anim) {
+            int time = 200;
+            AnimTimeLine timeLine = new AnimTimeLine();
             if (!mIsEmpty) {
-                imageAnim(true);
+                timeLine.addTimeLine(imageAnim(true));
             }
-            startAnimation(AnimUtils.getEnterAnimationForContainer());
+            setPivotY(0);
+            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 0.6f), new Vector3f(0, 1));
+            timeLine.addAnim(scaleAnim);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_RECENT_PHOTO_LIST_ANIM, true);
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_RECENT_PHOTO_LIST_ANIM, false);
+                    setScaleY(1);
+                }
+            });
+            timeLine.start();
         }
     }
 
     public void dismiss(boolean anim) {
         mClearListener.dismiss();
         if (anim) {
+            int time = 200;
+            AnimTimeLine timeLine = new AnimTimeLine();
             if (!mIsEmpty) {
-                imageAnim(false);
+                timeLine.addTimeLine(imageAnim(false));
             }
-            startAnimation(AnimUtils.getExitAnimationForContainer(this));
+            setPivotY(0);
+            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 1), new Vector3f(0, 0.6f));
+            timeLine.addAnim(scaleAnim);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_RECENT_PHOTO_LIST_ANIM, true);
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    setVisibility(View.GONE);
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_RECENT_PHOTO_LIST_ANIM, false);
+                    setScaleY(1);
+                }
+            });
+            timeLine.start();
         } else {
             setVisibility(View.GONE);
         }
     }
 
-    private AnimTimeLine mImageAnimTimeLine = null;
-
-    private void imageAnim(final boolean isShow) {
+    private AnimTimeLine imageAnim(final boolean isShow) {
         int count = mGridView.getChildCount();
         Vector3f loc00 = new Vector3f();
         Vector3f alphaFrom = new Vector3f();
@@ -194,14 +228,11 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
             anims.add(moveAnim);
             anims.add(alphaAnim);
         }
-        if (mImageAnimTimeLine != null) {
-            mImageAnimTimeLine.cancel();
-        }
-        mImageAnimTimeLine = new AnimTimeLine();
+        AnimTimeLine timeLine = new AnimTimeLine();
         for (Anim anim : anims) {
-            mImageAnimTimeLine.addAnim(anim);
+            timeLine.addAnim(anim);
         }
-        mImageAnimTimeLine.setAnimListener(new AnimListener() {
+        timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
             }
@@ -230,7 +261,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
                 }
             }
         });
-        mImageAnimTimeLine.start();
+        return timeLine;
     }
 
     private void updateUI(){

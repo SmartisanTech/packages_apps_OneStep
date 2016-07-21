@@ -30,6 +30,7 @@ import com.smartisanos.sidebar.util.RecentClipManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.ExpandableCollapsedTextViewHeightAnim;
 import com.smartisanos.sidebar.util.anim.Vector3f;
@@ -159,8 +160,8 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     public void show(boolean anim) {
         setVisibility(View.VISIBLE);
         if (anim) {
-            AnimTimeLine timeLine = new AnimTimeLine();
             int time = 200;
+            AnimTimeLine timeLine = new AnimTimeLine();
             if (!mIsEmpty) {
                 int height = mClipList.getHeight();
                 mClipList.setPivotY(0);
@@ -173,11 +174,12 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
             timeLine.setAnimListener(new AnimListener() {
                 @Override
                 public void onStart() {
-
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_CLIPBOARD_LIST_ANIM, true);
                 }
 
                 @Override
                 public void onComplete(int type) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_CLIPBOARD_LIST_ANIM, false);
                     mClipList.setY(0);
                     setScaleY(1);
                 }
@@ -212,10 +214,12 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
             timeLine.setAnimListener(new AnimListener() {
                 @Override
                 public void onStart() {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_CLIPBOARD_LIST_ANIM, true);
                 }
 
                 @Override
                 public void onComplete(int type) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_CLIPBOARD_LIST_ANIM, false);
                     view.setScaleY(1);
                     view.setAlpha(1);
                     resetClipboardFullTextStatus();

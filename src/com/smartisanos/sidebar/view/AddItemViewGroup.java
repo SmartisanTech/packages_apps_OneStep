@@ -20,6 +20,7 @@ import com.smartisanos.sidebar.util.ResolveInfoManager;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
@@ -159,10 +160,12 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
             timeLine.setAnimListener(new AnimListener() {
                 @Override
                 public void onStart() {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_ADD_ITEM_VIEW_ANIM, true);
                 }
 
                 @Override
                 public void onComplete(int type) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_ADD_ITEM_VIEW_ANIM, false);
                     setScaleX(1);
                     setScaleY(1);
                     setAlpha(1);
@@ -190,10 +193,12 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
             timeLine.setAnimListener(new AnimListener() {
                 @Override
                 public void onStart() {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_ADD_ITEM_VIEW_ANIM, true);
                 }
 
                 @Override
                 public void onComplete(int type) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_ADD_ITEM_VIEW_ANIM, false);
                     setVisibility(View.GONE);
                     setScaleX(1);
                     setScaleY(1);

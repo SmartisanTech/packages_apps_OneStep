@@ -27,6 +27,7 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
@@ -97,6 +98,10 @@ public class SideView extends RelativeLayout {
         mAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!AnimStatusManager.getInstance().canShowContentView()) {
+                    AnimStatusManager.getInstance().dumpStatus();
+                    return;
+                }
                 if (mAddButtonRotateAnim != null) {
                     return;
                 }

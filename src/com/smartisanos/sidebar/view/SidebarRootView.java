@@ -362,7 +362,7 @@ public class SidebarRootView extends FrameLayout {
 
     private boolean processResumeSidebar() {
         if (SidebarController.getInstance(mContext).getCurrentContentType() != ContentView.ContentType.NONE) {
-            log.error("resumeSidebar !");
+            log.error("processResumeSidebar !");
             Utils.resumeSidebar(mContext);
             return true;
         }

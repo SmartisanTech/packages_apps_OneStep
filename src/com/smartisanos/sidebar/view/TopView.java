@@ -22,9 +22,6 @@ import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.CopyHistoryItem;
 import android.graphics.Bitmap;
@@ -262,9 +259,22 @@ public class TopView extends FrameLayout {
     }
 
     public void resumeToNormal() {
+        AnimTimeLine timeLine = new AnimTimeLine();
         for (TopItemView view : mViewToType.keySet()) {
-            view.resume();
+            timeLine.addTimeLine(view.resume());
         }
+        timeLine.setAnimListener(new AnimListener() {
+            @Override
+            public void onStart() {
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_RESUME, true);
+            }
+
+            @Override
+            public void onComplete(int type) {
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_RESUME, false);
+            }
+        });
+        timeLine.start();
     }
 
     @Override

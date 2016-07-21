@@ -6,6 +6,7 @@ import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.AnimUtils;
 import com.smartisanos.sidebar.util.anim.Vector3f;
@@ -98,11 +99,31 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
         RecentFileManager.getInstance(mContext).startSearchFile();
         setVisibility(VISIBLE);
         if (anim) {
+            int time = 200;
+            AnimTimeLine timeLine = new AnimTimeLine();
             if (!mIsEmpty) {
-                mRecentFileList.setLayoutAnimation(AnimUtils.getEnterLayoutAnimationForListView());
-                mRecentFileList.startLayoutAnimation();
+                int height = mRecentFileList.getHeight();
+                mRecentFileList.setPivotY(0);
+                Anim moveAnim = new Anim(mRecentFileList, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, -height), new Vector3f());
+                timeLine.addAnim(moveAnim);
             }
-            startAnimation(AnimUtils.getEnterAnimationForContainer());
+            setPivotY(0);
+            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 0.6f), new Vector3f(0, 1));
+            timeLine.addAnim(scaleAnim);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_FILE_LIST_ANIM, true);
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_FILE_LIST_ANIM, false);
+                    mRecentFileList.setY(0);
+                    setScaleY(1);
+                }
+            });
+            timeLine.start();
         }
     }
 
@@ -114,7 +135,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
             if (mIsEmpty) {
                 view = mEmptyView;
             } else {
-                view = mRecentFileList;
+                view = mContainer;
             }
             int time = 200;
             view.setPivotY(0);
@@ -125,10 +146,12 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
             timeLine.setAnimListener(new AnimListener() {
                 @Override
                 public void onStart() {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_FILE_LIST_ANIM, true);
                 }
 
                 @Override
                 public void onComplete(int type) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_FILE_LIST_ANIM, false);
                     view.setScaleY(1);
                     view.setAlpha(1);
                     setVisibility(View.GONE);
