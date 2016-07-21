@@ -101,7 +101,21 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
         if (anim) {
             int time = 200;
             AnimTimeLine timeLine = new AnimTimeLine();
-            if (!mIsEmpty) {
+            if (mIsEmpty) {
+                int height = mEmptyView.getHeight();
+                mEmptyView.setPivotY(0);
+                Anim moveAnim = new Anim(mEmptyView, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, -height), new Vector3f());
+                moveAnim.setListener(new AnimListener() {
+                    @Override
+                    public void onStart() {
+                    }
+                    @Override
+                    public void onComplete(int type) {
+                        mEmptyView.setY(0);
+                    }
+                });
+                timeLine.addAnim(moveAnim);
+            } else {
                 int height = mRecentFileList.getHeight();
                 mRecentFileList.setPivotY(0);
                 Anim moveAnim = new Anim(mRecentFileList, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, -height), new Vector3f());
