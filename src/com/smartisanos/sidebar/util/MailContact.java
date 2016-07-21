@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import android.view.DragEvent;
 
 public class MailContact extends ContactItem {
+    public static final String PKG_NAME = "com.android.contacts";
 
     private String mMailAddress;
 
@@ -83,6 +84,11 @@ public class MailContact extends ContactItem {
     @Override
     public int getTypeIcon() {
         return R.drawable.contact_icon_mail;
+    }
+
+    @Override
+    public String getPackageName() {
+        return PKG_NAME;
     }
 
     @Override

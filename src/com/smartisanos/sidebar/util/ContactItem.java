@@ -55,6 +55,7 @@ public abstract class ContactItem implements SidebarItem{
     public abstract boolean handleDragEvent(DragEvent event);
     public abstract void save();
     public abstract int getTypeIcon();
+    public abstract String getPackageName();
     public abstract boolean sameContact(ContactItem ci);
     public static List<ContactItem> getContactList(Context context){
         List<ContactItem> all = new ArrayList<ContactItem>();

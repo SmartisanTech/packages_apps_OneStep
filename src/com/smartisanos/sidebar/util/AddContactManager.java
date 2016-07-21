@@ -40,10 +40,10 @@ public class AddContactManager extends DataManager {
     private AddContactManager(Context context){
         mContext = context;
         mMapPackageToItem = new HashMap<AddContactItem, String>();
-        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_dingding, R.string.add_contact_dingding, mDingDingListener), "com.alibaba.android.rimet");
-        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_mms, R.string.add_contact_mms, mMmsListener), "com.android.contacts");
-        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_mail, R.string.add_contact_mail, mMailListener), "com.android.contacts");
-        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_wechat, R.string.add_contact_wechat, mWechatListener), "com.tencent.mm");
+        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_dingding, R.string.add_contact_dingding, mDingDingListener), DingDingContact.PKG_NAME);
+        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_mms, R.string.add_contact_mms, mMmsListener), MmsContact.PKG_NAME);
+        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_mail, R.string.add_contact_mail, mMailListener), MailContact.PKG_NAME);
+        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_wechat, R.string.add_contact_wechat, mWechatListener), WechatContact.PKG_NAME);
         updateData();
     }
 

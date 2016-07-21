@@ -111,6 +111,28 @@ public class ContactManager extends DataManager{
         mHandler.obtainMessage(MSG_DELETE_CONTACT, ci).sendToTarget();
     }
 
+    public void onPackageAdded(String packageName){
+        // NA
+    }
+
+    public void onPackageRemoved(String packageName) {
+        boolean deleted = false;
+        synchronized (mContacts) {
+            for (int i = 0; i < mContacts.size(); ++i) {
+                ContactItem ci = mContacts.get(i);
+                if (ci.getPackageName().equals(packageName)) {
+                    deleted = true;
+                    mContacts.remove(i);
+                    i--;
+                    deleteContactFromDatabase(ci);
+                }
+            }
+        }
+        if (deleted) {
+            notifyListener();
+        }
+    }
+
     public static final class ContactComparator implements Comparator<ContactItem> {
         @Override
         public int compare(ContactItem lhs, ContactItem rhs) {

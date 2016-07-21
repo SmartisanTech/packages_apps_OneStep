@@ -2,7 +2,6 @@ package com.smartisanos.sidebar.util;
 
 import android.content.ActivityNotFoundException;
 import android.content.ClipDescription;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -10,16 +9,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.provider.BaseColumns;
 import android.view.DragEvent;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +20,8 @@ import java.util.Map;
 import com.smartisanos.sidebar.R;
 
 public class WechatContact extends ContactItem {
+
+    public static final String PKG_NAME = "com.tencent.mm";
 
     private String mIntent;
 
@@ -81,6 +76,11 @@ public class WechatContact extends ContactItem {
     @Override
     public int getTypeIcon() {
         return R.drawable.contact_icon_wechat;
+    }
+
+    @Override
+    public String getPackageName() {
+        return PKG_NAME;
     }
 
     @Override

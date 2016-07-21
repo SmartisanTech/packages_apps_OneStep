@@ -19,6 +19,7 @@ import android.view.DragEvent;
 import com.smartisanos.sidebar.R;
 
 public class DingDingContact extends ContactItem {
+    public static final String PKG_NAME = "com.alibaba.android.rimet";
     public final long uid;
     public final String encodedUid;
 
@@ -74,6 +75,11 @@ public class DingDingContact extends ContactItem {
     @Override
     public int getTypeIcon() {
         return R.drawable.contact_icon_dingding;
+    }
+
+    @Override
+    public String getPackageName() {
+        return PKG_NAME;
     }
 
     @Override

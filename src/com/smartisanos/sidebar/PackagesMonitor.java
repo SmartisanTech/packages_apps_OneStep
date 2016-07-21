@@ -1,6 +1,7 @@
 package com.smartisanos.sidebar;
 
 import com.smartisanos.sidebar.util.AddContactManager;
+import com.smartisanos.sidebar.util.ContactManager;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 
 import android.content.BroadcastReceiver;
@@ -15,13 +16,19 @@ public class PackagesMonitor extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         String packageName = intent.getData().getSchemeSpecificPart();
-        Log.d(TAG, "action -> " + action + " , packageName -> " + packageName);
+        boolean replace = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false);
         if(Intent.ACTION_PACKAGE_REMOVED.equals(action)){
-            ResolveInfoManager.getInstance(context).onPackageRemoved(packageName);
-            AddContactManager.getInstance(context).onPackageRemoved(packageName);
+            if (!replace) {
+                ResolveInfoManager.getInstance(context).onPackageRemoved(packageName);
+                AddContactManager.getInstance(context).onPackageRemoved(packageName);
+                ContactManager.getInstance(context).onPackageRemoved(packageName);
+            }
         }else if(Intent.ACTION_PACKAGE_ADDED.equals(action)){
-            ResolveInfoManager.getInstance(context).onPackageAdded(packageName);
-            AddContactManager.getInstance(context).onPackageAdded(packageName);
+            if (!replace) {
+                ResolveInfoManager.getInstance(context).onPackageAdded(packageName);
+                AddContactManager.getInstance(context).onPackageAdded(packageName);
+                ContactManager.getInstance(context).onPackageAdded(packageName);
+            }
         }
     }
 }

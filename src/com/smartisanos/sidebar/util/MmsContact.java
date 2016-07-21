@@ -20,6 +20,8 @@ import android.text.TextUtils;
 import android.view.DragEvent;
 
 public class MmsContact extends ContactItem {
+    public static final String PKG_NAME = "com.android.contacts";
+
     private Context context;
     private int mContactId;
     private String mPhoneNumber;
@@ -91,6 +93,11 @@ public class MmsContact extends ContactItem {
     @Override
     public int getTypeIcon() {
         return R.drawable.contact_icon_mms;
+    }
+
+    @Override
+    public String getPackageName() {
+        return PKG_NAME;
     }
 
     @Override
