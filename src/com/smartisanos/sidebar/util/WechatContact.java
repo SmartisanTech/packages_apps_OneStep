@@ -55,7 +55,7 @@ public class WechatContact extends ContactItem {
         }
 
         try {
-            mContext.startActivity(intent);
+            LaunchApp.start(mContext, intent, true, 0);
             return true;
         } catch (ActivityNotFoundException e) {
             // NA
