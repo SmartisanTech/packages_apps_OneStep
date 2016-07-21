@@ -19,7 +19,6 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
@@ -143,17 +142,6 @@ public class SidebarListView extends ListView {
             timeLine.addAnim(scaleBigAnim);
             timeLine.addAnim(alphaAnim);
             timeLine.addAnim(scaleNormal);
-            timeLine.setAnimListener(new AnimListener() {
-                @Override
-                public void onStart() {
-                    log.error("anim start !");
-                }
-
-                @Override
-                public void onComplete(int type) {
-                    log.error("anim complete !");
-                }
-            });
             timeLine.start();
         }
     };
@@ -269,7 +257,6 @@ public class SidebarListView extends ListView {
                     }
                 }
             });
-
             mFake.setVisibility(View.VISIBLE);
             post(new Runnable() {
                 @Override
@@ -298,7 +285,6 @@ public class SidebarListView extends ListView {
                     mFake.onDragEnd();
                 }
             });
-
             mFake.setVisibility(View.VISIBLE);
             post(new Runnable() {
                 @Override
@@ -314,6 +300,7 @@ public class SidebarListView extends ListView {
         final List<View> childs = getChildViews();
         AnimTimeLine timeLine = new AnimTimeLine();
         int count = childs.size();
+        boolean emptyAnimList = true;
         for (int i = 0; i < count; i++) {
             View child = childs.get(i);
             child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
@@ -330,7 +317,7 @@ public class SidebarListView extends ListView {
             moveAnim.setDelay(moveDelay);
             Anim alphaAnim = new Anim(child, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
             alphaAnim.setDelay(alphaDelay);
-
+            emptyAnimList = false;
             timeLine.addAnim(moveAnim);
             timeLine.addAnim(alphaAnim);
         }
@@ -350,7 +337,11 @@ public class SidebarListView extends ListView {
                 }
             }
         });
-        timeLine.start();
+        if (emptyAnimList) {
+            setVisibility(View.GONE);
+        } else {
+            timeLine.start();
+        }
     }
 
     private int mPrePosition = -1;
