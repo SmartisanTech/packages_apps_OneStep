@@ -48,7 +48,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     private TextView mClipboardFullText;
     private ScrollView mClipboardFullTextScrollView;
     private Button mClipboardCopyItemButton;
-    private View mClipboardItemBack;
+    private TextView mClipboardItemBack;
 
     private View mClipboardListTitle;
     private View mClipboardItemTitle;
@@ -98,7 +98,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
         mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
         mClipList.setOnItemLongClickListener(mOnClipBoardItemLongClickListener);
 
-        mClipboardItemBack = findViewById(R.id.back_button);
+        mClipboardItemBack = (TextView) findViewById(R.id.back_button);
         mClipboardCopyItemButton = (Button) findViewById(R.id.copy_icon);
         mClipboardListTitle = findViewById(R.id.clipboard_list_title);
         mClipboardItemTitle = findViewById(R.id.clipboard_item_title);
@@ -481,6 +481,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
 
     private void updateUI(){
         mTitle.setText(R.string.title_clipboard);
+        mClipboardItemBack.setText(R.string.clipboard_fulltext_back);
     }
 
     @Override
