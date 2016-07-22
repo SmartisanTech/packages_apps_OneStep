@@ -306,7 +306,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     };
     private ExpandableCollapsedTextViewHeightAnim animation = new ExpandableCollapsedTextViewHeightAnim();
     private int horizontalScrollTime = 200;
-    private int expandableOrCollapsedTime = 200;
+    private int expandableOrCollapsedTime = 250;
 
     private OnLongClickListener mOnClipBoardFullTextItemLongClickListener = new OnLongClickListener() {
         @Override
@@ -395,6 +395,9 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                 switchViewAnimRunning = false;
                 int from = viewHeight;
                 int to = getTextViewRealHeight(mClipboardFullText);
+                if (to > mContentView.getHeight()) {
+                    to = mContentView.getHeight();
+                }
                 if (from != to) {
                     //do expandable or Collapsed anim
                     animation.init(mClipboardFullTextScrollView, from, to, expandableOrCollapsedTime);
@@ -416,6 +419,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                         public void onAnimationRepeat(Animation animation) {
                         }
                     });
+                    animation.setStartTime(50);
                     animation.start();
                     switchViewAnimRunning = true;
                 } else {
@@ -445,8 +449,8 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
         Rect rect = new Rect();
         mClipList.getDrawingRect(rect);
         final int viewWidth = mClipList.getWidth();
-        final int viewHeight = (rect.bottom - rect.top);//mClipList.getHeight();
-        int from = mClipboardFullText.getHeight();
+        final int viewHeight = (rect.bottom - rect.top);
+        int from = mClipboardFullTextScrollView.getHeight();
         animation.init(mClipboardFullTextScrollView, from, viewHeight, expandableOrCollapsedTime);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override

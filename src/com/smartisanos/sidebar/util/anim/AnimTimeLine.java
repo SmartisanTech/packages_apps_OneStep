@@ -75,6 +75,8 @@ public class AnimTimeLine {
 
     public void start() {
         if (mAnimList == null || mAnimList.size() == 0) {
+            log.error("time line start, but anim list is null");
+            LOG.trace();
             return;
         }
         List<Animator> animators = new ArrayList<Animator>();

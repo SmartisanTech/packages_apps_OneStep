@@ -191,15 +191,9 @@ public class SideView extends RelativeLayout {
         mResolveAdapter.notifyDataSetChanged();
     }
 
-    private static final boolean DEV_FLAG = false;
-
     private AdapterView.OnItemLongClickListener mShareItemOnLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if (DEV_FLAG) {
-                log.error("feature close");
-                return false;
-            }
             if (view.getTag() == null) {
                 log.error("onItemLongClick return by tag is null");
                 return false;
@@ -229,10 +223,6 @@ public class SideView extends RelativeLayout {
     private AdapterView.OnItemLongClickListener mContactItemOnLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-            if (DEV_FLAG) {
-                log.error("feature close");
-                return false;
-            }
             if (view.getTag() == null) {
                 log.error("mContactItemOnLongClickListener return by tag is null");
                 return false;

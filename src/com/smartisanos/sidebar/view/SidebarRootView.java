@@ -36,17 +36,19 @@ public class SidebarRootView extends FrameLayout {
     private SideView mSideView;
 
     public SidebarRootView(Context context) {
-        super(context);
-        mContext = context;
+        this(context, null);
     }
 
     public SidebarRootView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        mContext = context;
+        this(context, attrs, 0);
     }
 
-    public SidebarRootView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public SidebarRootView(Context context, AttributeSet attrs, int defStyleAttr) {
+        this(context, attrs, defStyleAttr, 0);
+    }
+
+    public SidebarRootView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
         mContext = context;
     }
 
@@ -149,6 +151,8 @@ public class SidebarRootView extends FrameLayout {
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
+                    Anim bubbleAlpha = new Anim(mBubbleText, Anim.TRANSPARENT, 100, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+                    bubbleAlpha.start();
                     mView.setVisibility(View.VISIBLE);
                     iconWidth = mDragViewIcon.getWidth();
                     iconHeight = mDragViewIcon.getHeight();

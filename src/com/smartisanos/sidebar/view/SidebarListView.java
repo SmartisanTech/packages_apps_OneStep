@@ -16,7 +16,6 @@ import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ScrollView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.util.ContactItem;
@@ -139,8 +138,8 @@ public class SidebarListView extends ListView {
             Anim scaleNormal = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1.2f, 1.2f), new Vector3f(1, 1));
             scaleNormal.setDelay(time);
 
-            timeLine.addAnim(scaleBigAnim);
             timeLine.addAnim(alphaAnim);
+            timeLine.addAnim(scaleBigAnim);
             timeLine.addAnim(scaleNormal);
             timeLine.start();
         }
@@ -174,26 +173,6 @@ public class SidebarListView extends ListView {
         }else{
             mAdapter = null;
         }
-    }
-
-    private ScrollView getScrollViewParent(){
-        View now = this;
-        while(now.getParent() != null){
-            now = (View) now.getParent();
-            if(now instanceof ScrollView){
-                return (ScrollView)now;
-            }
-        }
-        return null;
-    }
-
-    private int getTopUtilScrollView(View now){
-        int ret = 0;
-        while(now != null && !(now instanceof ScrollView)){
-            ret += now.getTop();
-            now = (View) now.getParent();
-        }
-        return ret;
     }
 
     public List<View> getChildViews() {

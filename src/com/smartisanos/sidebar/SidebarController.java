@@ -195,7 +195,9 @@ public class SidebarController {
         }
         final WindowManager.LayoutParams lp = (WindowManager.LayoutParams)mSidebarRoot.getLayoutParams();
         if (toFullScreen) {
-            if (mSidebarRoot.getTrash() != null) {
+            if (mSidebarRoot.getTrash() == null) {
+                log.error("updateDragWindow trash is null");
+            } else {
                 mSidebarRoot.getTrash().initTrashView();
             }
             lp.flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;

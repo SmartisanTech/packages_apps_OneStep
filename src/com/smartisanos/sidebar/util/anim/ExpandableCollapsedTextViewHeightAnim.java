@@ -25,6 +25,7 @@ public class ExpandableCollapsedTextViewHeightAnim extends Animation {
         mFrom = from;
         mTo = to;
         setDuration(time);
+        setInterpolator(new AnimInterpolator.Interpolator(Anim.CUBIC_OUT));
         log.error("ExpandableCollapsedTextViewHeightAnim from ["+from+"], to ["+to+"], time ["+time+"]");
     }
 

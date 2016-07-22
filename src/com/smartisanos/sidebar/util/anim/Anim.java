@@ -215,16 +215,18 @@ public class Anim {
         }
     }
 
-    public void start() {
+    public boolean start() {
         if (mAnimList == null || mAnimList.size() == 0) {
 //            throw new IllegalArgumentException("anim size is 0");
             log.error("anim array is empty !");
-            return;
+            LOG.trace();
+            return false;
         }
         setAnimCallbackListener();
         mAnimationSet = new AnimatorSet();
         mAnimationSet.playTogether(mAnimList);
         mAnimationSet.start();
+        return true;
     }
 
     public List<ObjectAnimator> getAnimatorList() {

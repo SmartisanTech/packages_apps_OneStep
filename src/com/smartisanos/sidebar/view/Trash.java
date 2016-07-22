@@ -116,6 +116,7 @@ public class Trash {
     }
 
     public void initTrashView() {
+        mTrashStatus = TRASH_HIDE;
         mTrashView.setVisibility(View.GONE);
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -226,7 +227,13 @@ public class Trash {
                 }
             }
         });
-        anim.start();
+        if (!anim.start()) {
+            trashAnimRunning = false;
+            mTrashStatus = TRASH_HIDE;
+            if (callback != null) {
+                callback.run();
+            }
+        }
     }
 
     private boolean mTrashUpAnimRunning = false;
