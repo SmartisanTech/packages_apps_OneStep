@@ -1,7 +1,6 @@
 package com.smartisanos.sidebar.view;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.util.ScrollController;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -11,9 +10,6 @@ import android.widget.ScrollView;
 public class DragScrollView extends ScrollView {
 
     private ScrollController mScrollController;
-
-    private int mTopArea = 0;
-    private int mBottomArea = 0;
 
     public DragScrollView(Context context) {
         this(context, null);
@@ -26,37 +22,104 @@ public class DragScrollView extends ScrollView {
     public DragScrollView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mScrollController = new ScrollController(this);
-        mTopArea = getResources().getDimensionPixelSize(R.dimen.drag_scroll_view_top_area);
-        mBottomArea = getResources().getDimensionPixelSize(R.dimen.drag_scroll_view_bottom_area);
-    }
-
-    private boolean isScrollUp(){
-        return getScrollY() == 0;
-    }
-
-    private boolean isScrollBottom(){
-        if(getChildCount() <= 0){
-            return true;
-        }
-        return getChildAt(0).getMeasuredHeight() <= getScrollY() + getHeight();
     }
 
     @Override
     public boolean dispatchDragEvent(DragEvent event) {
-        int action = event.getAction();
-        switch (action) {
-        case DragEvent.ACTION_DRAG_LOCATION:
-            float y = event.getY();
-            if (y < mTopArea && !isScrollUp()) {
-                mScrollController.scrollDown();
-                return true;
-            } else if (y > this.getHeight() - mBottomArea && !isScrollBottom()) {
-                mScrollController.scrollUp();
-                return true;
-            }
-            break;
+        boolean intercept = mScrollController.onDragEvent(event);
+        if (intercept) {
+            return true;
         }
-        mScrollController.stopScroll();
         return super.dispatchDragEvent(event);
     }
+
+    private class ScrollController {
+
+        // 50 times on second !
+        private static final int DELAY = 20;
+        private static final int NUMBS = 200;
+
+        private static final int DIRECTION_DOWN = -1;
+        private static final int DIRECTION_NONE = 0;
+        private static final int DIRECTION_UP = 1;
+
+        private ScrollView mView;
+        private DragEvent mEvent;
+        private int mInitDel = 0;
+        private int mScrollDirection = 0;
+        private int mTopArea;
+        private int mBottomArea;
+        public ScrollController(ScrollView view) {
+            mView = view;
+            mTopArea = getResources().getDimensionPixelSize(R.dimen.drag_scroll_view_top_area);
+            mBottomArea = getResources().getDimensionPixelSize(R.dimen.drag_scroll_view_bottom_area);
+        }
+
+        public boolean onDragEvent(DragEvent event){
+            int action = event.getAction();
+            if(action ==  DragEvent.ACTION_DRAG_LOCATION){
+                float y = event.getY();
+                if(y < mTopArea && !isScrollUp()){
+                    setEvent(event);
+                    scroll(DIRECTION_DOWN);
+                    return true;
+                }else if(y > mView.getHeight() - mBottomArea && !isScrollBottom()){
+                    setEvent(event);
+                    scroll(DIRECTION_UP);
+                    return true;
+                }
+            }
+            setEvent(null);
+            scroll(DIRECTION_NONE);
+            return false;
+        }
+
+        private void setEvent(DragEvent event) {
+            if (mEvent != null) {
+                mEvent.recycle();
+                mEvent = null;
+            }
+            if (event != null) {
+                mEvent = DragEvent.obtain(event);
+            }
+        }
+
+        private boolean isScrollUp(){
+            return mView.getScrollY() == 0;
+        }
+
+        private boolean isScrollBottom(){
+            if(mView.getChildCount() <= 0){
+                return true;
+            }
+            return mView.getChildAt(0).getMeasuredHeight() <= mView.getScrollY() + mView.getHeight();
+        }
+
+        private void scroll(int direction) {
+            if (mScrollDirection == direction) {
+                return;
+            }
+            mScrollDirection = direction;
+            mView.removeCallbacks(mScrollRunnable);
+            if (mScrollDirection != DIRECTION_NONE) {
+                mInitDel = mView.getHeight() / NUMBS;
+                if (mInitDel <= 0) {
+                    mInitDel = 1;
+                }
+                mView.post(mScrollRunnable);
+            }
+        }
+
+        private Runnable mScrollRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mView.scrollBy(0, mInitDel * mScrollDirection);
+                mView.postDelayed(mScrollRunnable, DELAY);
+                if (mEvent != null) {
+                    DragScrollView.super.dispatchDragEvent(mEvent);
+                }
+            }
+        };
+    }
+
 }
