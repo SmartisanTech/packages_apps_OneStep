@@ -54,7 +54,7 @@ public class DingDingContact extends ContactItem {
         }
 
         try {
-            LaunchApp.start(mContext, intent, true, 0);
+            LaunchApp.start(mContext, intent, true, PKG_NAME, 0);
             return true;
         } catch (ActivityNotFoundException e) {
             // NA

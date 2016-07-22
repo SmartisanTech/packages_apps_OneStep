@@ -12,10 +12,10 @@ public class LaunchApp {
     public static final String EXTRA_HAD_CHOOSE = "com.smartisanos.doppelganger.had_choose";
 
     public static void start(Context context, Intent intent) {
-        start(context, intent, false, 0);
+        start(context, intent, false, null, 0);
     }
 
-    public static void start(Context context, Intent intent, boolean checkDoppelganger, int userId) {
+    public static void start(Context context, Intent intent, boolean checkDoppelganger, String pkg, int userId) {
         if (context == null) {
             return;
         }
@@ -24,7 +24,10 @@ public class LaunchApp {
         }
         boolean isDoppelganger = false;
         if (checkDoppelganger) {
-            String packageName = intent.getPackage();
+            String packageName = pkg;
+            if (packageName == null) {
+                packageName = intent.getPackage();
+            }
             isDoppelganger = isAppInDoppelgangerStatus(context, packageName);
         }
         try {
