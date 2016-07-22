@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="2px"
         android:background="#14ffffff"/>
-    <GridView
+    <com.smartisanos.sidebar.view.PhotoGridView
         android:id="@+id/recentphoto_gridview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

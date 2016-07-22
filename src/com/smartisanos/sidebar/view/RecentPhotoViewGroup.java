@@ -34,7 +34,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
     private View mContainer;
     private TextView mTitle;
     private View mClear;
-    private GridView mGridView;
+    private PhotoGridView mGridView;
     private RecentPhotoAdapter mAdapter;
 
     private EmptyView mEmptyView;
@@ -85,7 +85,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
         mContainer = findViewById(R.id.photo_container);
         mTitle = (TextView)findViewById(R.id.title);
         mClear = findViewById(R.id.clear);
-        mGridView = (GridView)findViewById(R.id.recentphoto_gridview);
+        mGridView = (PhotoGridView) findViewById(R.id.recentphoto_gridview);
         mGridView.setAdapter(mAdapter = new RecentPhotoAdapter(mContext, this));
         mClear.setOnClickListener(mClearListener);
     }
@@ -125,7 +125,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
             int time = 200;
             AnimTimeLine timeLine = new AnimTimeLine();
             if (!mIsEmpty) {
-                timeLine.addTimeLine(imageAnim(true));
+                timeLine.addTimeLine(mGridView.photoAnim(true));
             }
             setPivotY(0);
             Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 0.6f), new Vector3f(0, 1));
@@ -152,7 +152,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
             int time = 200;
             AnimTimeLine timeLine = new AnimTimeLine();
             if (!mIsEmpty) {
-                timeLine.addTimeLine(imageAnim(false));
+                timeLine.addTimeLine(mGridView.photoAnim(false));
             }
             setPivotY(0);
             Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 1), new Vector3f(0, 0.6f));
@@ -174,94 +174,6 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
         } else {
             setVisibility(View.GONE);
         }
-    }
-
-    private AnimTimeLine imageAnim(final boolean isShow) {
-        int count = mGridView.getChildCount();
-        Vector3f loc00 = new Vector3f();
-        Vector3f alphaFrom = new Vector3f();
-        Vector3f alphaTo = new Vector3f();
-        final int time = 200;
-        int easeInOut = Anim.CUBIC_OUT;
-        final List<Anim> anims = new ArrayList<Anim>();
-        for (int i = 0; i < count; i++) {
-            final View view = mGridView.getChildAt(i);
-            if (view == null) {
-                continue;
-            }
-            int x = view.getLeft();
-            int y = view.getTop();
-            if (i == 0) {
-                loc00.x = x;
-                loc00.y = y;
-                continue;
-            }
-            Vector3f from = new Vector3f();
-            Vector3f to = new Vector3f();
-            int moveDelay = 0;
-            int alphaDelay = 0;
-            if (isShow) {
-                view.setTranslationX(loc00.x);
-                view.setTranslationX(loc00.y);
-                view.setAlpha(0);
-                from.x = loc00.x;
-                from.y = loc00.y;
-                to.x = x;
-                to.y = y;
-                alphaFrom.z = 0;
-                alphaTo.z = 1;
-                moveDelay = i * 5;
-                alphaDelay = moveDelay + 20;
-            } else {
-                from.x = x;
-                from.y = y;
-                to.x = loc00.x;
-                to.y = loc00.y;
-                alphaFrom.z = 1;
-                alphaTo.z = 0;
-            }
-            log.error("imageAnim show ["+isShow+"] from "+ from + ", to " + to);
-            Anim moveAnim = new Anim(view, Anim.TRANSLATE, time, easeInOut, from, to);
-            Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time, easeInOut, alphaFrom, alphaTo);
-            moveAnim.setDelay(moveDelay);
-            alphaAnim.setDelay(alphaDelay);
-            anims.add(moveAnim);
-            anims.add(alphaAnim);
-        }
-        AnimTimeLine timeLine = new AnimTimeLine();
-        for (Anim anim : anims) {
-            timeLine.addAnim(anim);
-        }
-        timeLine.setAnimListener(new AnimListener() {
-            @Override
-            public void onStart() {
-            }
-
-            @Override
-            public void onComplete(int type) {
-                if (type == Anim.ANIM_FINISH_TYPE_CANCELED) {
-                    for (Anim anim : anims) {
-                        if (anim == null) {
-                            continue;
-                        }
-                        if (anim.getAnimType() == Anim.TRANSLATE) {
-                            Vector3f loc = null;
-                            if (isShow) {
-                                loc = anim.getTo();
-                            } else {
-                                loc = anim.getFrom();
-                            }
-                            View view = anim.getView();
-                            if (view != null) {
-                                view.setX(loc.x);
-                                view.setY(loc.y);
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        return timeLine;
     }
 
     private void updateUI(){
