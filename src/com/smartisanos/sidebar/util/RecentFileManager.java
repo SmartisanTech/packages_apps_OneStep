@@ -173,7 +173,8 @@ public class RecentFileManager extends DataManager implements IClear{
         Set<String> clearSet = mDatabaseHelper.getClearSet();
         Set<String> dataSet = new HashSet<String>();
         for (FileInfo info : mCursorCacheList) {
-            if (!clearSet.contains(info.hashKey)
+            info.refresh();
+            if (!clearSet.contains(info.getHashKey())
                     && !dataSet.contains(info.filePath)) {
                 dataSet.add(info.filePath);
                 allInfo.add(info);
@@ -181,7 +182,8 @@ public class RecentFileManager extends DataManager implements IClear{
         }
 
         for (FileInfo info : mSearchCacheList) {
-            if (!clearSet.contains(info.hashKey)
+            info.refresh();
+            if (!clearSet.contains(info.getHashKey())
                     && !dataSet.contains(info.filePath)) {
                 dataSet.add(info.filePath);
                 allInfo.add(info);
@@ -199,10 +201,12 @@ public class RecentFileManager extends DataManager implements IClear{
 
     private class FileComparator implements Comparator<FileInfo> {
         public int compare(FileInfo fileInfo1, FileInfo fileInfo2) {
-            if (fileInfo1.time == fileInfo2.time) {
+            long time1 = fileInfo1.lastTime;
+            long time2 = fileInfo2.lastTime;
+            if (time1 == time2) {
                 return 0;
             }
-            if (fileInfo1.time < fileInfo2.time) {
+            if (time1 < time2) {
                 return 1;
             } else {
                 return -1;
@@ -225,7 +229,7 @@ public class RecentFileManager extends DataManager implements IClear{
                         String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(FileColumns.MIME_TYPE));
                         FileInfo info = new FileInfo(filePath, mimeType);
                         if (info.valid()) {
-                            if (!clearSet.contains(info.hashKey)) {
+                            if (!clearSet.contains(info.getHashKey())) {
                                 infos.add(info);
                             }
                         }

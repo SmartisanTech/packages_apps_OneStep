@@ -83,7 +83,7 @@ public class FileClearDatabaseHelper extends SQLiteOpenHelper {
     public void insertTableData(List<FileInfo> hideList){
         final List<String> clearList = new ArrayList<String>();
         for(FileInfo info: hideList){
-            clearList.add(info.hashKey);
+            clearList.add(info.getHashKey());
         }
 
         synchronized (FileClearDatabaseHelper.class) {

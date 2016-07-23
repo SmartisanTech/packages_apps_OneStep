@@ -1,6 +1,7 @@
 package com.smartisanos.sidebar.util;
 
 import android.os.Environment;
+import android.system.ErrnoException;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -10,21 +11,30 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import libcore.io.Libcore;
+
 public class FileInfo {
     public static final String[] MIMETYPE_BLACKLIST = new String[] { "image/*" };
 
-    private static final String[] BLACKLIST = new String[]{
-        Environment.getExternalStorageDirectory().getAbsolutePath()+"/OpenMaster/plugins/",
-        Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/",
-        Environment.getExternalStorageDirectory().getAbsolutePath()+"/Tencent/"
-    };
+    private static final String[] BLACKLIST = new String[] {
+            Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/smartisan/textboom",
+            Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/OpenMaster/plugins/",
+            Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/tencent/",
+            Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/Tencent/" };
 
-    private static final String[] WHITELIST = new String[]{
-        Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/QQfile_recv/",
-        Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/MicroMsg/Download/",
-        Environment.getExternalStorageDirectory().getAbsolutePath()+"/Tencent/QQfile_recv/",
-        Environment.getExternalStorageDirectory().getAbsolutePath()+"/Tencent/MicroMsg/Download/"
-    };
+    private static final String[] WHITELIST = new String[] {
+            Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/tencent/QQfile_recv/",
+            Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/tencent/MicroMsg/Download/",
+            Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/Tencent/QQfile_recv/",
+            Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/Tencent/MicroMsg/Download/" };
 
     private static final Set<String> SUFFIXSET;
     private static final Set<String> PATH_MASK;
@@ -43,22 +53,34 @@ public class FileInfo {
         PATH_MASK = new HashSet<String>();
         PATH_MASK.add("backup");
         PATH_MASK.add("crash");
+        PATH_MASK.add("cache");
+        PATH_MASK.add("textboom");
+        PATH_MASK.add("config");
+        PATH_MASK.add("install");
+        PATH_MASK.add("applog_bak");
+        PATH_MASK.add("map");
     }
 
     public String filePath = "";
     public String mimeType;
-    public long time = 0;
-    public String hashKey;
+    public long lastTime;
 
     public FileInfo(String path){
         this(path, getFileMimeType(new File(path)));
     }
 
     public FileInfo(String path, String mimeType){
-        filePath = path;
+        this.filePath = path;
         this.mimeType =mimeType;
-        time = new File(path).lastModified();
-        hashKey = path + time;
+        this.lastTime = getLastTime(filePath);
+    }
+
+    public void refresh(){
+        this.lastTime = getLastTime(filePath);
+    }
+
+    public String getHashKey(){
+        return filePath + lastTime;
     }
 
     public int getIconId() {
@@ -132,5 +154,19 @@ public class FileInfo {
     public static String getFileMimeType(File file){
         String suffix = getSuffix(file.getName());
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(suffix);
+    }
+
+    public static long getLastTime(String path){
+        long aTime = 0;
+        long cTime = 0;
+        long mTime = 0;
+        try {
+            aTime = Libcore.os.stat(path).st_atime * 1000L;
+            cTime = Libcore.os.stat(path).st_ctime * 1000L;
+            mTime = Libcore.os.stat(path).st_mtime * 1000L;
+        } catch (ErrnoException e) {
+            // NA;
+        }
+        return Math.max(Math.max(aTime, cTime), mTime);
     }
 }
