@@ -119,6 +119,7 @@ public class SideView extends RelativeLayout {
 
         //contact
         mContactList = (SidebarListView) findViewById(R.id.contactlist);
+        mContactList.setSideView(this);
         mContactList.setNeedFootView(true);
         mContactAdapter = new ContactListAdapter(mContext);
         mContactList.setAdapter(mContactAdapter);
@@ -126,6 +127,7 @@ public class SideView extends RelativeLayout {
         mContactList.setOnItemLongClickListener(mContactItemOnLongClickListener);
 
         mContactListFake = (SidebarListView) findViewById(R.id.contactlist_fake);
+        mContactListFake.setSideView(this);
         mContactListFake.setNeedFootView(true);
         mContactListFake.setIsFake(true);
         mContactListFake.setAdapter(new ContactListAdapter(mContext));
@@ -134,18 +136,37 @@ public class SideView extends RelativeLayout {
 
         //resolve
         mShareList = (SidebarListView) findViewById(R.id.sharelist);
+        mShareList.setSideView(this);
         mResolveAdapter = new ResolveInfoListAdapter(mContext);
         mShareList.setAdapter(mResolveAdapter);
         mShareList.setOnItemClickListener(mShareItemOnClickListener);
         mShareList.setOnItemLongClickListener(mShareItemOnLongClickListener);
 
         mShareListFake = (SidebarListView) findViewById(R.id.sharelist_fake);
+        mShareListFake.setSideView(this);
         mShareListFake.setIsFake(true);
         mShareListFake.setCanAcceptDrag(false);
         mShareListFake.setAdapter(new ResolveInfoListAdapter(mContext));
 
         mShareList.setFake(mShareListFake);
         mScrollList = (ScrollView) findViewById(R.id.sideview_scroll_list);
+    }
+
+    public void refreshDivider() {
+        if (mContactList != null) {
+            mContactList.requestLayout();
+        }
+        if (mContactListFake != null) {
+            mContactListFake.requestLayout();
+        }
+    }
+
+    public boolean someListIsEmpty() {
+        if (mContactList.getAdapter() != null && mContactList.getAdapter().getCount() > 0
+                && mShareList.getAdapter() != null && mShareList.getAdapter().getCount() > 0) {
+            return false;
+        }
+        return true;
     }
 
     @Override

@@ -18,6 +18,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
@@ -33,6 +34,7 @@ public class SidebarListView extends ListView {
     private View mFootView;
     private boolean mCanAccpeeDrag = true;
     private boolean mIsFake = false;
+    private SideView mSideView;
 
     public SidebarListView(Context context) {
         super(context, null);
@@ -50,6 +52,10 @@ public class SidebarListView extends ListView {
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mFootView = LayoutInflater.from(context).inflate(R.layout.sidebar_view_divider, null);
+    }
+
+    public void setSideView(SideView view) {
+        mSideView = view;
     }
 
     @Override
@@ -72,7 +78,12 @@ public class SidebarListView extends ListView {
             // this means the construcor is going on !
             return;
         }
-        if (mNeedFootView && (getAdapter() != null && !getAdapter().isEmpty())) {
+
+        boolean isEmpty = false;
+        if (mSideView != null) {
+            isEmpty = mSideView.someListIsEmpty();
+        }
+        if (!isEmpty && mNeedFootView && (getAdapter() != null && !getAdapter().isEmpty())) {
             if (getFooterViewsCount() == 0) {
                 addFooterView(mFootView);
             }
