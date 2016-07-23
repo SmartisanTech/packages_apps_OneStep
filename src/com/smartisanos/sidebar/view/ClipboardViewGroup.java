@@ -6,7 +6,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -253,6 +252,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
 
         mClipboardFullText.setText("");
         mClipList.setVisibility(View.VISIBLE);
+        mClipboardFullTextScrollView.scrollTo(0, 0);
         mClipboardFullTextScrollView.setVisibility(View.GONE);
 
         mClipList.setTranslationX(0);
@@ -268,10 +268,10 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     private AdapterView.OnItemClickListener mOnClipBoardItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            Log.i("Sidebar", "onItemClick [" + position + "] [" + id + "]");
+            log.info("onItemClick [" + position + "] [" + id + "]");
             CopyHistoryItem item = (CopyHistoryItem) mClipboardAdapter.getItem(position);
             if (item == null) {
-                Log.i("Sidebar", "onItemClick lose CopyHistoryItem at [" + position + "]");
+                log.info("onItemClick lose CopyHistoryItem at [" + position + "]");
                 return;
             }
             if (clipboardItemClicked) {
@@ -293,9 +293,9 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     private AdapterView.OnItemLongClickListener mOnClipBoardItemLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-            Log.i("Sidebar", "onItemLongClick ["+position+"] ["+id+"]");
+            log.info("onItemLongClick ["+position+"] ["+id+"]");
             if (view == null) {
-                Log.i("Sidebar", "onItemLongClick view is null ["+position+"] ["+id+"]");
+                log.info("onItemLongClick view is null ["+position+"] ["+id+"]");
                 return false;
             }
             TextView textView = (TextView) view.findViewById(R.id.text);
