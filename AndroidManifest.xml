@@ -135,6 +135,10 @@
     <!-- load shortcut from com.smartisanos.expandservice -->
     <uses-permission android:name="com.smartisanos.expandservice.launcher.ACCESS_CALL_METHOD" />
 
+    <!-- to read sound recorder-->
+    <uses-permission android:name="smartisanos.recorder.WRITE_RECORDED_PROVIDER"/>
+    <uses-permission android:name="smartisanos.recorder.READ_RECORDED_PROVIDER"/>
+
     <application
         android:name="com.smartisanos.sidebar.SidebarApplication"
         android:persistent="true"

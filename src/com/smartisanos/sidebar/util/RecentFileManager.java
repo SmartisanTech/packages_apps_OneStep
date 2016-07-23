@@ -109,6 +109,7 @@ public class RecentFileManager extends DataManager implements IClear{
         mContext.getContentResolver().registerContentObserver(fileUri, true, mDatabaseObserver);
         mContext.getContentResolver().registerContentObserver(musicUri, true, mDatabaseObserver);
         mContext.getContentResolver().registerContentObserver(videoUri, true, mDatabaseObserver);
+        mContext.getContentResolver().registerContentObserver(RecorderInfo.RECORDER_URI, true, mDatabaseObserver);
         mHandler.obtainMessage(MSG_UPDATE_DATABASE_LIST).sendToTarget();
     }
 
@@ -159,6 +160,7 @@ public class RecentFileManager extends DataManager implements IClear{
         mCursorCacheList.addAll(getFileInfoByCursor(getContentCursor(MUSIC_TYPE)));
         mCursorCacheList.addAll(getFileInfoByCursor(getContentCursor(VIDEO_TYPE)));
         mCursorCacheList.addAll(getFileInfoByCursor(getContentCursor(FILE_TYPE)));
+        mCursorCacheList.addAll(RecorderInfo.getFileInfoFromRecorder(mContext));
         if(false){
             for(FileInfo info : mCursorCacheList){
                 Log.d(TAG, "database.fileinfo -> " + info.filePath);
