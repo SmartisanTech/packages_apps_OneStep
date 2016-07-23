@@ -28,6 +28,7 @@ import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
@@ -121,6 +122,7 @@ public class SideView extends RelativeLayout {
         mContactList.setNeedFootView(true);
         mContactAdapter = new ContactListAdapter(mContext);
         mContactList.setAdapter(mContactAdapter);
+        mContactList.setOnItemClickListener(mContactItemOnClickListener);
         mContactList.setOnItemLongClickListener(mContactItemOnLongClickListener);
 
         mContactListFake = (SidebarListView) findViewById(R.id.contactlist_fake);
@@ -134,6 +136,7 @@ public class SideView extends RelativeLayout {
         mShareList = (SidebarListView) findViewById(R.id.sharelist);
         mResolveAdapter = new ResolveInfoListAdapter(mContext);
         mShareList.setAdapter(mResolveAdapter);
+        mShareList.setOnItemClickListener(mShareItemOnClickListener);
         mShareList.setOnItemLongClickListener(mShareItemOnLongClickListener);
 
         mShareListFake = (SidebarListView) findViewById(R.id.sharelist_fake);
@@ -148,7 +151,7 @@ public class SideView extends RelativeLayout {
     @Override
     public boolean dispatchDragEvent(DragEvent event) {
         int action = event.getAction();
-        switch(action){
+        switch (action) {
         case DragEvent.ACTION_DRAG_STARTED:
             mContactList.onDragStart(event);
             mShareList.onDragStart(event);
@@ -191,6 +194,29 @@ public class SideView extends RelativeLayout {
         mResolveAdapter.notifyDataSetChanged();
     }
 
+    private AdapterView.OnItemClickListener mShareItemOnClickListener = new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            if (view == null || view.getTag() == null) {
+                return;
+            }
+            final View v = view;
+            AnimTimeLine timeLine = shakeIconAnim(v);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    v.setTranslationX(0);
+                }
+            });
+            timeLine.start();
+        }
+    };
+
     private AdapterView.OnItemLongClickListener mShareItemOnLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -217,6 +243,29 @@ public class SideView extends RelativeLayout {
             getScrollViewLayoutParams();
             holder.view.setVisibility(View.INVISIBLE);
             return false;
+        }
+    };
+
+    private AdapterView.OnItemClickListener mContactItemOnClickListener = new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            if (view == null || view.getTag() == null) {
+                return;
+            }
+            final View v = view;
+            AnimTimeLine timeLine = shakeIconAnim(view);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    v.setTranslationX(0);
+                }
+            });
+            timeLine.start();
         }
     };
 
@@ -533,5 +582,22 @@ public class SideView extends RelativeLayout {
             }
         });
         mAddButtonRotateAnim.start();
+    }
+
+    private AnimTimeLine shakeIconAnim(View view) {
+        AnimTimeLine timeLine = new AnimTimeLine();
+        int time = 100;
+        Anim anim1 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(-5, 0));
+        Anim anim2 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(-5, 0), new Vector3f(5, 0));
+        anim2.setDelay(time);
+        Anim anim3 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(5, 0), new Vector3f(-5, 0));
+        anim3.setDelay(time * 2);
+        Anim anim4 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(-5, 0), new Vector3f());
+        anim4.setDelay(time * 3);
+        timeLine.addAnim(anim1);
+        timeLine.addAnim(anim2);
+        timeLine.addAnim(anim3);
+        timeLine.addAnim(anim4);
+        return timeLine;
     }
 }

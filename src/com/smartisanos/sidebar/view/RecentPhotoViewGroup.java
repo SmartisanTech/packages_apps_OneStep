@@ -24,9 +24,6 @@ import com.smartisanos.sidebar.util.anim.AnimUtils;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, ContentView.ISubView {
     private static final LOG log = LOG.getInstance(RecentPhotoViewGroup.class);
 
@@ -127,8 +124,9 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
             if (!mIsEmpty) {
                 timeLine.addTimeLine(mGridView.photoAnim(true));
             }
+            setPivotX(0);
             setPivotY(0);
-            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 0.6f), new Vector3f(0, 1));
+            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0.6f, 0.6f), new Vector3f(1, 1));
             timeLine.addAnim(scaleAnim);
             timeLine.setAnimListener(new AnimListener() {
                 @Override
@@ -154,8 +152,9 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
             if (!mIsEmpty) {
                 timeLine.addTimeLine(mGridView.photoAnim(false));
             }
+            setPivotX(0);
             setPivotY(0);
-            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 1), new Vector3f(0, 0.6f));
+            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(0.6f, 0.6f));
             timeLine.addAnim(scaleAnim);
             timeLine.setAnimListener(new AnimListener() {
                 @Override

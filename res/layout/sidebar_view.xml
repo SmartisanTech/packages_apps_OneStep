@@ -50,29 +50,20 @@
                 android:scaleType="center"/>
         </LinearLayout>
     </com.smartisanos.sidebar.view.SideView>
-    <FrameLayout
-        android:id="@+id/trash"
+    <ImageView
+        android:id="@+id/trash_with_shadow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/trash"
         android:visibility="gone"
         android:gravity="center_horizontal|bottom"
-        >
-        <ImageView
-            android:id="@+id/trash_shadow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/trash_shadow"
-            />
-        <ImageView
-            android:id="@+id/icon_on_trash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-        <ImageView
-            android:id="@+id/trash_foreground"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/trash_foreground"
-            />
-    </FrameLayout>
+        />
+    <ImageView
+        android:id="@+id/trash_foreground"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/trash_foreground"
+        android:visibility="gone"
+        android:gravity="center_horizontal|bottom"
+        />
 </com.smartisanos.sidebar.view.SidebarRootView>

@@ -12,6 +12,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
@@ -20,13 +21,15 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
 public class Trash {
     private static final LOG log = LOG.getInstance(Trash.class);
 
     private Context mContext;
-    public FrameLayout mTrashView;
+    public ImageView mTrashView;
+    public ImageView mTrashForegroundView;
 
     public SidebarRootView mRootView;
 
@@ -46,9 +49,10 @@ public class Trash {
 
     private int mTrashStatus = TRASH_HIDE;
 
-    public Trash(Context context, FrameLayout trashView) {
+    public Trash(Context context, ImageView trashView, ImageView trashForegroundView) {
         mContext = context;
         mTrashView = trashView;
+        mTrashForegroundView = trashForegroundView;
         Resources resources = mContext.getResources();
         mTrashWidth         = resources.getInteger(R.integer.trash_width);;
         mTrashHeight        = resources.getInteger(R.integer.trash_height);
@@ -212,12 +216,30 @@ public class Trash {
         }
         Vector3f from = new Vector3f(0, mTrashView.getTranslationY());
         Vector3f to = new Vector3f(0, mWindowHeight);
-        Anim anim = new Anim(mTrashView, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, from, to);
-        anim.setListener(new AnimListener() {
+        int time = 200;
+        AnimTimeLine timeLine = new AnimTimeLine();
+        if (mTrashForegroundView.getVisibility() == View.VISIBLE) {
+            Anim anim = new Anim(mTrashForegroundView, Anim.TRANSLATE, time, Anim.CUBIC_OUT, from, to);
+            anim.setListener(new AnimListener() {
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    mTrashForegroundView.setVisibility(View.GONE);
+                }
+            });
+            timeLine.addAnim(anim);
+        }
+        Anim anim = new Anim(mTrashView, Anim.TRANSLATE, time, Anim.CUBIC_OUT, from, to);
+        timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
                 trashAnimRunning = true;
             }
+
             @Override
             public void onComplete(int type) {
                 trashAnimRunning = false;
@@ -227,7 +249,8 @@ public class Trash {
                 }
             }
         });
-        if (!anim.start()) {
+        timeLine.addAnim(anim);
+        if (!timeLine.start()) {
             trashAnimRunning = false;
             mTrashStatus = TRASH_HIDE;
             if (callback != null) {

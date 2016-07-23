@@ -73,11 +73,11 @@ public class AnimTimeLine {
         }
     }
 
-    public void start() {
+    public boolean start() {
         if (mAnimList == null || mAnimList.size() == 0) {
             log.error("time line start, but anim list is null");
             LOG.trace();
-            return;
+            return false;
         }
         List<Animator> animators = new ArrayList<Animator>();
         for (Anim anim : mAnimList) {
@@ -89,6 +89,7 @@ public class AnimTimeLine {
         setAnimCallbackListener();
         mAnimationSet.playTogether(animators);
         mAnimationSet.start();
+        return true;
     }
 
     public void stop() {

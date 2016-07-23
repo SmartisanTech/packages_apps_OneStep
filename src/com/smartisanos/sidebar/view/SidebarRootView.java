@@ -68,7 +68,7 @@ public class SidebarRootView extends FrameLayout {
 
     private Trash mTrash;
     public void setTrashView() {
-        mTrash = new Trash(mContext, (FrameLayout) findViewById(R.id.trash));
+        mTrash = new Trash(mContext, (ImageView) findViewById(R.id.trash_with_shadow), (ImageView) findViewById(R.id.trash_foreground));
         mTrash.mRootView = this;
     }
 
@@ -245,6 +245,11 @@ public class SidebarRootView extends FrameLayout {
         if (!mDragging) {
             return;
         }
+        int trashLocX = (int) mTrash.mTrashView.getTranslationX();
+        int trashLocY = (int) mTrash.mTrashView.getTranslationY();
+        mTrash.mTrashForegroundView.setTranslationX(trashLocX);
+        mTrash.mTrashForegroundView.setTranslationY(trashLocY);
+        mTrash.mTrashForegroundView.setVisibility(View.VISIBLE);
 
         setChildrenDrawingOrderEnabled(true);
         mEnableUninstallAnim = true;
@@ -453,7 +458,7 @@ public class SidebarRootView extends FrameLayout {
             int count = getChildCount();
             View view = getChildAt(index);
             int id = view.getId();
-            if (id == R.id.trash) {
+            if (id == R.id.trash_foreground) {
                 return (count - 1);
             } else if (id == -1) {
                 return (count - 2);
