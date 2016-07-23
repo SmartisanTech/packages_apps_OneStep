@@ -93,7 +93,14 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
         if(size() <= 0){
             return null;
         }else{
-            return get(0).loadIcon(pm);
+            ResolveInfo info = get(0);
+            Drawable drawable = IconRedirect.getRedirectIcon(info.activityInfo.packageName, info.activityInfo.name, mContext);
+            if (drawable != null) {
+                return drawable;
+            } else {
+                return info.loadIcon(pm);
+            }
+
         }
     }
 
