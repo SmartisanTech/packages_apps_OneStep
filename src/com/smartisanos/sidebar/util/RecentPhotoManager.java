@@ -34,7 +34,7 @@ public class RecentPhotoManager extends DataManager implements IClear{
         MediaStore.Images.ImageColumns.MIME_TYPE,
         MediaStore.Images.ImageColumns._ID };
 
-    private static final String DATABASE_NAME = "recent_photo";
+    private static final String DATABASE_NAME = "UselessPhoto";
 
     private Context mContext;
     private List<ImageInfo> mList = new ArrayList<ImageInfo>();
@@ -43,13 +43,19 @@ public class RecentPhotoManager extends DataManager implements IClear{
     private RecentPhotoManager(Context context) {
         mContext = context;
         mHandler = new Handler();
-        mDatabaseHelper = new ClearDatabaseHelper(mContext, DATABASE_NAME);
+        mDatabaseHelper = new ClearDatabaseHelper(mContext, DATABASE_NAME, mCallback);
         HandlerThread thread = new HandlerThread(RecentPhotoManager.class.getName());
         thread.start();
         mHandler = new PhotoManagerHandler(thread.getLooper());
         mContext.getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,true, new ImageObserver(mHandler));
-        mHandler.obtainMessage(MSG_UPDATE_IMAGE_LIST).sendToTarget();
     }
+
+    private ClearDatabaseHelper.Callback mCallback = new ClearDatabaseHelper.Callback(){
+        @Override
+        public void onInitComplete() {
+            mHandler.obtainMessage(MSG_UPDATE_IMAGE_LIST).sendToTarget();
+        }
+    };
 
     public List<ImageInfo> getImageList(){
         List<ImageInfo> list =new ArrayList<ImageInfo>();
@@ -60,6 +66,9 @@ public class RecentPhotoManager extends DataManager implements IClear{
     }
 
     private void updateImageList() {
+        if (!mDatabaseHelper.isDataSetOk()) {
+            return;
+        }
         List<ImageInfo> imageList = new ArrayList<ImageInfo>();
         Set<Integer> useless = mDatabaseHelper.getSet();
         Cursor cursor = null;
@@ -106,12 +115,15 @@ public class RecentPhotoManager extends DataManager implements IClear{
 
     @Override
     public void clear() {
+        List<Integer> clearList = new ArrayList<Integer>();
         synchronized (RecentPhotoManager.class) {
             for(ImageInfo fi : mList){
-                mDatabaseHelper.addUselessId(fi.id);
+                clearList.add(fi.id);
             }
+            mList.clear();
         }
-        mHandler.obtainMessage(MSG_UPDATE_IMAGE_LIST).sendToTarget();
+        notifyListener();
+        mDatabaseHelper.addUselessId(clearList);
     }
 
     private static final int MSG_UPDATE_IMAGE_LIST = 0;

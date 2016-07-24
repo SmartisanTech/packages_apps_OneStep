@@ -27,6 +27,7 @@ import java.util.Set;
 public class RecentFileManager extends DataManager implements IClear{
 
     private static final String TAG = RecentFileManager.class.getName();
+    private static final String DB_NAME = "UselessFile";
 
     private volatile static RecentFileManager sInstance;
     public synchronized static RecentFileManager getInstance(Context context){
@@ -79,16 +80,24 @@ public class RecentFileManager extends DataManager implements IClear{
     private List<FileInfo> mSearchCacheList = new ArrayList<FileInfo>();
 
     private DatabaseObserver mDatabaseObserver;
-    private FileClearDatabaseHelper mDatabaseHelper;
+    private ClearDatabaseHelper mDatabaseHelper;
 
     private RecentFileManager(Context context) {
         mContext = context;
         mDatabaseObserver =  new DatabaseObserver(mHandler);
-        mDatabaseHelper = new FileClearDatabaseHelper(mContext);
+        mDatabaseHelper = new ClearDatabaseHelper(mContext,DB_NAME, mCallback);
         HandlerThread thread = new HandlerThread(RecentPhotoManager.class.getName());
         thread.start();
         mHandler = new FileManagerHandler(thread.getLooper());
     }
+
+    private ClearDatabaseHelper.Callback mCallback = new ClearDatabaseHelper.Callback() {
+        @Override
+        public void onInitComplete() {
+            mHandler.obtainMessage(MSG_SEARCH_FILE).sendToTarget();
+            mHandler.obtainMessage(MSG_UPDATE_DATABASE_LIST).sendToTarget();
+        }
+    };
 
     public List<FileInfo> getFileList(){
         synchronized (RecentFileManager.class) {
@@ -169,8 +178,12 @@ public class RecentFileManager extends DataManager implements IClear{
     }
 
     private void sortRecentFileList() {
+        if(!mDatabaseHelper.isDataSetOk()){
+            return;
+        }
+
         List<FileInfo> allInfo = new ArrayList<FileInfo>();
-        Set<String> clearSet = mDatabaseHelper.getClearSet();
+        Set<Integer> clearSet = mDatabaseHelper.getSet();
         Set<String> dataSet = new HashSet<String>();
         for (FileInfo info : mCursorCacheList) {
             info.refresh();
@@ -218,7 +231,7 @@ public class RecentFileManager extends DataManager implements IClear{
         List<FileInfo> infos = new ArrayList<FileInfo>();
         if (cursor != null) {
             try {
-                Set<String> clearSet = mDatabaseHelper.getClearSet();
+                Set<Integer> clearSet = mDatabaseHelper.getSet();
                 if (cursor.moveToFirst()) {
                     do {
                         int size = cursor.getInt(cursor.getColumnIndexOrThrow(FileColumns.SIZE));
@@ -303,8 +316,13 @@ public class RecentFileManager extends DataManager implements IClear{
     @Override
     public void clear() {
         synchronized (RecentFileManager.class) {
-            mDatabaseHelper.insertTableData(mList);
+            List<Integer> clearList = new ArrayList<Integer>();
+            for(FileInfo fi : mList){
+                clearList.add(fi.getHashKey());
+            }
+            mDatabaseHelper.addUselessId(clearList);
             mList.clear();
         }
+        notifyListener();
     }
 }

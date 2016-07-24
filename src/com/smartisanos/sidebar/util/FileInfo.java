@@ -79,8 +79,12 @@ public class FileInfo {
         this.lastTime = getLastTime(filePath);
     }
 
-    public String getHashKey(){
-        return filePath + lastTime;
+    /*
+     * do not modify this method !!!!!!
+     * we mark fileinfo uselss by hashkey, if this is modified, the database will be invalid :(
+     */
+    public int getHashKey() {
+        return (int) (filePath.hashCode() * 13 + lastTime);
     }
 
     public int getIconId() {
