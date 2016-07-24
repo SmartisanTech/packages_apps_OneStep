@@ -51,7 +51,7 @@ public class AddResolveInfoGroupAdapter extends BaseAdapter{
                 mInfos = mManager.getUnAddedResolveInfoGroup();
                 notifyDataSetChanged();
                 if (mView != null) {
-                    if (mInfos.size() <= 0) {
+                    if (mInfos == null || mInfos.size() <= 0) {
                         mView.setVisibility(View.GONE);
                     } else {
                         mView.setVisibility(View.VISIBLE);
@@ -63,7 +63,7 @@ public class AddResolveInfoGroupAdapter extends BaseAdapter{
 
     @Override
     public int getCount() {
-        return mInfos.size();
+        return mInfos == null ? 0 : mInfos.size();
     }
 
     @Override
