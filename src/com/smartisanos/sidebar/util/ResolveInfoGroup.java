@@ -132,6 +132,9 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
         }
 
         String mimeType = event.getClipDescription().getMimeType(0);
+        if (TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
@@ -175,6 +178,9 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
         }
 
         String mimeType = event.getClipDescription().getMimeType(0);
+        if (TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType) && !TextUtils.isEmpty(event.getClipData().getItemAt(0).getText())) {
             Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             intent.addCategory(Intent.CATEGORY_DEFAULT);

@@ -46,6 +46,9 @@ public class MmsContact extends ContactItem {
             return false;
         }
         String mimeType = event.getClipDescription().getMimeType(0);
+        if (TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)
                 || ClipDescription.compareMimeTypes(mimeType, "image/*")) {
             return true;

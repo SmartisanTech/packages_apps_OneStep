@@ -36,14 +36,19 @@ public class DingDingContact extends ContactItem {
 
     @Override
     public boolean handleDragEvent(DragEvent event) {
-        if (event.getClipData().getItemCount() <= 0) {
+        if (event.getClipData().getItemCount() <= 0
+                || event.getClipData().getDescription().getMimeTypeCount() <= 0) {
             return false;
         }
+
         Intent intent = new Intent("com.alibaba.android.rimet.SEND");
         intent.putExtra("user_id", uid);
         intent.putExtra("user_id_string", encodedUid);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         String mimeType = event.getClipDescription().getMimeType(0);
+        if (TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
             intent.setType(mimeType);
             intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText());

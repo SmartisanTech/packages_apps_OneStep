@@ -42,8 +42,7 @@ public class MailContact extends ContactItem {
 
     @Override
     public boolean accptDragEvent(DragEvent event) {
-        // we can handle all mimeType!
-        return true;
+        return event.getClipDescription().getMimeTypeCount() > 0;
     }
 
     @Override

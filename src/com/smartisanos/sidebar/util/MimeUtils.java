@@ -15,11 +15,12 @@ public final class MimeUtils {
     private static final Map<String, Integer> extensionToIconMap = new HashMap<String, Integer>();
 
     static {
-        add("", "fodp", R.drawable.file_icon_fodp);
-        add("", "fods", R.drawable.file_icon_fods);
-        add("", "fodt", R.drawable.file_icon_fodt);
-        add("", "pages", R.drawable.file_icon_pages);
-        add("", "numbers", R.drawable.file_icon_numbers);
+        add("application/*", "fodp", R.drawable.file_icon_fodp);
+        add("application/*", "fods", R.drawable.file_icon_fods);
+        add("application/*", "fodt", R.drawable.file_icon_fodt);
+        add("application/*", "pages", R.drawable.file_icon_pages);
+        add("application/*", "numbers", R.drawable.file_icon_numbers);
+
         add("application/vnd.ms-word.document.macroenabled.12", "docm", R.drawable.file_icon_docm);
         add("application/x-7z-compressed", "7z", R.drawable.file_icon_7z);
         add("application/vnd.oasis.opendocument.presentation", "odp", R.drawable.file_icon_odp);

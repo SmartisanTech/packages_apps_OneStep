@@ -44,6 +44,9 @@ public class WechatContact extends ContactItem {
 
     @Override
     public boolean handleDragEvent(DragEvent event) {
+        if(event.getClipData().getItemCount() <= 0){
+            return false;
+        }
         Intent intent = null;
         try {
             intent = Intent.parseUri(mIntent, 0);

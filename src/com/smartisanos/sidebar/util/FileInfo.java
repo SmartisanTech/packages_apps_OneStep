@@ -36,20 +36,9 @@ public class FileInfo {
             Environment.getExternalStorageDirectory().getAbsolutePath()
                     + "/Tencent/MicroMsg/Download/" };
 
-    private static final Set<String> SUFFIXSET;
     private static final Set<String> PATH_MASK;
 
     static {
-        SUFFIXSET = new HashSet<String>();
-        SUFFIXSET.add("xlsx");
-        SUFFIXSET.add("key");
-        SUFFIXSET.add("pptx");
-        SUFFIXSET.add("numbers");
-        SUFFIXSET.add("rar");
-        SUFFIXSET.add("apk");
-        SUFFIXSET.add("7z");
-        SUFFIXSET.add("docx");
-        SUFFIXSET.add("pages");
         PATH_MASK = new HashSet<String>();
         PATH_MASK.add("backup");
         PATH_MASK.add("crash");
@@ -67,10 +56,16 @@ public class FileInfo {
     public long lastTime;
 
     public FileInfo(String path){
-        this(path, getFileMimeType(new File(path)));
+        this(path, getFileMimeType(path));
     }
 
     public FileInfo(String path, String mimeType){
+        if (TextUtils.isEmpty(mimeType)) {
+            mimeType = getFileMimeType(path);
+            if (TextUtils.isEmpty(mimeType)) {
+                mimeType = "application/*";
+            }
+        }
         this.filePath = path;
         this.mimeType =mimeType;
         this.lastTime = getLastTime(filePath);
@@ -94,10 +89,6 @@ public class FileInfo {
     }
 
     public boolean valid() {
-        if (TextUtils.isEmpty(filePath)) {
-            return false;
-        }
-
         if (!isMimeTypeAndFilePathValid(mimeType, filePath)) {
             return false;
         }
@@ -132,17 +123,15 @@ public class FileInfo {
     }
 
     public static boolean isMimeTypeAndFilePathValid(String mimeType, String filePath) {
+        if (TextUtils.isEmpty(filePath) || TextUtils.isEmpty(mimeType)) {
+            return false;
+        }
         File file = new File(filePath);
         if (!file.isFile() || isMaskFile(file.getParentFile())) {
             return false;
         }
         if (file.getName().toLowerCase().contains("log")) {
             return false;
-        }
-        if (TextUtils.isEmpty(mimeType)) {
-            if (!SUFFIXSET.contains(getSuffix(file.getName()))) {
-                return false;
-            }
         }
         return true;
     }
@@ -156,8 +145,8 @@ public class FileInfo {
         }
     }
 
-    public static String getFileMimeType(File file){
-        String suffix = getSuffix(file.getName());
+    public static String getFileMimeType(String filePath){
+        String suffix = getSuffix(new File(filePath).getName());
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(suffix);
     }
 
