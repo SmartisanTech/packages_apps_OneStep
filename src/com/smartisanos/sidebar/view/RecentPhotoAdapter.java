@@ -76,6 +76,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
                     try {
                         Intent intent = new Intent(Intent.ACTION_MAIN);
                         intent.setPackage("com.android.gallery3d");
+                        intent.putExtra("package_name", "com.smartisanos.sidebar");
                         intent.addCategory(Intent.CATEGORY_LAUNCHER);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         mContext.startActivity(intent);
@@ -143,7 +144,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
                     iv.post(new Runnable(){
                         @Override
                         public void run() {
-                            if(ii.filePath != null && ii.filePath.equals(iv.getTag())){
+                            if(ii.filePath != null && ii.filePath.equals(iv.getTag())) {
                                 iv.setBackground(new BitmapDrawable(mContext.getResources(), bitmap));
                             }
                         }
@@ -159,6 +160,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
                 try {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setPackage("com.android.gallery3d");
+                    intent.putExtra("package_name", "com.smartisanos.sidebar");
                     intent.setDataAndType(ii.getContentUri(mContext), ii.mimeType);
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

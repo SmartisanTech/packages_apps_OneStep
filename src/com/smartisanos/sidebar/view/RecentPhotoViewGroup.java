@@ -69,6 +69,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
                 try{
                     Intent intent = new Intent(Intent.ACTION_MAIN);
                     intent.setPackage("com.android.gallery3d");
+                    intent.putExtra("package_name", "com.smartisanos.sidebar");
                     intent.addCategory(Intent.CATEGORY_LAUNCHER);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
