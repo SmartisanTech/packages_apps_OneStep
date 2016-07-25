@@ -4,9 +4,9 @@
     <string name="topbar_photo">图片</string>
     <string name="topbar_file">文件</string>
     <string name="topbar_clipboard">剪贴板</string>
-    <string name="title_photo">最近接收和处理的图片</string>
-    <string name="title_file">最近接收和处理的文件</string>
-    <string name="title_clipboard">最近剪切和复制的文字</string>
+    <string name="title_photo">近期的图片</string>
+    <string name="title_file">近期的文件</string>
+    <string name="title_clipboard">近期复制或剪切过的文字</string>
     <string name="add_contact_shortcut">点击添加联系人快捷方式</string>
     <string name="add_application_shortcut">点击添加应用快捷方式</string>
     <string name="add_contact_dingding">钉钉联系人</string>
@@ -27,9 +27,9 @@
     <string name="uninstall_app_dialog_text">是否从边栏移除“%1$s”？</string>
     <string name="text_copied">文本已复制</string>
     <string name="photo_empty_text">图片记录为空</string>
-    <string name="photo_empty_hint">最近接收和处理的图片将会出现在这里</string>
+    <string name="photo_empty_hint">近期的图片将会出现在这里</string>
     <string name="file_empty_text">文件记录为空</string>
-    <string name="file_empty_hint">最近接收和处理的文件将会出现在这里</string>
+    <string name="file_empty_hint">近期的文件将会出现在这里</string>
     <string name="clipboard_empty_text">剪贴板为空</string>
-    <string name="clipboard_empty_hint">最近剪切和复制的文字将会出现在这里</string>
+    <string name="clipboard_empty_hint">近期复制或剪切过的文字将会出现在这里</string>
 </resources>
