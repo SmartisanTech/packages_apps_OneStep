@@ -145,6 +145,7 @@ public class DingDingContact extends ContactItem {
         }
 
         public int getId(DingDingContact ddc) {
+            ThreadVerify.verify(false);
             Cursor cursor = null;
             try {
                 if (ddc.uid != 0) {
@@ -172,6 +173,7 @@ public class DingDingContact extends ContactItem {
         }
 
         public void update(DingDingContact ddc) {
+            ThreadVerify.verify(false);
             int id = getId(ddc);
             // insert
             ContentValues cv = new ContentValues();
@@ -190,6 +192,7 @@ public class DingDingContact extends ContactItem {
         }
 
         public void remove(DingDingContact ddc) {
+            ThreadVerify.verify(false);
             int id = getId(ddc);
             if (id != 0) {
                 getWritableDatabase().delete(TABLE_CONTACTS,
@@ -197,7 +200,8 @@ public class DingDingContact extends ContactItem {
             }
         }
 
-        public List<ContactItem> getContacts(){
+        public List<ContactItem> getContacts() {
+            ThreadVerify.verify(false);
             List<ContactItem> ret = new ArrayList<ContactItem>();
             Cursor cursor = null;
             try {

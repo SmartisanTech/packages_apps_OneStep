@@ -313,6 +313,7 @@ public class SideView extends RelativeLayout {
             mRootView.startDrag(dragItem, viewLoc);
             dragItemType = SidebarRootView.DragItem.TYPE_SHORTCUT;
             getScrollViewLayoutParams();
+            log.error("onItemLongClick " + holder.view);
             holder.view.setVisibility(View.INVISIBLE);
             return false;
         }

@@ -65,6 +65,7 @@ public class RecentPhotoManager extends DataManager implements IClear{
     }
 
     private void updateImageList() {
+        ThreadVerify.verify(false);
         if (!mDatabaseHelper.isDataSetOk()) {
             return;
         }

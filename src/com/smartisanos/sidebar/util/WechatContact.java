@@ -177,6 +177,7 @@ public class WechatContact extends ContactItem {
         }
 
         private long getRecordId(WechatContact info) {
+            ThreadVerify.verify(false);
             String launchIntent = info.mIntent;
             String where = LAUNCH_INTENT + "='"+launchIntent+"'";
             Cursor cursor = null;
@@ -197,6 +198,7 @@ public class WechatContact extends ContactItem {
         }
 
         public long update(WechatContact info) {
+            ThreadVerify.verify(false);
             long recordId = getRecordId(info);
             long result = -1;
             ContentValues cv = new ContentValues();
@@ -216,6 +218,7 @@ public class WechatContact extends ContactItem {
         }
 
         public boolean remove(WechatContact info) {
+            ThreadVerify.verify(false);
             long recordId = getRecordId(info);
             if (recordId > 0) {
                 String where = ID + "=" + recordId;
@@ -228,6 +231,7 @@ public class WechatContact extends ContactItem {
         }
 
         public List<ContactItem> list() {
+            ThreadVerify.verify(false);
             List<ContactItem> list = new ArrayList<ContactItem>();
             Cursor cursor = null;
             try {

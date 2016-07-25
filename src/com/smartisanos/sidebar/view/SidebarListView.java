@@ -355,16 +355,31 @@ public class SidebarListView extends ListView {
         mPrePosition = position;
         View[] viewArr = new View[count];
         int index = 0;
-        for (int i = 0; i < count; i++) {
-            View view = getChildAt(i);
-            if (view.getVisibility() == View.INVISIBLE) {
-                viewArr[position] = view;
-            } else {
-                if (index == position) {
-                    index ++ ;
+        int invisibleViewCount = 0;
+        try {
+            for (int i = 0; i < count; i++) {
+                View view = getChildAt(i);
+                if (view.getVisibility() == View.INVISIBLE) {
+                    invisibleViewCount = invisibleViewCount + 1;
+                    viewArr[position] = view;
+                } else {
+                    if (index == position) {
+                        index ++ ;
+                    }
+                    viewArr[index ++] = view;
                 }
-                viewArr[index ++] = view;
             }
+        } catch (Exception e) {
+            log.error("pointToNewPositionWithAnim invisibleViewCount " + invisibleViewCount);
+            if (invisibleViewCount > 1) {
+                for (int i = 0; i < count; i++) {
+                    View view = getChildAt(i);
+                    if (view.getVisibility() == View.INVISIBLE) {
+                        log.error("dump INVISIBLE VIEW " + view);
+                    }
+                }
+            }
+            throw new IllegalArgumentException(e.getMessage());
         }
         int[] listViewLoc = new int[2];
         getLocationOnScreen(listViewLoc);

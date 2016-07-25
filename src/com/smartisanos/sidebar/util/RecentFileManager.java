@@ -165,6 +165,7 @@ public class RecentFileManager extends DataManager implements IClear{
     }
 
     private void updateDatabaseContent(){
+        ThreadVerify.verify(false);
         mCursorCacheList.clear();
         mCursorCacheList.addAll(getFileInfoByCursor(getContentCursor(MUSIC_TYPE)));
         mCursorCacheList.addAll(getFileInfoByCursor(getContentCursor(VIDEO_TYPE)));

@@ -31,7 +31,7 @@ public class ThreadVerify {
         }
         if (failed) {
             log.error("verifyThread failed, MAIN thread ["+PROCESS_ID+"] Running thread ["+tid+"] needRunningInUiThread ["+needRunningInUiThread+"]");
-            LOG.trace();
+            throw new IllegalArgumentException("verifyThread failed");
         }
     }
 
