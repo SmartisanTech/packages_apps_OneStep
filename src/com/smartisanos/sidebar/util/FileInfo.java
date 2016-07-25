@@ -59,6 +59,7 @@ public class FileInfo {
         PATH_MASK.add("install");
         PATH_MASK.add("applog_bak");
         PATH_MASK.add("map");
+        PATH_MASK.add("manifest");// like this -> /storage/emulated0/0/smartisan/bak/manifest/manifest.txt
     }
 
     public String filePath = "";
