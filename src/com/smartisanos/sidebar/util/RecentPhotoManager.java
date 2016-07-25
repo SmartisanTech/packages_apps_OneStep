@@ -42,11 +42,10 @@ public class RecentPhotoManager extends DataManager implements IClear{
     private Handler mHandler;
     private RecentPhotoManager(Context context) {
         mContext = context;
-        mHandler = new Handler();
-        mDatabaseHelper = new ClearDatabaseHelper(mContext, DATABASE_NAME, mCallback);
         HandlerThread thread = new HandlerThread(RecentPhotoManager.class.getName());
         thread.start();
         mHandler = new PhotoManagerHandler(thread.getLooper());
+        mDatabaseHelper = new ClearDatabaseHelper(mContext, DATABASE_NAME, mCallback);
         mContext.getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,true, new ImageObserver(mHandler));
     }
 

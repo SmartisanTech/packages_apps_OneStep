@@ -84,11 +84,11 @@ public class RecentFileManager extends DataManager implements IClear{
 
     private RecentFileManager(Context context) {
         mContext = context;
-        mDatabaseObserver =  new DatabaseObserver(mHandler);
-        mDatabaseHelper = new ClearDatabaseHelper(mContext,DB_NAME, mCallback);
-        HandlerThread thread = new HandlerThread(RecentPhotoManager.class.getName());
+        HandlerThread thread = new HandlerThread(RecentFileManager.class.getName());
         thread.start();
         mHandler = new FileManagerHandler(thread.getLooper());
+        mDatabaseObserver =  new DatabaseObserver(mHandler);
+        mDatabaseHelper = new ClearDatabaseHelper(mContext,DB_NAME, mCallback);
     }
 
     private ClearDatabaseHelper.Callback mCallback = new ClearDatabaseHelper.Callback() {
