@@ -81,7 +81,7 @@ public class ContactManager extends DataManager{
                         maxIndex = mContacts.get(i).getIndex();
                     }
                 }
-                ci.setIndex(maxIndex);
+                ci.setIndex(maxIndex + 1);
             }
             ci.isNewAdd = true;
             mContacts.add(0, ci);
