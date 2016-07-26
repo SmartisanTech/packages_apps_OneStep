@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.smartisanos.sidebar.PendingDragEventTask;
+
 import android.content.ClipDescription;
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,7 +23,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.DragEvent;
 
-public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarItem{
+public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
+        SidebarItem {
     private static final long serialVersionUID = 1L;
     private static final String TAG = ResolveInfoGroup.class.getName();
 
@@ -169,7 +172,12 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements SidebarI
         return false;
     }
 
-    public boolean handleEvent(Context context, DragEvent event){
+    public boolean handleDragEvent(Context context, DragEvent event){
+        boolean isPending = PendingDragEventTask.tryPending(context, event, this);
+        if(isPending){
+            return true;
+        }
+
         if (event.getClipData().getItemCount() <= 0
                 || event.getClipDescription() == null
                 || event.getClipDescription().getMimeTypeCount() <= 0

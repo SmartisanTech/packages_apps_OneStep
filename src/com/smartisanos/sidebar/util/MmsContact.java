@@ -41,7 +41,7 @@ public class MmsContact extends ContactItem {
     }
 
     @Override
-    public boolean accptDragEvent(DragEvent event) {
+    public boolean acceptDragEvent(Context context, DragEvent event) {
         if (event.getClipDescription().getMimeTypeCount() <= 0) {
             return false;
         }
@@ -57,7 +57,12 @@ public class MmsContact extends ContactItem {
     }
 
     @Override
-    public boolean handleDragEvent(DragEvent event) {
+    public boolean handleDragEvent(Context context, DragEvent event) {
+        boolean sret = super.handleDragEvent(context, event);
+        if(sret){
+            return true;
+        }
+
         if (event.getClipData().getItemCount() <= 0) {
             return false;
         }

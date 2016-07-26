@@ -3,11 +3,13 @@ package com.smartisanos.sidebar.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.smartisanos.sidebar.PendingDragEventTask;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.DragEvent;
 
-public abstract class ContactItem implements SidebarItem{
+public abstract class ContactItem implements SidebarItem {
     protected Context mContext;
     protected Bitmap mAvatar;
     protected Bitmap mAvatarWithGray;
@@ -51,8 +53,6 @@ public abstract class ContactItem implements SidebarItem{
      * this method can only be called by ContactManger. don't invoke it in other place!
      * */
     public abstract void deleteFromDatabase();
-    public abstract boolean accptDragEvent(DragEvent event);
-    public abstract boolean handleDragEvent(DragEvent event);
     public abstract void save();
     public abstract int getTypeIcon();
     public abstract String getPackageName();
@@ -64,5 +64,13 @@ public abstract class ContactItem implements SidebarItem{
         all.addAll(MmsContact.getContacts(context));
         all.addAll(MailContact.getContacts(context));
         return all;
+    }
+
+    @Override
+    public boolean handleDragEvent(Context context, DragEvent event) {
+        if(PendingDragEventTask.tryPending(mContext, event, this)){
+            return true;
+        }
+        return false;
     }
 }

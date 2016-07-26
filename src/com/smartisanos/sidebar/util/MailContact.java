@@ -41,12 +41,17 @@ public class MailContact extends ContactItem {
     }
 
     @Override
-    public boolean accptDragEvent(DragEvent event) {
+    public boolean acceptDragEvent(Context context, DragEvent event) {
         return event.getClipDescription().getMimeTypeCount() > 0;
     }
 
     @Override
-    public boolean handleDragEvent(DragEvent event) {
+    public boolean handleDragEvent(Context context, DragEvent event) {
+        boolean sret = super.handleDragEvent(context, event);
+        if(sret){
+            return true;
+        }
+
         if (event.getClipData().getItemCount() <= 0) {
             return false;
         }

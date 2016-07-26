@@ -58,7 +58,7 @@ public class ContactListAdapter extends DragEventAdapter {
     private void updateAcceptableResolveInfos() {
         mAcceptableContacts.clear();
         for (ContactItem ci : mContacts) {
-            if (mDragEvent == null || ci.accptDragEvent(mDragEvent)) {
+            if (mDragEvent == null || ci.acceptDragEvent(mContext, mDragEvent)) {
                 mAcceptableContacts.add(ci);
             }
         }
@@ -138,7 +138,7 @@ public class ContactListAdapter extends DragEventAdapter {
                     return true;
                 case DragEvent.ACTION_DROP:
                     vh.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
-                    boolean ret =  vh.mItem.handleDragEvent(event);
+                    boolean ret =  vh.mItem.handleDragEvent(mContext, event);
                     if(ret){
                         Utils.dismissAllDialog(mContext);
                     }
