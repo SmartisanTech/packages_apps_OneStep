@@ -20,7 +20,6 @@ import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
-import com.smartisanos.sidebar.util.anim.AnimUtils;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
@@ -91,9 +90,27 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
     private ClearListener mClearListener = new ClearListener(new Runnable() {
         @Override
         public void run() {
-            mGridView.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
-            mGridView.startLayoutAnimation();
-            startAnimation(AnimUtils.getClearAnimationForContainer(RecentPhotoViewGroup.this, RecentPhotoManager.getInstance(mContext)));
+            int width = mGridView.getWidth();
+            AnimTimeLine timeLine = new AnimTimeLine();
+            Anim moveAnim = new Anim(mGridView, Anim.MOVE, 100, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(width, 0));
+            Anim alphaAnim = new Anim(RecentPhotoViewGroup.this, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            timeLine.addAnim(moveAnim);
+            timeLine.addAnim(alphaAnim);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    mGridView.setTranslationX(0);
+                    RecentPhotoViewGroup.this.setAlpha(1);
+                    RecentPhotoViewGroup.this.setVisibility(View.GONE);
+                    RecentPhotoManager.getInstance(mContext).clear();
+                }
+            });
+            timeLine.start();
             SidebarController.getInstance(mContext).resumeTopView();
             mContentView.setCurrent(ContentType.NONE);
         }

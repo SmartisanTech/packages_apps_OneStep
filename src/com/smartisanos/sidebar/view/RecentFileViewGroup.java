@@ -8,7 +8,6 @@ import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
-import com.smartisanos.sidebar.util.anim.AnimUtils;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
@@ -69,9 +68,27 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
     private ClearListener mClearListener = new ClearListener(new Runnable() {
         @Override
         public void run() {
-            mRecentFileList.setLayoutAnimation(AnimUtils.getClearLayoutAnimationForListView());
-            mRecentFileList.startLayoutAnimation();
-            startAnimation(AnimUtils.getClearAnimationForContainer(RecentFileViewGroup.this, RecentFileManager.getInstance(mContext)));
+            AnimTimeLine timeLine = new AnimTimeLine();
+            int width = mRecentFileList.getWidth();
+            Anim moveAnim = new Anim(mRecentFileList, Anim.MOVE, 100, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(width, 0));
+            Anim alphaAnim = new Anim(RecentFileViewGroup.this, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            timeLine.addAnim(moveAnim);
+            timeLine.addAnim(alphaAnim);
+            timeLine.setAnimListener(new AnimListener() {
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onComplete(int type) {
+                    mRecentFileList.setTranslationX(0);
+                    RecentFileViewGroup.this.setAlpha(1);
+                    RecentFileViewGroup.this.setVisibility(View.GONE);
+                    RecentFileManager.getInstance(mContext).clear();
+                }
+            });
+            timeLine.start();
             SidebarController.getInstance(mContext).resumeTopView();
             mContentView.setCurrent(ContentType.NONE);
         }
