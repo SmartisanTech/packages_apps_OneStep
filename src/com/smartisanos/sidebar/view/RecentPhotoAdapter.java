@@ -135,7 +135,6 @@ public class RecentPhotoAdapter extends BaseAdapter {
             iv = (ImageView) ret.findViewById(R.id.image);
             ret.setTag(iv);
         }
-        iv.setBackground(null);
         iv.setTag(ii.filePath);
         mImageLoader.loadImage(ii.filePath, iv, new ImageLoader.Callback() {
             @Override
