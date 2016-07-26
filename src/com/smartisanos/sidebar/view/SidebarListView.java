@@ -7,6 +7,7 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -18,7 +19,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
@@ -186,11 +186,22 @@ public class SidebarListView extends ListView {
         }
     }
 
-    public List<View> getChildViews() {
+    public List<View> getDisplayedChildViews() {
+        Rect visibleRect = new Rect();
+        getLocalVisibleRect(visibleRect);
         List<View> views = new ArrayList<View>();
         int viewCount = getChildCount();
         for (int i = 0; i < viewCount; i++) {
             View child = getChildAt(i);
+            if (child == null) {
+                continue;
+            }
+            int top = child.getTop();
+            int bottom = child.getBottom();
+            if (bottom < visibleRect.top || top > visibleRect.bottom) {
+                //out of visible rect
+                continue;
+            }
             views.add(child);
         }
         return views;
@@ -205,7 +216,7 @@ public class SidebarListView extends ListView {
                     public void onGlobalLayout() {
                         getRootView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         final long animDelay = 15;
-                        final List<View> childs = getChildViews();
+                        final List<View> childs = getDisplayedChildViews();
                         for (int i = 0; i < childs.size(); ++i) {
                             final View child = childs.get(i);
                             child.setAlpha(0);
@@ -287,7 +298,7 @@ public class SidebarListView extends ListView {
 
     public void dismiss(final DragEvent event) {
         final long delayStep = 15;
-        final List<View> childs = getChildViews();
+        final List<View> childs = getDisplayedChildViews();
         AnimTimeLine timeLine = new AnimTimeLine();
         int count = childs.size();
         boolean emptyAnimList = true;
