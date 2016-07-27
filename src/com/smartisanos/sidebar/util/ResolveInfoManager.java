@@ -76,11 +76,8 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         "com.android.calendar"
     };
 
-    public static final String[] ACTIONS = new String[]{
-        //Intent.ACTION_VIEW,
-        Intent.ACTION_SEND,
-        Intent.ACTION_SEND_MULTIPLE
-    };
+    public static final String[] ACTIONS = new String[] { Intent.ACTION_SEND,
+            Intent.ACTION_SEND_MULTIPLE };
 
     private Context mContext;
     private List<ResolveInfoGroup> mList = new ArrayList<ResolveInfoGroup>();

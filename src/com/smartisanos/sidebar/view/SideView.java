@@ -39,8 +39,8 @@ public class SideView extends RelativeLayout {
     private View mLeftShadow, mRightShadow;
     private ImageView mExit, mAdd;
 
-    private SidebarListView mShareList, mContactList;
-    private SidebarListView mShareListFake, mContactListFake;
+    private SidebarListView mOngoingList, mShareList, mContactList;
+    private SidebarListView mOngoingListFake, mShareListFake, mContactListFake;
 
     private ResolveInfoListAdapter mResolveAdapter;
     private ScrollView mScrollList;
@@ -117,6 +117,20 @@ public class SideView extends RelativeLayout {
             }
         });
 
+//        //ongoing
+        mOngoingList = (SidebarListView) findViewById(R.id.ongoinglist);
+        mOngoingList.setSideView(this);
+        //mOngoingList.setNeedFootView(true);
+        mOngoingList.setAdapter(new OngoingAdapter(mContext));
+
+        mOngoingListFake = (SidebarListView) findViewById(R.id.ongoinglist_fake);
+        mOngoingListFake.setSideView(this);
+        //mOngoingListFake.setNeedFootView(true);
+        mOngoingListFake.setIsFake(true);
+        mOngoingListFake.setAdapter(new OngoingAdapter(mContext));
+
+        mOngoingList.setFake(mOngoingListFake);
+
         //contact
         mContactList = (SidebarListView) findViewById(R.id.contactlist);
         mContactList.setSideView(this);
@@ -176,8 +190,8 @@ public class SideView extends RelativeLayout {
     }
 
     public boolean someListIsEmpty() {
-        if (mContactList.getAdapter() != null && mContactList.getAdapter().getCount() > 0
-                && mShareList.getAdapter() != null && mShareList.getAdapter().getCount() > 0) {
+        if (mContactList != null && mContactList.getAdapter() != null && mContactList.getAdapter().getCount() > 0
+                && mShareList != null && mShareList.getAdapter() != null && mShareList.getAdapter().getCount() > 0) {
             return false;
         }
         return true;
@@ -188,11 +202,13 @@ public class SideView extends RelativeLayout {
         int action = event.getAction();
         switch (action) {
         case DragEvent.ACTION_DRAG_STARTED:
+            mOngoingList.onDragStart(event);
             mContactList.onDragStart(event);
             mShareList.onDragStart(event);
             return super.dispatchDragEvent(event);
         case DragEvent.ACTION_DRAG_ENDED:
             boolean ret = super.dispatchDragEvent(event);
+            mOngoingList.onDragEnd();
             mContactList.onDragEnd();
             mShareList.onDragEnd();
             return ret;

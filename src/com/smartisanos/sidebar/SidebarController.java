@@ -1,6 +1,7 @@
 package com.smartisanos.sidebar;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -20,6 +21,7 @@ import android.widget.FrameLayout;
 import com.android.internal.sidebar.ISidebar;
 import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.util.LOG;
+import com.smartisanos.sidebar.util.OngoingManager;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.Utils;
@@ -319,6 +321,17 @@ public class SidebarController {
         @Override
         public void onExitSidebarModeEnd() throws RemoteException {
             //TODO
+        }
+
+        @Override
+        public void resumeSidebar() throws RemoteException {
+            Utils.resumeSidebar(mContext);
+        }
+
+        @Override
+        public void updateOngoing(ComponentName name, int token,
+                int pendingNumbers, CharSequence title, int pid) throws RemoteException {
+            OngoingManager.getInstance(mContext).updateOngoing(name, token, pendingNumbers, title, pid);
         }
     };
 

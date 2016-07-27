@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingTop="3dp">
+    <RelativeLayout
+        android:background="@drawable/ongoing"
+        android:layout_width="48dp"
+        android:layout_height="48dp">
+        <ImageView
+            android:id="@+id/shareitemimageview"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerInParent="true"/>
+        <RelativeLayout
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true">
+            <TextView
+                android:id="@+id/pending_numbers"
+                android:layout_width="wrap_content"
+                android:minWidth="12dp"
+                android:maxWidth="22dp"
+                android:layout_height="13dp"
+                android:background="@drawable/number_bg"
+                android:layout_centerInParent="true"
+                android:textColor="#4c000000"
+                android:textSize="7dp"
+                android:gravity="center"/>
+    </RelativeLayout>
+    </RelativeLayout>
+</FrameLayout>
