@@ -21,6 +21,7 @@ import com.android.internal.sidebar.ISidebar;
 import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentFileManager;
+import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.view.ContentView;
@@ -121,6 +122,7 @@ public class SidebarController {
         updateContentViewWindowBySidebarMode();
         mTopView.show(true);
         mSidebarRoot.show(true);
+        RecentPhotoManager.getInstance(mContext).startObserver();
         RecentFileManager.getInstance(mContext).startFileObserver();
     }
 
@@ -129,6 +131,7 @@ public class SidebarController {
         mTopView.show(false);
         mSidebarRoot.show(false);
         dismissContent(false);
+        RecentPhotoManager.getInstance(mContext).stopObserver();
         RecentFileManager.getInstance(mContext).stopFileObserver();
     }
 

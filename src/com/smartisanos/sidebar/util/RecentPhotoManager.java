@@ -40,19 +40,41 @@ public class RecentPhotoManager extends DataManager implements IClear{
     private List<ImageInfo> mList = new ArrayList<ImageInfo>();
     private ClearDatabaseHelper mDatabaseHelper;
     private Handler mHandler;
+    private ImageObserver mImageObserver;
+    private boolean mRegistered;
     private RecentPhotoManager(Context context) {
         mContext = context;
         HandlerThread thread = new HandlerThread(RecentPhotoManager.class.getName());
         thread.start();
         mHandler = new PhotoManagerHandler(thread.getLooper());
         mDatabaseHelper = new ClearDatabaseHelper(mContext, DATABASE_NAME, mCallback);
-        mContext.getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,true, new ImageObserver(mHandler));
+        mImageObserver = new ImageObserver(mHandler);
+    }
+
+    public void startObserver() {
+        synchronized (mImageObserver) {
+            if (!mRegistered) {
+                mRegistered = true;
+                mContext.getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true, mImageObserver);
+                sendMessageIfNotExist(MSG_UPDATE_IMAGE_LIST);
+            }
+        }
+    }
+
+    public void stopObserver() {
+        synchronized (mImageObserver) {
+            if (mRegistered) {
+                mRegistered = false;
+                mContext.getContentResolver().unregisterContentObserver(mImageObserver);
+                mHandler.removeMessages(MSG_UPDATE_IMAGE_LIST);
+            }
+        }
     }
 
     private ClearDatabaseHelper.Callback mCallback = new ClearDatabaseHelper.Callback(){
         @Override
         public void onInitComplete() {
-            mHandler.obtainMessage(MSG_UPDATE_IMAGE_LIST).sendToTarget();
+            sendMessageIfNotExist(MSG_UPDATE_IMAGE_LIST);
         }
     };
 
@@ -109,7 +131,7 @@ public class RecentPhotoManager extends DataManager implements IClear{
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            mHandler.obtainMessage(MSG_UPDATE_IMAGE_LIST).sendToTarget();
+            sendMessageIfNotExist(MSG_UPDATE_IMAGE_LIST);
         }
     }
 
@@ -124,6 +146,12 @@ public class RecentPhotoManager extends DataManager implements IClear{
         }
         notifyListener();
         mDatabaseHelper.addUselessId(clearList);
+    }
+
+    private void sendMessageIfNotExist(int msgId) {
+        if (!mHandler.hasMessages(msgId)) {
+            mHandler.obtainMessage(msgId).sendToTarget();
+        }
     }
 
     private static final int MSG_UPDATE_IMAGE_LIST = 0;

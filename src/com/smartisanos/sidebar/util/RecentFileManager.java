@@ -79,6 +79,7 @@ public class RecentFileManager extends DataManager implements IClear{
     private List<FileInfo> mCursorCacheList = new ArrayList<FileInfo>();
     private List<FileInfo> mSearchCacheList = new ArrayList<FileInfo>();
 
+    private boolean mRegistered;
     private DatabaseObserver mDatabaseObserver;
     private ClearDatabaseHelper mDatabaseHelper;
 
@@ -94,8 +95,8 @@ public class RecentFileManager extends DataManager implements IClear{
     private ClearDatabaseHelper.Callback mCallback = new ClearDatabaseHelper.Callback() {
         @Override
         public void onInitComplete() {
-            mHandler.obtainMessage(MSG_SEARCH_FILE).sendToTarget();
-            mHandler.obtainMessage(MSG_UPDATE_DATABASE_LIST).sendToTarget();
+            sendMessageIfNotExist(MSG_SEARCH_FILE);
+            sendMessageIfNotExist(MSG_UPDATE_DATABASE_LIST);
         }
     };
 
@@ -107,26 +108,35 @@ public class RecentFileManager extends DataManager implements IClear{
         }
     }
 
-    public void startSearchFile(){
-        if(mHandler.hasMessages(MSG_SEARCH_FILE)){
-            return ;
-        }
-        mHandler.obtainMessage(MSG_SEARCH_FILE).sendToTarget();
+    public void startSearchFile() {
+        sendMessageIfNotExist(MSG_SEARCH_FILE);
     }
 
     public void startFileObserver(){
-        mContext.getContentResolver().registerContentObserver(fileUri, true, mDatabaseObserver);
-        mContext.getContentResolver().registerContentObserver(musicUri, true, mDatabaseObserver);
-        mContext.getContentResolver().registerContentObserver(videoUri, true, mDatabaseObserver);
-        mContext.getContentResolver().registerContentObserver(RecorderInfo.RECORDER_URI, true, mDatabaseObserver);
-        mHandler.obtainMessage(MSG_UPDATE_DATABASE_LIST).sendToTarget();
+        synchronized (mDatabaseObserver) {
+            if (!mRegistered) {
+                mContext.getContentResolver().registerContentObserver(fileUri,
+                        true, mDatabaseObserver);
+                mContext.getContentResolver().registerContentObserver(musicUri,
+                        true, mDatabaseObserver);
+                mContext.getContentResolver().registerContentObserver(videoUri,
+                        true, mDatabaseObserver);
+                mContext.getContentResolver().registerContentObserver(
+                        RecorderInfo.RECORDER_URI, true, mDatabaseObserver);
+                mRegistered = true;
+            }
+        }
+        sendMessageIfNotExist(MSG_UPDATE_DATABASE_LIST);
     }
 
     public void stopFileObserver() {
-        if (mHandler.hasMessages(MSG_SEARCH_FILE)) {
-            mHandler.removeMessages(MSG_SEARCH_FILE);
+        mHandler.removeMessages(MSG_SEARCH_FILE);
+        synchronized (mDatabaseObserver) {
+            if (mRegistered) {
+                mContext.getContentResolver().unregisterContentObserver(mDatabaseObserver);
+                mRegistered = false;
+            }
         }
-        mContext.getContentResolver().unregisterContentObserver(mDatabaseObserver);
     }
 
     public void onClearSetChange(){
@@ -289,7 +299,13 @@ public class RecentFileManager extends DataManager implements IClear{
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            mHandler.obtainMessage(MSG_UPDATE_DATABASE_LIST).sendToTarget();
+            sendMessageIfNotExist(MSG_UPDATE_DATABASE_LIST);
+        }
+    }
+
+    private void sendMessageIfNotExist(int msgId) {
+        if (!mHandler.hasMessages(msgId)) {
+            mHandler.obtainMessage(msgId).sendToTarget();
         }
     }
 
