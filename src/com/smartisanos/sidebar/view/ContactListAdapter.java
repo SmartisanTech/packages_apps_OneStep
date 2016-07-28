@@ -160,14 +160,14 @@ public class ContactListAdapter extends DragEventAdapter {
 
         public ContactItem mItem;
 
-        public void setItem(ContactItem item, boolean draging) {
+        public void setItem(ContactItem item, boolean dragging) {
             mItem = item;
             if (item == null) {
                 return;
             }
             typeIcon.setImageResource(item.getTypeIcon());
             displayName.setText(item.getDisplayName());
-            if(draging){
+            if(dragging){
                 contactAvatar.setImageBitmap(mItem.getAvatar());
                 displayName.setVisibility(View.VISIBLE);
             }else{

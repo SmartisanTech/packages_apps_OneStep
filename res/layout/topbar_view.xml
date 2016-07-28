@@ -27,6 +27,7 @@
             android:layout_height="match_parent"/>
     </LinearLayout>
     <View
+        android:id="@+id/top_view_shadow_line"
         android:layout_width="match_parent"
         android:layout_height="4dp"
         android:background="@drawable/top_shadow"

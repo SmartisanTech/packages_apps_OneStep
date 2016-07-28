@@ -152,6 +152,20 @@ public class SideView extends RelativeLayout {
         mScrollList = (ScrollView) findViewById(R.id.sideview_scroll_list);
     }
 
+    public View getShadowLineView() {
+        if (mLeftShadow != null) {
+            if (mLeftShadow.getVisibility() == VISIBLE) {
+                return mLeftShadow;
+            }
+        }
+        if (mRightShadow != null) {
+            if (mRightShadow.getVisibility() == VISIBLE) {
+                return mRightShadow;
+            }
+        }
+        return null;
+    }
+
     public void refreshDivider() {
         if (mContactList != null) {
             mContactList.requestLayout();
@@ -512,20 +526,6 @@ public class SideView extends RelativeLayout {
         return false;
     }
 
-    public void initViewAnim() {
-        mScrollList.setVisibility(INVISIBLE);
-    }
-
-    public void showAnimWhenSplitWindow() {
-        mScrollList.setVisibility(VISIBLE);
-        boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
-        int fromX = isLeft ? -mContactList.getWidth() : mContactList.getWidth();
-        int toX = 0;
-        log.error("sidebarListShowAnim from ["+fromX+"] to ["+toX+"]");
-        Anim anim = new Anim(mScrollList, Anim.TRANSLATE, 200, Anim.CUBIC_OUT, new Vector3f(fromX, 0), new Vector3f(toX, 0));
-        anim.start();
-    }
-
     private void restoreListItemView(SidebarListView listView) {
         if (listView != null) {
             try {
@@ -608,18 +608,24 @@ public class SideView extends RelativeLayout {
 
     private AnimTimeLine shakeIconAnim(View view) {
         AnimTimeLine timeLine = new AnimTimeLine();
-        int time = 100;
-        Anim anim1 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(-5, 0));
-        Anim anim2 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(-5, 0), new Vector3f(5, 0));
+        int time = 70;
+        Anim anim1 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(-6, 0));
+        Anim anim2 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(-6, 0), new Vector3f(12, 0));
         anim2.setDelay(time);
-        Anim anim3 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(5, 0), new Vector3f(-5, 0));
+        Anim anim3 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(12, 0), new Vector3f(-9, 0));
         anim3.setDelay(time * 2);
-        Anim anim4 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(-5, 0), new Vector3f());
+        Anim anim4 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(-9, 0), new Vector3f(6, 0));
         anim4.setDelay(time * 3);
+        Anim anim5 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(6, 0), new Vector3f(-5, 0));
+        anim5.setDelay(time * 4);
+        Anim anim6 = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(-5, 0), new Vector3f());
+        anim6.setDelay(time * 5);
         timeLine.addAnim(anim1);
         timeLine.addAnim(anim2);
         timeLine.addAnim(anim3);
         timeLine.addAnim(anim4);
+        timeLine.addAnim(anim5);
+        timeLine.addAnim(anim6);
         return timeLine;
     }
 }

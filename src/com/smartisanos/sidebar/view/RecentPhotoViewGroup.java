@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;

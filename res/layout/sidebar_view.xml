@@ -5,13 +5,11 @@
     android:id="@+id/sidebar_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#cc000000"
     >
     <com.smartisanos.sidebar.view.SideView
         android:id="@+id/sidebar"
         android:layout_width="48dp"
         android:layout_height="match_parent"
-        android:background="@drawable/background"
         android:orientation="vertical">
         <FrameLayout
             android:layout_width="match_parent"

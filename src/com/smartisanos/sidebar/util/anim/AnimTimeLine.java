@@ -19,6 +19,7 @@ public class AnimTimeLine {
     private List<Anim> mAnimList = new ArrayList<Anim>();
     private AnimatorSet mAnimationSet = new AnimatorSet();
     private AnimListener mListener;
+    private int mStartDelay = 0;
 
     public void addAnim(Anim anim) {
         if (anim == null) {
@@ -73,6 +74,10 @@ public class AnimTimeLine {
         }
     }
 
+    public void setDelay(int delay) {
+        mStartDelay = delay;
+    }
+
     public boolean start() {
         if (mAnimList == null || mAnimList.size() == 0) {
             log.error("time line start, but anim list is null");
@@ -88,6 +93,9 @@ public class AnimTimeLine {
         }
         setAnimCallbackListener();
         mAnimationSet.playTogether(animators);
+        if (mStartDelay != 0) {
+            mAnimationSet.setStartDelay(mStartDelay);
+        }
         mAnimationSet.start();
         return true;
     }
