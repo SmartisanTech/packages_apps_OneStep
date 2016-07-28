@@ -1,7 +1,5 @@
 package com.smartisanos.sidebar.view;
 
-import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -14,7 +12,6 @@ import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.SidebarController;
@@ -26,7 +23,6 @@ import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
-import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
@@ -319,8 +315,6 @@ public class SidebarRootView extends FrameLayout {
             int y = (int) (deltaY * interpolatedTime + moveFrom[1]);
             view.setTranslationX(x);
             view.setTranslationY(y);
-//            log.error("applyTransformation XY ("+x+", "+y+")");
-
             if (interpolatedTime == 1) {
                 cancel();
                 complete();
@@ -543,6 +537,7 @@ public class SidebarRootView extends FrameLayout {
 
             @Override
             public void onComplete(int type) {
+                shadowView.setVisibility(VISIBLE);
                 SidebarRootView.this.setAlpha(1);
                 SidebarRootView.this.setTranslationX(0);
                 setVisibility(View.GONE);
