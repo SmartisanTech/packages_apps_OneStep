@@ -199,7 +199,6 @@ public class SidebarController {
         }
         final WindowManager.LayoutParams lp = (WindowManager.LayoutParams)mSidebarRoot.getLayoutParams();
         if (toFullScreen) {
-            mSidebarRoot.setBackgroundResource(R.color.sidebar_root_background);
             if (mSidebarRoot.getTrash() == null) {
                 log.error("updateDragWindow trash is null");
             } else {
@@ -208,7 +207,6 @@ public class SidebarController {
             lp.flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
             lp.flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR;
         } else {
-            mSidebarRoot.setBackgroundResource(android.R.color.transparent);
             if (mSidebarRoot.getTrash() != null) {
                 mSidebarRoot.getTrash().hideTrashView();
             }

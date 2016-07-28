@@ -494,7 +494,8 @@ public class SidebarRootView extends FrameLayout {
 
             @Override
             public void onComplete(int type) {
-                SidebarRootView.this.setBackgroundResource(R.drawable.background);
+                SidebarRootView.this.setBackgroundResource(R.color.sidebar_root_background);
+                mSideView.setBackgroundResource(R.drawable.background);
                 SidebarRootView.this.setAlpha(1);
                 SidebarRootView.this.setTranslationX(0);
                 if (shadowView != null) {
@@ -520,6 +521,7 @@ public class SidebarRootView extends FrameLayout {
 
     private void doAnimWhenExit() {
         SidebarRootView.this.setBackgroundResource(android.R.color.transparent);
+        mSideView.setBackgroundResource(android.R.color.transparent);
         final View shadowView = mSideView.getShadowLineView();
         if (shadowView != null) {
             shadowView.setVisibility(INVISIBLE);
