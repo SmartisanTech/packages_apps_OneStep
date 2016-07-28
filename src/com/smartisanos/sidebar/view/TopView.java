@@ -327,6 +327,7 @@ public class TopView extends FrameLayout {
 
             @Override
             public void onComplete(int type) {
+                TopView.this.setBackgroundResource(R.drawable.background);
                 mPhotos.setAlpha(1);
                 mFile.setAlpha(1);
                 mClipboard.setAlpha(1);
@@ -354,6 +355,7 @@ public class TopView extends FrameLayout {
     }
 
     private void doAnimWhenExit() {
+        TopView.this.setBackgroundResource(android.R.color.transparent);
         mShadowLine.setVisibility(View.INVISIBLE);
         int time = 150;
         int toY = -67;
