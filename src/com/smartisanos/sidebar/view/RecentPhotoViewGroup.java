@@ -107,6 +107,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
                     RecentPhotoViewGroup.this.setAlpha(1);
                     RecentPhotoViewGroup.this.setVisibility(View.GONE);
                     RecentPhotoManager.getInstance(mContext).clear();
+                    mAdapter.clearCache();
                 }
             });
             timeLine.start();

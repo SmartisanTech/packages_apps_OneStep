@@ -93,7 +93,7 @@ public class PhotoGridView extends GridView {
                 alphaFrom.z = 1;
                 alphaTo.z = 0;
             }
-            log.error("imageAnim show ["+isShow+"] from "+ from + ", to " + to);
+//            log.error("imageAnim show ["+isShow+"] from "+ from + ", to " + to);
             Anim moveAnim = new Anim(view, Anim.MOVE, time, easeInOut, from, to);
             Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time, easeInOut, alphaFrom, alphaTo);
             moveAnim.setDelay(moveDelay);

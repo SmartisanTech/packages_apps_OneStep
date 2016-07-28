@@ -3,11 +3,26 @@ package com.smartisanos.sidebar.util;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.LruCache;
+import android.widget.ImageView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BitmapCache {
+    private static final LOG log = LOG.getInstance(BitmapCache.class);
 
     private int mSize = 0;
-    private LruCache<String, Bitmap> mImageCache = new LruCache<String, Bitmap>(400);
+
+    private LruCache<String, Bitmap> mImageCache = new LruCache<String, Bitmap>(100) {
+
+        @Override
+        protected void entryRemoved(boolean evicted, String key, Bitmap oldValue, Bitmap newValue) {
+            super.entryRemoved(evicted, key, oldValue, newValue);
+            if (oldValue != null) {
+                oldValue.recycle();
+            }
+        }
+    };
 
     public BitmapCache(int size) {
         if (size <= 0) {
@@ -17,7 +32,9 @@ public class BitmapCache {
     }
 
     public Bitmap getBitmapDirectly(String filepath){
-        return mImageCache.get(filepath);
+        synchronized (mImageCache) {
+            return mImageCache.get(filepath);
+        }
     }
 
     public synchronized Bitmap getBitmap(String filepath) {
@@ -48,27 +65,20 @@ public class BitmapCache {
     }
 
     public synchronized void clearCache() {
-        if (mImageCache != null) {
-            if (mImageCache.size() > 0) {
-                mImageCache.evictAll();
-            }
-        }
-    }
-
-    public synchronized void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-        if (mImageCache.get(key) == null) {
-            if (key != null && bitmap != null) {
-                mImageCache.put(key, bitmap);
-            }
-        }
-    }
-
-    public synchronized void removeImageCache(String filepath) {
-        if (filepath != null) {
+        synchronized (mImageCache) {
             if (mImageCache != null) {
-                Bitmap bm = mImageCache.remove(filepath);
-                if (bm != null){
-                    bm.recycle();
+                if (mImageCache.size() > 0) {
+                    mImageCache.evictAll();
+                }
+            }
+        }
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (key != null && bitmap != null) {
+            synchronized (mImageCache) {
+                if (mImageCache.get(key) == null) {
+                    mImageCache.put(key, bitmap);
                 }
             }
         }

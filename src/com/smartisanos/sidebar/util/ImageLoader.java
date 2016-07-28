@@ -64,4 +64,8 @@ public final class ImageLoader {
     public interface Callback {
         void onLoadComplete(Bitmap bitmap);
     }
+
+    public void clearCache() {
+        mCache.clearCache();
+    }
 }

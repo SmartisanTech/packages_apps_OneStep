@@ -52,10 +52,6 @@ public class SidebarController {
     private int mTopViewWidth, mTopViewHeight;
     private int mContentViewWidth, mContentViewHeight;
 
-    public int getContentViewWidth() {
-        return mContentViewWidth;
-    }
-
     public static SidebarController getInstance(Context context){
         if(sInstance == null){
             synchronized(SidebarController.class){

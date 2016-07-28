@@ -6,9 +6,11 @@ import java.util.List;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.util.BitmapCache;
+import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.ImageInfo;
 import com.smartisanos.sidebar.util.ImageLoader;
+import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
@@ -17,6 +19,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,6 +34,7 @@ import android.graphics.drawable.BitmapDrawable;
 import smartisanos.util.SidebarUtils;
 
 public class RecentPhotoAdapter extends BaseAdapter {
+    private static final LOG log = LOG.getInstance(RecentPhotoAdapter.class);
 
     private Context mContext;
     private RecentPhotoManager mPhotoManager;
@@ -45,7 +49,8 @@ public class RecentPhotoAdapter extends BaseAdapter {
         mEmpty = empty;
         mHandler = new Handler(Looper.getMainLooper());
         mPhotoManager = RecentPhotoManager.getInstance(mContext);
-        mImageLoader = new ImageLoader(mContext.getResources().getDimensionPixelSize(R.dimen.recent_photo_size));
+        int maxPhotoSize = mContext.getResources().getDimensionPixelSize(R.dimen.recent_photo_size);
+        mImageLoader = new ImageLoader(maxPhotoSize);
         mList = mPhotoManager.getImageList();
         mPhotoManager.addListener(new RecentUpdateListener() {
             @Override
@@ -144,7 +149,14 @@ public class RecentPhotoAdapter extends BaseAdapter {
                         @Override
                         public void run() {
                             if(ii.filePath != null && ii.filePath.equals(iv.getTag())) {
-                                iv.setBackground(new BitmapDrawable(mContext.getResources(), bitmap));
+                                Drawable d = iv.getBackground();
+                                Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+                                Bitmap bmp = BitmapUtils.drawableToBitmap(drawable);
+                                iv.setBackground(new BitmapDrawable(mContext.getResources(), bmp));
+                                if (d instanceof BitmapDrawable) {
+                                    BitmapDrawable bd = (BitmapDrawable) d;
+                                    bd.getBitmap().recycle();
+                                }
                             }
                         }
                     });
@@ -178,5 +190,11 @@ public class RecentPhotoAdapter extends BaseAdapter {
             }
         });
         return ret;
+    }
+
+    public void clearCache() {
+        if (mImageLoader != null) {
+            mImageLoader.clearCache();
+        }
     }
 }
