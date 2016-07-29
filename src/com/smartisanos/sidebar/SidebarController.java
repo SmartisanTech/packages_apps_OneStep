@@ -325,7 +325,12 @@ public class SidebarController {
 
         @Override
         public void resumeSidebar() throws RemoteException {
-            Utils.resumeSidebar(mContext);
+            mHandler.post(new Runnable(){
+                @Override
+                public void run() {
+                    Utils.resumeSidebar(mContext);
+                }
+            });
         }
 
         @Override
