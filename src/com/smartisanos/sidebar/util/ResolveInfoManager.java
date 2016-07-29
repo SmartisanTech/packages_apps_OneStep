@@ -63,6 +63,11 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         sBlackList.add("com.estrongs.android.pop");
         sBlackList.add("com.alensw.PicFolder");
         sBlackList.add("com.douban.frodo");
+        sBlackList.add("it.repix.android");
+        sBlackList.add("com.coolapk.market");
+        sBlackList.add("cn.poco.jane");
+        sBlackList.add("com.google.android.inputmethod.japanese");
+        sBlackList.add("tc.everphoto");
 
         sBlackCompList = new HashSet<Pair<String, String>>();
         sBlackCompList.add(new Pair<String, String>("com.tencent.mobileqq", "com.tencent.mobileqq.activity.ContactSyncJumpActivity"));
