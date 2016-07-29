@@ -144,7 +144,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
         mImageLoader.loadImage(ii.filePath, iv, new ImageLoader.Callback() {
             @Override
             public void onLoadComplete(final Bitmap bitmap) {
-                if (bitmap == null | bitmap.getWidth() == 0 || bitmap.getHeight() == 0) {
+                if (bitmap == null || bitmap.getWidth() == 0 || bitmap.getHeight() == 0) {
                     return;
                 }
                 iv.post(new Runnable() {
