@@ -144,23 +144,28 @@ public class RecentPhotoAdapter extends BaseAdapter {
         mImageLoader.loadImage(ii.filePath, iv, new ImageLoader.Callback() {
             @Override
             public void onLoadComplete(final Bitmap bitmap) {
-                if(ii.filePath != null && ii.filePath.equals(iv.getTag())){
-                    iv.post(new Runnable(){
-                        @Override
-                        public void run() {
-                            if(ii.filePath != null && ii.filePath.equals(iv.getTag())) {
-                                Drawable d = iv.getBackground();
-                                Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+                if (bitmap == null | bitmap.getWidth() == 0 || bitmap.getHeight() == 0) {
+                    return;
+                }
+                iv.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ii.filePath != null && ii.filePath.equals(iv.getTag())) {
+                            Drawable oldBg = iv.getBackground();
+                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+                            if (drawable.getIntrinsicWidth() > 0 && drawable.getIntrinsicHeight() > 0) {
                                 Bitmap bmp = BitmapUtils.drawableToBitmap(drawable);
                                 iv.setBackground(new BitmapDrawable(mContext.getResources(), bmp));
-                                if (d instanceof BitmapDrawable) {
-                                    BitmapDrawable bd = (BitmapDrawable) d;
-                                    bd.getBitmap().recycle();
+                                iv.setImageBitmap(bmp);
+                            }
+                            if (oldBg != null) {
+                                if (oldBg instanceof BitmapDrawable) {
+                                    ((BitmapDrawable) oldBg).getBitmap().recycle();
                                 }
                             }
                         }
-                    });
-                }
+                    }
+                });
             }
         });
 
