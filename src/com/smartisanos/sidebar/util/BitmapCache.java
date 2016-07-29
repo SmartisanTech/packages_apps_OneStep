@@ -49,6 +49,7 @@ public class BitmapCache {
         options.inSampleSize = options.outHeight > options.outWidth ? options.outHeight / mSize
                 : options.outWidth / mSize;
         options.inJustDecodeBounds = false;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
         bitmap = BitmapFactory.decodeFile(filepath, options);
         if(bitmap == null){
             //TODO remove this item

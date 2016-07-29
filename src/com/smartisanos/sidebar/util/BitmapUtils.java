@@ -71,6 +71,20 @@ public class BitmapUtils {
         return bitmap;
     }
 
+    public static Bitmap allNewBitmap(Bitmap src) {
+        if (src == null) {
+            return null;
+        }
+        Config config = src.getConfig();
+        if(config == null) {
+            config = Bitmap.Config.RGB_565;
+        }
+        Bitmap bitmap = Bitmap.createBitmap(src.getWidth(), src.getHeight(), config);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawBitmap(src, 0, 0, null);
+        return bitmap;
+    }
+
     public static Bitmap drawableToBitmap(Drawable drawable) {
         return drawableToBitmap(drawable, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
     }

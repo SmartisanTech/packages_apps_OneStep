@@ -152,12 +152,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
                     public void run() {
                         if (ii.filePath != null && ii.filePath.equals(iv.getTag())) {
                             Drawable oldBg = iv.getBackground();
-                            Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-                            if (drawable.getIntrinsicWidth() > 0 && drawable.getIntrinsicHeight() > 0) {
-                                Bitmap bmp = BitmapUtils.drawableToBitmap(drawable);
-                                iv.setBackground(new BitmapDrawable(mContext.getResources(), bmp));
-                                iv.setImageBitmap(bmp);
-                            }
+                            iv.setBackground(new BitmapDrawable(mContext.getResources(), BitmapUtils.allNewBitmap(bitmap)));
                             if (oldBg != null) {
                                 if (oldBg instanceof BitmapDrawable) {
                                     ((BitmapDrawable) oldBg).getBitmap().recycle();
