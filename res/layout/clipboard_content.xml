@@ -5,85 +5,36 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-    <FrameLayout
+    <LinearLayout
+        android:id="@+id/clipboard_list_title"
         android:layout_width="match_parent"
-        android:layout_height="30dp">
-        <LinearLayout
-            android:id="@+id/clipboard_list_title"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_gravity="center_vertical">
-            <TextView
-                android:id="@+id/clipboard_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/title_clipboard"
-                android:textColor="#4cffffff"
-                android:textSize="13.5dp"
-                android:layout_marginLeft="12dp"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"/>
-            <Button
-                android:id="@+id/clear"
-                android:background="@drawable/clear"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center_vertical"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/clipboard_item_title"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical">
+        <TextView
+            android:id="@+id/clipboard_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_clipboard"
+            android:textColor="#4cffffff"
+            android:textSize="13.5dp"
+            android:layout_marginLeft="12dp"
             android:layout_gravity="center_vertical"
-            android:visibility="gone">
-            <TextView
-                android:id="@+id/back_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/back_arrow_icon"
-                android:text="@string/clipboard_fulltext_back"
-                android:textColor="#ccffffff"
-                android:textSize="12dp"
-                android:gravity="left|center_vertical"/>
-            <Button
-                android:id="@+id/copy_icon"
-                android:layout_width="35dp"
-                android:layout_height="27dp"
-                android:background="@drawable/clipboard_copy_icon"/>
-        </LinearLayout>
-     </FrameLayout>
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/clear"
+            android:background="@drawable/clear"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
     <!-- divider -->
     <View
         android:layout_width="match_parent"
         android:layout_height="2px"
         android:background="#14ffffff"/>
-    <FrameLayout
-        android:id="@+id/clipboard_content_area"
+    <ListView
+        android:id="@+id/clipboard_listview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ListView
-            android:id="@+id/clipboard_listview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"/>
-        <ScrollView
-            android:id="@+id/full_text_scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:visibility="gone">
-            <TextView
-                android:id="@+id/clipboard_full_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="15dp"
-                android:maxLines="200"
-                android:ellipsize="end"
-                android:textColor="#ccffffff"/>
-        </ScrollView>
-    </FrameLayout>
+        android:layout_height="wrap_content"/>
 </LinearLayout>
