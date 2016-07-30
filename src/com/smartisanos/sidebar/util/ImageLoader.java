@@ -1,7 +1,9 @@
 package com.smartisanos.sidebar.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -24,12 +26,33 @@ public final class ImageLoader {
         }
     }
 
+    private Map<String, Callback> mLoadingTasks = new HashMap<String, Callback>();
+
+    public void removeLoadingTask(String path) {
+        if (path == null) {
+            return;
+        }
+        ThreadVerify.verify(true);
+        mLoadingTasks.remove(path);
+    }
+
     public void loadImage(String filepath, Callback callback) {
+        if (filepath == null) {
+            return;
+        }
         Bitmap cur = mCache.getBitmapDirectly(filepath);
         if(cur != null){
             callback.onLoadComplete(filepath, cur);
             return;
         }
+        ThreadVerify.verify(true);
+        if (mLoadingTasks.containsKey(filepath)) {
+            Callback oldCallback = mLoadingTasks.get(filepath);
+            if (oldCallback != null) {
+                oldCallback.setCancel();
+            }
+        }
+        mLoadingTasks.put(filepath, callback);
         LoadItem item = new LoadItem();
         item.filePath = filepath;
         item.callback = callback;
@@ -48,8 +71,14 @@ public final class ImageLoader {
             switch (msg.what) {
             case MSG_IMAGE_LOAD:
                 LoadItem item = (LoadItem) msg.obj;
-                Bitmap bm = mCache.getBitmap(item.filePath);
-                item.callback.onLoadComplete(item.filePath, bm);
+                ImageLoader.Callback callback = item.callback;
+                if (callback != null) {
+                    if (callback.isCancelled()) {
+                        return;
+                    }
+                    Bitmap bm = mCache.getBitmap(item.filePath);
+                    callback.onLoadComplete(item.filePath, bm);
+                }
             }
         }
     }
@@ -61,6 +90,8 @@ public final class ImageLoader {
 
     public interface Callback {
         void onLoadComplete(String filePath, Bitmap bitmap);
+        void setCancel();
+        boolean isCancelled();
     }
 
     public void clearCache() {

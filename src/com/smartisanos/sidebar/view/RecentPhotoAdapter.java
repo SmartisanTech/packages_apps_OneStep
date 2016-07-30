@@ -195,6 +195,18 @@ public class RecentPhotoAdapter extends BaseAdapter {
                 }
             });
         }
+
+        private volatile boolean mCancelled = false;
+
+        @Override
+        public void setCancel() {
+            mCancelled = true;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return mCancelled;
+        }
     }
 
     class ViewHolder {
