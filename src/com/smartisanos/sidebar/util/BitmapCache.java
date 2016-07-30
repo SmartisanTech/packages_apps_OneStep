@@ -1,25 +1,22 @@
 package com.smartisanos.sidebar.util;
 
+import java.lang.ref.SoftReference;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.LruCache;
-import android.widget.ImageView;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class BitmapCache {
-    private static final LOG log = LOG.getInstance(BitmapCache.class);
-
     private int mSize = 0;
-
-    private LruCache<String, Bitmap> mImageCache = new LruCache<String, Bitmap>(100) {
-
+    private LruCache<String, SoftReference<Bitmap>> mImageCache = new LruCache<String, SoftReference<Bitmap>>(100) {
         @Override
-        protected void entryRemoved(boolean evicted, String key, Bitmap oldValue, Bitmap newValue) {
+        protected void entryRemoved(boolean evicted, String key, SoftReference<Bitmap> oldValue, SoftReference<Bitmap> newValue) {
             super.entryRemoved(evicted, key, oldValue, newValue);
             if (oldValue != null) {
-                oldValue.recycle();
+                Bitmap old = oldValue.get();
+                if(old != null){
+                    old.recycle();
+                }
             }
         }
     };
@@ -33,12 +30,16 @@ public class BitmapCache {
 
     public Bitmap getBitmapDirectly(String filepath){
         synchronized (mImageCache) {
-            return mImageCache.get(filepath);
+            SoftReference<Bitmap> softBp = mImageCache.get(filepath);
+            if(softBp != null){
+                return softBp.get();
+            }
         }
+        return null;
     }
 
-    public synchronized Bitmap getBitmap(String filepath) {
-        Bitmap ret = mImageCache.get(filepath);
+    public Bitmap getBitmap(String filepath) {
+        Bitmap ret = getBitmapDirectly(filepath);
         if (ret != null) {
             return ret;
         }
@@ -52,7 +53,6 @@ public class BitmapCache {
         options.inPreferredConfig = Bitmap.Config.RGB_565;
         bitmap = BitmapFactory.decodeFile(filepath, options);
         if(bitmap == null){
-            //TODO remove this item
             return null;
         }
         if (bitmap.getWidth() != bitmap.getHeight()) {
@@ -65,7 +65,7 @@ public class BitmapCache {
         return bitmap;
     }
 
-    public synchronized void clearCache() {
+    public void clearCache() {
         synchronized (mImageCache) {
             if (mImageCache != null) {
                 if (mImageCache.size() > 0) {
@@ -79,7 +79,7 @@ public class BitmapCache {
         if (key != null && bitmap != null) {
             synchronized (mImageCache) {
                 if (mImageCache.get(key) == null) {
-                    mImageCache.put(key, bitmap);
+                    mImageCache.put(key, new SoftReference<Bitmap>(bitmap));
                 }
             }
         }

@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,33 +68,22 @@ public class RecentPhotoAdapter extends BaseAdapter {
         notifyEmpty();
     }
 
-    public void updateUI(){
-        TextView text = (TextView) getOpenGalleryView().findViewById(R.id.text);
-        text.setText(R.string.open_gallery);
-    }
-
-    private View getOpenGalleryView() {
-        if (mOpenGalleryView == null) {
-            mOpenGalleryView = LayoutInflater.from(mContext).inflate(R.layout.open_gallery_item, null);
-            mOpenGalleryView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.setPackage("com.android.gallery3d");
-                        intent.putExtra("package_name", "com.smartisanos.sidebar");
-                        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        mContext.startActivity(intent);
-                        Utils.dismissAllDialog(mContext);
-                    } catch (ActivityNotFoundException e) {
-                        // NA
-                    }
-                }
-            });
+    private View.OnClickListener mOpenGalleryListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setPackage("com.android.gallery3d");
+                intent.putExtra("package_name", "com.smartisanos.sidebar");
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
+                Utils.dismissAllDialog(mContext);
+            } catch (ActivityNotFoundException e) {
+                // NA
+            }
         }
-        return mOpenGalleryView;
-    }
+    };
 
     private void notifyEmpty() {
         if (mEmpty != null) {
@@ -125,46 +115,30 @@ public class RecentPhotoAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView,
             ViewGroup parent) {
-        if(position == 0){
-            return getOpenGalleryView();
+        View ret = null;
+        ViewHolder vh = null;
+        if (convertView != null) {
+            ret = convertView;
+            vh = (ViewHolder) convertView.getTag();
+        } else {
+            ret = LayoutInflater.from(mContext).inflate(R.layout.recent_photo_item, null);
+            vh = new ViewHolder();
+            vh.imageView = (ImageView) ret.findViewById(R.id.image);
+            vh.openGalleryViewGroup = ret.findViewById(R.id.open_gallery);
+            vh.openGalleryViewGroup.setOnClickListener(mOpenGalleryListener);
+            ret.setTag(vh);
+        }
+        vh.updateUIByPostion(position);
+        if (position <= 0) {
+            return ret;
         }
 
         final ImageInfo ii = mList.get(position - 1);
-        View ret = null;
-        final ImageView iv;
-        if (convertView != null && convertView.getTag() != null) {
-            ret = convertView;
-            iv = (ImageView) convertView.getTag();
-        } else {
-            ret = LayoutInflater.from(mContext).inflate(R.layout.recentphotoitem, null);
-            iv = (ImageView) ret.findViewById(R.id.image);
-            ret.setTag(iv);
-        }
-        iv.setTag(ii.filePath);
-        mImageLoader.loadImage(ii.filePath, iv, new ImageLoader.Callback() {
-            @Override
-            public void onLoadComplete(final Bitmap bitmap) {
-                if (bitmap == null || bitmap.getWidth() == 0 || bitmap.getHeight() == 0) {
-                    return;
-                }
-                iv.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (ii.filePath != null && ii.filePath.equals(iv.getTag())) {
-                            Drawable oldBg = iv.getBackground();
-                            iv.setBackground(new BitmapDrawable(mContext.getResources(), BitmapUtils.allNewBitmap(bitmap)));
-                            if (oldBg != null) {
-                                if (oldBg instanceof BitmapDrawable) {
-                                    ((BitmapDrawable) oldBg).getBitmap().recycle();
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        });
+        vh.filePath = ii.filePath;
 
-        iv.setOnClickListener(new View.OnClickListener() {
+        mImageLoader.loadImage(ii.filePath, new ImageLoaderCallback(vh));
+
+        vh.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Utils.dismissAllDialog(mContext);
@@ -182,7 +156,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
             }
         });
 
-        iv.setOnLongClickListener(new View.OnLongClickListener() {
+        vh.imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 SidebarUtils.dragImage(v, mContext, new File(ii.filePath), ii.mimeType);
@@ -190,6 +164,53 @@ public class RecentPhotoAdapter extends BaseAdapter {
             }
         });
         return ret;
+    }
+
+    class ImageLoaderCallback implements ImageLoader.Callback {
+        private ViewHolder mViewHolder;
+
+        public ImageLoaderCallback(ViewHolder vh) {
+            mViewHolder = vh;
+        }
+
+        @Override
+        public void onLoadComplete(final String filePath, Bitmap bitmap) {
+            if (bitmap == null || bitmap.getWidth() == 0
+                    || bitmap.getHeight() == 0) {
+                return;
+            }
+            final Bitmap newBitmap = BitmapUtils.allNewBitmap(bitmap);
+            mViewHolder.imageView.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (mViewHolder.filePath != null && mViewHolder.filePath.equals(filePath)) {
+                        Drawable oldBg = mViewHolder.imageView.getBackground();
+                        mViewHolder.imageView.setBackground(new BitmapDrawable(mContext.getResources(), newBitmap));
+                        if (oldBg != null) {
+                            if (oldBg instanceof BitmapDrawable) {
+                                ((BitmapDrawable) oldBg).getBitmap().recycle();
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    class ViewHolder {
+        public ImageView imageView;
+        public View openGalleryViewGroup;
+        public String filePath;
+
+        public void updateUIByPostion(int position) {
+            if (position <= 0) {
+                imageView.setVisibility(View.GONE);
+                openGalleryViewGroup.setVisibility(View.VISIBLE);
+            } else {
+                imageView.setVisibility(View.VISIBLE);
+                openGalleryViewGroup.setVisibility(View.GONE);
+            }
+        }
     }
 
     public void clearCache() {

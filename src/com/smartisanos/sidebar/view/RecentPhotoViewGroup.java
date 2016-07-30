@@ -195,11 +195,11 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
 
     private void updateUI(){
         mTitle.setText(R.string.title_photo);
-        mAdapter.updateUI();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
         updateUI();
     }
 }

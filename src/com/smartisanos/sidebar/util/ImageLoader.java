@@ -8,11 +8,10 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.widget.ImageView;
 
 public final class ImageLoader {
     private static final int THREAD_NUM = 3;
-    public static final int MSG_IMAGE_LOAD = 1;
+    private static final int MSG_IMAGE_LOAD = 1;
     private BitmapCache mCache;
     private List<Handler> mHandlers;
     public ImageLoader(int photoSize) {
@@ -25,11 +24,10 @@ public final class ImageLoader {
         }
     }
 
-    public void loadImage(String filepath, ImageView imageview,
-            Callback callback) {
+    public void loadImage(String filepath, Callback callback) {
         Bitmap cur = mCache.getBitmapDirectly(filepath);
         if(cur != null){
-            callback.onLoadComplete(cur);
+            callback.onLoadComplete(filepath, cur);
             return;
         }
         LoadItem item = new LoadItem();
@@ -51,7 +49,7 @@ public final class ImageLoader {
             case MSG_IMAGE_LOAD:
                 LoadItem item = (LoadItem) msg.obj;
                 Bitmap bm = mCache.getBitmap(item.filePath);
-                item.callback.onLoadComplete(bm);
+                item.callback.onLoadComplete(item.filePath, bm);
             }
         }
     }
@@ -62,7 +60,7 @@ public final class ImageLoader {
     }
 
     public interface Callback {
-        void onLoadComplete(Bitmap bitmap);
+        void onLoadComplete(String filePath, Bitmap bitmap);
     }
 
     public void clearCache() {
