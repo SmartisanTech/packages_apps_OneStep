@@ -27,7 +27,7 @@
             android:layout_centerHorizontal="true"
             android:paddingBottom="@dimen/open_gallery_item_text_bottom"
             android:textSize="10dp"
-            android:textColor="#9affffff"
+            android:textColor="#60ffffff"
             android:text="@string/open_gallery"/>
     </RelativeLayout>
 </com.smartisanos.sidebar.view.RecentPhotoItemView>
