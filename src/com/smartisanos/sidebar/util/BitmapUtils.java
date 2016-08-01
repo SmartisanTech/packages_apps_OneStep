@@ -72,7 +72,7 @@ public class BitmapUtils {
     }
 
     public static Bitmap allNewBitmap(Bitmap src) {
-        if (src == null) {
+        if (src == null || src.getWidth() <= 0 || src.getHeight() <= 0) {
             return null;
         }
         Config config = src.getConfig();

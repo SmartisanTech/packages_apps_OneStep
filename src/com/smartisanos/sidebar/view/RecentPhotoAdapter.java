@@ -175,10 +175,6 @@ public class RecentPhotoAdapter extends BaseAdapter {
 
         @Override
         public void onLoadComplete(final String filePath, Bitmap bitmap) {
-            if (bitmap == null || bitmap.getWidth() == 0
-                    || bitmap.getHeight() == 0) {
-                return;
-            }
             final Bitmap newBitmap = BitmapUtils.allNewBitmap(bitmap);
             mViewHolder.imageView.post(new Runnable() {
                 @Override
@@ -188,7 +184,10 @@ public class RecentPhotoAdapter extends BaseAdapter {
                         mViewHolder.imageView.setBackground(new BitmapDrawable(mContext.getResources(), newBitmap));
                         if (oldBg != null) {
                             if (oldBg instanceof BitmapDrawable) {
-                                ((BitmapDrawable) oldBg).getBitmap().recycle();
+                                Bitmap oldBitmap = ((BitmapDrawable) oldBg).getBitmap();
+                                if(oldBitmap != null) {
+                                    oldBitmap.recycle();
+                                }
                             }
                         }
                     }
