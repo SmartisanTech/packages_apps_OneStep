@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 public class TopView extends FrameLayout {
@@ -319,14 +320,15 @@ public class TopView extends FrameLayout {
         timeLine.addAnim(photoAlpha);
         timeLine.addAnim(fileAlpha);
         timeLine.addAnim(clipboardAlpha);
-        timeLine.setDelay(50);
         timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, true);
             }
 
             @Override
             public void onComplete(int type) {
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, false);
                 TopView.this.setBackgroundResource(R.drawable.background);
                 mPhotos.setAlpha(1);
                 mFile.setAlpha(1);
@@ -377,11 +379,12 @@ public class TopView extends FrameLayout {
         timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
-
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_EXIT, true);
             }
 
             @Override
             public void onComplete(int type) {
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_EXIT, false);
                 mPhotos.setAlpha(1);
                 mFile.setAlpha(1);
                 mClipboard.setAlpha(1);
@@ -400,7 +403,15 @@ public class TopView extends FrameLayout {
     public void show(boolean show) {
         if (show) {
             setVisibility(View.VISIBLE);
-            doAnimWhenEnter();
+            final ViewTreeObserver observer = getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                @Override
+                public void onGlobalLayout() {
+                    observer.removeOnGlobalLayoutListener(this);
+                    doAnimWhenEnter();
+                }
+            });
         } else {
             doAnimWhenExit();
         }

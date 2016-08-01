@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Handler;
@@ -121,6 +120,9 @@ public class SidebarController {
         mSidebarRoot.setAlpha(0);
         mTopView.show(true);
         mSidebarRoot.show(true);
+    }
+
+    public void onEnterAnimComplete() {
         RecentPhotoManager.getInstance(mContext).startObserver();
         RecentFileManager.getInstance(mContext).startFileObserver();
     }

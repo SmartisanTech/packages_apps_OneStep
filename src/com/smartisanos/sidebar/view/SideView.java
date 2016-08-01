@@ -84,6 +84,10 @@ public class SideView extends RelativeLayout {
         mExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AnimStatusManager asm = AnimStatusManager.getInstance();
+                if (asm.isEnterAnimOngoing() || asm.isExitAnimOngoing()) {
+                    return;
+                }
                 ISidebarService sidebarService = ISidebarService.Stub.asInterface(ServiceManager.getService(Context.SIDEBAR_SERVICE));
                 if (sidebarService != null) {
                     try {

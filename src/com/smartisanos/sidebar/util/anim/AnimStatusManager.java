@@ -1,5 +1,6 @@
 package com.smartisanos.sidebar.util.anim;
 
+import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.LOG;
 
 import java.lang.reflect.Field;
@@ -17,6 +18,11 @@ public class AnimStatusManager {
     public static int ON_ADD_ITEM_VIEW_ANIM     = 0x1 << 5;
     public static int ON_ADD_ITEM_ANIM          = 0x1 << 6;
     public static int ON_TOP_VIEW_RESUME        = 0x1 << 7;
+    public static int ON_TOP_VIEW_ENTER         = 0x1 << 8;
+    public static int ON_TOP_VIEW_EXIT          = 0x1 << 9;
+    public static int ON_SIDE_VIEW_ENTER        = 0x1 << 10;
+    public static int ON_SIDE_VIEW_EXIT         = 0x1 << 11;
+
 
     public static final int [] STATUS_ARR = new int[] {
             ON_TOP_VIEW_CLICK,
@@ -26,7 +32,11 @@ public class AnimStatusManager {
             ON_CLIPBOARD_LIST_ANIM,
             ON_ADD_ITEM_VIEW_ANIM,
             ON_ADD_ITEM_ANIM,
-            ON_TOP_VIEW_RESUME
+            ON_TOP_VIEW_RESUME,
+            ON_TOP_VIEW_ENTER,
+            ON_TOP_VIEW_EXIT,
+            ON_SIDE_VIEW_ENTER,
+            ON_SIDE_VIEW_EXIT
     };
 
     public static final Map<Integer, String> statusNameMap = new HashMap<Integer, String>();
@@ -82,12 +92,20 @@ public class AnimStatusManager {
         if (getStatus(status) == value) {
             return;
         }
+        boolean oldIsEnterAnim = isEnterAnimOngoing();
         String statusName = statusNameMap.get(status);
         if (LOG.ENABLE_DEBUG) log.info("setStatus status ["+statusName+"], value ["+value+"]");
         if (value) {
             mStatus |= status;
         } else {
             mStatus &= ~status;
+        }
+        boolean newIsEnterAnim = isEnterAnimOngoing();
+        if (newIsEnterAnim != oldIsEnterAnim) {
+            if (!newIsEnterAnim) {
+                // the controller should have been created already ....
+                SidebarController.getInstance(null).onEnterAnimComplete();
+            }
         }
     }
 
@@ -106,9 +124,26 @@ public class AnimStatusManager {
             | ON_CLIPBOARD_LIST_ANIM
             | ON_ADD_ITEM_ANIM
             | ON_ADD_ITEM_VIEW_ANIM
-            | ON_TOP_VIEW_RESUME;
+            | ON_TOP_VIEW_RESUME
+            | ON_TOP_VIEW_ENTER
+            | ON_TOP_VIEW_EXIT
+            | ON_SIDE_VIEW_ENTER
+            | ON_SIDE_VIEW_EXIT;
 
     public boolean canShowContentView() {
         return (mStatus & SHOW_CONTENT_FLAG) == 0;
+    }
+
+    private static final int ENTER_ANIM_FLAG = ON_TOP_VIEW_ENTER
+            | ON_SIDE_VIEW_ENTER;
+    private static final int EXIT_ANIM_FLAG = ON_TOP_VIEW_EXIT
+            | ON_SIDE_VIEW_EXIT;
+
+    public boolean isEnterAnimOngoing() {
+        return (mStatus & ENTER_ANIM_FLAG) != 0;
+    }
+
+    public boolean isExitAnimOngoing() {
+        return (mStatus & EXIT_ANIM_FLAG) != 0;
     }
 }
