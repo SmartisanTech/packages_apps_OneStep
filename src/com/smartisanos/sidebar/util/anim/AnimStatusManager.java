@@ -4,8 +4,11 @@ import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.LOG;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import android.util.Pair;
 
 public class AnimStatusManager {
     private static final LOG log = LOG.getInstance(AnimStatusManager.class);
@@ -64,6 +67,7 @@ public class AnimStatusManager {
 
     public static AnimStatusManager mManager;
     private volatile int mStatus = 0;
+    private List<Pair<AnimFlagStatusChangedListener, Integer>> mFlagListeners = new ArrayList<Pair<AnimFlagStatusChangedListener, Integer>>();
 
     public static AnimStatusManager getInstance() {
         if (mManager == null) {
@@ -89,23 +93,38 @@ public class AnimStatusManager {
         mStatus = 0;
     }
 
+    public void addAnimFlagStatusChangedListener(int flag, AnimFlagStatusChangedListener listener) {
+        if(flag == 0 || listener == null) {
+            return ;
+        }
+        mFlagListeners.add(new Pair<AnimFlagStatusChangedListener, Integer>(listener, flag));
+    }
+
+    public void removeAnimFlagStatusChangedListener(AnimFlagStatusChangedListener listener) {
+        for (int i = 0; i < mFlagListeners.size(); ++i) {
+            if (mFlagListeners.get(i).first == listener) {
+                mFlagListeners.remove(i);
+            }
+        }
+    }
+
     public void setStatus(int status, boolean value) {
         if (getStatus(status) == value) {
             return;
         }
-        boolean oldIsEnterAnim = isEnterAnimOngoing();
         String statusName = statusNameMap.get(status);
         if (LOG.ENABLE_DEBUG) log.info("setStatus status ["+statusName+"], value ["+value+"]");
+        int oldValue = mStatus;
         if (value) {
             mStatus |= status;
         } else {
             mStatus &= ~status;
         }
-        boolean newIsEnterAnim = isEnterAnimOngoing();
-        if (newIsEnterAnim != oldIsEnterAnim) {
-            if (!newIsEnterAnim) {
-                // the controller should have been created already ....
-                SidebarController.getInstance(null).onEnterAnimComplete();
+
+        for (int i = 0; i < mFlagListeners.size(); ++i) {
+            int careFlag = mFlagListeners.get(i).second;
+            if ((oldValue & careFlag) != (mStatus & careFlag)) {
+                mFlagListeners.get(i).first.onChanged();
             }
         }
     }
@@ -118,7 +137,7 @@ public class AnimStatusManager {
         return (mStatus & status) == status;
     }
 
-    private static final int SHOW_CONTENT_FLAG = ON_TOP_VIEW_CLICK
+    public static final int SHOW_CONTENT_FLAG = ON_TOP_VIEW_CLICK
             | ON_SIDE_VIEW_ADD_CLICK
             | ON_RECENT_PHOTO_LIST_ANIM
             | ON_FILE_LIST_ANIM
@@ -136,9 +155,9 @@ public class AnimStatusManager {
         return (mStatus & SHOW_CONTENT_FLAG) == 0;
     }
 
-    private static final int ENTER_ANIM_FLAG = ON_TOP_VIEW_ENTER
+    public static final int ENTER_ANIM_FLAG = ON_TOP_VIEW_ENTER
             | ON_SIDE_VIEW_ENTER;
-    private static final int EXIT_ANIM_FLAG = ON_TOP_VIEW_EXIT
+    public static final int EXIT_ANIM_FLAG = ON_TOP_VIEW_EXIT
             | ON_SIDE_VIEW_EXIT;
 
     public boolean isEnterAnimOngoing() {
@@ -151,5 +170,9 @@ public class AnimStatusManager {
 
     public boolean canAddResoleInfoItem() {
         return (mStatus & ON_ADD_RIG_ITEM_REMOVE) == 0;
+    }
+
+    public interface AnimFlagStatusChangedListener {
+        void onChanged();
     }
 }

@@ -94,6 +94,16 @@ public class SidebarController {
                 e.printStackTrace();
             }
         }
+
+        AnimStatusManager.getInstance().addAnimFlagStatusChangedListener(
+                AnimStatusManager.ENTER_ANIM_FLAG, new AnimStatusManager.AnimFlagStatusChangedListener() {
+                    @Override
+                    public void onChanged() {
+                        if (!AnimStatusManager.getInstance().isEnterAnimOngoing()) {
+                            onEnterAnimComplete();
+                        }
+                    }
+                });
     }
 
     private void onSidebarModeChanged(){
