@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 public class TopView extends FrameLayout {
@@ -319,7 +320,6 @@ public class TopView extends FrameLayout {
         timeLine.addAnim(photoAlpha);
         timeLine.addAnim(fileAlpha);
         timeLine.addAnim(clipboardAlpha);
-        timeLine.setDelay(50);
         timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
@@ -335,6 +335,9 @@ public class TopView extends FrameLayout {
                 mPhotos.setTranslationY(0);
                 mFile.setTranslationY(0);
                 mClipboard.setTranslationY(0);
+
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, true);
+                SidebarController.getInstance(mContext).requestRegisterObserver();
 
                 Anim showShadowLine = new Anim(mShadowLine, Anim.TRANSPARENT, 50, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
                 showShadowLine.setListener(new AnimListener() {
@@ -400,7 +403,15 @@ public class TopView extends FrameLayout {
     public void show(boolean show) {
         if (show) {
             setVisibility(View.VISIBLE);
-            doAnimWhenEnter();
+            final ViewTreeObserver observer = getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                @Override
+                public void onGlobalLayout() {
+                    observer.removeOnGlobalLayoutListener(this);
+                    doAnimWhenEnter();
+                }
+            });
         } else {
             doAnimWhenExit();
         }

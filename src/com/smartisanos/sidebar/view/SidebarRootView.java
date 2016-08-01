@@ -24,6 +24,7 @@ import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.R;
@@ -460,7 +461,14 @@ public class SidebarRootView extends FrameLayout {
     public void show(boolean show){
         if(show){
             setVisibility(View.VISIBLE);
-            doAnimWhenEnter();
+            final ViewTreeObserver observer = getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    observer.removeOnGlobalLayoutListener(this);
+                    doAnimWhenEnter();
+                }
+            });
         }else{
             doAnimWhenExit();
         }
@@ -475,7 +483,7 @@ public class SidebarRootView extends FrameLayout {
         int delta = sidebarWidth;
         int fromX = isLeft ? -delta : delta;
         int time = 150;
-        Anim moveAnim = new Anim(this, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(fromX, 0), new Vector3f());
+        Anim moveAnim = new Anim(this, Anim.MOVE, time, 0, new Vector3f(fromX, 0), new Vector3f());
         Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
         AnimTimeLine timeLine = new AnimTimeLine();
         timeLine.addAnim(moveAnim);
@@ -492,14 +500,15 @@ public class SidebarRootView extends FrameLayout {
                 mSideView.setBackgroundResource(R.drawable.background);
                 SidebarRootView.this.setAlpha(1);
                 SidebarRootView.this.setTranslationX(0);
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_ENTER, true);
+                SidebarController.getInstance(mContext).requestRegisterObserver();
+                mSideView.setOnClickListener(true);
                 if (shadowView != null) {
                     Anim alphaAnim = new Anim(shadowView, Anim.TRANSPARENT, 50, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
                     alphaAnim.setListener(new AnimListener() {
                         @Override
                         public void onStart() {
-
                         }
-
                         @Override
                         public void onComplete(int type) {
                             shadowView.setAlpha(1);
@@ -509,11 +518,11 @@ public class SidebarRootView extends FrameLayout {
                 }
             }
         });
-        timeLine.setDelay(50);
         timeLine.start();
     }
 
     private void doAnimWhenExit() {
+        mSideView.setOnClickListener(false);
         SidebarRootView.this.setBackgroundResource(android.R.color.transparent);
         mSideView.setBackgroundResource(android.R.color.transparent);
         final View shadowView = mSideView.getShadowLineView();

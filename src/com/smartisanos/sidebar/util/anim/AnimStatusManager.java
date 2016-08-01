@@ -17,6 +17,9 @@ public class AnimStatusManager {
     public static int ON_ADD_ITEM_VIEW_ANIM     = 0x1 << 5;
     public static int ON_ADD_ITEM_ANIM          = 0x1 << 6;
     public static int ON_TOP_VIEW_RESUME        = 0x1 << 7;
+    public static int ON_TOP_VIEW_ENTER         = 0x1 << 8;
+    public static int ON_SIDE_VIEW_ENTER        = 0x1 << 9;
+
 
     public static final int [] STATUS_ARR = new int[] {
             ON_TOP_VIEW_CLICK,
@@ -26,7 +29,9 @@ public class AnimStatusManager {
             ON_CLIPBOARD_LIST_ANIM,
             ON_ADD_ITEM_VIEW_ANIM,
             ON_ADD_ITEM_ANIM,
-            ON_TOP_VIEW_RESUME
+            ON_TOP_VIEW_RESUME,
+            ON_TOP_VIEW_ENTER,
+            ON_SIDE_VIEW_ENTER
     };
 
     public static final Map<Integer, String> statusNameMap = new HashMap<Integer, String>();
@@ -110,5 +115,12 @@ public class AnimStatusManager {
 
     public boolean canShowContentView() {
         return (mStatus & SHOW_CONTENT_FLAG) == 0;
+    }
+
+
+    private static final int ENTER_ANIM_FLAG = ON_TOP_VIEW_ENTER | ON_SIDE_VIEW_ENTER;
+
+    public boolean isEnterAnimComplete() {
+        return (mStatus & ENTER_ANIM_FLAG) == 0;
     }
 }
