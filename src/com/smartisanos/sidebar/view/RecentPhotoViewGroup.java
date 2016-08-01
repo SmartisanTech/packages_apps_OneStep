@@ -201,5 +201,6 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         updateUI();
+        mClearListener.onConfigurationChanged(newConfig);
     }
 }

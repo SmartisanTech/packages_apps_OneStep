@@ -1,5 +1,6 @@
 package com.smartisanos.sidebar.view;
 
+import android.content.res.Configuration;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
@@ -41,5 +42,10 @@ public class ClearListener implements View.OnClickListener {
         if (mDialog != null && mDialog.isShowing()) {
             mDialog.dismiss();
         }
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) {
+        dismiss();
+        mDialog = null;
     }
 }

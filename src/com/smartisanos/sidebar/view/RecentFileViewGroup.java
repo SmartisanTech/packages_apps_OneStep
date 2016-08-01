@@ -202,5 +202,6 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         updateUI();
+        mClearListener.onConfigurationChanged(newConfig);
     }
 }
