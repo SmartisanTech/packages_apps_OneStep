@@ -10,19 +10,19 @@ import java.util.Map;
 public class AnimStatusManager {
     private static final LOG log = LOG.getInstance(AnimStatusManager.class);
 
-    public static int ON_TOP_VIEW_CLICK         = 0x1;
-    public static int ON_SIDE_VIEW_ADD_CLICK    = 0x1 << 1;
-    public static int ON_RECENT_PHOTO_LIST_ANIM = 0x1 << 2;
-    public static int ON_FILE_LIST_ANIM         = 0x1 << 3;
-    public static int ON_CLIPBOARD_LIST_ANIM    = 0x1 << 4;
-    public static int ON_ADD_ITEM_VIEW_ANIM     = 0x1 << 5;
-    public static int ON_ADD_ITEM_ANIM          = 0x1 << 6;
-    public static int ON_TOP_VIEW_RESUME        = 0x1 << 7;
-    public static int ON_TOP_VIEW_ENTER         = 0x1 << 8;
-    public static int ON_TOP_VIEW_EXIT          = 0x1 << 9;
-    public static int ON_SIDE_VIEW_ENTER        = 0x1 << 10;
-    public static int ON_SIDE_VIEW_EXIT         = 0x1 << 11;
-
+    public static final int ON_TOP_VIEW_CLICK         = 0x1;
+    public static final int ON_SIDE_VIEW_ADD_CLICK    = 0x1 << 1;
+    public static final int ON_RECENT_PHOTO_LIST_ANIM = 0x1 << 2;
+    public static final int ON_FILE_LIST_ANIM         = 0x1 << 3;
+    public static final int ON_CLIPBOARD_LIST_ANIM    = 0x1 << 4;
+    public static final int ON_ADD_ITEM_VIEW_ANIM     = 0x1 << 5;
+    public static final int ON_ADD_ITEM_ANIM          = 0x1 << 6;
+    public static final int ON_TOP_VIEW_RESUME        = 0x1 << 7;
+    public static final int ON_TOP_VIEW_ENTER         = 0x1 << 8;
+    public static final int ON_TOP_VIEW_EXIT          = 0x1 << 9;
+    public static final int ON_SIDE_VIEW_ENTER        = 0x1 << 10;
+    public static final int ON_SIDE_VIEW_EXIT         = 0x1 << 11;
+    public static final int ON_ADD_RIG_ITEM_REMOVE    = 0x1 << 12;
 
     public static final int [] STATUS_ARR = new int[] {
             ON_TOP_VIEW_CLICK,
@@ -36,7 +36,8 @@ public class AnimStatusManager {
             ON_TOP_VIEW_ENTER,
             ON_TOP_VIEW_EXIT,
             ON_SIDE_VIEW_ENTER,
-            ON_SIDE_VIEW_EXIT
+            ON_SIDE_VIEW_EXIT,
+            ON_ADD_RIG_ITEM_REMOVE
     };
 
     public static final Map<Integer, String> statusNameMap = new HashMap<Integer, String>();
@@ -128,7 +129,8 @@ public class AnimStatusManager {
             | ON_TOP_VIEW_ENTER
             | ON_TOP_VIEW_EXIT
             | ON_SIDE_VIEW_ENTER
-            | ON_SIDE_VIEW_EXIT;
+            | ON_SIDE_VIEW_EXIT
+            | ON_ADD_RIG_ITEM_REMOVE;
 
     public boolean canShowContentView() {
         return (mStatus & SHOW_CONTENT_FLAG) == 0;
@@ -145,5 +147,9 @@ public class AnimStatusManager {
 
     public boolean isExitAnimOngoing() {
         return (mStatus & EXIT_ANIM_FLAG) != 0;
+    }
+
+    public boolean canAddResoleInfoItem() {
+        return (mStatus & ON_ADD_RIG_ITEM_REMOVE) == 0;
     }
 }

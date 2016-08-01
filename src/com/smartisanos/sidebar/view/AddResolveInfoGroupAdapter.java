@@ -16,6 +16,7 @@ import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 
 public class AddResolveInfoGroupAdapter extends BaseAdapter{
     private static final LOG log = LOG.getInstance(AddResolveInfoGroupAdapter.class);
@@ -97,7 +98,9 @@ public class AddResolveInfoGroupAdapter extends BaseAdapter{
         ret.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mViewGroup.removeItemAtIndex(index, true);
+                if (AnimStatusManager.getInstance().canAddResoleInfoItem()) {
+                    mViewGroup.removeItemAtIndex(index, true);
+                }
             }
         });
         vh.restore();

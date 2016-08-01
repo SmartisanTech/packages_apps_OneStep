@@ -73,6 +73,10 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
             return;
         }
 
+        if (index >= mResolveInfoAdapter.getCount()) {
+            return;
+        }
+
         final ResolveInfoGroup item = (ResolveInfoGroup) mResolveInfoAdapter.getItem(index);
         item.isNewAdd = true;
         log.error("remove item ["+item.getDisplayName()+"], index ["+index+"]");
@@ -128,10 +132,12 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
         timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_ADD_RIG_ITEM_REMOVE, true);
             }
 
             @Override
             public void onComplete(int type) {
+                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_ADD_RIG_ITEM_REMOVE, false);
                 if (runnable != null) {
                     runnable.run();
                 }
