@@ -1,5 +1,6 @@
 package com.smartisanos.sidebar.view;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
@@ -84,6 +85,9 @@ public class SideView extends RelativeLayout {
         mExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (ActivityManager.isUserAMonkey()) {
+                    return;
+                }
                 AnimStatusManager asm = AnimStatusManager.getInstance();
                 if (asm.isEnterAnimOngoing() || asm.isExitAnimOngoing()) {
                     return;
