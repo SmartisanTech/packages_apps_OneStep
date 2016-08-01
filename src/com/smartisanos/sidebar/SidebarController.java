@@ -115,23 +115,14 @@ public class SidebarController {
     }
 
     private void start(){
-        AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, false);
-        AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_ENTER, false);
         updateTopViewWindowBySidebarMode();
         updateSideViewWindowBySidebarMode();
         updateContentViewWindowBySidebarMode();
         mSidebarRoot.setAlpha(0);
         mTopView.show(true);
         mSidebarRoot.show(true);
-    }
-
-    public void requestRegisterObserver() {
-        if (AnimStatusManager.getInstance().isEnterAnimComplete()) {
-            AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, false);
-            AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_ENTER, false);
-            RecentPhotoManager.getInstance(mContext).startObserver();
-            RecentFileManager.getInstance(mContext).startFileObserver();
-        }
+        RecentPhotoManager.getInstance(mContext).startObserver();
+        RecentFileManager.getInstance(mContext).startFileObserver();
     }
 
     private void stop(){

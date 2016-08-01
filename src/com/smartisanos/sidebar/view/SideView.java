@@ -81,8 +81,41 @@ public class SideView extends RelativeLayout {
         mLeftShadow = findViewById(R.id.left_shadow);
         mRightShadow = findViewById(R.id.right_shadow);
         updateUIBySIdebarMode();
+        mExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ISidebarService sidebarService = ISidebarService.Stub.asInterface(ServiceManager.getService(Context.SIDEBAR_SERVICE));
+                if (sidebarService != null) {
+                    try {
+                        sidebarService.resetWindow();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         mAdd = (ImageView) findViewById(R.id.add);
+        mAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!AnimStatusManager.getInstance().canShowContentView()) {
+                    AnimStatusManager.getInstance().dumpStatus();
+                    return;
+                }
+                if (mAddButtonRotateAnim != null) {
+                    return;
+                }
+                SidebarController sc = SidebarController.getInstance(mContext);
+                if(sc.getCurrentContentType() == ContentType.NONE){
+                    sc.dimTopView();
+                    sc.showContent(ContentType.ADDTOSIDEBAR);
+                }else if(sc.getCurrentContentType() == ContentType.ADDTOSIDEBAR){
+                    sc.resumeTopView();
+                    sc.dismissContent(true);
+                }
+            }
+        });
 
 //        //ongoing
         mOngoingList = (SidebarListView) findViewById(R.id.ongoinglist);
@@ -131,59 +164,6 @@ public class SideView extends RelativeLayout {
 
         mShareList.setFake(mShareListFake);
         mScrollList = (ScrollView) findViewById(R.id.sideview_scroll_list);
-    }
-
-    private View.OnClickListener mExitButtonOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            ISidebarService sidebarService = ISidebarService.Stub.asInterface(ServiceManager.getService(Context.SIDEBAR_SERVICE));
-            if (sidebarService != null) {
-                try {
-                    sidebarService.resetWindow();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    };
-
-    private View.OnClickListener mAddButtonOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if (!AnimStatusManager.getInstance().canShowContentView()) {
-                AnimStatusManager.getInstance().dumpStatus();
-                return;
-            }
-            if (mAddButtonRotateAnim != null) {
-                return;
-            }
-            SidebarController sc = SidebarController.getInstance(mContext);
-            if(sc.getCurrentContentType() == ContentType.NONE){
-                sc.dimTopView();
-                sc.showContent(ContentType.ADDTOSIDEBAR);
-            }else if(sc.getCurrentContentType() == ContentType.ADDTOSIDEBAR){
-                sc.resumeTopView();
-                sc.dismissContent(true);
-            }
-        }
-    };
-
-    public void setOnClickListener(boolean isEnter) {
-        if (isEnter) {
-            if (mAdd != null) {
-                mAdd.setOnClickListener(mAddButtonOnClick);
-            }
-            if (mExit != null) {
-                mExit.setOnClickListener(mExitButtonOnClick);
-            }
-        } else {
-            if (mAdd != null) {
-                mAdd.setOnClickListener(null);
-            }
-            if (mExit != null) {
-                mExit.setOnClickListener(null);
-            }
-        }
     }
 
     public View getShadowLineView() {
