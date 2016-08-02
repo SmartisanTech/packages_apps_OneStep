@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="topbar_photo">사진</string>
+    <string name="topbar_file">파일</string>
+    <string name="topbar_clipboard">클립보드</string>
+    <string name="title_photo">최근 열어본 사진</string>
+    <string name="title_file">최근 열어본 파일</string>
+    <string name="title_clipboard">최근 잘라내고 복사한 글자</string>
+    <string name="add_contact_shortcut">클릭하여 연락처 단축 아이콘 추가 </string>
+    <string name="add_application_shortcut">클릭하여 응용 프로그램 단축 아이콘 추가</string>
+    <string name="add_contact_dingding">Ding Talk 연락처</string>
+    <string name="add_contact_wechat">Wechat 연락처</string>
+    <string name="add_contact_mail">이메일 연락처</string>
+    <string name="add_contact_mms">문자 메시지 연락처</string>
+    <string name="open_gallery">사진첩 열기</string>
+    <string name="title_confirm_delete_history_photo">기록 삭제 후 사진을 삭제 할 수 없습니다</string>
+    <string name="title_confirm_delete_history_file">기록 삭제 후 파일을 삭제 할 수 없습니다</string>
+    <string name="title_confirm_delete_history_clipboard">클립보드 내용을 삭제 후 복구 할 수 없습니다</string>
+    <string name="clear">삭제</string>
+    <string name="add_wechat_hint">Wechat 접속，친한 친구 카테고리에서 우측 상단 3점의 그림 클릭，친한 친구 선택“바탕화면에 추가”</string>
+
+    <string name="clipboard_fulltext_back">돌아가기</string>
+
+    <!-- uninstall -->
+    <string name="uninstall_app_dialog_title">알림</string>
+    <string name="uninstall_app_dialog_text">사이드 바에서 삭제 하시겠습니까“%1$s”？</string>
+    <string name="text_copied">복귀 하였습니다</string>
+    <string name="photo_empty_text">사진 기록이 없습니다</string>
+    <string name="photo_empty_hint">최근 열어본 사진은 이곳에 나타납니다</string>
+    <string name="file_empty_text">文件记录为空파일 기록이 없습니다</string>
+    <string name="file_empty_hint">최근 열어본 파일은 이곳에 나타납니다</string>
+    <string name="clipboard_empty_text">클립보드가 비었습니다</string>
+    <string name="clipboard_empty_hint">최근 자르거나 복사한 문자는 이곳에 나타납니다</string>
+
+    <!-- pending event -->
+    <string name="pending_ongoing">처리중</string>
+    <string name="pending_fail">처리 실패</string>
+    <string name="pending_cancel">취소 됨</string>
+
+    <string name="fail_to_load_image">이미지를 로드할 수 없습니다.</string>
+</resources>

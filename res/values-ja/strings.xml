@@ -32,5 +32,11 @@
     <string name="file_empty_hint">最近受け取ったり編集したファイルはここに表示されます</string>
     <string name="clipboard_empty_text">クリップボードなし</string>
     <string name="clipboard_empty_hint">最近切り取ったりコピーしたテキストはここに表示されます</string>
+
+    <!-- pending event -->
+    <string name="pending_ongoing">処理中...</string>
+    <string name="pending_fail">処理失敗</string>
+    <string name="pending_cancel">取り消しました</string>
+
     <string name="fail_to_load_image">画像を読み込めませんでした</string>
 </resources>

@@ -34,8 +34,9 @@
     <string name="clipboard_empty_hint">Recently cut and copied text will appear here</string>
 
     <!-- pending event -->
-    <string name="pending_ongoing">正在处理</string>
-    <string name="pending_cancel">已取消</string>
-    <string name="pending_fail">处理失败</string>
+    <string name="pending_ongoing">Working...</string>
+    <string name="pending_fail">Action Failed</string>
+    <string name="pending_cancel">Canceled</string>
+
     <string name="fail_to_load_image">Unable to Load the Image</string>
 </resources>
