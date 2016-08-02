@@ -83,6 +83,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
         mClear = findViewById(R.id.clear);
         mGridView = (PhotoGridView) findViewById(R.id.recentphoto_gridview);
         mGridView.setAdapter(mAdapter = new RecentPhotoAdapter(mContext, this));
+        mGridView.setSelector(R.drawable.grid_view_selector);
         mClear.setOnClickListener(mClearListener);
     }
 

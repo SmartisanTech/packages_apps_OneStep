@@ -12,6 +12,18 @@
         android:src="@drawable/photo_mask"
         android:scaleType="fitXY"
         android:visibility="gone"/>
+    <TextView
+        android:id="@+id/load_fail"
+        android:layout_width="@dimen/recent_photo_size"
+        android:layout_height="@dimen/recent_photo_size"
+        android:layout_margin="@dimen/recent_photo_padding"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textSize="13.5dp"
+        android:textColor="#ccffffff"
+        android:text="@string/fail_to_load_image"
+        android:background="#181818"
+        android:visibility="gone"/>
     <RelativeLayout
         android:id="@+id/open_gallery"
         android:layout_width="@dimen/recent_photo_size"

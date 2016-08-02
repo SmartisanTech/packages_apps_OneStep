@@ -32,4 +32,5 @@
     <string name="file_empty_hint">Последний архив появится здесь</string>
     <string name="clipboard_empty_text">Буфер обмена пустой</string>
     <string name="clipboard_empty_hint">Последний текст появится здесь</string>
+    <string name="fail_to_load_image">Не удается загрузить изображение</string>
 </resources>

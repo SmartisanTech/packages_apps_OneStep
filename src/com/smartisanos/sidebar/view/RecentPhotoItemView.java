@@ -11,6 +11,7 @@ import android.widget.TextView;
 public class RecentPhotoItemView extends FrameLayout {
 
     private TextView mText;
+    private TextView mLoadFail;
 
     public RecentPhotoItemView(Context context) {
         this(context, null);
@@ -34,6 +35,7 @@ public class RecentPhotoItemView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mText = (TextView) findViewById(R.id.text);
+        mLoadFail = (TextView) findViewById(R.id.load_fail);
     }
 
     @Override
@@ -41,6 +43,9 @@ public class RecentPhotoItemView extends FrameLayout {
         super.onConfigurationChanged(newConfig);
         if (mText != null) {
             mText.setText(R.string.open_gallery);
+        }
+        if (mLoadFail != null) {
+            mLoadFail.setText(R.string.fail_to_load_image);
         }
     }
 }

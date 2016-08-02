@@ -32,4 +32,5 @@
     <string name="file_empty_hint">最近接收和處理的文件將會出現在這裡</string>
     <string name="clipboard_empty_text">剪貼板為空</string>
     <string name="clipboard_empty_hint">最近剪切和複製的文字將會出現在這裡</string>
+    <string name="fail_to_load_image">無法載入圖片</string>
 </resources>

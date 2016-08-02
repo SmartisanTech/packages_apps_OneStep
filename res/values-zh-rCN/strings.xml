@@ -37,4 +37,5 @@
     <string name="pending_ongoing">正在处理</string>
     <string name="pending_cancel">已取消</string>
     <string name="pending_fail">处理失败</string>
+    <string name="fail_to_load_image">无法加载此图片</string>
 </resources>

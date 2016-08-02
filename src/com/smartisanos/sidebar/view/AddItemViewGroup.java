@@ -53,9 +53,11 @@ public class AddItemViewGroup extends LinearLayout implements ContentView.ISubVi
     protected void onFinishInflate() {
         super.onFinishInflate();
         mContacts = (FullGridView)findViewById(R.id.contact_gridview);
+        mContacts.setSelector(R.drawable.grid_view_selector);
         mAddContactAdapter = new AddContactAdapter(mContext);
         mContacts.setAdapter(mAddContactAdapter);
         mResolveInfos = (FullGridView) findViewById(R.id.resolveinfo_gridview);
+        mResolveInfos.setSelector(R.drawable.grid_view_selector);
         mResolveInfoAdapter = new AddResolveInfoGroupAdapter(mContext, this, findViewById(R.id.add_resolve));
         mResolveInfos.setAdapter(mResolveInfoAdapter);
         mAddContactTitle = (TextView) findViewById(R.id.add_contact_title_view);

@@ -124,6 +124,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
             ret = LayoutInflater.from(mContext).inflate(R.layout.recent_photo_item, null);
             vh = new ViewHolder();
             vh.imageView = (ImageView) ret.findViewById(R.id.image);
+            vh.textView = (TextView) ret.findViewById(R.id.load_fail);
             vh.openGalleryViewGroup = ret.findViewById(R.id.open_gallery);
             vh.openGalleryViewGroup.setOnClickListener(mOpenGalleryListener);
             ret.setTag(vh);
@@ -180,16 +181,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
                 @Override
                 public void run() {
                     if (mViewHolder.filePath != null && mViewHolder.filePath.equals(filePath)) {
-                        Drawable oldBg = mViewHolder.imageView.getBackground();
-                        mViewHolder.imageView.setBackground(new BitmapDrawable(mContext.getResources(), newBitmap));
-                        if (oldBg != null) {
-                            if (oldBg instanceof BitmapDrawable) {
-                                Bitmap oldBitmap = ((BitmapDrawable) oldBg).getBitmap();
-                                if(oldBitmap != null) {
-                                    oldBitmap.recycle();
-                                }
-                            }
-                        }
+                        mViewHolder.updateBitmap(newBitmap);
                     }
                 }
             });
@@ -210,16 +202,39 @@ public class RecentPhotoAdapter extends BaseAdapter {
 
     class ViewHolder {
         public ImageView imageView;
+        public TextView textView;
         public View openGalleryViewGroup;
         public String filePath;
 
         public void updateUIByPostion(int position) {
             if (position <= 0) {
                 imageView.setVisibility(View.GONE);
+                textView.setVisibility(View.GONE);
                 openGalleryViewGroup.setVisibility(View.VISIBLE);
             } else {
                 imageView.setVisibility(View.VISIBLE);
+                textView.setVisibility(View.GONE);
                 openGalleryViewGroup.setVisibility(View.GONE);
+            }
+        }
+
+        public void updateBitmap(Bitmap bmp) {
+            if (bmp == null) {
+                textView.setVisibility(View.VISIBLE);
+                imageView.setVisibility(View.GONE);
+            } else {
+                textView.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+                Drawable oldBg = imageView.getBackground();
+                imageView.setBackground(new BitmapDrawable(mContext.getResources(),bmp));
+                if (oldBg != null) {
+                    if (oldBg instanceof BitmapDrawable) {
+                        Bitmap oldBitmap = ((BitmapDrawable) oldBg).getBitmap();
+                        if (oldBitmap != null) {
+                            oldBitmap.recycle();
+                        }
+                    }
+                }
             }
         }
     }
