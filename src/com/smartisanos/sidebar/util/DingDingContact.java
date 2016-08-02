@@ -31,7 +31,7 @@ public class DingDingContact extends ContactItem {
 
     @Override
     public boolean acceptDragEvent(Context context, DragEvent event) {
-        return true;
+        return event.getClipDescription().getMimeTypeCount() == 1;
     }
 
     @Override
@@ -41,8 +41,8 @@ public class DingDingContact extends ContactItem {
             return true;
         }
 
-        if (event.getClipData().getItemCount() <= 0
-                || event.getClipData().getDescription().getMimeTypeCount() <= 0) {
+        if (event.getClipData().getItemCount() != 1
+                || event.getClipData().getDescription().getMimeTypeCount() != 1) {
             return false;
         }
 

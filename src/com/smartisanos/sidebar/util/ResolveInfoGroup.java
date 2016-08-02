@@ -20,7 +20,6 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.DragEvent;
 
 public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
@@ -127,14 +126,12 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
     }
 
     public boolean acceptDragEvent(Context context, DragEvent event) {
-        if (event == null) {
-            return true;
-        }
-        if (event.getClipDescription().getMimeTypeCount() <= 0 || size() <= 0) {
+        if (event == null || event.getClipDescription().getMimeTypeCount() <= 0
+                || size() <= 0) {
             return false;
         }
 
-        String mimeType = event.getClipDescription().getMimeType(0);
+        String mimeType = MimeUtils.getCommonMimeType(event);
         if (TextUtils.isEmpty(mimeType)) {
             return false;
         }
@@ -152,18 +149,21 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
                 }
             }
         } else {
-            for (String action : ResolveInfoManager.ACTIONS) {
-                Intent intent = new Intent(action);
-                intent.addCategory(Intent.CATEGORY_DEFAULT);
-                intent.setType(mimeType);
-                intent.setPackage(getPackageName());
-                List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
-                if (infos != null) {
-                    for (ResolveInfo ri1 : this) {
-                        for (ResolveInfo ri2 : infos) {
-                            if (sameComponet(ri1, ri2)) {
-                                return true;
-                            }
+            Intent intent = new Intent();
+            if (event.getClipDescription().getMimeTypeCount() > 1) {
+                intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+            } else {
+                intent.setAction(Intent.ACTION_SEND);
+            }
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setType(mimeType);
+            intent.setPackage(getPackageName());
+            List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
+            if (infos != null) {
+                for (ResolveInfo ri1 : this) {
+                    for (ResolveInfo ri2 : infos) {
+                        if (sameComponet(ri1, ri2)) {
+                            return true;
                         }
                     }
                 }
@@ -185,7 +185,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
             return false;
         }
 
-        String mimeType = event.getClipDescription().getMimeType(0);
+        String mimeType = MimeUtils.getCommonMimeType(event);
         if (TextUtils.isEmpty(mimeType)) {
             return false;
         }
@@ -217,30 +217,32 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
             if(event.getClipData().getItemAt(0).getUri() == null){
                 return false;
             }
-            for (String action : ResolveInfoManager.ACTIONS) {
-                Intent intent = new Intent(action);
-                intent.addCategory(Intent.CATEGORY_DEFAULT);
-                intent.setPackage(getPackageName());
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-                        | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                if(Intent.ACTION_VIEW.equals(action)){
-                    intent.setDataAndType(event.getClipData().getItemAt(0).getUri(), mimeType);
-                }else{
-                    intent.setType(mimeType);
-                    intent.putExtra(Intent.EXTRA_STREAM, event.getClipData().getItemAt(0).getUri());
-                }
+            Intent intent = new Intent();
+            intent.setType(mimeType);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setPackage(getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+                    | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            if (event.getClipData().getItemCount() > 1) {
+                intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, MimeUtils.getUris(event));
+            } else {
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_STREAM, event.getClipData().getItemAt(0).getUri());
+            }
 
-                List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
-                if (infos != null) {
-                    for (ResolveInfo ri1 : this) {
-                        for (ResolveInfo ri2 : infos) {
-                            if (sameComponet(ri1, ri2)) {
-                                intent.setComponent(new ComponentName(ri1.activityInfo.packageName, ri1.activityInfo.name));
-                                Utils.dismissAllDialog(mContext);
-                                context.startActivity(intent);
-                                return true;
-                            }
+            List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
+            if (infos != null) {
+                for (ResolveInfo ri1 : this) {
+                    for (ResolveInfo ri2 : infos) {
+                        if (sameComponet(ri1, ri2)) {
+                            intent.setComponent(new ComponentName(
+                                    ri1.activityInfo.packageName,
+                                    ri1.activityInfo.name));
+                            Utils.dismissAllDialog(mContext);
+                            context.startActivity(intent);
+                            return true;
                         }
                     }
                 }

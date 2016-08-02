@@ -1,9 +1,13 @@
 package com.smartisanos.sidebar.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import android.net.Uri;
 import android.text.TextUtils;
+import android.view.DragEvent;
 
 import com.smartisanos.sidebar.R;
 
@@ -81,5 +85,55 @@ public final class MimeUtils {
             }
         }
         return R.drawable.file_icon_default;
+    }
+
+    public static String getCommonMimeType(List<String> mimeTypes) {
+        if (mimeTypes == null || mimeTypes.size() <= 0) {
+            return null;
+        }
+
+        boolean sameType = true;
+        for (int i = 1; i < mimeTypes.size(); ++i) {
+            if (!mimeTypes.get(0).equals(mimeTypes.get(i))) {
+                sameType = false;
+                break;
+            }
+        }
+        if (sameType) {
+            return mimeTypes.get(0);
+        }
+
+        int index0 = mimeTypes.get(0).indexOf("/");
+        if (index0 == -1) {
+            return null;
+        }
+        for (int i = 1; i < mimeTypes.size(); ++i) {
+            int indexNow = mimeTypes.get(i).indexOf("/");
+            if (indexNow == -1) {
+                return null;
+            }
+            if (indexNow != index0
+                    || !mimeTypes.get(0).regionMatches(0, mimeTypes.get(i), 0,
+                            indexNow)) {
+                return "*/*";
+            }
+        }
+        return mimeTypes.get(0).substring(0, index0 + 1) + "*";
+    }
+
+    public static String getCommonMimeType(DragEvent event) {
+        List<String> mimeTypes = new ArrayList<String>();
+        for (int i = 0; i < event.getClipDescription().getMimeTypeCount(); ++i) {
+            mimeTypes.add(event.getClipDescription().getMimeType(i));
+        }
+        return MimeUtils.getCommonMimeType(mimeTypes);
+    }
+
+    public static ArrayList<Uri> getUris(DragEvent event) {
+        ArrayList<Uri> uris = new ArrayList<Uri>();
+        for (int i = 0; i < event.getClipData().getItemCount(); ++i) {
+            uris.add(event.getClipData().getItemAt(i).getUri());
+        }
+        return uris;
     }
 }

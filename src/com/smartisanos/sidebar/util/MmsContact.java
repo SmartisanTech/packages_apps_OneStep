@@ -42,7 +42,7 @@ public class MmsContact extends ContactItem {
 
     @Override
     public boolean acceptDragEvent(Context context, DragEvent event) {
-        if (event.getClipDescription().getMimeTypeCount() <= 0) {
+        if (event.getClipDescription().getMimeTypeCount() != 1) {
             return false;
         }
         String mimeType = event.getClipDescription().getMimeType(0);
@@ -63,7 +63,7 @@ public class MmsContact extends ContactItem {
             return true;
         }
 
-        if (event.getClipData().getItemCount() <= 0) {
+        if (event.getClipData().getItemCount() != 1) {
             return false;
         }
         Intent intent = null;

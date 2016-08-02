@@ -7,6 +7,7 @@ import com.smartisanos.sidebar.R;
 
 import android.content.ActivityNotFoundException;
 import android.content.ClipDescription;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -21,9 +22,9 @@ import android.view.DragEvent;
 
 public class MailContact extends ContactItem {
     public static final String PKG_NAME = "com.android.contacts";
+    private static final ComponentName COMP_NAME = new ComponentName("com.android.email","com.android.email.activity.ComposeActivityEmail");
 
     private String mMailAddress;
-
     public MailContact(Context context, CharSequence displayName, String mailAddress) {
         this(context, BitmapUtils.getDefaultContactAvatar(context), displayName, mailAddress);
     }
@@ -52,17 +53,29 @@ public class MailContact extends ContactItem {
             return true;
         }
 
-        if (event.getClipData().getItemCount() <= 0) {
+        if (event.getClipData().getItemCount() <= 0
+                || event.getClipDescription().getMimeTypeCount() <= 0
+                || event.getClipDescription().getMimeTypeCount() != event.getClipData().getItemCount()) {
             return false;
         }
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
+
+        String mimeType = MimeUtils.getCommonMimeType(event);
+        Intent intent = new Intent();
         intent.setData(Uri.parse("mailto:" + mMailAddress));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        String mimeType = event.getClipDescription().getMimeType(0);
+        intent.setType(mimeType);
+        intent.setComponent(COMP_NAME);
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
+            intent.setAction(Intent.ACTION_SEND);
             intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText());
-        } else if (event.getClipData().getItemAt(0).getUri() != null) {
-            intent.putExtra(Intent.EXTRA_STREAM, event.getClipData().getItemAt(0).getUri());
+        } else {
+            if (event.getClipData().getItemCount() > 1) {
+                intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, MimeUtils.getUris(event));
+            } else {
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_STREAM, event.getClipData().getItemAt(0).getUri());
+            }
         }
 
         try {
