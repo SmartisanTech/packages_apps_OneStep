@@ -56,16 +56,52 @@ public class RecentFileManager extends DataManager implements IClear{
     private static final int MSG_UPDATE_DATABASE_LIST = 0;
     private static final int MSG_SEARCH_FILE = 1;
 
-    private static final String VOLUME_EXTERNAL = "external";
-    private static final String fileSelection = "(mime_type == 'application/zip') OR (_data LIKE '%.7z') OR (_data LIKE '%.rar') OR (_data LIKE '%.apk') OR (mime_type=='application/msword') OR (mime_type=='application/vnd.ms-powerpoint') OR (mime_type=='text/plain') OR (mime_type=='application/vnd.ms-excel') OR (mime_type=='application/pdf') OR (_data LIKE '%.pptx') OR (_data LIKE '%.key') OR (_data LIKE '%.numbers') OR (_data LIKE '%.xlsx') OR (_data LIKE '%.docx') OR (_data LIKE '%.pages')";
-
     private static final int MUSIC_TYPE = 1;
     private static final int VIDEO_TYPE = 2;
     private static final int FILE_TYPE = 3;
 
-    private final Uri fileUri = Files.getContentUri(VOLUME_EXTERNAL);
-    private final Uri musicUri = Audio.Media.getContentUri(VOLUME_EXTERNAL);
-    private final Uri videoUri = Video.Media.getContentUri(VOLUME_EXTERNAL);
+    private static final String VOLUME_EXTERNAL = "external";
+    private static final Uri fileUri = Files.getContentUri(VOLUME_EXTERNAL);
+    private static final Uri musicUri = Audio.Media.getContentUri(VOLUME_EXTERNAL);
+    private static final Uri videoUri = Video.Media.getContentUri(VOLUME_EXTERNAL);
+
+    private static final String[] WANTED_MIMETYPE = new String[] {
+        "application/zip",
+        "application/msword",
+        "application/vnd.ms-powerpoint",
+        "text/plain",
+        "application/vnd.ms-excel",
+        "application/pdf"
+    };
+
+    private static final String[] WANTED_SUFFIX = new String[] {
+        ".zip",
+        ".7z",
+        ".rar",
+        ".apk",
+        ".pptx",
+        ".ppt",
+        ".key",
+        ".numbers",
+        ".xlsx",
+        ".doc",
+        ".docx",
+        ".pages"
+    };
+
+    private static final String FILE_SELECTION;
+
+    static {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(" + "mime_type == " + ("'" + WANTED_MIMETYPE[0] + "'") + ")");
+        for(int i = 1; i < WANTED_MIMETYPE.length; ++ i) {
+            sb.append(" OR (" + "mime_type == " + ("'" + WANTED_MIMETYPE[i] + "'") + ")");
+        }
+        for(int i = 0; i < WANTED_SUFFIX.length; ++ i) {
+            sb.append(" OR (" + "_data LIKE " + ("'%" + WANTED_SUFFIX[i] + "'") + ")");
+        }
+        FILE_SELECTION = sb.toString();
+    }
 
     private static final String[] TARGET_DIR = new String[]{
         Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/QQfile_recv/",
@@ -275,9 +311,9 @@ public class RecentFileManager extends DataManager implements IClear{
         }else if(type == VIDEO_TYPE){
             return mContext.getContentResolver().query(videoUri, FILE_PROJECTION, null,null, null);
         }else if(type == FILE_TYPE){
-            return mContext.getContentResolver().query(fileUri, FILE_PROJECTION, fileSelection,null, null);
+            return mContext.getContentResolver().query(fileUri, FILE_PROJECTION, FILE_SELECTION,null, null);
         }else{
-            return mContext.getContentResolver().query(fileUri, FILE_PROJECTION, fileSelection,null, null);
+            return mContext.getContentResolver().query(fileUri, FILE_PROJECTION, FILE_SELECTION,null, null);
         }
     }
 
