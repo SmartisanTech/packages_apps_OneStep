@@ -70,8 +70,6 @@ public class RecentFileManager extends DataManager implements IClear{
     private static final String[] TARGET_DIR = new String[]{
         Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/QQfile_recv/",
         Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/MicroMsg/Download/",
-        Environment.getExternalStorageDirectory().getAbsolutePath()+"/Tencent/QQfile_recv/",
-        Environment.getExternalStorageDirectory().getAbsolutePath()+"/Tencent/MicroMsg/Download/",
         Environment.getExternalStorageDirectory().getAbsolutePath()+"/DingTalk/"
     };
 
@@ -160,6 +158,7 @@ public class RecentFileManager extends DataManager implements IClear{
         for(String path : TARGET_DIR){
             allFile.addAll(searchDestinationFolder(new File(path)));
         }
+        mSearchCacheList.clear();
         for(int i = 0 ; i < allFile.size() ; i++){
             String filePath = allFile.get(i);
             FileInfo info = new FileInfo(filePath);
@@ -167,8 +166,9 @@ public class RecentFileManager extends DataManager implements IClear{
                 mSearchCacheList.add(info);
             }
         }
-        if(false){
-            for(FileInfo info : mSearchCacheList){
+        if (false) {
+            Log.d(TAG, "dump search cache list !");
+            for (FileInfo info : mSearchCacheList) {
                 Log.d(TAG, "sdcard.fileinfo -> " + info.filePath);
             }
         }
@@ -181,8 +181,9 @@ public class RecentFileManager extends DataManager implements IClear{
         mCursorCacheList.addAll(getFileInfoByCursor(getContentCursor(VIDEO_TYPE)));
         mCursorCacheList.addAll(getFileInfoByCursor(getContentCursor(FILE_TYPE)));
         mCursorCacheList.addAll(RecorderInfo.getFileInfoFromRecorder(mContext));
-        if(false){
-            for(FileInfo info : mCursorCacheList){
+        if (false) {
+            Log.d(TAG, "dump cursor cache list !");
+            for (FileInfo info : mCursorCacheList) {
                 Log.d(TAG, "database.fileinfo -> " + info.filePath);
             }
         }

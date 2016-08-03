@@ -22,19 +22,13 @@ public class FileInfo {
             Environment.getExternalStorageDirectory().getAbsolutePath()
                     + "/OpenMaster/plugins/",
             Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + "/tencent/",
-            Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + "/Tencent/" };
+                    + "/tencent/"};
 
     private static final String[] WHITELIST = new String[] {
             Environment.getExternalStorageDirectory().getAbsolutePath()
                     + "/tencent/QQfile_recv/",
             Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + "/tencent/MicroMsg/Download/",
-            Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + "/Tencent/QQfile_recv/",
-            Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + "/Tencent/MicroMsg/Download/" };
+                    + "/tencent/MicroMsg/Download/"};
 
     private static final Set<String> PATH_MASK;
 
@@ -131,7 +125,9 @@ public class FileInfo {
             return false;
         }
         if (file.getName().toLowerCase().contains("log")) {
-            return false;
+            if (!file.getName().toLowerCase().contains("logo")) {
+                return false;
+            }
         }
         return true;
     }
