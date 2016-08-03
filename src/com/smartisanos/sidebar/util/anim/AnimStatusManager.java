@@ -45,24 +45,38 @@ public class AnimStatusManager {
 
     public static final Map<Integer, String> statusNameMap = new HashMap<Integer, String>();
     static {
-        Class clazz = AnimStatusManager.class;
-        Field[] fields = clazz.getFields();
-        AnimStatusManager obj = new AnimStatusManager();
-        for (Field f : fields) {
-            try {
-                String name = f.getName();
-                String typeName = f.getType().getName();
-                if (name != null
-                        && typeName.equals("int")
-                        && name.startsWith("ON_")) {
-                    int value = f.getInt(obj);
-                    log.info("AnimStatusManager key [" + name + "], value [" + value + "]");
-                    statusNameMap.put(value, name);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        Class clazz = AnimStatusManager.class;
+//        Field[] fields = clazz.getFields();
+//        AnimStatusManager obj = new AnimStatusManager();
+//        for (Field f : fields) {
+//            try {
+//                String name = f.getName();
+//                String typeName = f.getType().getName();
+//                if (name != null
+//                        && typeName.equals("int")
+//                        && name.startsWith("ON_")) {
+//                    int value = f.getInt(obj);
+//                    log.info("AnimStatusManager key [" + name + "], value [" + value + "]");
+//                    statusNameMap.put(value, name);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+
+        statusNameMap.put(ON_TOP_VIEW_CLICK,         "ON_TOP_VIEW_CLICK");
+        statusNameMap.put(ON_SIDE_VIEW_ADD_CLICK,    "ON_SIDE_VIEW_ADD_CLICK");
+        statusNameMap.put(ON_RECENT_PHOTO_LIST_ANIM, "ON_RECENT_PHOTO_LIST_ANIM");
+        statusNameMap.put(ON_FILE_LIST_ANIM,         "ON_FILE_LIST_ANIM");
+        statusNameMap.put(ON_CLIPBOARD_LIST_ANIM,    "ON_CLIPBOARD_LIST_ANIM");
+        statusNameMap.put(ON_ADD_ITEM_VIEW_ANIM,     "ON_ADD_ITEM_VIEW_ANIM");
+        statusNameMap.put(ON_ADD_ITEM_ANIM,          "ON_ADD_ITEM_ANIM");
+        statusNameMap.put(ON_TOP_VIEW_RESUME,        "ON_TOP_VIEW_RESUME");
+        statusNameMap.put(ON_TOP_VIEW_ENTER,         "ON_TOP_VIEW_ENTER");
+        statusNameMap.put(ON_TOP_VIEW_EXIT,          "ON_TOP_VIEW_EXIT");
+        statusNameMap.put(ON_SIDE_VIEW_ENTER,        "ON_SIDE_VIEW_ENTER");
+        statusNameMap.put(ON_SIDE_VIEW_EXIT,         "ON_SIDE_VIEW_EXIT");
+        statusNameMap.put(ON_ADD_RIG_ITEM_REMOVE,    "ON_ADD_RIG_ITEM_REMOVE");
     }
 
     public static AnimStatusManager mManager;
