@@ -254,17 +254,24 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
     public static ResolveInfoGroup fromData(Context context, String pkgName, String componentNames){
         ResolveInfoGroup rig = new ResolveInfoGroup(context);
         String[] names = componentNames.split("\\|");
-        if(names != null){
-            for(String name : names){
-                Intent intent = new Intent();
-                intent.setComponent(new ComponentName(pkgName, name));
-                List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, 0);
-                if(list != null && list.size() > 0){
-                    rig.add(list.get(0));
-                }else{
-                    return null;
+        if(names == null) {
+            return null;
+        }
+        List<ResolveInfo> list = ResolveInfoManager.getInstance(context).getAllResolveInfoByPackageName(pkgName);
+        for (int i = 0; i < list.size(); ++i) {
+            boolean ok = false;
+            for (int j = 0; j < names.length; ++j) {
+                if (list.get(i).activityInfo.name.equals(names[j])) {
+                    ok = true;
+                    break;
                 }
             }
+            if (ok) {
+                rig.add(list.get(i));
+            }
+        }
+        if (rig.size() != names.length) {
+            return null;
         }
         SameGroupComparator sgc = new SameGroupComparator();
         for (int i = 1; i < rig.size(); ++i) {

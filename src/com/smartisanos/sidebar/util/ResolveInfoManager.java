@@ -181,7 +181,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
                         maxIndex = mList.get(i).getIndex();
                     }
                 }
-                rig.setIndex(maxIndex);
+                rig.setIndex(maxIndex + 1);
             }
             mList.add(0, rig);
         }
@@ -331,7 +331,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         return ret;
     }
 
-    private List<ResolveInfo> getAllResolveInfoByPackageName(String packageName) {
+    public List<ResolveInfo> getAllResolveInfoByPackageName(String packageName) {
         List<ResolveInfo> ret = new ArrayList<ResolveInfo>();
         for (String action : ACTIONS) {
             Intent intent = new Intent(action);
