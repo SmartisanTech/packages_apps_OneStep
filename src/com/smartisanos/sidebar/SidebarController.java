@@ -163,7 +163,6 @@ public class SidebarController {
     private void addSideViewWindow() {
         mSidebarRoot = (SidebarRootView) View.inflate(mContext,
                 R.layout.sidebar_view, null);
-        mSidebarRoot.setTrashView();
         mSideView = (SideView) mSidebarRoot.findViewById(R.id.sidebar);
         mSideView.setRootView(mSidebarRoot);
         mSidebarRoot.setSideView(mSideView);

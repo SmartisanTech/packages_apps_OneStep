@@ -48,6 +48,7 @@ public class Trash {
     public static final int TRASH_FLOAT = 3;
 
     private int mTrashStatus = TRASH_HIDE;
+    private UninstallAction mUninstallAction;
 
     public Trash(Context context, ImageView trashView, ImageView trashForegroundView) {
         mContext = context;
@@ -94,29 +95,25 @@ public class Trash {
         }
     }
 
+    public void dismissDialog() {
+        if (mUninstallAction != null) {
+            mUninstallAction.dismissDialog();
+        }
+    }
+
     public boolean dragObjectUpOnUp(float x, float y) {
-        boolean processUninstall = false;
-//        log.error("dragObjectUpOnUp ["+x+"], ["+y+"]");
         if (!inTrashUninstallReactArea(x, y)) {
-            return processUninstall;
+            return false;
         }
         SidebarRootView.DragView dragView = mRootView.getDraggedView();
         if (dragView == null) {
-            log.error("dragObjectUpOnUp return by dragView is null");
-            return processUninstall;
-        }
-        SidebarRootView.DragItem item = dragView.getDragItem();
-        if (item == null) {
-            log.error("dragObjectUpOnUp return by dragItem is null");
-            return processUninstall;
+            return false;
         }
         //move icon to trash
         moveIconToTrash(dragView);
-        UninstallAction action = new UninstallAction(mContext, item);
-        action.showUninstallDialog();
-        processUninstall = true;
-//        log.error("handle uninstall process");
-        return processUninstall;
+        mUninstallAction = new UninstallAction(mContext, dragView.getDragItem());
+        mUninstallAction.showUninstallDialog();
+        return true;
     }
 
     public void initTrashView() {

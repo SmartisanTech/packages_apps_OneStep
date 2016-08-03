@@ -17,7 +17,7 @@ public class UninstallAction {
 
     private Context mContext;
     private DragItem mDragItem;
-    private static AlertDialog mUninstallDialog;
+    private AlertDialog mUninstallDialog;
     private boolean isCancelRun = false;
 
     public UninstallAction(Context context, DragItem dragItem) {
@@ -25,7 +25,7 @@ public class UninstallAction {
         mDragItem = dragItem;
     }
 
-    public static void dismissDialog() {
+    public void dismissDialog() {
         if (mUninstallDialog != null) {
             mUninstallDialog.dismiss();
         }

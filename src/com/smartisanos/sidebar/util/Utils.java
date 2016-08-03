@@ -29,6 +29,7 @@ public class Utils {
         log.error("super method resumeSidebar !");
         SidebarController.getInstance(context).resumeTopView();
         SidebarController.getInstance(context).dismissContent(true);
+        SidebarController.getInstance(context).getSidebarRootView().stopDrag();
     }
 
     public static void dismissAllDialog(Context context) {

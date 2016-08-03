@@ -294,10 +294,7 @@ public class SideView extends RelativeLayout {
             view.getLocationOnScreen(viewLoc);
             viewLoc[0] = viewLoc[0] + view.getWidth() / 2;
             viewLoc[1] = viewLoc[1] + view.getHeight() / 2;
-
-            SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(SidebarRootView.DragItem.TYPE_APPLICATION, icon, data, index);
-            dragItem.mListItemView = view;
-            mRootView.startDrag(dragItem, viewLoc);
+            mRootView.startDrag(SidebarRootView.DragItem.TYPE_APPLICATION, icon, data, index, view, viewLoc);
             dragItemType = SidebarRootView.DragItem.TYPE_APPLICATION;
             getScrollViewLayoutParams();
             holder.view.setVisibility(View.INVISIBLE);
@@ -346,9 +343,7 @@ public class SideView extends RelativeLayout {
             Drawable icon = new BitmapDrawable(getResources(), item.getAvatar());
             int index = mContactAdapter.objectIndex(item);
             mContactList.setPrePosition(index);
-            SidebarRootView.DragItem dragItem = new SidebarRootView.DragItem(SidebarRootView.DragItem.TYPE_SHORTCUT, icon, item, index);
-            dragItem.mListItemView = view;
-            mRootView.startDrag(dragItem, viewLoc);
+            mRootView.startDrag(SidebarRootView.DragItem.TYPE_SHORTCUT, icon, item, index, view, viewLoc);
             dragItemType = SidebarRootView.DragItem.TYPE_SHORTCUT;
             getScrollViewLayoutParams();
             log.error("onItemLongClick " + holder.view);
@@ -381,7 +376,6 @@ public class SideView extends RelativeLayout {
                 "rect ["+scrollViewRect.left+", "+scrollViewRect.top+", "+scrollViewRect.right+", "+scrollViewRect.bottom+"]");
     }
 
-    private int mWindowWidth;
     private int mWindowHeight;
 
     private void initWindowSize(Context context) {
@@ -389,16 +383,12 @@ public class SideView extends RelativeLayout {
         Display display = wm.getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
-        int widthPixels;
         int heightPixels;
         if (metrics.heightPixels > metrics.widthPixels) {
-            widthPixels = metrics.widthPixels;
             heightPixels = metrics.heightPixels;
         } else {
-            widthPixels = metrics.heightPixels;
             heightPixels = metrics.widthPixels;
         }
-        mWindowWidth = widthPixels;
         mWindowHeight = heightPixels;
     }
 
