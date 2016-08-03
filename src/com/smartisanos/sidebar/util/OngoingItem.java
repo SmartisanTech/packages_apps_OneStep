@@ -125,7 +125,7 @@ public class OngoingItem implements SidebarItem {
                     .getText());
             intent.setComponent(mName);
             Utils.dismissAllDialog(context);
-            start(context, intent);
+            sendNewData(context, intent);
             return true;
         } else {
             if (event.getClipData().getItemAt(0).getUri() == null) {
@@ -141,7 +141,7 @@ public class OngoingItem implements SidebarItem {
             intent.putExtra(Intent.EXTRA_STREAM,
                     event.getClipData().getItemAt(0).getUri());
             Utils.dismissAllDialog(context);
-            start(context, intent);
+            sendNewData(context, intent);
             return true;
         }
     }
@@ -156,6 +156,16 @@ public class OngoingItem implements SidebarItem {
 
     public void setTitle(CharSequence title) {
         mTitle = title;
+    }
+
+    public void sendNewData(Context context, Intent extraIntent) {
+        Intent realIntent = new Intent("com.smartisanos.sidebar.intent.action.SEND_NEW_DATA");
+        realIntent.setPackage(mName.getPackageName());
+        realIntent.putExtra("token", mToken);
+        if(extraIntent != null){
+            realIntent.putExtra(Intent.EXTRA_INTENT, extraIntent);
+        }
+        context.sendBroadcast(realIntent);
     }
 
     public void start(Context context, Intent extraIntent){
