@@ -129,6 +129,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
             vh.openGalleryViewGroup.setOnClickListener(mOpenGalleryListener);
             ret.setTag(vh);
         }
+        vh.filePath = null;
         vh.updateUIByPostion(position);
         if (position <= 0) {
             return ret;
