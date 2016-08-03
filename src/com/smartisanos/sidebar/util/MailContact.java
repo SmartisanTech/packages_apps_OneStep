@@ -63,7 +63,6 @@ public class MailContact extends ContactItem {
         Intent intent = new Intent();
         intent.setData(Uri.parse("mailto:" + mMailAddress));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setType(mimeType);
         intent.setComponent(COMP_NAME);
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
             intent.setAction(Intent.ACTION_SEND);
