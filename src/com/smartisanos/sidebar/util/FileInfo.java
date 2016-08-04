@@ -43,6 +43,12 @@ public class FileInfo {
         PATH_MASK.add("applog_bak");
         PATH_MASK.add("map");
         PATH_MASK.add("manifest");// like this -> /storage/emulated0/0/smartisan/bak/manifest/manifest.txt
+        PATH_MASK.add("logs");
+        PATH_MASK.add("baidumap");
+        PATH_MASK.add("appstore");
+        PATH_MASK.add("com.pinguo.edit.sdk");
+        PATH_MASK.add("yysdk");
+        PATH_MASK.add("ycmedia");
     }
 
     public String filePath = "";
