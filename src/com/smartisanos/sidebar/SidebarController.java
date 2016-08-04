@@ -125,8 +125,8 @@ public class SidebarController {
 
     private void start(){
         updateTopViewWindowBySidebarMode();
-        updateSideViewWindowBySidebarMode();
         updateContentViewWindowBySidebarMode();
+        updateSideViewWindowBySidebarMode();
         mSidebarRoot.setAlpha(0);
         mTopView.show(true);
         mSidebarRoot.show(true);
@@ -148,8 +148,8 @@ public class SidebarController {
 
     private void AddWindows() {
         addTopViewWindow();
-        addSideViewWindow();
         addContentViewWindow();
+        addSideViewWindow();
     }
 
     public SidebarRootView getSidebarRootView() {

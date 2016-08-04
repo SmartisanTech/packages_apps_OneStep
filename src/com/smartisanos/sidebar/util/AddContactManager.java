@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.smartisanos.sidebar.R;
-
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -16,6 +14,9 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+
+import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.SidebarController;
 
 public class AddContactManager extends DataManager {
     private static final String TAG = AddContactManager.class.getName();
@@ -96,7 +97,7 @@ public class AddContactManager extends DataManager {
         @Override
         public void onClick(View v) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-            builder.setMessage(R.string.add_wechat_hint)
+            builder.setView(R.layout.wechat_hint)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(android.R.string.ok,
                             new DialogInterface.OnClickListener() {
@@ -118,7 +119,7 @@ public class AddContactManager extends DataManager {
                             });
             AlertDialog dialog = builder.create();
             dialog.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
-            dialog.getWindow().getAttributes().token = v.getWindowToken();
+            dialog.getWindow().getAttributes().token = SidebarController.getInstance(v.getContext()).getSidebarRootView().getWindowToken();
             dialog.show();
         }
     };

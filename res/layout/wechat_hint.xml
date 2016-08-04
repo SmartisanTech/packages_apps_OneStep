@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <View
+        android:layout_width="228dp"
+        android:layout_height="143dp"
+        android:background="@drawable/wechat_contact_dialog"
+        android:layout_marginTop="33dp"/>
+    <TextView
+        style="?android:attr/textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
+        android:lineSpacingMultiplier="1.1"
+        android:gravity="left|center_vertical"
+        android:text="@string/add_wechat_hint"
+        android:paddingStart="18dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="16dp"/>
+</LinearLayout>
