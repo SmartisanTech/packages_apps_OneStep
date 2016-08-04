@@ -306,9 +306,18 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
 
     public static class SameGroupComparator implements Comparator<ResolveInfo> {
         private static Set<String> sPACKAGES;
+        private static List<String> sPACKAGE_ORDER;
         static {
             sPACKAGES = new HashSet<String>();
             sPACKAGES.add("com.android.contacts");
+            sPACKAGE_ORDER = new ArrayList<String>();
+            sPACKAGE_ORDER.add("com.sina.weibo");
+            sPACKAGE_ORDER.add("com.tencent.mm");
+            sPACKAGE_ORDER.add("com.tencent.mobileqq");
+            sPACKAGE_ORDER.add("com.android.email");
+            sPACKAGE_ORDER.add("com.smartisanos.notes");
+            sPACKAGE_ORDER.add("com.android.mms");
+            sPACKAGE_ORDER.add("com.android.calendar");
         }
 
         public static boolean notNeedSplit(String packageName) {
@@ -324,6 +333,21 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
             String pkgA = a.activityInfo.packageName;
             String pkgB = b.activityInfo.packageName;
             if (!pkgA.equals(pkgB)) {
+                int orderA = sPACKAGE_ORDER.indexOf(pkgA);
+                int orderB = sPACKAGE_ORDER.indexOf(pkgB);
+                if (orderA != orderB) {
+                    if (orderA == -1) {
+                        return 1;
+                    } else if (orderB == -1) {
+                        return -1;
+                    } else {
+                        if (orderA < orderB) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                }
                 return pkgA.compareTo(pkgB);
             }
             if (notNeedSplit(pkgA)) {
