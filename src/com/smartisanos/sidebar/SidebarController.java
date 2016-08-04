@@ -357,10 +357,8 @@ public class SidebarController {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
-                String reason = intent.getStringExtra("reason");
-                if ("eathomekey".equals(reason)) {
-                    Utils.resumeSidebar(context);
-                }
+                log.info("reason -> " + intent.getStringExtra("reason"));
+                Utils.resumeSidebar(context);
             }
         }
     };
