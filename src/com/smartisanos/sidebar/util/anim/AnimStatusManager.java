@@ -26,6 +26,7 @@ public class AnimStatusManager {
     public static final int ON_SIDE_VIEW_ENTER        = 0x1 << 10;
     public static final int ON_SIDE_VIEW_EXIT         = 0x1 << 11;
     public static final int ON_ADD_RIG_ITEM_REMOVE    = 0x1 << 12;
+    public static final int ON_BOOKMARK_ANIM          = 0x1 << 13;
 
     public static final int [] STATUS_ARR = new int[] {
             ON_TOP_VIEW_CLICK,
@@ -40,7 +41,8 @@ public class AnimStatusManager {
             ON_TOP_VIEW_EXIT,
             ON_SIDE_VIEW_ENTER,
             ON_SIDE_VIEW_EXIT,
-            ON_ADD_RIG_ITEM_REMOVE
+            ON_ADD_RIG_ITEM_REMOVE,
+            ON_BOOKMARK_ANIM
     };
 
     public static final Map<Integer, String> statusNameMap = new HashMap<Integer, String>();
@@ -77,6 +79,7 @@ public class AnimStatusManager {
         statusNameMap.put(ON_SIDE_VIEW_ENTER,        "ON_SIDE_VIEW_ENTER");
         statusNameMap.put(ON_SIDE_VIEW_EXIT,         "ON_SIDE_VIEW_EXIT");
         statusNameMap.put(ON_ADD_RIG_ITEM_REMOVE,    "ON_ADD_RIG_ITEM_REMOVE");
+        statusNameMap.put(ON_BOOKMARK_ANIM,          "ON_BOOKMARK_ANIM");
     }
 
     public static AnimStatusManager mManager;
@@ -163,7 +166,8 @@ public class AnimStatusManager {
             | ON_TOP_VIEW_EXIT
             | ON_SIDE_VIEW_ENTER
             | ON_SIDE_VIEW_EXIT
-            | ON_ADD_RIG_ITEM_REMOVE;
+            | ON_ADD_RIG_ITEM_REMOVE
+            | ON_BOOKMARK_ANIM;
 
     public boolean canShowContentView() {
         return (mStatus & SHOW_CONTENT_FLAG) == 0;

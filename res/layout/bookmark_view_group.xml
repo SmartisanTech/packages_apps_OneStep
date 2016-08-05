@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.smartisanos.sidebar.view.BookmarkViewGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+    android:id="@+id/bookmark_view_group"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/content_bg"
+    android:orientation="vertical">
+    <include
+        layout="@layout/bookmark_content"
+        android:visibility="gone"/>
+    <include
+        layout="@layout/empty_view"/>
+</com.smartisanos.sidebar.view.BookmarkViewGroup>

@@ -20,6 +20,8 @@
             android:id="@+id/file"/>
         <include layout="@layout/top_item_view"
             android:id="@+id/clipboard"/>
+        <include layout="@layout/top_item_view"
+            android:id="@+id/bookmark"/>
         <com.smartisanos.sidebar.view.DimSpaceView
             android:id="@+id/top_dim_view_right"
             android:background="@color/dim_color"

@@ -6,7 +6,8 @@
     android:layout_weight="1">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
         <View
             android:id="@+id/back_dim_view"
             android:layout_width="match_parent"
@@ -16,36 +17,37 @@
         <RelativeLayout
             android:id="@+id/content_group"
             android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true">
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="8dp"
+            >
             <ImageView
                 android:id="@+id/icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="12dp"
-                android:layout_centerVertical="true"
-                android:scaleType="matrix"/>
+                android:layout_width="43dp"
+                android:layout_height="55dp"
+                android:scaleType="matrix"
+                />
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="43dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:gravity="center_horizontal"
-                android:layout_toRightOf="@id/icon"
-                android:layout_marginTop="18dp"
-                android:layout_marginLeft="6dp">
+                android:layout_below="@id/icon"
+                >
                 <TextView
                     android:id="@+id/text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:textSize="12dp"
+                    android:textSize="10dp"
                     android:textColor="#ccffffff"/>
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/arrow_icon"/>
+                    android:layout_width="9dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/arrow_icon"
+                    android:layout_gravity="right"
+                    android:layout_marginLeft="5dp"
+                    />
             </LinearLayout>
         </RelativeLayout>
         <View

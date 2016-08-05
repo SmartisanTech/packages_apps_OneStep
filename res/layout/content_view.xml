@@ -13,4 +13,6 @@
         android:visibility="invisible"/>
     <include layout="@layout/additem_view_group"
         android:visibility="invisible"/>
+    <include layout="@layout/bookmark_view_group"
+        android:visibility="invisible"/>
 </com.smartisanos.sidebar.view.ContentView>
