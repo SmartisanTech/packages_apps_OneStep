@@ -6,21 +6,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 
 public class ImageInfo {
     public String filePath;
     public String mimeType;
     public int id;
-
-    public ImageInfo(String filePath, int id) {
-        this.filePath = filePath;
-        this.id = id;
-        mimeType = FileInfo.getFileMimeType(filePath);
-        if (TextUtils.isEmpty(mimeType)) {
-            mimeType = "image/*";
-        }
-    }
 
     public Uri getContentUri(Context context) {
         if (id != 0) {

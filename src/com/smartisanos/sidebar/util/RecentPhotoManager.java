@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 
 public class RecentPhotoManager extends DataManager implements IClear{
@@ -29,8 +30,9 @@ public class RecentPhotoManager extends DataManager implements IClear{
     }
 
     private static final String[] thumbCols = new String[] {
-        GalleryMedia.Files.TABLE_NAME + "." + GalleryMedia.Files.DATA,
-        GalleryMedia.Files.TABLE_NAME + "." + GalleryMedia.Files._ID };
+        MediaStore.Images.ImageColumns.DATA,
+        MediaStore.Images.ImageColumns.MIME_TYPE,
+        MediaStore.Images.ImageColumns._ID };
 
     private static final String DATABASE_NAME = "UselessPhoto";
 
@@ -53,8 +55,7 @@ public class RecentPhotoManager extends DataManager implements IClear{
         synchronized (mImageObserver) {
             if (!mRegistered) {
                 mRegistered = true;
-                mContext.getContentResolver().registerContentObserver(GalleryMedia.Files.OPEN_URI, true, mImageObserver);
-                //mContext.getContentResolver().registerContentObserver(GalleryMedia.Bucket.CONTENT_URI, true, mImageObserver);
+                mContext.getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true, mImageObserver);
                 sendMessageIfNotExist(MSG_UPDATE_IMAGE_LIST);
             }
         }
@@ -94,12 +95,13 @@ public class RecentPhotoManager extends DataManager implements IClear{
         Set<Integer> useless = mDatabaseHelper.getSet();
         Cursor cursor = null;
         try {
-            cursor = mContext.getContentResolver().query(GalleryMedia.Files.OPEN_URI, thumbCols, null, null, null);
+            cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, thumbCols, null, null, null);
             if (cursor.moveToFirst()) {
                 do {
-                    String filePath = cursor.getString(cursor.getColumnIndexOrThrow(GalleryMedia.Files.TABLE_NAME + "." + GalleryMedia.Files.DATA));
-                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(GalleryMedia.Files.TABLE_NAME + "." + GalleryMedia.Files._ID));
-                    ImageInfo info = new ImageInfo(filePath, id);
+                    ImageInfo info = new ImageInfo();
+                    info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
+                    info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
+                    info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
                     if (!TextUtils.isEmpty(info.filePath)&& !TextUtils.isEmpty(info.mimeType)) {
                         if (!useless.contains(info.id)) {
                             imageList.add(info);
