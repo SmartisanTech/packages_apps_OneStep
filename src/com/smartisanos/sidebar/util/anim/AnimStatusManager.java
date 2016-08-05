@@ -129,8 +129,10 @@ public class AnimStatusManager {
         if (getStatus(status) == value) {
             return;
         }
-        String statusName = statusNameMap.get(status);
-        if (LOG.ENABLE_DEBUG) log.info("setStatus status ["+statusName+"], value ["+value+"]");
+        if (LOG.ENABLE_DEBUG) {
+            String statusName = statusNameMap.get(status);
+            log.info("setStatus status ["+statusName+"], value ["+value+"]");
+        }
         int oldValue = mStatus;
         if (value) {
             mStatus |= status;

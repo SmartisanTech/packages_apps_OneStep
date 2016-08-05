@@ -424,6 +424,11 @@ public class SidebarRootView extends FrameLayout {
 
     public void show(boolean show){
         if(show){
+            if (mExitAnimTimeLine != null) {
+                log.error("mExitAnimTimeLine not null");
+                mExitAnimTimeLine.cancel();
+            }
+            setAlpha(0);
             setVisibility(View.VISIBLE);
             final ViewTreeObserver observer = getViewTreeObserver();
             observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -434,9 +439,14 @@ public class SidebarRootView extends FrameLayout {
                 }
             });
         }else{
+            if (mEnterAnimTimeLine != null) {
+                mEnterAnimTimeLine.cancel();
+            }
             doAnimWhenExit();
         }
     }
+
+    private AnimTimeLine mEnterAnimTimeLine = null;
 
     private void doAnimWhenEnter() {
         final View shadowView = mSideView.getShadowLineView();
@@ -449,10 +459,10 @@ public class SidebarRootView extends FrameLayout {
         int time = 150;
         Anim moveAnim = new Anim(this, Anim.MOVE, time, 0, new Vector3f(fromX, 0), new Vector3f());
         Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
-        AnimTimeLine timeLine = new AnimTimeLine();
-        timeLine.addAnim(moveAnim);
-        timeLine.addAnim(alphaAnim);
-        timeLine.setAnimListener(new AnimListener() {
+        mEnterAnimTimeLine = new AnimTimeLine();
+        mEnterAnimTimeLine.addAnim(moveAnim);
+        mEnterAnimTimeLine.addAnim(alphaAnim);
+        mEnterAnimTimeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
                 AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_ENTER, true);
@@ -460,28 +470,37 @@ public class SidebarRootView extends FrameLayout {
 
             @Override
             public void onComplete(int type) {
-                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_ENTER, false);
-                SidebarRootView.this.setBackgroundResource(R.color.sidebar_root_background);
-                mSideView.setBackgroundResource(R.drawable.background);
-                SidebarRootView.this.setAlpha(1);
-                SidebarRootView.this.setTranslationX(0);
-                if (shadowView != null) {
-                    Anim alphaAnim = new Anim(shadowView, Anim.TRANSPARENT, 50, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
-                    alphaAnim.setListener(new AnimListener() {
-                        @Override
-                        public void onStart() {
-                        }
-                        @Override
-                        public void onComplete(int type) {
+                if (mEnterAnimTimeLine != null) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_ENTER, false);
+                    SidebarRootView.this.setBackgroundResource(R.color.sidebar_root_background);
+                    mSideView.setBackgroundResource(R.drawable.background);
+                    SidebarRootView.this.setAlpha(1);
+                    SidebarRootView.this.setTranslationX(0);
+                    if (shadowView != null) {
+                        if (type != Anim.ANIM_FINISH_TYPE_CANCELED) {
+                            Anim alphaAnim = new Anim(shadowView, Anim.TRANSPARENT, 50, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+                            alphaAnim.setListener(new AnimListener() {
+                                @Override
+                                public void onStart() {
+                                }
+                                @Override
+                                public void onComplete(int type) {
+                                    shadowView.setAlpha(1);
+                                }
+                            });
+                            alphaAnim.start();
+                        } else {
                             shadowView.setAlpha(1);
                         }
-                    });
-                    alphaAnim.start();
+                    }
+                    mEnterAnimTimeLine = null;
                 }
             }
         });
-        timeLine.start();
+        mEnterAnimTimeLine.start();
     }
+
+    private AnimTimeLine mExitAnimTimeLine = null;
 
     private void doAnimWhenExit() {
         SidebarRootView.this.setBackgroundResource(android.R.color.transparent);
@@ -490,16 +509,16 @@ public class SidebarRootView extends FrameLayout {
         if (shadowView != null) {
             shadowView.setVisibility(INVISIBLE);
         }
-        AnimTimeLine timeLine = new AnimTimeLine();
+        mExitAnimTimeLine = new AnimTimeLine();
         boolean isLeft = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
         int delta = sidebarWidth;
         int toX = isLeft ? -delta : delta;
         int time = 200;
         Anim moveAnim = new Anim(this, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(toX, 0));
         Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, time, 0, new Vector3f(0, 0, 1), new Vector3f());
-        timeLine.addAnim(moveAnim);
-        timeLine.addAnim(alphaAnim);
-        timeLine.setAnimListener(new AnimListener() {
+        mExitAnimTimeLine.addAnim(moveAnim);
+        mExitAnimTimeLine.addAnim(alphaAnim);
+        mExitAnimTimeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
                 AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_EXIT, true);
@@ -507,18 +526,21 @@ public class SidebarRootView extends FrameLayout {
 
             @Override
             public void onComplete(int type) {
-                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_EXIT, false);
-                shadowView.setVisibility(VISIBLE);
-                SidebarRootView.this.setAlpha(1);
-                SidebarRootView.this.setTranslationX(0);
-                setVisibility(View.GONE);
-                stopDrag();
-                if (mSideView != null) {
-                    mSideView.restoreView();
+                if (mExitAnimTimeLine != null) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_EXIT, false);
+                    shadowView.setVisibility(VISIBLE);
+                    SidebarRootView.this.setAlpha(1);
+                    SidebarRootView.this.setTranslationX(0);
+                    setVisibility(View.GONE);
+                    stopDrag();
+                    if (mSideView != null) {
+                        mSideView.restoreView();
+                    }
+                    mExitAnimTimeLine = null;
                 }
             }
         });
-        timeLine.start();
+        mExitAnimTimeLine.start();
     }
 
     public boolean mEnableUninstallAnim = false;

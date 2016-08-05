@@ -128,7 +128,6 @@ public class SidebarController {
         updateTopViewWindowBySidebarMode();
         updateContentViewWindowBySidebarMode();
         updateSideViewWindowBySidebarMode();
-        mSidebarRoot.setAlpha(0);
         mTopView.show(true);
         mSidebarRoot.show(true);
     }

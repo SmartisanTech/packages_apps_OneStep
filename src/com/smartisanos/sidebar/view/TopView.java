@@ -326,6 +326,8 @@ public class TopView extends FrameLayout {
         return super.dispatchTouchEvent(ev);
     }
 
+    private AnimTimeLine mEnterAnimTimeLine = null;
+
     private void doAnimWhenEnter() {
         mShadowLine.setVisibility(View.INVISIBLE);
         int time = 200;
@@ -363,17 +365,17 @@ public class TopView extends FrameLayout {
         });
         showShadowLine.setDelay(170);
 
-        AnimTimeLine timeLine = new AnimTimeLine();
-        timeLine.addAnim(photoMove);
-        timeLine.addAnim(fileMove);
-        timeLine.addAnim(clipboardMove);
-        timeLine.addAnim(bookmarkMove);
-        timeLine.addAnim(photoAlpha);
-        timeLine.addAnim(fileAlpha);
-        timeLine.addAnim(clipboardAlpha);
-        timeLine.addAnim(bookmarkAlpha);
-        timeLine.addAnim(showShadowLine);
-        timeLine.setAnimListener(new AnimListener() {
+        mEnterAnimTimeLine = new AnimTimeLine();
+        mEnterAnimTimeLine.addAnim(photoMove);
+        mEnterAnimTimeLine.addAnim(fileMove);
+        mEnterAnimTimeLine.addAnim(clipboardMove);
+        mEnterAnimTimeLine.addAnim(bookmarkMove);
+        mEnterAnimTimeLine.addAnim(photoAlpha);
+        mEnterAnimTimeLine.addAnim(fileAlpha);
+        mEnterAnimTimeLine.addAnim(clipboardAlpha);
+        mEnterAnimTimeLine.addAnim(bookmarkAlpha);
+        mEnterAnimTimeLine.addAnim(showShadowLine);
+        mEnterAnimTimeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
                 AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, true);
@@ -381,21 +383,26 @@ public class TopView extends FrameLayout {
 
             @Override
             public void onComplete(int type) {
-                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, false);
-                TopView.this.setBackgroundResource(R.drawable.background);
-                mPhotos.setAlpha(1);
-                mFile.setAlpha(1);
-                mClipboard.setAlpha(1);
-                mBookmark.setAlpha(1);
+                if (mEnterAnimTimeLine != null) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, false);
+                    TopView.this.setBackgroundResource(R.drawable.background);
+                    mPhotos.setAlpha(1);
+                    mFile.setAlpha(1);
+                    mClipboard.setAlpha(1);
+                    mBookmark.setAlpha(1);
 
-                mPhotos.setTranslationY(0);
-                mFile.setTranslationY(0);
-                mClipboard.setTranslationY(0);
-                mBookmark.setTranslationY(0);
+                    mPhotos.setTranslationY(0);
+                    mFile.setTranslationY(0);
+                    mClipboard.setTranslationY(0);
+                    mBookmark.setTranslationY(0);
+                    mEnterAnimTimeLine = null;
+                }
             }
         });
-        timeLine.start();
+        mEnterAnimTimeLine.start();
     }
+
+    private AnimTimeLine mExitAnimTimeLine = null;
 
     private void doAnimWhenExit() {
         TopView.this.setBackgroundResource(android.R.color.transparent);
@@ -417,16 +424,16 @@ public class TopView extends FrameLayout {
         Anim clipboardAlpha = new Anim(mClipboard, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
         Anim bookmarkAlpha = new Anim(mBookmark, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
 
-        AnimTimeLine timeLine = new AnimTimeLine();
-        timeLine.addAnim(photoMove);
-        timeLine.addAnim(fileMove);
-        timeLine.addAnim(clipboardMove);
-        timeLine.addAnim(bookmarkMove);
-        timeLine.addAnim(photoAlpha);
-        timeLine.addAnim(fileAlpha);
-        timeLine.addAnim(clipboardAlpha);
-        timeLine.addAnim(bookmarkAlpha);
-        timeLine.setAnimListener(new AnimListener() {
+        mExitAnimTimeLine = new AnimTimeLine();
+        mExitAnimTimeLine.addAnim(photoMove);
+        mExitAnimTimeLine.addAnim(fileMove);
+        mExitAnimTimeLine.addAnim(clipboardMove);
+        mExitAnimTimeLine.addAnim(bookmarkMove);
+        mExitAnimTimeLine.addAnim(photoAlpha);
+        mExitAnimTimeLine.addAnim(fileAlpha);
+        mExitAnimTimeLine.addAnim(clipboardAlpha);
+        mExitAnimTimeLine.addAnim(bookmarkAlpha);
+        mExitAnimTimeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
                 AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_EXIT, true);
@@ -434,26 +441,33 @@ public class TopView extends FrameLayout {
 
             @Override
             public void onComplete(int type) {
-                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_EXIT, false);
-                mPhotos.setAlpha(1);
-                mFile.setAlpha(1);
-                mClipboard.setAlpha(1);
-                mBookmark.setAlpha(1);
+                if (mExitAnimTimeLine != null) {
+                    AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_EXIT, false);
+                    mPhotos.setAlpha(1);
+                    mFile.setAlpha(1);
+                    mClipboard.setAlpha(1);
+                    mBookmark.setAlpha(1);
 
-                mPhotos.setTranslationY(0);
-                mFile.setTranslationY(0);
-                mClipboard.setTranslationY(0);
-                mBookmark.setTranslationY(0);
+                    mPhotos.setTranslationY(0);
+                    mFile.setTranslationY(0);
+                    mClipboard.setTranslationY(0);
+                    mBookmark.setTranslationY(0);
 
-                setVisibility(View.GONE);
-                resumeToNormal();
+                    setVisibility(View.GONE);
+                    resumeToNormal();
+                    mExitAnimTimeLine = null;
+                }
             }
         });
-        timeLine.start();
+        mExitAnimTimeLine.start();
     }
 
     public void show(boolean show) {
         if (show) {
+            if (mExitAnimTimeLine != null) {
+                log.error("mExitAnimTimeLine not null");
+                mExitAnimTimeLine.cancel();
+            }
             setVisibility(View.VISIBLE);
             final ViewTreeObserver observer = getViewTreeObserver();
             observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -465,6 +479,9 @@ public class TopView extends FrameLayout {
                 }
             });
         } else {
+            if (mEnterAnimTimeLine != null) {
+                mEnterAnimTimeLine.cancel();
+            }
             doAnimWhenExit();
         }
     }
