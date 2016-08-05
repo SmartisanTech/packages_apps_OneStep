@@ -4,10 +4,10 @@
     <string name="topbar_photo">图片</string>
     <string name="topbar_file">文件</string>
     <string name="topbar_clipboard">剪贴板</string>
+    <string name="topbar_bookmark">收藏</string>
     <string name="title_photo">近期的图片</string>
     <string name="title_file">近期的文件</string>
     <string name="title_clipboard">近期复制或剪切过的文字</string>
-    <string name="topbar_bookmark">收藏</string>
     <string name="title_bookmark">最近书签</string>
     <string name="add_contact_shortcut">点击添加联系人快捷方式</string>
     <string name="add_application_shortcut">点击添加应用快捷方式</string>

@@ -4,9 +4,11 @@
     <string name="topbar_photo">圖片</string>
     <string name="topbar_file">文件</string>
     <string name="topbar_clipboard">剪貼板</string>
+    <string name="topbar_bookmark">收藏</string>
     <string name="title_photo">最近接收和處理的圖片</string>
     <string name="title_file">最近接收和處理的文件</string>
     <string name="title_clipboard">最近剪切和複製的文字</string>
+    <string name="title_bookmark">最近書簽</string>
     <string name="add_contact_shortcut">點擊添加聯絡人快捷方式</string>
     <string name="add_application_shortcut">點擊添加應用快捷方式</string>
     <string name="add_contact_dingding">釘釘聯絡人</string>
@@ -17,6 +19,7 @@
     <string name="title_confirm_delete_history_photo">清空記錄後不會刪除圖片</string>
     <string name="title_confirm_delete_history_file">清空記錄後不會刪除檔案</string>
     <string name="title_confirm_delete_history_clipboard">清空剪貼板內容將無法恢復</string>
+    <string name="title_confirm_delete_bookmark">清空收藏內容將無法恢復</string>
     <string name="clear">清空</string>
     <string name="add_wechat_hint">進入微信，在微信好友詳情界面點擊右上角三點圖示，選擇將好友“添加到桌面”</string>
 
@@ -39,4 +42,8 @@
     <string name="pending_cancel">已取消</string>
 
     <string name="fail_to_load_image">無法載入圖片</string>
+    <string name="bookmark_empty_text">書簽為空</string>
+    <string name="bookmark_empty_hint">你可以在各應用中，通過點擊"分享-添加到書簽"，或複製連結將其中的文章圖片等添加到書簽</string>
+    <string name="share_component_name">添加收藏</string>
+    <string name="bookmark_source">來自:</string>
 </resources>

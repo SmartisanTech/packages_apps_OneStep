@@ -8,7 +8,7 @@
     <string name="title_photo">Recent Images</string>
     <string name="title_file">Recent Files</string>
     <string name="title_clipboard">Recent Clipboard Text</string>
-    <string name="title_bookmark">Recent Bookmark</string>
+    <string name="title_bookmark">Recent Bookmarks</string>
     <string name="add_contact_shortcut">Tap to Add Contact"'"s Shortcut</string>
     <string name="add_application_shortcut">Tap to Add App Shortcut</string>
     <string name="add_contact_dingding">Dingding Contact</string>
@@ -19,7 +19,7 @@
     <string name="title_confirm_delete_history_photo">Clearing the history will not delete images</string>
     <string name="title_confirm_delete_history_file">Clearing the history will not delete files</string>
     <string name="title_confirm_delete_history_clipboard">Contents of the clipboard can"'"t be recovered once it is cleared</string>
-    <string name="title_confirm_delete_bookmark">Contents of the bookmark can"'"t be recovered once it is cleared</string>
+    <string name="title_confirm_delete_bookmark">Bookmarks can"'"t be recovered once deleted.</string>
     <string name="clear">Clear</string>
     <string name="add_wechat_hint">Once in WeChat, look at the Details page of a friend and tap the "three dot" icon at the upper right to add a shortcut for that friend to the Launcher</string>
 
@@ -42,8 +42,8 @@
     <string name="pending_cancel">Canceled</string>
 
     <string name="fail_to_load_image">Unable to Load the Image</string>
-    <string name="bookmark_empty_text">Bookmark Is Empty</string>
-    <string name="bookmark_empty_hint">Click "Share-Add to bookmark" or Copy link to save to Bookmark</string>
-    <string name="share_component_name">Add to Bookmark</string>
-    <string name="bookmark_source">Source:</string>
+    <string name="bookmark_empty_text">No Bookmarks</string>
+    <string name="bookmark_empty_hint">Add to Bookmarks, or copy the link and add the page"'"s text and images to Bookmarks.</string>
+    <string name="share_component_name">Add to Bookmarks</string>
+    <string name="bookmark_source">From:</string>
 </resources>

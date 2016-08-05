@@ -4,9 +4,11 @@
     <string name="topbar_photo">Фото</string>
     <string name="topbar_file">Файл</string>
     <string name="topbar_clipboard">Буфер обмена</string>
+    <string name="topbar_bookmark">Избранное</string>
     <string name="title_photo">Последное фото</string>
     <string name="title_file">Последние файлы</string>
     <string name="title_clipboard">Последние тексты в будере обмене</string>
+    <string name="title_bookmark">Последняя закладка</string>
     <string name="add_contact_shortcut">Кликать добавить ярлык контакта</string>
     <string name="add_application_shortcut">Кликать добавить ярлык приложения</string>
     <string name="add_contact_dingding">Контакт Dingding</string>
@@ -17,6 +19,7 @@
     <string name="title_confirm_delete_history_photo">Очистка истории не будет удалить фото</string>
     <string name="title_confirm_delete_history_file">Очистка истории не будет удалить архив</string>
     <string name="title_confirm_delete_history_clipboard">Очистка буфера обмены не восстановима</string>
+    <string name="title_confirm_delete_bookmark">Удаленные избранные не восстановимы</string>
     <string name="clear">Очистить</string>
     <string name="add_wechat_hint">Входив в Wechat, на странице детали друзьей кликать чтобы "добавить друга домой"</string>
 
@@ -39,4 +42,8 @@
     <string name="pending_cancel">Отмено</string>
 
     <string name="fail_to_load_image">Не удается загрузить изображение</string>
+    <string name="bookmark_empty_text">Закладка пустая</string>
+    <string name="bookmark_empty_hint">Вы можете в приложениях кликать"Поделиться-Добавить в закладку" или копировать ссылку чтобы добавить статьи или фото в закладку</string>
+    <string name="share_component_name">Добавить в избранное</string>
+    <string name="bookmark_source">Из:</string>
 </resources>
