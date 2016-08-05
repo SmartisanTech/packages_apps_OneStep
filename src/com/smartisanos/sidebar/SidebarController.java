@@ -100,6 +100,7 @@ public class SidebarController {
                     @Override
                     public void onChanged() {
                         if (!AnimStatusManager.getInstance().isEnterAnimOngoing()) {
+                            AnimStatusManager.getInstance().removeAnimFlagStatusChangedListener(this);
                             onEnterAnimComplete();
                         }
                     }

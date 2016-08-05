@@ -299,19 +299,37 @@ public class TopView extends FrameLayout {
 
     private void doAnimWhenEnter() {
         mShadowLine.setVisibility(View.INVISIBLE);
-        int time = 150;
-        int height = getHeight() / 4;
+        int time = 200;
+        int height = getHeight();
         int fromY = -height;
         mPhotos.setAlpha(0);
         mFile.setAlpha(0);
         mClipboard.setAlpha(0);
-        Anim photoMove = new Anim(mPhotos, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f());
-        Anim fileMove = new Anim(mFile, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f());
-        Anim clipboardMove = new Anim(mClipboard, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f());
+        Vector3f moveFrom = new Vector3f(0, fromY);
+        Vector3f moveTo = new Vector3f();
+        Anim photoMove = new Anim(mPhotos, Anim.MOVE, time, Anim.CUBIC_OUT, moveFrom, moveTo);
+        Anim fileMove = new Anim(mFile, Anim.MOVE, time, Anim.CUBIC_OUT, moveFrom, moveTo);
+        Anim clipboardMove = new Anim(mClipboard, Anim.MOVE, time, Anim.CUBIC_OUT, moveFrom, moveTo);
 
-        Anim photoAlpha = new Anim(mPhotos, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
-        Anim fileAlpha = new Anim(mFile, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
-        Anim clipboardAlpha = new Anim(mClipboard, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+        Vector3f alphaFrom = new Vector3f();
+        Vector3f alphaTo = new Vector3f(0, 0, 1);
+        Anim photoAlpha = new Anim(mPhotos, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        Anim fileAlpha = new Anim(mFile, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        Anim clipboardAlpha = new Anim(mClipboard, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+
+        Anim showShadowLine = new Anim(mShadowLine, Anim.TRANSPARENT, 30, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        showShadowLine.setListener(new AnimListener() {
+            @Override
+            public void onStart() {
+                mShadowLine.setVisibility(VISIBLE);
+            }
+
+            @Override
+            public void onComplete(int type) {
+                mShadowLine.setAlpha(1);
+            }
+        });
+        showShadowLine.setDelay(170);
 
         AnimTimeLine timeLine = new AnimTimeLine();
         timeLine.addAnim(photoMove);
@@ -320,6 +338,7 @@ public class TopView extends FrameLayout {
         timeLine.addAnim(photoAlpha);
         timeLine.addAnim(fileAlpha);
         timeLine.addAnim(clipboardAlpha);
+        timeLine.addAnim(showShadowLine);
         timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
@@ -337,20 +356,6 @@ public class TopView extends FrameLayout {
                 mPhotos.setTranslationY(0);
                 mFile.setTranslationY(0);
                 mClipboard.setTranslationY(0);
-
-                Anim showShadowLine = new Anim(mShadowLine, Anim.TRANSPARENT, 50, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
-                showShadowLine.setListener(new AnimListener() {
-                    @Override
-                    public void onStart() {
-                        mShadowLine.setVisibility(VISIBLE);
-                    }
-
-                    @Override
-                    public void onComplete(int type) {
-                        mShadowLine.setAlpha(1);
-                    }
-                });
-                showShadowLine.start();
             }
         });
         timeLine.start();
@@ -359,15 +364,20 @@ public class TopView extends FrameLayout {
     private void doAnimWhenExit() {
         TopView.this.setBackgroundResource(android.R.color.transparent);
         mShadowLine.setVisibility(View.INVISIBLE);
-        int time = 150;
-        int toY = -67;
-        Anim photoMove = new Anim(mPhotos, Anim.MOVE, time, 0, new Vector3f(), new Vector3f(0, toY));
-        Anim fileMove = new Anim(mFile, Anim.MOVE, time, 0, new Vector3f(), new Vector3f(0, toY));
-        Anim clipboardMove = new Anim(mClipboard, Anim.MOVE, time, 0, new Vector3f(), new Vector3f(0, toY));
+        int time = 200;
+        int height = getHeight();
+        int toY = -height;
+        Vector3f moveFrom = new Vector3f();
+        Vector3f moveTo = new Vector3f(0, toY);
+        Anim photoMove = new Anim(mPhotos, Anim.MOVE, time, 0, moveFrom, moveTo);
+        Anim fileMove = new Anim(mFile, Anim.MOVE, time, 0, moveFrom, moveTo);
+        Anim clipboardMove = new Anim(mClipboard, Anim.MOVE, time, 0, moveFrom, moveTo);
 
-        Anim photoAlpha = new Anim(mPhotos, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
-        Anim fileAlpha = new Anim(mFile, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
-        Anim clipboardAlpha = new Anim(mClipboard, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+        Vector3f alphaFrom = new Vector3f(0, 0, 1);
+        Vector3f alphaTo = new Vector3f();
+        Anim photoAlpha = new Anim(mPhotos, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        Anim fileAlpha = new Anim(mFile, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        Anim clipboardAlpha = new Anim(mClipboard, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
 
         AnimTimeLine timeLine = new AnimTimeLine();
         timeLine.addAnim(photoMove);
