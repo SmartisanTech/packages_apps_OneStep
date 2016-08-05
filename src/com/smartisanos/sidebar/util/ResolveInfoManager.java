@@ -200,15 +200,26 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
 
     private void saveOrderForList(){
         List<ResolveInfoGroup> list = getAddedResolveInfoGroup();
-        for(ResolveInfoGroup rig : list){
-            int id = getId(rig);
-            if(id != 0){
-                ContentValues cv = new ContentValues();
-                cv.put(ResolveInfoColumns.PACKAGE_NAME, rig.getPackageName());
-                cv.put(ResolveInfoColumns.COMPONENT_NAMES, rig.getComponentNames());
-                cv.put(ResolveInfoColumns.WEIGHT, rig.getIndex());
-                getWritableDatabase().update(TABLE_RESOLVEINFO, cv,
-                        ResolveInfoColumns._ID + "=?", new String[] { id + "" });
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for(ResolveInfoGroup rig : list){
+                int id = getId(rig);
+                if(id != 0){
+                    ContentValues cv = new ContentValues();
+                    cv.put(ResolveInfoColumns.PACKAGE_NAME, rig.getPackageName());
+                    cv.put(ResolveInfoColumns.COMPONENT_NAMES, rig.getComponentNames());
+                    cv.put(ResolveInfoColumns.WEIGHT, rig.getIndex());
+                    db.update(TABLE_RESOLVEINFO, cv, ResolveInfoColumns._ID + "=?", new String[] { id + "" });
+                }
+            }
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (db != null) {
+                db.endTransaction();
+                db.close();
             }
         }
     }
