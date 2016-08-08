@@ -83,6 +83,12 @@ public class ReceiveShareData extends Activity {
             item = null;
             e.printStackTrace();
         }
+        if (item != null) {
+            //verify title
+            if (item.title == null || item.title.trim().length() == 0) {
+                item = null;
+            }
+        }
         return item;
     }
 }
