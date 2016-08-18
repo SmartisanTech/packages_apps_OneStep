@@ -243,7 +243,6 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                 return false;
             }
             TextView textView = (TextView) view.findViewById(R.id.text);
-            Utils.dismissAllDialog(mContext);
             SidebarUtils.dragText(textView, mContext, textView.getText());
             return false;
         }
