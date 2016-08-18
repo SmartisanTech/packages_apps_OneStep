@@ -45,6 +45,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
     private static final Set<Pair<String, String>> sBlackCompList;
     static {
         sBlackList = new HashSet<String>();
+        sBlackList.add("com.smartisanos.sidebar");
         sBlackList.add("com.android.phone");
         sBlackList.add("com.android.contacts");
         sBlackList.add("com.android.settings");
