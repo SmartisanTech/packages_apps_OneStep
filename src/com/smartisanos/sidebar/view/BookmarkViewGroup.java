@@ -30,7 +30,7 @@ import com.smartisanos.sidebar.util.anim.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookmarkViewGroup extends LinearLayout implements IEmpty, ContentView.ISubView  {
+public class BookmarkViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView  {
     private static final LOG log = LOG.getInstance(BookmarkViewGroup.class);
 
     private Context mContext;

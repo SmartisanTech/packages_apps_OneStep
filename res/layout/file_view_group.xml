@@ -4,8 +4,7 @@
     android:id="@+id/recent_file_view_group"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/content_bg"
-    android:orientation="vertical">
+    android:background="@drawable/content_bg">
     <include
         layout="@layout/file_content"
         android:visibility="gone"/>
