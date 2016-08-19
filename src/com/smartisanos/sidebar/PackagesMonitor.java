@@ -7,13 +7,14 @@ import com.smartisanos.sidebar.util.ResolveInfoManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 public class PackagesMonitor extends BroadcastReceiver {
     private static final String TAG = PackagesMonitor.class.getName();
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        // the context passed in is ReceiverRestrictedContext, don't use it
+        context = context.getApplicationContext();
         String action = intent.getAction();
         String packageName = intent.getData().getSchemeSpecificPart();
         boolean replace = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false);
