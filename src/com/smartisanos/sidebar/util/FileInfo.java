@@ -7,8 +7,10 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import libcore.io.Libcore;
@@ -31,7 +33,6 @@ public class FileInfo {
                     + "/tencent/MicroMsg/Download/"};
 
     private static final Set<String> PATH_MASK;
-
     static {
         PATH_MASK = new HashSet<String>();
         PATH_MASK.add("backup");
@@ -44,11 +45,42 @@ public class FileInfo {
         PATH_MASK.add("map");
         PATH_MASK.add("manifest");// like this -> /storage/emulated0/0/smartisan/bak/manifest/manifest.txt
         PATH_MASK.add("logs");
+        PATH_MASK.add("log");
         PATH_MASK.add("baidumap");
         PATH_MASK.add("appstore");
+        PATH_MASK.add("plugins");
         PATH_MASK.add("com.pinguo.edit.sdk");
         PATH_MASK.add("yysdk");
         PATH_MASK.add("ycmedia");
+        PATH_MASK.add("sohudownload");
+        PATH_MASK.add("com.zcool.community");
+        PATH_MASK.add("qbiz");//storage/emulated/0/qqmusic/qbiz
+        PATH_MASK.add("app_style");//storage/emulated/0/ZAKER/DataStr/app_style/app_style.txt
+        PATH_MASK.add("zaker");///storage/emulated/0/ZAKER/DataStr/interaction/interaction.txt
+        PATH_MASK.add("emotion");///storage/emulated/0/Android/data/com.eg.android.AlipayGphone/files/emotion/magic/1788303168490637619/1788303168490637619.zip
+    }
+
+    private static final Map<File, Set<String>> sTypeInSpeDir;
+    private static final String[] SpeDir = new String[] { "qqmusic/song" };
+    private static final String[] SpeType = new String[] { "txt" };
+
+    static {
+        sTypeInSpeDir = new HashMap<File, Set<String>>();
+        if (SpeDir.length != SpeType.length) {
+            Log.e(FileInfo.class.getName(), "SpeDir.length != SpeType.length !");
+        } else {
+            for (int i = 0; i < SpeDir.length; ++i) {
+                File dir = new File(Environment.getExternalStorageDirectory(), SpeDir[i]);
+                Set<String> set = new HashSet<String>();
+                String[] types = SpeType[i].split(",");
+                if (types != null) {
+                    for (String type : types) {
+                        set.add(type);
+                    }
+                }
+                sTypeInSpeDir.put(dir, set);
+            }
+        }
     }
 
     public String filePath = "";
@@ -122,11 +154,27 @@ public class FileInfo {
         return isMaskFile(file.getParentFile());
     }
 
+    private static boolean isTypeInSpeDir(File file) {
+        if (sTypeInSpeDir.containsKey(file.getParentFile())) {
+            if (sTypeInSpeDir.get(file.getParentFile()).contains(getSuffix(file.getName()))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean isMimeTypeAndFilePathValid(String mimeType, String filePath) {
         if (TextUtils.isEmpty(filePath) || TextUtils.isEmpty(mimeType)) {
             return false;
         }
+        if (mimeType.startsWith("image/")) {
+            return false;
+        }
+
         File file = new File(filePath);
+        if (isTypeInSpeDir(file)) {
+            return false;
+        }
         if (!file.isFile() || isMaskFile(file.getParentFile())) {
             return false;
         }
