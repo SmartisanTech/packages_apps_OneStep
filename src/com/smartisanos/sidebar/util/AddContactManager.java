@@ -83,6 +83,7 @@ public class AddContactManager extends DataManager {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent("com.alibaba.android.rimet.ShortCutSelect");
+            intent.putExtra("can_choose_current_user", true);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try{
                 Utils.dismissAllDialog(mContext);
