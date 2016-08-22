@@ -37,7 +37,7 @@ public class BookmarkManager extends DataManager implements IClear {
 
     private BookmarkManager(Context context) {
         mContext = context;
-        HandlerThread thread = new HandlerThread(RecentFileManager.class.getName());
+        HandlerThread thread = new HandlerThread(BookmarkManager.class.getName());
         thread.start();
         mHandler = new BookmarkManagerHandler(thread.getLooper());
         mHandler.obtainMessage(MSG_LIST_BOOKMARK).sendToTarget();

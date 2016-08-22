@@ -29,7 +29,7 @@ public class ContactManager extends DataManager{
     private Handler mHandler;
     private ContactManager(Context context){
         mContext = context;
-        HandlerThread thread = new HandlerThread(RecentFileManager.class.getName());
+        HandlerThread thread = new HandlerThread(ContactManager.class.getName());
         thread.start();
         mHandler = new ContactManagerHandler(thread.getLooper());
         mHandler.obtainMessage(MSG_READ_CONTACTS).sendToTarget();

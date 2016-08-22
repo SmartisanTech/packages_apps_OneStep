@@ -33,7 +33,7 @@ public class OngoingManager extends DataManager {
     private List<OngoingItem> mList = new ArrayList<OngoingItem>();
     private OngoingManager(Context context){
         mContext = context;
-        HandlerThread thread = new HandlerThread(RecentFileManager.class.getName());
+        HandlerThread thread = new HandlerThread(OngoingManager.class.getName());
         thread.start();
         mHandler = new OngoingManagerHandler(thread.getLooper());
         try {
