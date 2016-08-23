@@ -149,14 +149,6 @@ public class ContactListAdapter extends DragEventAdapter {
                 return false;
             }
         });
-
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ViewHolder vh = (ViewHolder) v.getTag();
-                vh.mItem.openUI(mContext);
-            }
-        });
         return holder.view;
     }
 

@@ -309,19 +309,8 @@ public class SideView extends RelativeLayout {
             if (view == null || view.getTag() == null) {
                 return;
             }
-            final View v = view;
-            AnimTimeLine timeLine = shakeIconAnim(view);
-            timeLine.setAnimListener(new AnimListener() {
-                @Override
-                public void onStart() {
-                }
-
-                @Override
-                public void onComplete(int type) {
-                    v.setTranslationX(0);
-                }
-            });
-            timeLine.start();
+            ContactItem ci = (ContactItem) mContactAdapter.getItem(position);
+            ci.openUI(mContext);
         }
     };
 
