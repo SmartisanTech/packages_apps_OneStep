@@ -107,7 +107,7 @@ public class OngoingAdapter extends DragEventAdapter {
             @Override
             public void onClick(View v) {
                 ViewHolder vh = (ViewHolder) v.getTag();
-                vh.item.start(mContext, null);
+                vh.item.openUI(mContext);
             }
         });
         return ret;

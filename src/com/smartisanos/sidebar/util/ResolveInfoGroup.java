@@ -251,6 +251,12 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
         return false;
     }
 
+    @Override
+    public boolean openUI(Context context) {
+        // don't support this action
+        return false;
+    }
+
     public static ResolveInfoGroup fromData(Context context, String pkgName, String componentNames){
         ResolveInfoGroup rig = new ResolveInfoGroup(context);
         String[] names = componentNames.split("\\|");

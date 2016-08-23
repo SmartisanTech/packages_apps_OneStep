@@ -72,6 +72,13 @@ public class DingDingContact extends ContactItem {
         return false;
     }
 
+
+    @Override
+    public boolean openUI(Context context) {
+        //TODO need dingding support
+        return false;
+    }
+
     @Override
     public void save() {
         DatabaseHelper.getInstance(mContext).update(this);

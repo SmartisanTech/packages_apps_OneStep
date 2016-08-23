@@ -8,4 +8,5 @@ public interface SidebarItem {
     void delete();
     boolean acceptDragEvent(Context context, DragEvent event);
     boolean handleDragEvent(Context context, DragEvent event);
+    boolean openUI(Context context);
 }

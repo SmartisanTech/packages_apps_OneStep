@@ -87,6 +87,22 @@ public class MailContact extends ContactItem {
     }
 
     @Override
+    public boolean openUI(Context context) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setData(Uri.parse("mailto:" + mMailAddress));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setComponent(COMP_NAME);
+
+        try {
+            mContext.startActivity(intent);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
     public void save() {
         MailDatabaseHelper.getInstance(mContext).update(this);
     }

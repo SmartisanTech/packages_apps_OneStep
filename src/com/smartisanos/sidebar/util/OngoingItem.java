@@ -146,6 +146,18 @@ public class OngoingItem implements SidebarItem {
         }
     }
 
+    @Override
+    public boolean openUI(Context context) {
+        Intent realIntent = new Intent();
+        realIntent.setComponent(mName);
+        realIntent.putExtra("token", mToken);
+        realIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+                | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        context.startActivity(realIntent);
+        return true;
+    }
+
     public boolean isSameItem(ComponentName name, int token) {
         return mToken == token && mName.equals(name);
     }
@@ -166,18 +178,5 @@ public class OngoingItem implements SidebarItem {
             realIntent.putExtra(Intent.EXTRA_INTENT, extraIntent);
         }
         context.sendBroadcast(realIntent);
-    }
-
-    public void start(Context context, Intent extraIntent){
-        Intent realIntent = new Intent();
-        realIntent.setComponent(mName);
-        realIntent.putExtra("token", mToken);
-        realIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-                | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        if(extraIntent != null){
-            realIntent.putExtra(Intent.EXTRA_INTENT, extraIntent);
-        }
-        context.startActivity(realIntent);
     }
 }

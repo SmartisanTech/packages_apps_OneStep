@@ -89,6 +89,19 @@ public class MmsContact extends ContactItem {
     }
 
     @Override
+    public boolean openUI(Context context) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + mPhoneNumber));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            // NA
+        }
+        return false;
+    }
+
+    @Override
     public void save() {
         MmsDatabaseHelper.getInstance(context).update(this);
     }
