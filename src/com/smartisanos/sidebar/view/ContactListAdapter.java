@@ -10,7 +10,6 @@ import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.ContactManager;
 import com.smartisanos.sidebar.util.LOG;
-import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 
 import android.content.Context;
@@ -44,7 +43,7 @@ public class ContactListAdapter extends DragEventAdapter {
         mManager = ContactManager.getInstance(mContext);
         mContacts = mManager.getContactList();
         mAcceptableContacts.addAll(mContacts);
-        mManager.addListener(new RecentUpdateListener() {
+        mManager.addListener(new ContactManager.RecentUpdateListener() {
             @Override
             public void onUpdate() {
                 mHandler.post(new Runnable(){

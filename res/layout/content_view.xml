@@ -11,8 +11,6 @@
         android:visibility="invisible"/>
     <include layout="@layout/clipboard_view_group"
         android:visibility="invisible"/>
-    <include layout="@layout/additem_view_group"
-        android:visibility="invisible"/>
     <include layout="@layout/bookmark_view_group"
         android:visibility="gone"/>
 </com.smartisanos.sidebar.view.ContentView>

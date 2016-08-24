@@ -31,13 +31,11 @@ public class ContentView extends RelativeLayout {
         PHOTO,
         FILE,
         CLIPBOARD,
-        ADDTOSIDEBAR,
     }
 
     private RecentPhotoViewGroup mRecentPhotoViewGroup;
     private RecentFileViewGroup mRecentFileViewGroup;
     private ClipboardViewGroup mClipboardViewGroup;
-    private AddItemViewGroup mAddItemViewGroup;
 
     private ContentType mCurType = ContentType.NONE;
 
@@ -101,12 +99,10 @@ public class ContentView extends RelativeLayout {
         mRecentFileViewGroup.setContentView(this);
         mClipboardViewGroup = (ClipboardViewGroup)findViewById(R.id.clipboard_view_group);
         mClipboardViewGroup.setContentView(this);
-        mAddItemViewGroup = (AddItemViewGroup) findViewById(R.id.additem_view_group);
 
         mMapTypeToView.put(ContentType.PHOTO, mRecentPhotoViewGroup);
         mMapTypeToView.put(ContentType.FILE, mRecentFileViewGroup);
         mMapTypeToView.put(ContentType.CLIPBOARD, mClipboardViewGroup);
-        mMapTypeToView.put(ContentType.ADDTOSIDEBAR, mAddItemViewGroup);
     }
 
     @Override

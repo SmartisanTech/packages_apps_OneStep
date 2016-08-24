@@ -180,13 +180,15 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         }
     }
 
-    public void delete(ResolveInfoGroup rig){
-        for(int i = 0; i < mList.size(); ++ i){
-            if(mList.get(i).equals(rig)){
-                mList.remove(i);
-                notifyUpdate();
-                mHandler.obtainMessage(MSG_DELETE, rig).sendToTarget();
-                return;
+    public void delete(ResolveInfoGroup rig) {
+        synchronized (mListeners) {
+            for (int i = 0; i < mList.size(); ++i) {
+                if (mList.get(i).equals(rig)) {
+                    mList.remove(i);
+                    notifyUpdate();
+                    mHandler.obtainMessage(MSG_DELETE, rig).sendToTarget();
+                    return;
+                }
             }
         }
     }
@@ -212,6 +214,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
                 }
                 rig.setIndex(maxIndex + 1);
             }
+            rig.isNewAdd = true;
             mList.add(0, rig);
         }
         mHandler.obtainMessage(MSG_SAVE, rig).sendToTarget();

@@ -21,4 +21,11 @@
     <dimen name="float_text_size">13dp</dimen>
     <dimen name="share_item_icon_offset_x">3dp</dimen>
     <dimen name="share_item_icon_offset_y">3dp</dimen>
+    <dimen name="item_block_gap">5dip</dimen>
+    <dimen name="setting_global_marginTop">9dp</dimen>
+    <dimen name="setting_global_marginBottom">9dp</dimen>
+    
+    <dimen name="icon_settings_icon_margin_left">20dip</dimen>
+    <dimen name="icon_settings_author_margin_left">6dip</dimen>
+    <dimen name="icon_settings_author_margin_right">27dip</dimen>    
 </resources>

@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
+import com.smartisanos.sidebar.SidebarStatus;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
@@ -57,6 +58,10 @@ public class SidebarRootView extends FrameLayout {
     protected void onFinishInflate() {
         mSideView = (SideView) findViewById(R.id.sidebar);
         mTrash = new Trash(mContext, (ImageView) findViewById(R.id.trash_with_shadow), (ImageView) findViewById(R.id.trash_foreground));
+    }
+
+    public void requestStatus(SidebarStatus status) {
+        mSideView.requestStatus(status);
     }
 
     public Trash getTrash() {

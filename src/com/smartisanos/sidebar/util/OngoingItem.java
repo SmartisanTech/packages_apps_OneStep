@@ -185,4 +185,14 @@ public class OngoingItem implements SidebarItem {
         }
         context.sendBroadcast(realIntent);
     }
+
+    @Override
+    public void setIndex(int index) {
+        // NA
+    }
+
+    @Override
+    public int getIndex() {
+        return 0;
+    }
 }

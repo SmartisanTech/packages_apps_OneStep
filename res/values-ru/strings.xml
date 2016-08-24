@@ -9,7 +9,6 @@
     <string name="title_file">Последние файлы</string>
     <string name="title_clipboard">Последние тексты в будере обмене</string>
     <string name="title_bookmark">Последняя закладка</string>
-    <string name="add_contact_shortcut">Кликать добавить ярлык контакта</string>
     <string name="add_application_shortcut">Кликать добавить ярлык приложения</string>
     <string name="add_contact_dingding">Контакт Dingding</string>
     <string name="add_contact_wechat">Контакт Wechat</string>
@@ -23,7 +22,7 @@
     <string name="clear">Очистить</string>
     <string name="add_wechat_hint">Входив в Wechat, на странице детали друзьей кликать чтобы "добавить друга домой"</string>
 
-    <string name="clipboard_fulltext_back">назад</string>
+    <string name="back_text">назад</string>
 
     <!-- uninstall -->
     <string name="uninstall_app_dialog_title">Уведомление</string>

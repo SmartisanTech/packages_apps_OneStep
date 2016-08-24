@@ -9,7 +9,6 @@
     <string name="title_file">최근 열어본 파일</string>
     <string name="title_clipboard">최근 잘라내고 복사한 글자</string>
     <string name="title_bookmark">최근 책갈피</string>
-    <string name="add_contact_shortcut">클릭하여 연락처 단축 아이콘 추가 </string>
     <string name="add_application_shortcut">클릭하여 응용 프로그램 단축 아이콘 추가</string>
     <string name="add_contact_dingding">Ding Talk 연락처</string>
     <string name="add_contact_wechat">Wechat 연락처</string>
@@ -23,7 +22,7 @@
     <string name="clear">삭제</string>
     <string name="add_wechat_hint">Wechat 접속，친한 친구 카테고리에서 우측 상단 3점의 그림 클릭，친한 친구 선택“바탕화면에 추가”</string>
 
-    <string name="clipboard_fulltext_back">돌아가기</string>
+    <string name="back_text">돌아가기</string>
 
     <!-- uninstall -->
     <string name="uninstall_app_dialog_title">알림</string>

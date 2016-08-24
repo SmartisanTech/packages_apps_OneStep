@@ -12,7 +12,6 @@ import com.smartisanos.sidebar.util.ImageInfo;
 import com.smartisanos.sidebar.util.ImageLoader;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
-import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 
 import android.content.ActivityNotFoundException;
@@ -53,7 +52,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
         int maxPhotoSize = mContext.getResources().getDimensionPixelSize(R.dimen.recent_photo_size);
         mImageLoader = new ImageLoader(maxPhotoSize);
         mList = mPhotoManager.getImageList();
-        mPhotoManager.addListener(new RecentUpdateListener() {
+        mPhotoManager.addListener(new RecentPhotoManager.RecentUpdateListener() {
             @Override
             public void onUpdate() {
                 mHandler.post(new Runnable(){

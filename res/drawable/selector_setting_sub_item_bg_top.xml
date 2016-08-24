@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:smartisanos="http://schemas.android.com/apk/res/smartisanos">
+    <item android:state_focused="false" android:state_pressed="false" android:drawable="@smartisanos:drawable/sub_item_back_ground_top" />
+    <item android:state_pressed="true" android:state_enabled="true" android:drawable="@smartisanos:drawable/sub_item_back_ground_top_highlight" />
+    <item android:state_focused="true" android:state_enabled="true" android:drawable="@smartisanos:drawable/sub_item_back_ground_top_highlight" />
+    <item android:state_enabled="false" android:drawable="@smartisanos:drawable/sub_item_back_ground_top_disabled" />
+</selector>

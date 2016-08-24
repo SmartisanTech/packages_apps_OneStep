@@ -9,7 +9,6 @@
     <string name="title_file">最近接收和處理的文件</string>
     <string name="title_clipboard">最近剪切和複製的文字</string>
     <string name="title_bookmark">最近書簽</string>
-    <string name="add_contact_shortcut">點擊添加聯絡人快捷方式</string>
     <string name="add_application_shortcut">點擊添加應用快捷方式</string>
     <string name="add_contact_dingding">釘釘聯絡人</string>
     <string name="add_contact_wechat">微信聯絡人</string>
@@ -23,7 +22,7 @@
     <string name="clear">清空</string>
     <string name="add_wechat_hint">進入微信，在微信好友詳情界面點擊右上角三點圖示，選擇將好友“添加到桌面”</string>
 
-    <string name="clipboard_fulltext_back">返回</string>
+    <string name="back_text">返回</string>
 
     <!-- uninstall -->
     <string name="uninstall_app_dialog_title">提示</string>

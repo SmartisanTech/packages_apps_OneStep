@@ -20,7 +20,6 @@ import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentFileManager;
-import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 
 public class RecentFileAdapter extends BaseAdapter {
@@ -40,7 +39,7 @@ public class RecentFileAdapter extends BaseAdapter {
         mFileInfoList = mFileManager.getFileList();
         updateDataList();
         mHandler = new Handler(Looper.getMainLooper());
-        mFileManager.addListener(new RecentUpdateListener() {
+        mFileManager.addListener(new RecentFileManager.RecentUpdateListener() {
             @Override
             public void onUpdate() {
                 mHandler.post(new Runnable() {

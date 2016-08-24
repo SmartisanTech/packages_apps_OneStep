@@ -16,7 +16,6 @@ import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentClipManager;
-import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class ClipboardAdapter extends BaseAdapter{
         mCopyHistoryItemList = mClipManager.getCopyList();
         updateDataList();
         mHandler = new Handler(Looper.getMainLooper());
-        mClipManager.addListener(new RecentUpdateListener(){
+        mClipManager.addListener(new RecentClipManager.RecentUpdateListener(){
             @Override
             public void onUpdate() {
                 mHandler.post(new Runnable(){

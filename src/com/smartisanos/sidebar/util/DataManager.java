@@ -18,4 +18,9 @@ public abstract class DataManager {
             lis.onUpdate();
         }
     }
+
+    public interface RecentUpdateListener {
+        void onUpdate();
+    }
+
 }

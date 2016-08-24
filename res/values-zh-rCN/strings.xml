@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
+    <string name="app_name">神奇拖拽</string>
     <string name="topbar_photo">图片</string>
     <string name="topbar_file">文件</string>
     <string name="topbar_clipboard">剪贴板</string>
@@ -9,7 +10,6 @@
     <string name="title_file">近期的文件</string>
     <string name="title_clipboard">近期复制或剪切过的文字</string>
     <string name="title_bookmark">最近书签</string>
-    <string name="add_contact_shortcut">点击添加联系人快捷方式</string>
     <string name="add_application_shortcut">点击添加应用快捷方式</string>
     <string name="add_contact_dingding">钉钉联系人</string>
     <string name="add_contact_wechat">微信联系人</string>
@@ -23,7 +23,7 @@
     <string name="clear">清空</string>
     <string name="add_wechat_hint">进入微信，在微信好友详情界面点击右上角三点图标，选择将好友“添加到桌面”</string>
 
-    <string name="clipboard_fulltext_back">返回</string>
+    <string name="back_text">返回</string>
 
     <!-- uninstall -->
     <string name="uninstall_app_dialog_title">提示</string>
@@ -65,4 +65,6 @@
     <string name="date_label_month_November">十一月</string>
     <string name="date_label_month_December">十二月</string>
     <string name="list_view_look_more">查看更多</string>
+    <string name="add_app_to_sidebar">添加边栏应用</string>
+    <string name="add_share_to_sidebar">添加拖拽分享</string>
 </resources>

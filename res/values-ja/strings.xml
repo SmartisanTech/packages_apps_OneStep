@@ -23,7 +23,7 @@
     <string name="clear">消去</string>
     <string name="add_wechat_hint">WeChatを開き友人詳細ページの左上の三角アイコンから「ホーム画面に追加」を選択</string>
 
-    <string name="clipboard_fulltext_back">戻る</string>
+    <string name="back_text">戻る</string>
 
     <!-- uninstall -->
     <string name="uninstall_app_dialog_title">ヒント</string>

@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.smartisanos.sidebar.util.BookmarkManager;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.LOG;
-import com.smartisanos.sidebar.util.RecentUpdateListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +43,7 @@ public class BookmarkAdapter extends BaseAdapter {
         notifyEmpty();
     }
 
-    private RecentUpdateListener mUpdateListener = new RecentUpdateListener() {
+    private BookmarkManager.RecentUpdateListener mUpdateListener = new BookmarkManager.RecentUpdateListener() {
         @Override
         public void onUpdate() {
             mHandler.post(new Runnable() {

@@ -41,10 +41,10 @@ public class AddContactManager extends DataManager {
     private AddContactManager(Context context){
         mContext = context;
         mMapPackageToItem = new HashMap<AddContactItem, String>();
-        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_dingding, R.string.add_contact_dingding, mDingDingListener), DingDingContact.PKG_NAME);
-        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_mms, R.string.add_contact_mms, mMmsListener), MmsContact.PKG_NAME);
-        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_mail, R.string.add_contact_mail, mMailListener), MailContact.PKG_NAME);
-        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_wechat, R.string.add_contact_wechat, mWechatListener), WechatContact.PKG_NAME);
+        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_add_ding, R.string.add_contact_dingding, mDingDingListener), DingDingContact.PKG_NAME);
+        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_add_sms, R.string.add_contact_mms, mMmsListener), MmsContact.PKG_NAME);
+        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_add_mail, R.string.add_contact_mail, mMailListener), MailContact.PKG_NAME);
+        mMapPackageToItem.put(new AddContactItem(R.drawable.icon_add_wechat, R.string.add_contact_wechat, mWechatListener), WechatContact.PKG_NAME);
         updateData();
     }
 
@@ -97,7 +97,7 @@ public class AddContactManager extends DataManager {
     private View.OnClickListener mWechatListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
             builder.setView(R.layout.wechat_hint)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(android.R.string.ok,
@@ -119,8 +119,6 @@ public class AddContactManager extends DataManager {
                                 }
                             });
             AlertDialog dialog = builder.create();
-            dialog.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
-            dialog.getWindow().getAttributes().token = SidebarController.getInstance(v.getContext()).getSidebarRootView().getWindowToken();
             dialog.show();
         }
     };

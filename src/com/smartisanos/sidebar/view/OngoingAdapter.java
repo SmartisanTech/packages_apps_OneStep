@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.util.OngoingItem;
 import com.smartisanos.sidebar.util.OngoingManager;
-import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 
 public class OngoingAdapter extends DragEventAdapter {
@@ -33,7 +32,7 @@ public class OngoingAdapter extends DragEventAdapter {
         mList = mManager.getList();
         mAccpetableList.addAll(mList);
         mHandler = new Handler(Looper.getMainLooper());
-        mManager.addListener(new RecentUpdateListener() {
+        mManager.addListener(new OngoingManager.RecentUpdateListener() {
             @Override
             public void onUpdate() {
                 mHandler.post(new Runnable() {

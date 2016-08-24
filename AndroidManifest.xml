@@ -142,6 +142,7 @@
 
     <application
         android:name="com.smartisanos.sidebar.SidebarApplication"
+        android:icon="@drawable/info"
         android:persistent="true"
         android:supportsRtl="true"
         android:allowClearUserData="false"
@@ -205,5 +206,31 @@
                 <action android:name="android.intent.action.ACTIVITY_RESUMED" />
             </intent-filter>
         </receiver>
+        <activity
+            android:name=".setting.SettingActivity"
+            android:icon="@drawable/setting"
+            android:theme="@style/SettingTheme"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:excludeFromRecents="true"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".setting.AddApplicationActivity"
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"
+            android:excludeFromRecents="true" >
+        </activity>
+        <activity
+            android:name=".setting.AddResolveInfoGroupActivtiy"
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"
+            android:excludeFromRecents="true" >
+        </activity>
     </application>
 </manifest>

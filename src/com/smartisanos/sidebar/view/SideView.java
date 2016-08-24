@@ -2,6 +2,7 @@ package com.smartisanos.sidebar.view;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -19,26 +20,24 @@ import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
+import com.smartisanos.sidebar.SidebarStatus;
+import com.smartisanos.sidebar.util.AppItem;
 import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
-import com.smartisanos.sidebar.util.anim.Anim;
-import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
-import com.smartisanos.sidebar.util.anim.AnimTimeLine;
-import com.smartisanos.sidebar.util.anim.Vector3f;
-import com.smartisanos.sidebar.view.ContentView.ContentType;
 
 public class SideView extends RelativeLayout {
     private static final LOG log = LOG.getInstance(SideView.class);
 
     private View mExitAndAdd;
     private View mLeftShadow, mRightShadow;
-    private ImageView mExit, mAdd;
+    private ImageView mExit, mSetting;
 
-    private SidebarListView mOngoingList, mShareList, mContactList;
+    private SidebarListView mOngoingList, mAppList, mContactList;
     private SidebarListView mOngoingListFake, mShareListFake, mContactListFake;
 
+    private AppListAdapter mAppAdapter;
     private ResolveInfoListAdapter mResolveAdapter;
     private ScrollView mScrollView;
 
@@ -106,25 +105,15 @@ public class SideView extends RelativeLayout {
             }
         });
 
-        mAdd = (ImageView) findViewById(R.id.add);
-        mAdd.setOnClickListener(new View.OnClickListener() {
+        mSetting = (ImageView) findViewById(R.id.setting);
+        mSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!AnimStatusManager.getInstance().canShowContentView()) {
-                    AnimStatusManager.getInstance().dumpStatus();
-                    return;
-                }
-                if (mAddButtonRotateAnim != null) {
-                    return;
-                }
-                SidebarController sc = SidebarController.getInstance(mContext);
-                if(sc.getCurrentContentType() == ContentType.NONE){
-                    sc.dimTopView();
-                    sc.showContent(ContentType.ADDTOSIDEBAR);
-                }else if(sc.getCurrentContentType() == ContentType.ADDTOSIDEBAR){
-                    sc.resumeTopView();
-                    sc.dismissContent(true);
-                }
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setPackage(mContext.getPackageName());// ourself
+                mContext.startActivity(intent);
             }
         });
 
@@ -159,20 +148,29 @@ public class SideView extends RelativeLayout {
         mContactList.setFake(mContactListFake);
 
         //resolve
-        mShareList = (SidebarListView) findViewById(R.id.sharelist);
-        mShareList.setSideView(this);
-        mResolveAdapter = new ResolveInfoListAdapter(mContext);
-        mShareList.setAdapter(mResolveAdapter);
-        mShareList.setOnItemClickListener(mShareItemOnClickListener);
+        mAppList = (SidebarListView) findViewById(R.id.applist);
+        mAppList.setSideView(this);
+        mAppAdapter = new AppListAdapter(mContext);
+        mAppList.setAdapter(mAppAdapter);
+        mAppList.setOnItemClickListener(mAppItemOnClickListener);
 
-        mShareListFake = (SidebarListView) findViewById(R.id.sharelist_fake);
+        mShareListFake = (SidebarListView) findViewById(R.id.sharelist);
         mShareListFake.setSideView(this);
         mShareListFake.setIsFake(true);
-        mShareListFake.setCanAcceptDrag(false);
-        mShareListFake.setAdapter(new ResolveInfoListAdapter(mContext));
+        mShareListFake.setAdapter(mResolveAdapter = new ResolveInfoListAdapter(mContext));
 
-        mShareList.setFake(mShareListFake);
+        mAppList.setFake(mShareListFake);
         mScrollView = (ScrollView) findViewById(R.id.sideview_scroll_list);
+    }
+
+    public void requestStatus(SidebarStatus status) {
+        if(status == SidebarStatus.NORMAL) {
+            mAppList.setVisibility(View.VISIBLE);
+            mShareListFake.setVisibility(View.INVISIBLE);
+        } else {
+            mAppList.setVisibility(View.INVISIBLE);
+            mShareListFake.setVisibility(View.VISIBLE);
+        }
     }
 
     public View getShadowLineView() {
@@ -200,7 +198,7 @@ public class SideView extends RelativeLayout {
 
     public boolean someListIsEmpty() {
         if (mContactList != null && mContactList.getAdapter() != null && mContactList.getAdapter().getCount() > 0
-                && mShareList != null && mShareList.getAdapter() != null && mShareList.getAdapter().getCount() > 0) {
+                && mAppList != null && mAppList.getAdapter() != null && mAppList.getAdapter().getCount() > 0) {
             return false;
         }
         return true;
@@ -214,19 +212,19 @@ public class SideView extends RelativeLayout {
         case DragEvent.ACTION_DRAG_STARTED:
             mOngoingList.onDragStart(event);
             mContactList.onDragStart(event);
-            mShareList.onDragStart(event);
+            mAppList.onDragStart(event);
             return super.dispatchDragEvent(event);
         case DragEvent.ACTION_DRAG_ENDED:
             boolean ret = super.dispatchDragEvent(event);
             mOngoingList.onDragEnd();
             mContactList.onDragEnd();
-            mShareList.onDragEnd();
+            mAppList.onDragEnd();
             return ret;
         }
         return super.dispatchDragEvent(event);
     }
 
-    public ResolveInfoListAdapter getAppListAdapter() {
+    public ResolveInfoListAdapter getResolveListAdapter() {
         return mResolveAdapter;
     }
 
@@ -255,26 +253,12 @@ public class SideView extends RelativeLayout {
         mResolveAdapter.notifyDataSetChanged();
     }
 
-    private AdapterView.OnItemClickListener mShareItemOnClickListener = new AdapterView.OnItemClickListener() {
+    private AdapterView.OnItemClickListener mAppItemOnClickListener = new AdapterView.OnItemClickListener() {
 
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if (view == null || view.getTag() == null) {
-                return;
-            }
-            final View v = view;
-            AnimTimeLine timeLine = shakeIconAnim(v);
-            timeLine.setAnimListener(new AnimListener() {
-                @Override
-                public void onStart() {
-                }
-
-                @Override
-                public void onComplete(int type) {
-                    v.setTranslationX(0);
-                }
-            });
-            timeLine.start();
+            AppItem ai = (AppItem) mAppAdapter.getItem(position);
+            ai.openUI(mContext);
         }
     };
 
@@ -309,7 +293,7 @@ public class SideView extends RelativeLayout {
             }
         }
         if (y > Constants.WindowHeight - touchArea) {
-            if (scrollViewRect.bottom < (mShareList.getHeight() + mContactList.getHeight())) {
+            if (scrollViewRect.bottom < (mAppList.getHeight() + mContactList.getHeight())) {
                 return AREA_TYPE_BOTTOM;
             }
         }
@@ -391,64 +375,11 @@ public class SideView extends RelativeLayout {
     }
 
     public void restoreView() {
-        mShareList.onDragEnd();
-        mContactList.onDragEnd();
         restoreListItemView(mContactList);
-        restoreListItemView(mShareList);
-        mAdd.setRotation(0);
+        restoreListItemView(mAppList);
     }
 
-    private Anim mAddButtonRotateAnim = null;
-    public void clickAddButtonAnim(boolean isLeft, boolean isEnter, final Runnable taskForComplete) {
-        if (mAdd == null) {
-            return;
-        }
-        if (mAddButtonRotateAnim != null) {
-            mAddButtonRotateAnim.cancel();
-        }
-        int from = 0;
-        int to = 0;
-        if (isLeft) {
-            if (isEnter) {
-                to = 45;
-            } else {
-                from = 45;
-            }
-        } else {
-            if (isEnter) {
-                to = -45;
-            } else {
-                from = -45;
-            }
-        }
-        int width = mAdd.getWidth();
-        int height = mAdd.getHeight();
-        mAdd.setPivotX(width / 2);
-        mAdd.setPivotY(height / 2);
-        mAdd.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        mAdd.setDrawingCacheEnabled(false);
-
-        mAddButtonRotateAnim = new Anim(mAdd, Anim.ROTATE, 300, Anim.CUBIC_OUT, new Vector3f(0, 0, from), new Vector3f(0, 0, to));
-        mAddButtonRotateAnim.setListener(new AnimListener() {
-            @Override
-            public void onStart() {
-            }
-
-            @Override
-            public void onComplete(int type) {
-                if (mAddButtonRotateAnim == null) {
-                    return;
-                }
-                mAdd.setRotation(mAddButtonRotateAnim.getTo().z);
-                if (taskForComplete != null) {
-                    taskForComplete.run();
-                }
-                mAddButtonRotateAnim = null;
-            }
-        });
-        mAddButtonRotateAnim.start();
-    }
-
+    /**
     private AnimTimeLine shakeIconAnim(View view) {
         AnimTimeLine timeLine = new AnimTimeLine();
         int time = 70;
@@ -471,6 +402,7 @@ public class SideView extends RelativeLayout {
         timeLine.addAnim(anim6);
         return timeLine;
     }
+    **/
 
     public FrameLayout getDarkBgView() {
         return mDarkBgView;

@@ -14,6 +14,9 @@ import android.app.ActivityManagerNative;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
@@ -290,5 +293,9 @@ public class Utils {
 //            }
         }
         return label;
+    }
+
+    public static List<ResolveInfo> getAllAppsInfo(Context context) {
+        return context.getPackageManager().queryIntentActivities(Intent.makeMainActivity(null), 0);
     }
 }

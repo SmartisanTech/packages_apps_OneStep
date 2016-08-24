@@ -10,29 +10,28 @@
         android:layout_height="wrap_content">
         <LinearLayout
             android:orientation="vertical"
+            android:layout_marginBottom="48dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <com.smartisanos.sidebar.view.SidebarListView
                 android:id="@+id/ongoinglist_fake"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:visibility="invisible"/>
             <com.smartisanos.sidebar.view.SidebarListView
                 android:id="@+id/contactlist_fake"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:visibility="invisible"/>
             <com.smartisanos.sidebar.view.SidebarListView
-                android:id="@+id/sharelist_fake"
+                android:id="@+id/sharelist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="48dp"/>
+                android:visibility="invisible"/>
         </LinearLayout>
         <LinearLayout
             android:orientation="vertical"
+            android:layout_marginBottom="48dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <com.smartisanos.sidebar.view.SidebarListView
@@ -44,12 +43,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <com.smartisanos.sidebar.view.SidebarListView
-                android:id="@+id/sharelist"
+                android:id="@+id/applist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="48dp"/>
         </LinearLayout>
     </FrameLayout>
 </com.smartisanos.sidebar.view.DragScrollView>

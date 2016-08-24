@@ -3,9 +3,6 @@ package com.smartisanos.sidebar.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -294,7 +291,7 @@ public class SidebarListView extends ListView {
 
     private static final int ANIM_DURA = 150;
 
-    private void showAnimWhenIn(final AnimatorListener listener) {
+    private void showAnimWhenIn() {
         getRootView().getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -313,9 +310,6 @@ public class SidebarListView extends ListView {
                                     .setDuration(ANIM_DURA)
                                     .setInterpolator(
                                             new DecelerateInterpolator(1.5f));
-                            if (i == childs.size() - 1) {
-                                anim.setListener(listener);
-                            }
                             anim.setStartDelay(animDelay * i + 200);
                             anim.start();
                         }
@@ -324,32 +318,24 @@ public class SidebarListView extends ListView {
     }
 
     public void onDragStart(DragEvent event) {
-        if(mDragEvent != null){
+        if (mDragEvent != null) {
             mDragEvent.recycle();
             mDragEvent = null;
         }
         mDragEvent = DragEvent.obtain(event);
         if (mAdapter != null) {
-            mAdapter.onDragStart(mDragEvent);
-            if(mFake == null){
+            if (mFake == null) {
                 // no anim!;
-                return ;
+                mAdapter.onDragStart(mDragEvent);
+                return;
             }
-            showAnimWhenIn(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    if (mDragEvent != null) {
-                        mFake.onDragStart(mDragEvent);
-                    }
-                }
-            });
+            // we dismiss
+            dismiss();
+
+            // fake filter and show
+            mFake.onDragStart(mDragEvent);
+            mFake.showAnimWhenIn();
             mFake.setVisibility(View.VISIBLE);
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    mFake.dismiss(mDragEvent);
-                }
-            });
         }
     }
 
@@ -359,29 +345,21 @@ public class SidebarListView extends ListView {
             mDragEvent = null;
         }
         if (mAdapter != null) {
-            mAdapter.onDragEnd();
-            if(mFake == null){
+            if (mFake == null) {
                 // no anim
-                return ;
+                mAdapter.onDragEnd();
+                return;
             }
+            // fake dismiss
+            mFake.dismiss();
 
-            showAnimWhenIn(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mFake.onDragEnd();
-                }
-            });
-            mFake.setVisibility(View.VISIBLE);
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    mFake.dismiss(null);
-                }
-            });
+            // we show
+            showAnimWhenIn();
+            setVisibility(View.VISIBLE);
         }
     }
 
-    public void dismiss(final DragEvent event) {
+    public void dismiss() {
         final long delayStep = 15;
         final List<View> childs = getDisplayedChildViews();
         AnimTimeLine timeLine = new AnimTimeLine();
@@ -414,7 +392,7 @@ public class SidebarListView extends ListView {
 
             @Override
             public void onComplete(int type) {
-                setVisibility(View.GONE);
+                setVisibility(View.INVISIBLE);
                 for (View child : childs) {
                     child.setLayerType(View.LAYER_TYPE_NONE, null);
                     child.setDrawingCacheEnabled(true);
@@ -424,7 +402,7 @@ public class SidebarListView extends ListView {
             }
         });
         if (emptyAnimList) {
-            setVisibility(View.GONE);
+            setVisibility(View.INVISIBLE);
         } else {
             timeLine.start();
         }

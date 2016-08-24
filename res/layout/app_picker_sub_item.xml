@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.smartisanos.sidebar.setting.AppPickerSubView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/common_icon_frame_bg"/>
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:adjustViewBounds="true"/>
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/icon"
+        android:layout_centerHorizontal="true"
+        android:padding="9dp"
+        android:textColor="#9a000000"
+        android:textSize="10dp"/>
+    <ImageView
+        android:id="@+id/selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/common_icon_frame_selected"
+        android:visibility="invisible"/>
+</com.smartisanos.sidebar.setting.AppPickerSubView>

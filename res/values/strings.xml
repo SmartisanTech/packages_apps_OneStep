@@ -9,7 +9,6 @@
     <string name="title_file">Recent Files</string>
     <string name="title_clipboard">Recent Clipboard Text</string>
     <string name="title_bookmark">Recent Bookmarks</string>
-    <string name="add_contact_shortcut">Tap to Add Contact"'"s Shortcut</string>
     <string name="add_application_shortcut">Tap to Add App Shortcut</string>
     <string name="add_contact_dingding">Dingding Contact</string>
     <string name="add_contact_wechat">WeChat Contact</string>
@@ -23,7 +22,7 @@
     <string name="clear">Clear</string>
     <string name="add_wechat_hint">Once in WeChat, look at the Details page of a friend and tap the "three dot" icon at the upper right to add a shortcut for that friend to the Launcher</string>
 
-    <string name="clipboard_fulltext_back">Back</string>
+    <string name="back_text">Back</string>
 
     <!-- uninstall -->
     <string name="uninstall_app_dialog_title">Notice</string>
@@ -65,4 +64,6 @@
     <string name="date_label_month_November">November</string>
     <string name="date_label_month_December">十二月</string>
     <string name="list_view_look_more">More</string>
+    <string name="add_app_to_sidebar">Add App To Sidebar</string>
+    <string name="add_share_to_sidebar">Add Share To Sidebar</string>
 </resources>

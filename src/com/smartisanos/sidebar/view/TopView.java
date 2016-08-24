@@ -7,6 +7,7 @@ import java.util.Map;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
+import com.smartisanos.sidebar.SidebarStatus;
 import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.BookmarkManager;
 import com.smartisanos.sidebar.util.Constants;
@@ -16,7 +17,6 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentClipManager;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
-import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
@@ -124,6 +124,14 @@ public class TopView extends FrameLayout {
         mClipManager = RecentClipManager.getInstance(mContext);
 
         mShadowLine = findViewById(R.id.top_view_shadow_line);
+    }
+
+    public void requestStatus(SidebarStatus status) {
+        if (status == SidebarStatus.NORMAL) {
+            resumeToNormal();
+        } else if (status == SidebarStatus.UNNAME) {
+            dimAll();
+        }
     }
 
     private View.OnClickListener mItemOnClickListener = new View.OnClickListener() {
@@ -349,7 +357,6 @@ public class TopView extends FrameLayout {
                     mClipboard.setTranslationY(0);
 
                     setVisibility(View.GONE);
-                    resumeToNormal();
                     mExitAnimTimeLine = null;
                 }
             }

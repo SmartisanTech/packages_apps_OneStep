@@ -46,6 +46,7 @@ public class SidebarController {
     private ContentView mContentView;
 
     private int mSidbarMode = SidebarMode.MODE_LEFT;
+    private SidebarStatus mStatus = SidebarStatus.NORMAL;
 
     private float mRate = 1.0f;
     private int mScreenWidth, mScreenHeight;
@@ -121,6 +122,15 @@ public class SidebarController {
 
     public int getSidebarMode(){
         return mSidbarMode;
+    }
+
+    public void requestStatus(SidebarStatus status) {
+        if (mStatus == status) {
+            return;
+        }
+        mStatus = status;
+        mTopView.requestStatus(mStatus);
+        mSidebarRoot.requestStatus(mStatus);
     }
 
     private void start(){
@@ -322,7 +332,7 @@ public class SidebarController {
 
         @Override
         public void onEnterSidebarModeEnd() throws RemoteException {
-            //TODO
+            // NA
         }
 
         @Override
@@ -337,7 +347,7 @@ public class SidebarController {
 
         @Override
         public void onExitSidebarModeEnd() throws RemoteException {
-            //TODO
+            // NA
         }
 
         @Override

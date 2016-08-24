@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:smartisanos="http://schemas.android.com/apk/res/smartisanos"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/setting_background">
+
+    <smartisanos.widget.Title
+        android:id="@+id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        smartisanos:title="@string/app_name"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar"
+        android:scrollbars="none"
+        android:overScrollMode="always" >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <smartisanos.widget.SettingItemSwitch
+                android:id="@+id/sidebar_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/setting_global_marginTop"
+                android:background="@drawable/selector_setting_sub_item_bg_single"
+                smartisanos:title="@string/app_name" />
+            <LinearLayout
+                android:id="@+id/add_contact_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@id/sidebar_switch"
+                android:layout_marginTop="@dimen/setting_global_marginTop">
+                <smartisanos.widget.SettingItemText
+                    android:id="@+id/add_contact_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_setting_sub_item_bg_single"/>
+                <smartisanos.widget.SettingItemText
+                    android:id="@+id/add_contact_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_setting_sub_item_bg_single"/>
+                <smartisanos.widget.SettingItemText
+                    android:id="@+id/add_contact_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_setting_sub_item_bg_single"/>
+                <smartisanos.widget.SettingItemText
+                    android:id="@+id/add_contact_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selector_setting_sub_item_bg_single"/>
+            </LinearLayout>
+            <smartisanos.widget.SettingItemText
+                android:id="@+id/add_app"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_setting_sub_item_bg_single"
+                android:layout_below="@id/add_contact_group"
+                android:layout_marginTop="@dimen/setting_global_marginTop"/>
+            <smartisanos.widget.SettingItemText
+                android:id="@+id/add_share"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_setting_sub_item_bg_single"
+                android:layout_below="@id/add_app"
+                android:layout_marginTop="@dimen/setting_global_marginTop"/>
+        </RelativeLayout>
+    </ScrollView>
+    <include layout="@layout/title_bar_shadow"/>
+</RelativeLayout>
