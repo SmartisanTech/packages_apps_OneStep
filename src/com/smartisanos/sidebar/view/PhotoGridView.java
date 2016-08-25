@@ -81,14 +81,14 @@ public class PhotoGridView extends GridView {
             int alphaDelay = 0;
             if (isShow) {
                 view.setAlpha(0);
-                from.x = loc00.x - x;
+//                from.x = loc00.x - x;
                 from.y = loc00.y - y;
                 alphaFrom.z = 0;
                 alphaTo.z = 1;
                 moveDelay = i * 5;
                 alphaDelay = moveDelay + 20;
             } else {
-                to.x = loc00.x - x;
+//                to.x = loc00.x - x;
                 to.y = loc00.y - y;
                 alphaFrom.z = 1;
                 alphaTo.z = 0;

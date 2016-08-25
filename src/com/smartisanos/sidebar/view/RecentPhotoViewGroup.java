@@ -145,7 +145,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
             }
             setPivotX(0);
             setPivotY(0);
-            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0.6f, 0.6f), new Vector3f(1, 1));
+            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 0.6f), new Vector3f(0, 1));
             timeLine.addAnim(scaleAnim);
             timeLine.setAnimListener(new AnimListener() {
                 @Override
@@ -173,7 +173,7 @@ public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, Content
             }
             setPivotX(0);
             setPivotY(0);
-            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(0.6f, 0.6f));
+            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 1), new Vector3f(0, 0.6f));
             timeLine.addAnim(scaleAnim);
             timeLine.setAnimListener(new AnimListener() {
                 @Override
