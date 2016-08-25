@@ -4,9 +4,11 @@
     <string name="topbar_photo">画像</string>
     <string name="topbar_file">ファイル</string>
     <string name="topbar_clipboard">クリップボード</string>
+    <string name="topbar_bookmark">ブックマーク</string>
     <string name="title_photo">最近の画像</string>
     <string name="title_file">最近のファイル</string>
     <string name="title_clipboard">最近のクリップボードテキスト</string>
+    <string name="title_bookmark">最近のブックマーク</string>
     <string name="add_contact_shortcut">連絡先ショートカット作成</string>
     <string name="add_application_shortcut">アプリショートカット作成</string>
     <string name="add_contact_dingding">Dingding連絡先</string>
@@ -17,6 +19,7 @@
     <string name="title_confirm_delete_history_photo">履歴のクリアでは画像は削除されません</string>
     <string name="title_confirm_delete_history_file">履歴のクリアではファイルは削除されません</string>
     <string name="title_confirm_delete_history_clipboard">クリップボードをクリアすると復元できません</string>
+    <string name="title_confirm_delete_bookmark">ブックマーク内容をクリアすると復元できません</string>
     <string name="clear">消去</string>
     <string name="add_wechat_hint">WeChatを開き友人詳細ページの左上の三角アイコンから「ホーム画面に追加」を選択</string>
 
@@ -39,4 +42,8 @@
     <string name="pending_cancel">取り消しました</string>
 
     <string name="fail_to_load_image">画像を読み込めませんでした</string>
+    <string name="bookmark_empty_text">ブックマークは空です</string>
+    <string name="bookmark_empty_hint">各アプリで「シェア-ブックマークに追加」をタップするか、リンクコピーで文章や画像をブックマークに追加できます</string>
+    <string name="share_component_name">ブックマークに追加</string>
+    <string name="bookmark_source">ソース:</string>
 </resources>
