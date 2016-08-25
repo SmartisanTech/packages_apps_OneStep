@@ -81,22 +81,23 @@ public class TopView extends FrameLayout {
         mTopbarPhotoIconContentPaddingTop = context.getResources().getDimensionPixelSize(R.dimen.topbar_photo_icon_content_paddingTop);
         mTopbarFileIconContentPaddingTop = context.getResources().getDimensionPixelSize(R.dimen.topbar_file_icon_content_paddingTop);
 
-        this.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                // NA
-            }
-
-            @Override
-            public void onViewAttachedToWindow(View v) {
-                if (mFinishInflated) {
-                    updatePhotoIconContent();
-                    updateFileIconContent();
-                    updateClipIconContent();
-                }
-            }
-        });
+//        this.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+//
+//            @Override
+//            public void onViewDetachedFromWindow(View v) {
+//                // NA
+//            }
+//
+//            @Override
+//            public void onViewAttachedToWindow(View v) {
+//                if (mFinishInflated) {
+//                    updatePhotoIconContent();
+//                    updateFileIconContent();
+//                    updateClipIconContent();
+//                    updateBookmarkIconContent();
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -110,12 +111,19 @@ public class TopView extends FrameLayout {
 
         mPhotos = (TopItemView) findViewById(R.id.photo);
         mPhotos.setText(R.string.topbar_photo);
+        mPhotos.setIconBackground(R.drawable.topbar_photo);
+
         mFile = (TopItemView) findViewById(R.id.file);
         mFile.setText(R.string.topbar_file);
+        mFile.setIconBackground(R.drawable.topbar_file);
+
         mClipboard = (TopItemView) findViewById(R.id.clipboard);
         mClipboard.setText(R.string.topbar_clipboard);
+        mClipboard.setIconBackground(R.drawable.topbar_clipboard);
+
         mBookmark = (TopItemView) findViewById(R.id.bookmark);
         mBookmark.setText(R.string.topbar_bookmark);
+        mBookmark.setIconBackground(R.drawable.topbar_bookmark);
 
         mViewToType = new HashMap<ITopItem, ContentType>();
         mViewToType.put(mLeft, ContentType.NONE);
@@ -133,67 +141,67 @@ public class TopView extends FrameLayout {
         // update icon content
         mPhotos.setIconContentPaddingTop(mTopbarPhotoIconContentPaddingTop);
         mPhotoManager = RecentPhotoManager.getInstance(mContext);
-        mPhotoManager.addListener(new RecentUpdateListener() {
-            @Override
-            public void onUpdate() {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        updatePhotoIconContent();
-                    }
-                });
-            }
-        });
+//        mPhotoManager.addListener(new RecentUpdateListener() {
+//            @Override
+//            public void onUpdate() {
+//                post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        updatePhotoIconContent();
+//                    }
+//                });
+//            }
+//        });
 
         mFile.setIconContentPaddingTop(mTopbarFileIconContentPaddingTop);
         mFileManager = RecentFileManager.getInstance(mContext);
-        mFileManager.addListener(new RecentUpdateListener() {
-            @Override
-            public void onUpdate() {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateFileIconContent();
-                    }
-                });
-            }
-        });
+//        mFileManager.addListener(new RecentUpdateListener() {
+//            @Override
+//            public void onUpdate() {
+//                post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        updateFileIconContent();
+//                    }
+//                });
+//            }
+//        });
 
         mClipManager = RecentClipManager.getInstance(mContext);
-        mClipManager.addListener(new RecentUpdateListener() {
-            @Override
-            public void onUpdate() {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateClipIconContent();
-                    }
-                });
-            }
-        });
+//        mClipManager.addListener(new RecentUpdateListener() {
+//            @Override
+//            public void onUpdate() {
+//                post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        updateClipIconContent();
+//                    }
+//                });
+//            }
+//        });
 
         mBookmarkManager = BookmarkManager.getInstance(mContext);
-        mBookmarkManager.addListener(new RecentUpdateListener() {
-            @Override
-            public void onUpdate() {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateBookmarkIconContent();
-                    }
-                });
-            }
-        });
+//        mBookmarkManager.addListener(new RecentUpdateListener() {
+//            @Override
+//            public void onUpdate() {
+//                post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        updateBookmarkIconContent();
+//                    }
+//                });
+//            }
+//        });
 
-        post(new Runnable() {
-            @Override
-            public void run() {
-                updatePhotoIconContent();
-                updateFileIconContent();
-                updateClipIconContent();
-                updateBookmarkIconContent();
-            }
-        });
+//        post(new Runnable() {
+//            @Override
+//            public void run() {
+//                updatePhotoIconContent();
+//                updateFileIconContent();
+//                updateClipIconContent();
+//                updateBookmarkIconContent();
+//            }
+//        });
         mShadowLine = findViewById(R.id.top_view_shadow_line);
     }
 
@@ -245,48 +253,48 @@ public class TopView extends FrameLayout {
         }
     };
 
-    private void updatePhotoIconContent() {
-        List<ImageInfo> mList = mPhotoManager.getImageList();
-        if (mList.size() > 0) {
-            mPhotos.setIconBackground(R.drawable.topbar_photo);
-            Bitmap bmp = BitmapUtils.getSquareBitmap(mList.get(0).filePath, mTopbarPhotoIconContentSize);
-            if (bmp != null) {
-                mPhotos.setIconContent(bmp);
-            }
-        } else {
-            mPhotos.setIconBackground(R.drawable.topview_photo_default);
-            mPhotos.resetIconContent();
-        }
-    }
+//    private void updatePhotoIconContent() {
+//        List<ImageInfo> mList = mPhotoManager.getImageList();
+//        if (mList.size() > 0) {
+//            mPhotos.setIconBackground(R.drawable.topbar_photo);
+//            Bitmap bmp = BitmapUtils.getSquareBitmap(mList.get(0).filePath, mTopbarPhotoIconContentSize);
+//            if (bmp != null) {
+//                mPhotos.setIconContent(bmp);
+//            }
+//        } else {
+//            mPhotos.setIconBackground(R.drawable.topview_photo_default);
+//            mPhotos.resetIconContent();
+//        }
+//    }
 
-    private void updateFileIconContent() {
-        List<FileInfo> mList = mFileManager.getFileList();
-        if (mList.size() > 0) {
-            mFile.setIconBackground(R.drawable.topbar_file);
-            mFile.setIconContent(mContext.getResources().getDrawable(mList.get(0).getIconId()));
-        }else{
-            mFile.setIconBackground(R.drawable.topview_file_default);
-            mFile.resetIconContent();
-        }
-    }
+//    private void updateFileIconContent() {
+//        List<FileInfo> mList = mFileManager.getFileList();
+//        if (mList.size() > 0) {
+//            mFile.setIconBackground(R.drawable.topbar_file);
+//            mFile.setIconContent(mContext.getResources().getDrawable(mList.get(0).getIconId()));
+//        }else{
+//            mFile.setIconBackground(R.drawable.topview_file_default);
+//            mFile.resetIconContent();
+//        }
+//    }
 
-    private void updateClipIconContent() {
-        List<CopyHistoryItem> list = mClipManager.getCopyList();
-        if (list != null && list.size() > 0) {
-            mClipboard.setIconBackground(R.drawable.topbar_clipboard);
-        } else {
-            mClipboard.setIconBackground(R.drawable.topview_clipboard_default);
-        }
-    }
+//    private void updateClipIconContent() {
+//        List<CopyHistoryItem> list = mClipManager.getCopyList();
+//        if (list != null && list.size() > 0) {
+//            mClipboard.setIconBackground(R.drawable.topbar_clipboard);
+//        } else {
+//            mClipboard.setIconBackground(R.drawable.topview_clipboard_default);
+//        }
+//    }
 
-    private void updateBookmarkIconContent() {
-        boolean isEmpty = mBookmarkManager.getBookmarks().size() == 0;
-        if (isEmpty) {
-            mBookmark.setIconBackground(R.drawable.bookmark_default);
-        } else {
-            mBookmark.setIconBackground(R.drawable.bookmark);
-        }
-    }
+//    private void updateBookmarkIconContent() {
+//        boolean isEmpty = mBookmarkManager.getBookmarks().size() == 0;
+//        if (isEmpty) {
+//            mBookmark.setIconBackground(R.drawable.bookmark_default);
+//        } else {
+//            mBookmark.setIconBackground(R.drawable.topbar_bookmark);
+//        }
+//    }
 
     public void dimAll(){
         AnimTimeLine timeLine = new AnimTimeLine();
