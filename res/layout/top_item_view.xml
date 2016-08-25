@@ -28,18 +28,21 @@
                 android:scaleType="matrix"
                 />
             <LinearLayout
-                android:layout_width="43dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_horizontal"
+                android:layout_centerInParent="true"
                 android:layout_below="@id/icon"
                 >
                 <TextView
                     android:id="@+id/text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:singleLine="true"
                     android:textSize="10dp"
+                    android:maxLines="1"
+                    android:maxWidth="50dp"
+                    android:ellipsize="end"
                     android:textColor="#ccffffff"/>
                 <ImageView
                     android:layout_width="9dp"

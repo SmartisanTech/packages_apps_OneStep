@@ -8,6 +8,7 @@ import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.BookmarkManager;
+import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.ImageInfo;
 import com.smartisanos.sidebar.util.LOG;
@@ -26,6 +27,8 @@ import com.smartisanos.sidebar.view.ContentView.ContentType;
 import android.content.Context;
 import android.content.CopyHistoryItem;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -55,6 +58,7 @@ public class TopView extends FrameLayout {
 
     private boolean mFinishInflated = false;
     private Context mContext;
+    private FrameLayout mDarkBgView;
 
     public TopView(Context context) {
         this(context, null);
@@ -100,7 +104,7 @@ public class TopView extends FrameLayout {
         super.onFinishInflate();
 
         mFinishInflated = true;
-
+        mDarkBgView = (FrameLayout) findViewById(R.id.top_view_dark_bg);
         mLeft = (DimSpaceView) findViewById(R.id.top_dim_view_left);
         mRight = (DimSpaceView) findViewById(R.id.top_dim_view_right);
 
@@ -328,7 +332,7 @@ public class TopView extends FrameLayout {
 
     private AnimTimeLine mEnterAnimTimeLine = null;
 
-    private void doAnimWhenEnter() {
+    private void doAnimWhenEnter(final int bgMode) {
         mShadowLine.setVisibility(View.INVISIBLE);
         int time = 200;
         int height = getHeight();
@@ -386,6 +390,7 @@ public class TopView extends FrameLayout {
                 if (mEnterAnimTimeLine != null) {
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, false);
                     TopView.this.setBackgroundResource(R.drawable.background);
+                    setBgMode(bgMode == SidebarController.BG_MODE_DARK);
                     mPhotos.setAlpha(1);
                     mFile.setAlpha(1);
                     mClipboard.setAlpha(1);
@@ -406,6 +411,7 @@ public class TopView extends FrameLayout {
 
     private void doAnimWhenExit() {
         TopView.this.setBackgroundResource(android.R.color.transparent);
+        mDarkBgView.setBackgroundResource(android.R.color.transparent);
         mShadowLine.setVisibility(View.INVISIBLE);
         int time = 200;
         int height = getHeight();
@@ -462,7 +468,7 @@ public class TopView extends FrameLayout {
         mExitAnimTimeLine.start();
     }
 
-    public void show(boolean show) {
+    public void show(boolean show, final int bgMode) {
         if (show) {
             if (mExitAnimTimeLine != null) {
                 log.error("mExitAnimTimeLine not null");
@@ -475,7 +481,7 @@ public class TopView extends FrameLayout {
                 @Override
                 public void onGlobalLayout() {
                     observer.removeOnGlobalLayoutListener(this);
-                    doAnimWhenEnter();
+                    doAnimWhenEnter(bgMode);
                 }
             });
         } else {
@@ -484,5 +490,18 @@ public class TopView extends FrameLayout {
             }
             doAnimWhenExit();
         }
+    }
+
+    public boolean setBgMode(boolean toDark) {
+        if (mDarkBgView == null) {
+            log.error("mDarkBgView is null");
+            return false;
+        }
+        int color = Constants.SHADOW_BG_COLOR_LIGHT;
+        if (toDark) {
+            color = Constants.SHADOW_BG_COLOR_DARK;
+        }
+        mDarkBgView.setBackgroundColor(color);
+        return true;
     }
 }

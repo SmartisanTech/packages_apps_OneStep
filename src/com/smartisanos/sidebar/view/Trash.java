@@ -5,18 +5,12 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.action.UninstallAction;
+import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimInterpolator;
@@ -59,6 +53,9 @@ public class Trash {
         mTrashHeight        = resources.getInteger(R.integer.trash_height);
         mTrashDisplayHeight = resources.getInteger(R.integer.trash_display_height);
         mTrashFloatUpHeight = resources.getInteger(R.integer.trash_float_up_height);
+
+        mWindowWidth = Constants.WindowWidth;
+        mWindowHeight = Constants.WindowHeight;
     }
 
     public boolean inTrashReactArea(float x, float y) {
@@ -119,29 +116,14 @@ public class Trash {
     public void initTrashView() {
         mTrashStatus = TRASH_HIDE;
         mTrashView.setVisibility(View.GONE);
-        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-        int widthPixels;
-        int heightPixels;
-        if (metrics.heightPixels > metrics.widthPixels) {
-            widthPixels = metrics.widthPixels;
-            heightPixels = metrics.heightPixels;
-        } else {
-            widthPixels = metrics.heightPixels;
-            heightPixels = metrics.widthPixels;
-        }
-        mWindowWidth = widthPixels;
-        mWindowHeight = heightPixels;
 
         int trashViewWidth = mTrashView.getWidth();
         if (trashViewWidth == 0) {
             trashViewWidth = mTrashWidth;
         }
 
-        int locX = widthPixels / 2 - trashViewWidth / 2;
-        int locY = heightPixels;
+        int locX = mWindowWidth / 2 - trashViewWidth / 2;
+        int locY = mWindowHeight;
         mTrashView.setTranslationX(locX);
         mTrashView.setTranslationY(locY);
         mTrashView.setVisibility(View.VISIBLE);

@@ -127,8 +127,13 @@ public class SidebarController {
         updateTopViewWindowBySidebarMode();
         updateContentViewWindowBySidebarMode();
         updateSideViewWindowBySidebarMode();
-        mTopView.show(true);
-        mSidebarRoot.show(true);
+
+        int bgMode = BG_MODE_LIGHT;
+        if (Utils.launcherIsTopActivity(mContext)) {
+            bgMode = BG_MODE_DARK;
+        }
+        mTopView.show(true, bgMode);
+        mSidebarRoot.show(true, bgMode);
     }
 
     public void onEnterAnimComplete() {
@@ -138,8 +143,8 @@ public class SidebarController {
 
     private void stop(){
         AnimStatusManager.getInstance().reset();
-        mTopView.show(false);
-        mSidebarRoot.show(false);
+        mTopView.show(false, 0);
+        mSidebarRoot.show(false, 0);
         dismissContent(false);
         RecentPhotoManager.getInstance(mContext).stopObserver();
         RecentFileManager.getInstance(mContext).stopFileObserver();
@@ -149,6 +154,10 @@ public class SidebarController {
         addTopViewWindow();
         addContentViewWindow();
         addSideViewWindow();
+    }
+
+    public TopView getSidebarTopView() {
+        return mTopView;
     }
 
     public SidebarRootView getSidebarRootView() {
@@ -361,4 +370,33 @@ public class SidebarController {
             }
         }
     };
+
+    public static final int BG_MODE_DARK = 1;
+    public static final int BG_MODE_LIGHT = 2;
+
+    private int mBgMode = -1;
+
+    public void updateBgMode(int mode) {
+        updateBgMode(mode, false);
+    }
+
+    public void updateBgMode(int mode, boolean force) {
+        if (mBgMode == mode && !force) {
+            return;
+        }
+        if (mode == BG_MODE_DARK || mode == BG_MODE_LIGHT) {
+            boolean toDark = (mode == BG_MODE_DARK);
+            if (mSideView != null && mTopView != null) {
+                log.error("setBgMode toDark ["+toDark+"]");
+                if (!mTopView.setBgMode(toDark)
+                        || !mSideView.setBgMode(toDark)) {
+                    //set bg mode failed, revert bg
+                    mTopView.setBgMode(false);
+                    mSideView.setBgMode(false);
+                } else {
+                    mBgMode = mode;
+                }
+            }
+        }
+    }
 }

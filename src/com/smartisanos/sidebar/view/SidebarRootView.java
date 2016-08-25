@@ -422,7 +422,7 @@ public class SidebarRootView extends FrameLayout {
         }
     }
 
-    public void show(boolean show){
+    public void show(boolean show, final int bgMode){
         if(show){
             if (mExitAnimTimeLine != null) {
                 log.error("mExitAnimTimeLine not null");
@@ -435,12 +435,15 @@ public class SidebarRootView extends FrameLayout {
                 @Override
                 public void onGlobalLayout() {
                     observer.removeOnGlobalLayoutListener(this);
-                    doAnimWhenEnter();
+                    doAnimWhenEnter(bgMode);
                 }
             });
         }else{
             if (mEnterAnimTimeLine != null) {
                 mEnterAnimTimeLine.cancel();
+            }
+            if (mSideView != null) {
+                mSideView.setBgMode(false);
             }
             doAnimWhenExit();
         }
@@ -448,7 +451,7 @@ public class SidebarRootView extends FrameLayout {
 
     private AnimTimeLine mEnterAnimTimeLine = null;
 
-    private void doAnimWhenEnter() {
+    private void doAnimWhenEnter(final int bgMode) {
         final View shadowView = mSideView.getShadowLineView();
         if (shadowView != null) {
             shadowView.setAlpha(0);
@@ -474,6 +477,7 @@ public class SidebarRootView extends FrameLayout {
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_ENTER, false);
                     SidebarRootView.this.setBackgroundResource(R.color.sidebar_root_background);
                     mSideView.setBackgroundResource(R.drawable.background);
+                    mSideView.setBgMode(bgMode == SidebarController.BG_MODE_DARK);
                     SidebarRootView.this.setAlpha(1);
                     SidebarRootView.this.setTranslationX(0);
                     if (shadowView != null) {

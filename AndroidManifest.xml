@@ -199,5 +199,10 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+        <receiver android:name=".receiver.AppResumeReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTIVITY_RESUMED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

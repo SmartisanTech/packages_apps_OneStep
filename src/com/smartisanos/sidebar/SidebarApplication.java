@@ -28,6 +28,12 @@ public class SidebarApplication extends Application {
         MailContactsHelper.getInstance(this);
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        RecentFileManager.getInstance(getApplicationContext()).stopFileObserver();
+    }
+
     private void setStrictMode() {
         if (!ENABLE_STRICT_MODE) {
             return;
@@ -48,11 +54,5 @@ public class SidebarApplication extends Application {
                 .penaltyDeath()
                 .build();
         StrictMode.setVmPolicy(vmPolicy);
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        RecentFileManager.getInstance(getApplicationContext()).stopFileObserver();
     }
 }

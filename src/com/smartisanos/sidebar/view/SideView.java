@@ -15,7 +15,9 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
@@ -23,6 +25,7 @@ import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
+import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
@@ -49,6 +52,8 @@ public class SideView extends RelativeLayout {
     private ContactListAdapter mContactAdapter;
 
     private Context mContext;
+    private FrameLayout mDarkBgView;
+    private LinearLayout mAddAndExitDarkBg;
 
     public SideView(Context context) {
         this(context, null);
@@ -77,6 +82,8 @@ public class SideView extends RelativeLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mDarkBgView = (FrameLayout) findViewById(R.id.side_view_dark_bg);
+        mAddAndExitDarkBg = (LinearLayout) findViewById(R.id.exit_and_add_dark_bg);
         mExitAndAdd = findViewById(R.id.exit_and_add);
         mExit = (ImageView) findViewById(R.id.exit);
         mLeftShadow = findViewById(R.id.left_shadow);
@@ -630,5 +637,19 @@ public class SideView extends RelativeLayout {
         timeLine.addAnim(anim5);
         timeLine.addAnim(anim6);
         return timeLine;
+    }
+
+    public boolean setBgMode(boolean toDark) {
+        if (mDarkBgView == null || mAddAndExitDarkBg == null) {
+            log.error("mDarkBgView or mAddAndExitDarkBg is null");
+            return false;
+        }
+        int color = Constants.SHADOW_BG_COLOR_LIGHT;
+        if (toDark) {
+            color = Constants.SHADOW_BG_COLOR_DARK;
+        }
+        mDarkBgView.setBackgroundColor(color);
+        mAddAndExitDarkBg.setBackgroundColor(color);
+        return true;
     }
 }

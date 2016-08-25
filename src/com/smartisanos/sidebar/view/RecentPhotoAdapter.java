@@ -130,7 +130,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
             ret.setTag(vh);
         }
         vh.filePath = null;
-        vh.updateUIByPostion(position);
+        vh.updateUIByPosition(position);
         if (position <= 0) {
             return ret;
         }
@@ -207,7 +207,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
         public View openGalleryViewGroup;
         public String filePath;
 
-        public void updateUIByPostion(int position) {
+        public void updateUIByPosition(int position) {
             if (position <= 0) {
                 imageView.setVisibility(View.GONE);
                 textView.setVisibility(View.GONE);

@@ -12,41 +12,53 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <FrameLayout
+            android:id="@+id/side_view_dark_bg"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="85.3dp">
-            <include layout="@layout/drag_scroll_view"/>
-            <View
-                android:id="@+id/right_shadow"
-                android:layout_width="4dp"
+            android:layout_height="match_parent">
+            <FrameLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"
-                android:background="@drawable/right_shadow"/>
-            <View
-                android:id="@+id/left_shadow"
-                android:layout_width="4dp"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                android:layout_gravity="right"
-                android:background="@drawable/left_shadow"/>
+                android:layout_marginTop="85.3dp">
+                <include layout="@layout/drag_scroll_view"/>
+                <View
+                    android:id="@+id/right_shadow"
+                    android:layout_width="4dp"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:background="@drawable/right_shadow"/>
+                <View
+                    android:id="@+id/left_shadow"
+                    android:layout_width="4dp"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:layout_gravity="right"
+                    android:background="@drawable/left_shadow"/>
+            </FrameLayout>
+            <LinearLayout
+                android:id="@+id/exit_and_add"
+                android:layout_width="match_parent"
+                android:layout_height="89.3dp"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:id="@+id/exit_and_add_dark_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    >
+                    <ImageView
+                        android:id="@+id/exit"
+                        android:layout_width="match_parent"
+                        android:layout_height="42.6dp"
+                        android:scaleType="center"/>
+                    <ImageView
+                        android:id="@+id/add"
+                        android:layout_width="match_parent"
+                        android:layout_height="42.6dp"
+                        android:src="@drawable/add"
+                        android:scaleType="center"/>
+                </LinearLayout>
+            </LinearLayout>
         </FrameLayout>
-        <LinearLayout
-            android:id="@+id/exit_and_add"
-            android:layout_width="match_parent"
-            android:layout_height="89.3dp"
-            android:orientation="vertical">
-            <ImageView
-                android:id="@+id/exit"
-                android:layout_width="match_parent"
-                android:layout_height="42.6dp"
-                android:scaleType="center"/>
-            <ImageView
-                android:id="@+id/add"
-                android:layout_width="match_parent"
-                android:layout_height="42.6dp"
-                android:src="@drawable/add"
-                android:scaleType="center"/>
-        </LinearLayout>
     </com.smartisanos.sidebar.view.SideView>
     <ImageView
         android:id="@+id/trash_with_shadow"
