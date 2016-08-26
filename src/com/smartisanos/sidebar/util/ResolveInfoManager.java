@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -40,6 +41,32 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
 
     private static final String DB_NAME ="resolveinfo";
     private static final int DB_VERSION = 1;
+
+    private static final Set<String> sAutoAddPackageSet;
+    private static final List<ComponentName> sAutoAddPackageList;
+
+    static {
+        // package
+        sAutoAddPackageSet = new HashSet<String>();
+        sAutoAddPackageSet.add("com.sina.weibo");
+        sAutoAddPackageSet.add("com.taobao.taobao");
+        sAutoAddPackageSet.add("com.evernote");
+        sAutoAddPackageSet.add("com.wunderkinder.wunderlistandroid");
+        sAutoAddPackageSet.add("com.meitu.meiyancamera");
+        sAutoAddPackageSet.add("com.google.android.youtube");
+        sAutoAddPackageSet.add("com.facebook.katana");
+        sAutoAddPackageSet.add("com.whatsapp");
+        sAutoAddPackageSet.add("com.instagram.android");
+        // component
+        sAutoAddPackageList = new ArrayList<ComponentName>();
+        sAutoAddPackageList.add(new ComponentName("com.tencent.mm.ui", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
+        sAutoAddPackageList.add(new ComponentName("com.tencent.mm.ui", "com.tencent.mm.ui.tools.ShareImgUI"));
+        sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.JumpActivity"));
+        sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.qfileJumpActivity"));
+        sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqqi", "com.tencent.mobileqq.activity.JumpActivity"));
+        sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqqi", "com.tencent.mobileqq.activity.qfileJumpActivity"));
+        sAutoAddPackageList.add(new ComponentName("com.twitter.android", "com.twitter.android.composer.ComposerActivity"));
+    }
 
     private static final Set<String> sBlackList;
     private static final Set<Pair<String, String>> sBlackCompList;
@@ -190,7 +217,6 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         mHandler.obtainMessage(MSG_SAVE, rig).sendToTarget();
         notifyUpdate();
     }
-
 
     public void updateOrder() {
         synchronized (mList) {
@@ -382,8 +408,27 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         notifyUpdate();
     }
 
-    public void onPackageAdded(String packageName){
-        notifyUpdate();
+    public void onPackageAdded(String packageName) {
+        List<ResolveInfoGroup> rigList = getAllResolveInfoGroupByPackageName(packageName);
+        // see component list first
+        boolean addComponent = false;
+        for (int i = 0; i < sAutoAddPackageList.size(); ++i) {
+            ComponentName cn = sAutoAddPackageList.get(i);
+            if (cn.getPackageName().equals(packageName)) {
+                for (ResolveInfoGroup rig : rigList) {
+                    if (rig.containsComponent(cn)) {
+                        addResolveInfoGroup(rig);
+                        addComponent = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!addComponent) {
+            for (ResolveInfoGroup rig : rigList) {
+                addResolveInfoGroup(rig);
+            }
+        }
     }
 
     public static class MyComparator implements Comparator<ResolveInfo> {

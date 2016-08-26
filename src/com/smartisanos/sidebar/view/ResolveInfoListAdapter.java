@@ -3,11 +3,7 @@ package com.smartisanos.sidebar.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,12 +11,7 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -31,11 +22,7 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 import com.smartisanos.sidebar.util.Utils;
-import com.smartisanos.sidebar.util.anim.Anim;
-import com.smartisanos.sidebar.util.anim.AnimInterpolator;
-import com.smartisanos.sidebar.util.anim.AnimListener;
-import com.smartisanos.sidebar.util.anim.AnimTimeLine;
-import com.smartisanos.sidebar.util.anim.Vector3f;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 
 public class ResolveInfoListAdapter extends DragEventAdapter {
     private static final LOG log = LOG.getInstance(ResolveInfoListAdapter.class);
@@ -46,27 +33,47 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
     private List<ResolveInfoGroup> mAcceptableResolveInfos = new ArrayList<ResolveInfoGroup>();
     private DragEvent mDragEvent;
     private ResolveInfoManager mManager;
-
+    private boolean mPendingUpdate = false;
     public ResolveInfoListAdapter(Context context) {
         mContext = context;
         mManager = ResolveInfoManager.getInstance(context);
         mResolveInfos = mManager.getAddedResolveInfoGroup();
         mAcceptableResolveInfos.addAll(mResolveInfos);
         mManager.addListener(resolveInfoUpdateListener);
+        AnimStatusManager.getInstance().addAnimFlagStatusChangedListener(
+                AnimStatusManager.SIDEBAR_ITEM_DRAGGING,
+                new AnimStatusManager.AnimFlagStatusChangedListener() {
+                    @Override
+                    public void onChanged() {
+                        if (mPendingUpdate) {
+                            updateData();
+                        }
+                    }
+                });
     }
 
     private ResolveInfoManager.ResolveInfoUpdateListener resolveInfoUpdateListener = new ResolveInfoManager.ResolveInfoUpdateListener() {
         @Override
         public void onUpdate() {
-            new Handler(Looper.getMainLooper()).post(new Runnable(){
-                @Override
-                public void run() {
-                    mResolveInfos = mManager.getAddedResolveInfoGroup();
-                    updateAcceptableResolveInfos();
-                }
-            });
+            updateData();
         }
     };
+
+    private void updateData() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if (AnimStatusManager.getInstance()
+                        .canUpdateSidebarList()) {
+                    mResolveInfos = mManager.getAddedResolveInfoGroup();
+                    updateAcceptableResolveInfos();
+                    mPendingUpdate = false;
+                } else {
+                    mPendingUpdate = true;
+                }
+            }
+        });
+    }
 
     private void updateAcceptableResolveInfos() {
         mAcceptableResolveInfos.clear();

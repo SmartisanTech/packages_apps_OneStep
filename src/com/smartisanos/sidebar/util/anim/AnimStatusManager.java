@@ -1,9 +1,7 @@
 package com.smartisanos.sidebar.util.anim;
 
-import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.LOG;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -196,6 +194,10 @@ public class AnimStatusManager {
 
     public boolean canAddResoleInfoItem() {
         return (mStatus & ON_ADD_RIG_ITEM_REMOVE) == 0;
+    }
+
+    public boolean canUpdateSidebarList() {
+        return (mStatus & SIDEBAR_ITEM_DRAGGING) == 0;
     }
 
     public interface AnimFlagStatusChangedListener {

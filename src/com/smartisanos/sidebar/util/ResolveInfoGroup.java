@@ -262,6 +262,16 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
         return false;
     }
 
+    public boolean containsComponent(ComponentName cn) {
+        for (ResolveInfo ri : this) {
+            if (ri.activityInfo.packageName.equals(cn.getPackageName())
+                    && ri.activityInfo.name.equals(cn.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static ResolveInfoGroup fromData(Context context, String pkgName, String componentNames){
         ResolveInfoGroup rig = new ResolveInfoGroup(context);
         String[] names = componentNames.split("\\|");
