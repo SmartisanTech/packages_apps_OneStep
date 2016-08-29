@@ -65,6 +65,7 @@ public class SidebarController {
     }
 
     private SidebarController(Context context) {
+        context = context.getApplicationContext();
         mContext = context;
         mHandler = new Handler(Looper.getMainLooper());
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);

@@ -91,6 +91,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
     private Handler mHandler;
     private ResolveInfoManager(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        context = context.getApplicationContext();
         mContext = context;
         HandlerThread thread = new HandlerThread(ResolveInfoManager.class.getName());
         thread.start();

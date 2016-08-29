@@ -18,6 +18,8 @@ public class AppResumeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        // the context passed in is ReceiverRestrictedContext, don't use it
+        context = context.getApplicationContext();
         String action = intent.getAction();
         if (action == null || !action.equals(APP_RESUME_ACTION)) {
             return;

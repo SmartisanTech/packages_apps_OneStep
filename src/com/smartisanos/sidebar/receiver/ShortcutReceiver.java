@@ -42,6 +42,8 @@ public class ShortcutReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        // the context passed in is ReceiverRestrictedContext, don't use it
+        context = context.getApplicationContext();
         String action = intent.getAction();
         if (ACTION_INSTALL_SHORTCUT.equals(action)) {
             handleInstallShortcut(context, intent);
