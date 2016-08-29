@@ -17,6 +17,7 @@ import com.smartisanos.sidebar.util.anim.AnimInterpolator;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
+import com.smartisanos.sidebar.view.SidebarRootView.DragView;
 
 public class Trash {
     private static final LOG log = LOG.getInstance(Trash.class);
@@ -24,8 +25,6 @@ public class Trash {
     private Context mContext;
     public ImageView mTrashView;
     public ImageView mTrashForegroundView;
-
-    public SidebarRootView mRootView;
 
     public int mTrashWidth;
     public int mTrashHeight;
@@ -98,17 +97,13 @@ public class Trash {
         }
     }
 
-    public boolean dragObjectUpOnUp(float x, float y) {
+    public boolean dragObjectUpOnUp(float x, float y, DragView dragView) {
         if (!inTrashUninstallReactArea(x, y)) {
-            return false;
-        }
-        SidebarRootView.DragView dragView = mRootView.getDraggedView();
-        if (dragView == null) {
             return false;
         }
         //move icon to trash
         moveIconToTrash(dragView);
-        mUninstallAction = new UninstallAction(mContext, dragView.getDragItem());
+        mUninstallAction = new UninstallAction(mContext, dragView);
         mUninstallAction.showUninstallDialog();
         return true;
     }
@@ -300,9 +295,6 @@ public class Trash {
     }
 
     public void moveIconToTrash(final SidebarRootView.DragView dragView) {
-        if (dragView == null) {
-            return;
-        }
         View view = dragView.mView;
         if (view == null) {
             return;
@@ -324,10 +316,6 @@ public class Trash {
 
             @Override
             public void onComplete(int type) {
-                if (dragView == null) {
-                    log.error("moveIconToTrash view is null when anim complete");
-                    return;
-                }
                 if (mTrashStatus != TRASH_FLOAT) {
                     Runnable runnable = new Runnable() {
                         @Override
@@ -353,7 +341,6 @@ public class Trash {
         }
         float rockAngle = 2.0f;
         float offset = 2.0f;
-        long interval_time = 70;
         float locX = view.getX();
         float locY = view.getY();
         //init view loc and rotate

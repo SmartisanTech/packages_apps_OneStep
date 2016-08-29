@@ -122,7 +122,9 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
         return position;
     }
 
-    public void moveItemPostion(ResolveInfoGroup item, int index) {
+    @Override
+    public void moveItemPostion(Object object, int index) {
+        ResolveInfoGroup item = (ResolveInfoGroup)object;
         if (index < 0) {
             index = 0;
         }
@@ -225,9 +227,9 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
                 return;
             }
             if (color) {
-                iconImageView.setImageDrawable(resolveInfoGroup.loadIcon(context.getPackageManager()));
+                iconImageView.setImageDrawable(resolveInfoGroup.loadIcon());
             } else {
-                iconImageView.setImageBitmap(resolveInfoGroup.loadBlackWhiteIcon(context.getPackageManager()));
+                iconImageView.setImageBitmap(resolveInfoGroup.loadBlackWhiteIcon());
             }
         }
 

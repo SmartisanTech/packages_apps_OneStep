@@ -13,7 +13,7 @@ import android.util.Pair;
 public class AnimStatusManager {
     private static final LOG log = LOG.getInstance(AnimStatusManager.class);
 
-    public static final int ON_TOP_VIEW_CLICK         = 0x1;
+    public static final int ON_TOP_VIEW_CLICK         = 0x1 << 0;
     public static final int ON_SIDE_VIEW_ADD_CLICK    = 0x1 << 1;
     public static final int ON_RECENT_PHOTO_LIST_ANIM = 0x1 << 2;
     public static final int ON_FILE_LIST_ANIM         = 0x1 << 3;
@@ -27,6 +27,8 @@ public class AnimStatusManager {
     public static final int ON_SIDE_VIEW_EXIT         = 0x1 << 11;
     public static final int ON_ADD_RIG_ITEM_REMOVE    = 0x1 << 12;
     public static final int ON_BOOKMARK_ANIM          = 0x1 << 13;
+    public static final int SIDEBAR_ITEM_DRAGGING     = 0x1 << 14;
+    public static final int STATUS_NUM = 15;
 
     public static final int [] STATUS_ARR = new int[] {
             ON_TOP_VIEW_CLICK,
@@ -80,6 +82,10 @@ public class AnimStatusManager {
         statusNameMap.put(ON_SIDE_VIEW_EXIT,         "ON_SIDE_VIEW_EXIT");
         statusNameMap.put(ON_ADD_RIG_ITEM_REMOVE,    "ON_ADD_RIG_ITEM_REMOVE");
         statusNameMap.put(ON_BOOKMARK_ANIM,          "ON_BOOKMARK_ANIM");
+        statusNameMap.put(SIDEBAR_ITEM_DRAGGING,     "SIDEBAR_ITEM_DRAGGING");
+        if (statusNameMap.size() != STATUS_NUM) {
+            throw new IllegalArgumentException("statusNameMap.size() != STATUS_NUM");
+        }
     }
 
     public static AnimStatusManager mManager;

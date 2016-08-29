@@ -106,4 +106,21 @@ public class Utils {
         }
         return isMatch;
     }
+
+    public static boolean inArea(float rawX, float rawY, View view) {
+        int[] loc = new int[2];
+        view.getLocationOnScreen(loc);
+        int viewWidth = view.getWidth();
+        int viewHeight = view.getHeight();
+        int left = loc[0];
+        int top = loc[1];
+        int right = left + viewWidth;
+        int bottom = top + viewHeight;
+        if (left < rawX && rawX < right) {
+            if (top < rawY && rawY < bottom) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

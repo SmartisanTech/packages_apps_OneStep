@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.view.DragEvent;
 
@@ -39,6 +40,11 @@ public class OngoingItem implements SidebarItem {
     @Override
     public CharSequence getDisplayName() {
         return mTitle;
+    }
+
+    @Override
+    public Bitmap getAvatar() {
+        return null;
     }
 
     @Override

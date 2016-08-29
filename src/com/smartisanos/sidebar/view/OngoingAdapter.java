@@ -144,6 +144,10 @@ public class OngoingAdapter extends DragEventAdapter {
         updateAcceptableList();
     }
 
+    public void moveItemPostion(Object object, int index) {
+        // NA
+    }
+
     class ViewHolder {
         public TextView pendingNumbers;
         public OngoingItem item;

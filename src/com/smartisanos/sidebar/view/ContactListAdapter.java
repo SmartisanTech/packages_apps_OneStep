@@ -194,7 +194,8 @@ public class ContactListAdapter extends DragEventAdapter {
         return mContacts.indexOf(item);
     }
 
-    public void moveItemPostion(ContactItem item, int index) {
+    public void moveItemPostion(Object object, int index) {
+        ContactItem item = (ContactItem) object;
         if(index < 0){
             index = 0;
         }

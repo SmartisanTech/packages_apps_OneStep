@@ -172,8 +172,6 @@ public class SidebarController {
         mSidebarRoot = (SidebarRootView) View.inflate(mContext,
                 R.layout.sidebar_view, null);
         mSideView = (SideView) mSidebarRoot.findViewById(R.id.sidebar);
-        mSideView.setRootView(mSidebarRoot);
-        mSidebarRoot.setSideView(mSideView);
 
         final WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,

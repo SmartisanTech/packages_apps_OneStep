@@ -16,17 +16,13 @@ import android.widget.TextView;
 
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
-import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
-import com.smartisanos.sidebar.util.ResolveInfoGroup;
-import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
-import com.smartisanos.sidebar.view.SidebarRootView.DragItem;
 import com.smartisanos.sidebar.R;
 
 public class SidebarRootView extends FrameLayout {
@@ -57,81 +53,36 @@ public class SidebarRootView extends FrameLayout {
         sidebarWidth = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_width);
     }
 
-    public void setSideView(SideView sideView) {
-        mSideView = sideView;
-    }
-
     @Override
     protected void onFinishInflate() {
+        mSideView = (SideView) findViewById(R.id.sidebar);
         mTrash = new Trash(mContext, (ImageView) findViewById(R.id.trash_with_shadow), (ImageView) findViewById(R.id.trash_foreground));
-        mTrash.mRootView = this;
     }
 
     public Trash getTrash() {
         return mTrash;
     }
 
-    public class DragItem {
-        public static final int TYPE_APPLICATION = 1;
-        public static final int TYPE_SHORTCUT = 2;
-        private Drawable iconOrig;
-        private int itemType;
-        public SidebarItem sidebarItem;
-        public int floatUpIndex;
-        public int viewIndex;
-        public String displayName;
-        public View mListViewItem;
-
-        public DragItem(int type, Drawable icon, SidebarItem item, View view, int initIndex) {
-            itemType = type;
-            iconOrig = icon;
-            floatUpIndex = initIndex;
-            viewIndex = initIndex;
-            sidebarItem = item;
-            mListViewItem = view;
-            displayName = sidebarItem.getDisplayName().toString();
-        }
-
-        public void delelte(){
-            sidebarItem.delete();
-        }
-
-        public void backToPostion() {
-            mListViewItem.setVisibility(View.VISIBLE);
-            if (itemType == DragItem.TYPE_APPLICATION) {
-                mSideView.getAppListAdapter().moveItemPostion((ResolveInfoGroup) sidebarItem, viewIndex);
-            } else if (itemType == DragItem.TYPE_SHORTCUT) {
-                mSideView.getContactListAdapter().moveItemPostion((ContactItem) sidebarItem, viewIndex);
-            }
-        }
-    }
-
     public class DragView {
-
+        public View mListViewItem;
         private Drawable mIcon;
-        private DragItem mItem;
-
-        public int iconWidth;
-        public int iconHeight;
 
         public final View mView;
         public final ImageView mDragViewIcon;
         public final TextView mBubbleText;
 
-        private boolean mAlreadyInit = false;
-
-        public DragView(Context context, DragItem item, int[] loc) {
+        public DragView(Context context, Drawable icon, View view, int[] loc) {
             mView = LayoutInflater.from(context).inflate(R.layout.drag_view, null);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
             mView.setLayoutParams(params);
-            mItem = item;
-            mIcon = item.iconOrig;
+            mIcon = icon;
+            mListViewItem = view;
             mDragViewIcon = (ImageView) mView.findViewById(R.id.drag_view_icon);
             mDragViewIcon.setBackground(mIcon);
             mBubbleText = (TextView) mView.findViewById(R.id.drag_view_bubble_text);
-            mBubbleText.setText(mItem.displayName);
+            mBubbleText.setText(getDisplayName());
 
             mView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -139,13 +90,10 @@ public class SidebarRootView extends FrameLayout {
                     mView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     Anim bubbleAlpha = new Anim(mBubbleText, Anim.TRANSPARENT, 100, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
                     bubbleAlpha.start();
-                    iconWidth = mDragViewIcon.getWidth();
-                    iconHeight = mDragViewIcon.getHeight();
-                    mAlreadyInit = true;
                     int[] screenLoc = new int[2];
-                    mItem.mListViewItem.getLocationOnScreen(screenLoc);
-                    int realIconWidth = mItem.mListViewItem.getWidth();
-                    int realIconHeight = mItem.mListViewItem.getHeight();
+                    mListViewItem.getLocationOnScreen(screenLoc);
+                    int realIconWidth = mListViewItem.getWidth();
+                    int realIconHeight = mListViewItem.getHeight();
                     int deltaX = mView.getWidth() / 2 - realIconWidth / 2;
                     int deltaY = mDragViewIcon.getHeight() / 2 - realIconHeight / 2;
                     int x = screenLoc[0] - deltaX;
@@ -155,6 +103,19 @@ public class SidebarRootView extends FrameLayout {
                     mView.setVisibility(View.VISIBLE);
                 }
             });
+        }
+
+        public CharSequence getDisplayName() {
+            return mSideView.getDraggedListView().getDraggedItem().getDisplayName();
+        }
+
+        public void delelte(){
+            mSideView.getDraggedListView().deleteDraggedSidebarItem();
+        }
+
+        public void backToPostion() {
+            mListViewItem.setVisibility(View.VISIBLE);
+            mSideView.getDraggedListView().dropBackSidebarItem();
         }
 
         public void setBubbleVisibleStatus(int visible) {
@@ -169,21 +130,12 @@ public class SidebarRootView extends FrameLayout {
             }
         }
 
-        public DragItem getDragItem() {
-            return mItem;
-        }
-
         public void move(float touchX, float touchY) {
-            if (!mAlreadyInit) {
+            if (mView.getVisibility() != View.VISIBLE) {
                 return;
             }
-            int bubbleHeight = 0;
-            if (mBubbleText != null) {
-                bubbleHeight = mBubbleText.getHeight();
-            }
-            int width = mView.getWidth();
-            int x = (int) (touchX - width / 2);
-            int y = (int) (touchY - iconHeight / 2 - bubbleHeight);
+            int x = (int) (touchX - mView.getWidth() / 2);
+            int y = (int) (touchY - mDragViewIcon.getHeight() / 2 - mBubbleText.getHeight());
             mView.setTranslationX(x);
             mView.setTranslationY(y);
         }
@@ -200,31 +152,33 @@ public class SidebarRootView extends FrameLayout {
     }
 
     private class ShowDragViewWhenRelayout implements ViewTreeObserver.OnGlobalLayoutListener {
-        private DragItem mItem;
+        private Drawable iconOrig;
+        public View mListViewItem;
         private int[] mLoc;
 
-        public ShowDragViewWhenRelayout(DragItem item, int[] loc) {
-            mItem = item;
+        public ShowDragViewWhenRelayout(Drawable icon, View view, int[] loc) {
+            iconOrig = icon;
+            mListViewItem = view;
             mLoc = loc;
         }
 
         @Override
         public void onGlobalLayout() {
             getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            mDragView = new DragView(mContext, mItem, mLoc);
+            mDragView = new DragView(mContext, iconOrig, mListViewItem, mLoc);
             mDragView.showView();
             mTrash.trashAppearWithAnim();
         }
     }
 
     private boolean mDragging = false;
-    public void startDrag(int type, Drawable icon, SidebarItem item, int initIndex, View view, int[] loc) {
+    public void startDrag(Drawable icon, View view, int[] loc) {
         if(mDragging){
             return ;
         }
         mDragging = true;
         ShowDragViewWhenRelayout showDragViewWhenRelayout = new ShowDragViewWhenRelayout(
-                new DragItem(type, icon, item, view, initIndex), loc);
+                icon, view, loc);
         getViewTreeObserver().addOnGlobalLayoutListener(showDragViewWhenRelayout);
         //set sidebar to full screen
         SidebarController.getInstance(mContext).updateDragWindow(true);
@@ -242,7 +196,6 @@ public class SidebarRootView extends FrameLayout {
         mTrash.mTrashForegroundView.setVisibility(View.VISIBLE);
 
         setChildrenDrawingOrderEnabled(true);
-        mEnableUninstallAnim = true;
         requestLayout();
         View view = mDragView.mView;
         Vector3f from = new Vector3f(0, view.getY());
@@ -257,16 +210,15 @@ public class SidebarRootView extends FrameLayout {
             @Override
             public void onComplete(int type) {
                 mDragDeleting = false;
-                setChildrenDrawingOrderEnabled(false);
-                mEnableUninstallAnim = false;
+                mDragging = false;
                 mDragView.removeView();
+                setChildrenDrawingOrderEnabled(false);
                 mTrash.trashDisappearWithAnim(new Runnable() {
                     @Override
                     public void run() {
                         SidebarController.getInstance(mContext).updateDragWindow(false);
                     }
                 });
-                mDragging = false;
             }
         });
         anim.start();
@@ -288,7 +240,7 @@ public class SidebarRootView extends FrameLayout {
             ImageView icon = mDragView.mDragViewIcon;
             icon.getLocationOnScreen(moveFrom);
             log.error("loc from ("+moveFrom[0]+", "+moveFrom[1]+")");
-            mDragView.getDragItem().mListViewItem.getLocationOnScreen(moveTo);
+            mDragView.mListViewItem.getLocationOnScreen(moveTo);
             int dragViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.drag_view_icon_size);
             int itemViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_list_item_img_size);
             scaleTo = (float) ((1.0 * itemViewSize) / (1.0 * dragViewSize));
@@ -316,7 +268,7 @@ public class SidebarRootView extends FrameLayout {
         private void complete() {
             mDragging = false;
             mDragDroping = false;
-            mDragView.getDragItem().backToPostion();
+            mDragView.backToPostion();
             mDragView.removeView();
             SidebarController.getInstance(mContext).updateDragWindow(false);
         }
@@ -385,7 +337,7 @@ public class SidebarRootView extends FrameLayout {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP : {
                 if (ENABLE_TOUCH_LOG) log.error("ACTION_UP");
-                if (mTrash.dragObjectUpOnUp(x, y)) {
+                if (mTrash.dragObjectUpOnUp(x, y, mDragView)) {
                     //handle uninstall
                 } else {
                     dropDrag();
@@ -415,7 +367,7 @@ public class SidebarRootView extends FrameLayout {
             mDragging = false;
             mDragDeleting = false;
             mDragDroping = false;
-            mDragView.mItem.backToPostion();
+            mDragView.backToPostion();
             mDragView.removeView();
             mTrash.dismissDialog();
             SidebarController.getInstance(mContext).updateDragWindow(false);
@@ -547,20 +499,16 @@ public class SidebarRootView extends FrameLayout {
         mExitAnimTimeLine.start();
     }
 
-    public boolean mEnableUninstallAnim = false;
-
     @Override
     protected int getChildDrawingOrder(int childCount, int index) {
-        if (mEnableUninstallAnim) {
-            int count = getChildCount();
-            View view = getChildAt(index);
-            int id = view.getId();
-            if (id == R.id.trash_foreground) {
-                return (count - 1);
-            } else if (id == -1) {
-                return (count - 2);
-            }
+        int id = getChildAt(index).getId();
+        if (index < childCount - 2) {
+            return index;
         }
-        return super.getChildDrawingOrder(childCount, index);
+        if (id == R.id.trash_foreground) { // the most up view
+            return (childCount - 1);
+        } else {// dragview
+            return (childCount - 2);
+        }
     }
 }

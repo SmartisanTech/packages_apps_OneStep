@@ -92,7 +92,7 @@ public class AddResolveInfoGroupAdapter extends BaseAdapter{
             vh = (ViewHolder) ret.getTag();
         }
         final ResolveInfoGroup rig = mInfos.get(position);
-        vh.iv.setImageDrawable(rig.loadIcon(mContext.getPackageManager()));
+        vh.iv.setImageDrawable(rig.loadIcon());
         vh.tv.setText(rig.getDisplayName());
         final int index = position;
         ret.setOnClickListener(new View.OnClickListener() {

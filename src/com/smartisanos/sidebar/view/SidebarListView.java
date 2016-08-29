@@ -8,6 +8,8 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -15,15 +17,20 @@ import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
+import com.smartisanos.sidebar.util.SidebarItem;
+import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
@@ -36,8 +43,11 @@ public class SidebarListView extends ListView {
     private boolean mIsFake = false;
     private SideView mSideView;
 
+    private SidebarItem mDraggedItem;
+    private int mDragPosition = -1;
+
     public SidebarListView(Context context) {
-        super(context, null);
+        this(context, null);
     }
 
     public SidebarListView(Context context, AttributeSet attrs) {
@@ -52,10 +62,85 @@ public class SidebarListView extends ListView {
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mFootView = LayoutInflater.from(context).inflate(R.layout.sidebar_view_divider, null);
+        setOnItemLongClickListener(mOnLongClickListener);
     }
 
     public void setSideView(SideView view) {
         mSideView = view;
+    }
+
+    private AdapterView.OnItemLongClickListener mOnLongClickListener = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            int[] viewLoc = new int[2];
+            view.getLocationOnScreen(viewLoc);
+            viewLoc[0] = viewLoc[0] + view.getWidth() / 2;
+            viewLoc[1] = viewLoc[1] + view.getHeight() / 2;
+            mDraggedItem = (SidebarItem) SidebarListView.this.getAdapter().getItem(position);
+            mDragPosition = position;
+            Drawable icon = new BitmapDrawable(getResources(), mDraggedItem.getAvatar());
+            SidebarController.getInstance(mContext).getSidebarRootView().startDrag(icon, view, viewLoc);
+            mSideView.setDraggedList(SidebarListView.this);
+            view.setVisibility(View.INVISIBLE);
+            AnimStatusManager.getInstance().setStatus(AnimStatusManager.SIDEBAR_ITEM_DRAGGING, true);
+            return false;
+        }
+    };
+
+    public SidebarItem getDraggedItem() {
+        return mDraggedItem;
+    }
+
+    public void deleteDraggedSidebarItem() {
+        if (mDraggedItem != null) {
+            mDraggedItem.delete();
+            dragEnd();
+        }
+    }
+
+    public void dropBackSidebarItem() {
+        if (mDraggedItem != null) {
+            ListAdapter adatper = getAdapter();
+            if ((adatper instanceof DragSortAdapter)) {
+                DragSortAdapter dsa = (DragSortAdapter) adatper;
+                dsa.moveItemPostion(mDraggedItem, mDragPosition);
+            }
+            dragEnd();
+        }
+    }
+
+    private void dragEnd() {
+        mDragPosition = -1;
+        mDraggedItem = null;
+        AnimStatusManager.getInstance().setStatus(AnimStatusManager.SIDEBAR_ITEM_DRAGGING, false);
+    }
+
+    private int[] convertToLocalCoordinate(int x, int y, Rect drawingRect) {
+        int[] viewLoc = new int[2];
+        getLocationOnScreen(viewLoc);
+        int[] loc = new int[2];
+        loc[0] = x - viewLoc[0];
+        loc[1] = y - viewLoc[1];
+        loc[0] = loc[0] + drawingRect.left;
+        loc[1] = loc[1] + drawingRect.top;
+        return loc;
+    }
+
+    public void dragObjectMove(int rawX, int rawY) {
+        if (Utils.inArea(rawX, rawY, this)) {
+            int count = getAdapter().getCount();
+            if (count > 0) {
+                //convert global coordinate to view local coordinate
+                Rect drawingRect = new Rect();
+                getDrawingRect(drawingRect);
+                int[] localLoc = convertToLocalCoordinate(rawX, rawY, drawingRect);
+                int subViewHeight = drawingRect.bottom / count;
+                int position = localLoc[1] / subViewHeight;
+                if (position >= 0 && position < count) {
+                    pointToNewPositionWithAnim(position);
+                }
+            }
+        }
     }
 
     @Override
@@ -345,44 +430,27 @@ public class SidebarListView extends ListView {
         }
     }
 
-    private int mPrePosition = -1;
-    public void setPrePosition(int position) {
-        mPrePosition = position;
-    }
-
-    private AnimTimeLine moveAnimTimeLine;
-
-    public void pointToNewPositionWithAnim(int position) {
-        if (position < 0) {
-            return;
-        }
+    private void pointToNewPositionWithAnim(int position) {
         int count = getCount() - getFooterViewsCount();
-        if(position >= count){
-            return ;
-        }
-        if (mPrePosition == position) {
+        if (position < 0 || position >= count || mDragPosition == position) {
             return;
         }
-        mPrePosition = position;
-        View[] viewArr = new View[count];
-        int index = 0;
+        // check invisible count
         int invisibleViewCount = 0;
-        try {
+        for (int i = 0; i < count; i++) {
+            View view = getChildAt(i);
+            if (view.getVisibility() != View.VISIBLE) {
+                invisibleViewCount++;
+            }
+        }
+        if (invisibleViewCount != 1) {
             for (int i = 0; i < count; i++) {
                 View view = getChildAt(i);
                 if (view.getVisibility() == View.INVISIBLE) {
-                    invisibleViewCount = invisibleViewCount + 1;
-                    viewArr[position] = view;
-                } else {
-                    if (index == position) {
-                        index ++ ;
-                    }
-                    viewArr[index ++] = view;
+                    log.error("dump INVISIBLE VIEW " + view);
                 }
             }
-        } catch (Exception e) {
-            log.error("pointToNewPositionWithAnim invisibleViewCount " + invisibleViewCount);
-            if (invisibleViewCount > 1) {
+            if (invisibleViewCount != 1) {
                 for (int i = 0; i < count; i++) {
                     View view = getChildAt(i);
                     if (view.getVisibility() == View.INVISIBLE) {
@@ -390,11 +458,24 @@ public class SidebarListView extends ListView {
                     }
                 }
             }
-            throw new IllegalArgumentException(e.getMessage());
+            throw new IllegalArgumentException("invisibleViewCount != 1");
         }
-        int[] listViewLoc = new int[2];
-        getLocationOnScreen(listViewLoc);
-        moveAnimTimeLine = new AnimTimeLine();
+
+        mDragPosition = position;
+        View[] viewArr = new View[count];
+        int index = 0;
+        for (int i = 0; i < count; i++) {
+            View view = getChildAt(i);
+            if (view.getVisibility() == View.INVISIBLE) {
+                viewArr[position] = view;
+            } else {
+                if (index == position) {
+                    index++;
+                }
+                viewArr[index++] = view;
+            }
+        }
+        AnimTimeLine moveAnimTimeLine = new AnimTimeLine();
         int toY = 0;
         for (int i = 0; i < viewArr.length; i++) {
             View view = viewArr[i];

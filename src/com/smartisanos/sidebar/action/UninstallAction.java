@@ -9,20 +9,20 @@ import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.view.SidebarRootView;
-import com.smartisanos.sidebar.view.SidebarRootView.DragItem;
+import com.smartisanos.sidebar.view.SidebarRootView.DragView;
 import com.smartisanos.sidebar.view.Trash;
 
 public class UninstallAction {
     private static final LOG log = LOG.getInstance(UninstallAction.class);
 
     private Context mContext;
-    private DragItem mDragItem;
+    private DragView mDragItem;
     private AlertDialog mUninstallDialog;
     private boolean isCancelRun = false;
 
-    public UninstallAction(Context context, DragItem dragItem) {
+    public UninstallAction(Context context, DragView dragView) {
         mContext = context;
-        mDragItem = dragItem;
+        mDragItem = dragView;
     }
 
     public void dismissDialog() {
@@ -36,7 +36,7 @@ public class UninstallAction {
             return ;
         }
         String content = mContext.getString(R.string.uninstall_app_dialog_text);
-        content = String.format(content, mDragItem.displayName);
+        content = String.format(content, mDragItem.getDisplayName());
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
         builder.setTitle(R.string.uninstall_app_dialog_title);
         builder.setMessage(content);

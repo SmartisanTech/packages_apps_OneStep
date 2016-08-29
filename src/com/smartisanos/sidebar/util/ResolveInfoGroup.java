@@ -91,7 +91,12 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
         return true;
     }
 
-    public Drawable loadIcon(PackageManager pm){
+    @Override
+    public Bitmap getAvatar() {
+        return BitmapUtils.drawableToBitmap(loadIcon());
+    }
+
+    public Drawable loadIcon(){
         if(size() <= 0){
             return null;
         }else{
@@ -100,20 +105,20 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
             if (drawable != null) {
                 return drawable;
             } else {
-                return info.loadIcon(pm);
+                return info.loadIcon(mContext.getPackageManager());
             }
 
         }
     }
 
-    public Bitmap loadBlackWhiteIcon(PackageManager pm) {
+    public Bitmap loadBlackWhiteIcon() {
         if (mBlackWhiteIcon != null) {
             Bitmap ret = mBlackWhiteIcon.get();
             if (ret != null) {
                 return ret;
             }
         }
-        Bitmap ret = BitmapUtils.convertToBlackWhite(loadIcon(pm));
+        Bitmap ret = BitmapUtils.convertToBlackWhite(loadIcon());
         mBlackWhiteIcon = new SoftReference<Bitmap>(ret);
         return ret;
     }
