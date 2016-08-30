@@ -79,10 +79,6 @@ public class SidebarController {
         mTopViewHeight = (int) (mScreenHeight * (1.0f - mRate));
         mContentViewWidth = mScreenWidth - mSideViewWidth;
         mContentViewHeight = mScreenHeight - mTopViewHeight;
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        context.registerReceiver(mBroadcastReceiver, filter);
     }
 
     public void init() {
@@ -105,6 +101,9 @@ public class SidebarController {
                         }
                     }
                 });
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        mContext.registerReceiver(mBroadcastReceiver, filter);
     }
 
     private void onSidebarModeChanged(){
