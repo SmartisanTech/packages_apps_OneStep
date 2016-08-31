@@ -10,6 +10,8 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
+import com.smartisanos.sidebar.util.net.NetworkHandler;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,12 +101,20 @@ public class BookmarkManager extends DataManager implements IClear {
             switch (msg.what) {
                 case MSG_ADD_BOOKMARK : {
                     BookmarkItem item = (BookmarkItem) msg.obj;
-                    if (DatabaseHelper.getInstance(mContext).insert(item) > 0) {
-                        synchronized (mList) {
-                            mList.add(0, item);
-                        }
-                        notifyListener();
+                    long id = DatabaseHelper.getInstance(mContext).insert(item);
+                    if (id <= 0) {
+                        break;
                     }
+                    if (item.title == null || item.title.trim().length() == 0) {
+                        log.error("MSG_ADD_BOOKMARK request title !");
+                        List params = new ArrayList();
+                        params.add(item);
+                        NetworkHandler.postTask(NetworkHandler.ACTION_LOAD_BOOKMARK_TITLE, params);
+                    }
+                    synchronized (mList) {
+                        mList.add(0, item);
+                    }
+                    notifyListener();
                     break;
                 }
                 case MSG_REMOVE_BOOKMARK : {

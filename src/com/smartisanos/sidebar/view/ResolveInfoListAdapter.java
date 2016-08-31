@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
+import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
@@ -162,20 +163,25 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
             View view = LayoutInflater.from(mContext).inflate(R.layout.shareitem, null);
             ImageView iconInputLeft = (ImageView) view.findViewById(R.id.icon_input_left);
             ImageView iconInputRight = (ImageView) view.findViewById(R.id.icon_input_right);
+            ImageView iconInputDragLeft = (ImageView) view.findViewById(R.id.icon_input_drag_left);
+            ImageView iconInputDragRight = (ImageView) view.findViewById(R.id.icon_input_drag_right);
             ImageView iconImage = (ImageView) view.findViewById(R.id.shareitemimageview);
+
             holder = new ViewHolder();
             holder.view = view;
             holder.context = mContext;
             holder.iconInputLeft = iconInputLeft;
             holder.iconInputRight = iconInputRight;
+            holder.iconInputDragLeft = iconInputDragLeft;
+            holder.iconInputDragRight = iconInputDragRight;
             holder.iconImageView = iconImage;
             view.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.restore();
-        holder.setInfo(resolveInfoGroup, mDragEvent != null);
-        holder.updateIconFlag(SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
+        boolean isLeftMode = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
+        holder.setInfo(resolveInfoGroup, mDragEvent != null, isLeftMode);
         Utils.setAlwaysCanAcceptDrag(holder.view, true);
         holder.view.setOnDragListener(new View.OnDragListener() {
             @Override
@@ -185,21 +191,23 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
                     case DragEvent.ACTION_DRAG_STARTED:
                         return true;
                     case DragEvent.ACTION_DRAG_ENTERED:
-                        log.d("ACTION_DRAG_ENTERED");
+//                        log.d("ACTION_DRAG_ENTERED");
+                        FloatText.show(mContext, holder.view, holder.resolveInfoGroup.getDisplayName().toString());
                         holder.view.animate().scaleX(SCALE_SIZE).scaleY(SCALE_SIZE)
                         .setInterpolator(new AccelerateDecelerateInterpolator())
                         .setStartDelay(0)
                         .setDuration(100).start();
                         return true;
                     case DragEvent.ACTION_DRAG_EXITED:
-                        log.d("ACTION_DRAG_EXITED");
+//                        log.d("ACTION_DRAG_EXITED");
+                        FloatText.hide();
                         holder.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
                         return true;
                     case DragEvent.ACTION_DRAG_LOCATION:
-                        log.d("ACTION_DRAG_LOCATION");
+//                        log.d("ACTION_DRAG_LOCATION");
                         return true;
                     case DragEvent.ACTION_DROP:
-                        log.d("ACTION_DRAG_DROP");
+//                        log.d("ACTION_DRAG_DROP");
                         holder.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
                         return holder.resolveInfoGroup.handleDragEvent(mContext, event);
                     case DragEvent.ACTION_DRAG_ENDED:
@@ -223,30 +231,54 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
         public Context context;
         public ImageView iconInputLeft;
         public ImageView iconInputRight;
+        public ImageView iconInputDragLeft;
+        public ImageView iconInputDragRight;
         public ImageView iconImageView;
         public Drawable icon;
         public ResolveInfoGroup resolveInfoGroup;
         public boolean isNewAdded = false;
 
-        public void setInfo(ResolveInfoGroup info, boolean color) {
+        public void setInfo(ResolveInfoGroup info, boolean dragging, boolean isLeftMode) {
             resolveInfoGroup = info;
             if (info == null) {
                 return;
             }
-            if (color) {
-                iconImageView.setImageDrawable(resolveInfoGroup.loadIcon());
+            iconImageView.setImageDrawable(resolveInfoGroup.loadIcon());
+            if (dragging) {
+                int offsetX = Constants.share_item_offset_x;
+                if (isLeftMode) {
+                    offsetX = -offsetX;
+                }
+                iconImageView.setTranslationX(offsetX);
+                iconImageView.setTranslationY(Constants.share_item_offset_y);
+                iconImageView.setScaleX(0.8f);
+                iconImageView.setScaleY(0.8f);
             } else {
-                iconImageView.setImageBitmap(resolveInfoGroup.loadBlackWhiteIcon());
+                iconImageView.setTranslationX(0);
+                iconImageView.setTranslationY(0);
+                iconImageView.setScaleX(1);
+                iconImageView.setScaleY(1);
             }
-        }
-
-        public void updateIconFlag(boolean showLeft) {
-            if (showLeft) {
+            if (isLeftMode) {
                 iconInputLeft.setVisibility(View.INVISIBLE);
-                iconInputRight.setVisibility(View.VISIBLE);
+                iconInputDragLeft.setVisibility(View.INVISIBLE);
+                if (dragging) {
+                    iconInputRight.setVisibility(View.INVISIBLE);
+                    iconInputDragRight.setVisibility(View.VISIBLE);
+                } else {
+                    iconInputDragRight.setVisibility(View.INVISIBLE);
+                    iconInputRight.setVisibility(View.VISIBLE);
+                }
             } else {
-                iconInputLeft.setVisibility(View.VISIBLE);
                 iconInputRight.setVisibility(View.INVISIBLE);
+                iconInputDragRight.setVisibility(View.INVISIBLE);
+                if (dragging) {
+                    iconInputLeft.setVisibility(View.INVISIBLE);
+                    iconInputDragLeft.setVisibility(View.VISIBLE);
+                } else {
+                    iconInputDragLeft.setVisibility(View.INVISIBLE);
+                    iconInputLeft.setVisibility(View.VISIBLE);
+                }
             }
         }
 

@@ -3,7 +3,9 @@
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingTop="3dp">
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    >
     <RelativeLayout
         android:background="@drawable/icon_background"
         android:layout_width="48dp"
@@ -31,6 +33,27 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="7dp"
+            android:layout_marginTop="6dp"
+            android:visibility="invisible"/>
+
+        <ImageView
+            android:id="@+id/icon_input_drag_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_input_right_drag"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="6dp"
+            android:visibility="invisible"/>
+        <ImageView
+            android:id="@+id/icon_input_drag_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_input_left_drag"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="6dp"
             android:layout_marginTop="6dp"
             android:visibility="invisible"/>
     </RelativeLayout>

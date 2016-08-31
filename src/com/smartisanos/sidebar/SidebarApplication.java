@@ -16,9 +16,16 @@ public class SidebarApplication extends Application {
 
     private static final boolean ENABLE_STRICT_MODE = true;
 
+    private volatile static SidebarApplication myself;
+
+    public static SidebarApplication getInstance() {
+        return myself;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        myself = this;
         Constants.init(this);
         AnimStatusManager.getInstance().reset();
         ThreadVerify.PROCESS_ID = Process.myTid();
@@ -31,6 +38,7 @@ public class SidebarApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
+        myself = null;
         RecentFileManager.getInstance(getApplicationContext()).stopFileObserver();
     }
 

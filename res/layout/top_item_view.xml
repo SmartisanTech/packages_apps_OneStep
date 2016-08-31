@@ -23,8 +23,8 @@
             >
             <ImageView
                 android:id="@+id/icon"
-                android:layout_width="43dp"
-                android:layout_height="55dp"
+                android:layout_width="45dp"
+                android:layout_height="53dp"
                 android:scaleType="matrix"
                 />
             <LinearLayout

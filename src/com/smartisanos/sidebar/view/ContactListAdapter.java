@@ -3,7 +3,10 @@ package com.smartisanos.sidebar.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.util.BitmapUtils;
+import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.ContactManager;
 import com.smartisanos.sidebar.util.LOG;
@@ -116,7 +119,8 @@ public class ContactListAdapter extends DragEventAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.restore();
-        holder.setItem(item, mDragEvent != null);
+        boolean isLeftMode = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
+        holder.setItem(item, mDragEvent != null, isLeftMode);
         holder.view.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
@@ -160,18 +164,21 @@ public class ContactListAdapter extends DragEventAdapter {
 
         public ContactItem mItem;
 
-        public void setItem(ContactItem item, boolean dragging) {
+        public void setItem(ContactItem item, boolean dragging, boolean isLeftMode) {
             mItem = item;
             if (item == null) {
                 return;
             }
             typeIcon.setImageResource(item.getTypeIcon());
             displayName.setText(item.getDisplayName());
-            if(dragging){
-                contactAvatar.setImageBitmap(mItem.getAvatar());
+            contactAvatar.setImageBitmap(mItem.getAvatar());
+            if(dragging) {
+                contactAvatar.setScaleX(0.8f);
+                contactAvatar.setScaleY(0.8f);
                 displayName.setVisibility(View.VISIBLE);
-            }else{
-                contactAvatar.setImageBitmap(mItem.getAvatarWithGray());
+            } else {
+                contactAvatar.setScaleX(1);
+                contactAvatar.setScaleY(1);
                 displayName.setVisibility(View.GONE);
             }
         }

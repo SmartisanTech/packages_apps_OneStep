@@ -13,7 +13,12 @@
     <!-- drag view values -->
     <dimen name="dragViewScale">12dp</dimen>
     <dimen name="clip_radius">6dp</dimen>
-    <dimen name="top_view_space_left">0dp</dimen>
-    <dimen name="top_view_space_right">16dp</dimen>
+    <dimen name="top_view_space_left">3dp</dimen>
+    <dimen name="top_view_space_right">3dp</dimen>
     <dimen name="open_gallery_item_text_bottom">9dp</dimen>
+
+    <dimen name="float_text_padding_with_sidebar">12dp</dimen>
+    <dimen name="float_text_size">13dp</dimen>
+    <dimen name="share_item_icon_offset_x">3dp</dimen>
+    <dimen name="share_item_icon_offset_y">3dp</dimen>
 </resources>

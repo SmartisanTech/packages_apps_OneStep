@@ -2,7 +2,10 @@ package com.smartisanos.sidebar.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -11,7 +14,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.RemoteException;
+import android.view.DragEvent;
 import android.view.View;
 
 import com.smartisanos.sidebar.SidebarController;
@@ -122,5 +128,122 @@ public class Utils {
             }
         }
         return false;
+    }
+
+    public static String debugDrag(DragEvent event) {
+        StringBuffer buffer = new StringBuffer();
+        int action = event.getAction();
+        switch (action) {
+            case DragEvent.ACTION_DRAG_STARTED : {
+                buffer.append("[ACTION_DRAG_STARTED]");
+                break;
+            }
+            case DragEvent.ACTION_DRAG_ENTERED : {
+                buffer.append("[ACTION_DRAG_ENTERED]");
+                break;
+            }
+            case DragEvent.ACTION_DRAG_LOCATION : {
+                buffer.append("[ACTION_DRAG_LOCATION]");
+                break;
+            }
+            case DragEvent.ACTION_DRAG_EXITED : {
+                buffer.append("[ACTION_DRAG_EXITED]");
+                break;
+            }
+            case DragEvent.ACTION_DRAG_ENDED : {
+                buffer.append("[ACTION_DRAG_ENDED]");
+                break;
+            }
+            case DragEvent.ACTION_DROP : {
+                buffer.append("[ACTION_DROP]");
+                break;
+            }
+        }
+        return buffer.toString();
+    }
+
+    public static boolean isNetworkConnected(Context context) {
+        if (context == null) {
+            return false;
+        }
+        boolean connected = false;
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            if (networkInfo != null) {
+                connected = networkInfo.isConnected();
+            }
+        } catch (Exception e) {}
+        return connected;
+    }
+
+    public static boolean isWifiConnected(Context context) {
+        if (context == null) {
+            return false;
+        }
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return wifi != null && wifi.isConnected();
+    }
+
+    public static String parseTitle(String content) {
+        String title = null;
+        try {
+            //html code, may include <!-- -->
+            List<int[]> invisibleContent = parseContent("(?s)/<[!]--.*-->/", content);
+            List<int[]> titleContent = parseContent("<title>(.*)</title>", content);
+            int[] region = null;
+            int size = titleContent.size();
+            for (int i = 0; i < size; i++) {
+                int[] charIndex = titleContent.get(i);
+                if (invisibleContent.size() == 0) {
+                    //match first
+                    region = charIndex;
+                    break;
+                }
+                boolean inBlock = false;
+                for (int[] block : invisibleContent) {
+                    if (block[0] <= charIndex[0] && charIndex[0] <= block[1]) {
+                        inBlock = true;
+                        break;
+                    }
+                    if (block[0] <= charIndex[1] && charIndex[1] <= block[1]) {
+                        inBlock = true;
+                        break;
+                    }
+                }
+                if (!inBlock) {
+                    region = charIndex;
+                }
+            }
+            if (region != null) {
+                title = content.substring(region[0], region[1]);
+                if (title != null) {
+                    int length = title.length();
+                    title = title.substring(7, length - 8);
+                }
+            }
+        } catch (Exception e) {
+            title = null;
+            e.printStackTrace();
+        }
+        return title;
+    }
+
+    private static List<int[]> parseContent(String expression, String content) {
+        List<int[]> list = new ArrayList<int[]>();
+        try {
+            Pattern pattern = Pattern.compile(expression, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(content);
+            while (matcher.find()) {
+                int[] match = new int[2];
+                match[0] = matcher.start();
+                match[1] = matcher.end();
+                list.add(match);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

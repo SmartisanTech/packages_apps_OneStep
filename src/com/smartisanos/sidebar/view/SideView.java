@@ -209,6 +209,7 @@ public class SideView extends RelativeLayout {
     @Override
     public boolean dispatchDragEvent(DragEvent event) {
         int action = event.getAction();
+        FloatText.handleDragEvent(mContext, event);
         switch (action) {
         case DragEvent.ACTION_DRAG_STARTED:
             mOngoingList.onDragStart(event);

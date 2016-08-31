@@ -10,6 +10,9 @@ import android.util.Pair;
 
 public class AnimStatusManager {
     private static final LOG log = LOG.getInstance(AnimStatusManager.class);
+    static {
+        log.close();
+    }
 
     public static final int ON_TOP_VIEW_CLICK         = 0x1 << 0;
     public static final int ON_SIDE_VIEW_ADD_CLICK    = 0x1 << 1;
