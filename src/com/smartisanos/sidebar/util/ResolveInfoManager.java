@@ -410,6 +410,10 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
 
     public void onPackageAdded(String packageName) {
         List<ResolveInfoGroup> rigList = getAllResolveInfoGroupByPackageName(packageName);
+        if (rigList == null) {
+            // no needed resolveinfo
+            return;
+        }
         // see component list first
         boolean addComponent = false;
         for (int i = 0; i < sAutoAddPackageList.size(); ++i) {
