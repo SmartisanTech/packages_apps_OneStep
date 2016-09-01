@@ -43,7 +43,7 @@
 
     <string name="fail_to_load_image">Unable to Load the Image</string>
     <string name="bookmark_empty_text">No Bookmarks</string>
-    <string name="bookmark_empty_hint">Add to Bookmarks, or copy the link and add the page"'"s text and images to Bookmarks.</string>
+    <string name="bookmark_empty_hint">Add to Bookmarks, or copy the link and add the page"'"s text and images to Bookmarks</string>
     <string name="share_component_name">Add to Bookmarks</string>
     <string name="bookmark_source">From:</string>
 </resources>
