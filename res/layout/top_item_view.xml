@@ -30,26 +30,29 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:gravity="center_horizontal"
                 android:layout_centerInParent="true"
-                android:layout_below="@id/icon"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_toRightOf="@id/icon"
                 >
                 <TextView
                     android:id="@+id/text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="10dp"
+                    android:textSize="12dp"
                     android:maxLines="1"
                     android:maxWidth="50dp"
                     android:ellipsize="end"
-                    android:textColor="#ccffffff"/>
+                    android:textColor="#ccffffff"
+                    android:layout_gravity="center_horizontal"
+                    />
                 <ImageView
                     android:layout_width="9dp"
                     android:layout_height="15dp"
                     android:src="@drawable/arrow_icon"
-                    android:layout_gravity="right"
-                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center_horizontal"
                     />
             </LinearLayout>
         </RelativeLayout>

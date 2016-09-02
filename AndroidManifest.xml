@@ -188,18 +188,18 @@
                 <action android:name="com.android.launcher.action.INSTALL_SHORTCUT" />
             </intent-filter>
         </receiver>
-        <activity android:name=".ReceiveShareData"
-            android:exported="true"
-            android:label="@string/share_component_name"
-            android:icon="@drawable/add_to_bookmark"
-            >
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <action android:name="android.intent.action.SEND_MULTIPLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity>
+        <!--<activity android:name=".ReceiveShareData"-->
+            <!--android:exported="true"-->
+            <!--android:label="@string/share_component_name"-->
+            <!--android:icon="@drawable/add_to_bookmark"-->
+            <!--&gt;-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.SEND" />-->
+                <!--<action android:name="android.intent.action.SEND_MULTIPLE" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<data android:mimeType="text/plain" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
         <receiver android:name=".receiver.AppResumeReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.ACTIVITY_RESUMED" />

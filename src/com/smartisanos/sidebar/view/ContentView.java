@@ -32,14 +32,12 @@ public class ContentView extends RelativeLayout {
         FILE,
         CLIPBOARD,
         ADDTOSIDEBAR,
-        BOOKMARK
     }
 
     private RecentPhotoViewGroup mRecentPhotoViewGroup;
     private RecentFileViewGroup mRecentFileViewGroup;
     private ClipboardViewGroup mClipboardViewGroup;
     private AddItemViewGroup mAddItemViewGroup;
-    private BookmarkViewGroup mBookmarkViewGroup;
 
     private ContentType mCurType = ContentType.NONE;
 
@@ -103,15 +101,12 @@ public class ContentView extends RelativeLayout {
         mRecentFileViewGroup.setContentView(this);
         mClipboardViewGroup = (ClipboardViewGroup)findViewById(R.id.clipboard_view_group);
         mClipboardViewGroup.setContentView(this);
-        mBookmarkViewGroup = (BookmarkViewGroup) findViewById(R.id.bookmark_view_group);
-        mBookmarkViewGroup.setContentView(this);
         mAddItemViewGroup = (AddItemViewGroup) findViewById(R.id.additem_view_group);
 
         mMapTypeToView.put(ContentType.PHOTO, mRecentPhotoViewGroup);
         mMapTypeToView.put(ContentType.FILE, mRecentFileViewGroup);
         mMapTypeToView.put(ContentType.CLIPBOARD, mClipboardViewGroup);
         mMapTypeToView.put(ContentType.ADDTOSIDEBAR, mAddItemViewGroup);
-        mMapTypeToView.put(ContentType.BOOKMARK, mBookmarkViewGroup);
     }
 
     @Override

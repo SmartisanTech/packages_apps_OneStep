@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.BookmarkManager;
 import com.smartisanos.sidebar.util.Constants;
@@ -41,14 +42,13 @@ public class TopView extends FrameLayout {
     private SidebarController mController;
 
     private DimSpaceView mLeft, mRight;
-    private TopItemView mPhotos, mFile, mClipboard, mBookmark;
+    private TopItemView mPhotos, mFile, mClipboard;
 
     private Map<ITopItem, ContentType> mViewToType;
 
     private RecentPhotoManager mPhotoManager;
     private RecentFileManager mFileManager;
     private RecentClipManager mClipManager;
-    private BookmarkManager mBookmarkManager;
 
     private int mTopbarPhotoIconContentSize ;
     private int mTopbarPhotoIconContentPaddingTop;
@@ -80,24 +80,6 @@ public class TopView extends FrameLayout {
         mTopbarPhotoIconContentSize = context.getResources().getDimensionPixelSize(R.dimen.topbar_photo_icon_content_size);
         mTopbarPhotoIconContentPaddingTop = context.getResources().getDimensionPixelSize(R.dimen.topbar_photo_icon_content_paddingTop);
         mTopbarFileIconContentPaddingTop = context.getResources().getDimensionPixelSize(R.dimen.topbar_file_icon_content_paddingTop);
-
-//        this.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-//
-//            @Override
-//            public void onViewDetachedFromWindow(View v) {
-//                // NA
-//            }
-//
-//            @Override
-//            public void onViewAttachedToWindow(View v) {
-//                if (mFinishInflated) {
-//                    updatePhotoIconContent();
-//                    updateFileIconContent();
-//                    updateClipIconContent();
-//                    updateBookmarkIconContent();
-//                }
-//            }
-//        });
     }
 
     @Override
@@ -121,87 +103,26 @@ public class TopView extends FrameLayout {
         mClipboard.setText(R.string.topbar_clipboard);
         mClipboard.setIconBackground(R.drawable.topbar_clipboard);
 
-        mBookmark = (TopItemView) findViewById(R.id.bookmark);
-        mBookmark.setText(R.string.topbar_bookmark);
-        mBookmark.setIconBackground(R.drawable.topbar_bookmark);
-
         mViewToType = new HashMap<ITopItem, ContentType>();
         mViewToType.put(mLeft, ContentType.NONE);
         mViewToType.put(mPhotos, ContentType.PHOTO);
         mViewToType.put(mFile, ContentType.FILE);
         mViewToType.put(mClipboard, ContentType.CLIPBOARD);
-        mViewToType.put(mBookmark, ContentType.BOOKMARK);
         mViewToType.put(mRight, ContentType.NONE);
 
         mPhotos.setOnClickListener(mItemOnClickListener);
         mFile.setOnClickListener(mItemOnClickListener);
         mClipboard.setOnClickListener(mItemOnClickListener);
-        mBookmark.setOnClickListener(mItemOnClickListener);
 
         // update icon content
         mPhotos.setIconContentPaddingTop(mTopbarPhotoIconContentPaddingTop);
         mPhotoManager = RecentPhotoManager.getInstance(mContext);
-//        mPhotoManager.addListener(new RecentUpdateListener() {
-//            @Override
-//            public void onUpdate() {
-//                post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        updatePhotoIconContent();
-//                    }
-//                });
-//            }
-//        });
 
         mFile.setIconContentPaddingTop(mTopbarFileIconContentPaddingTop);
+
         mFileManager = RecentFileManager.getInstance(mContext);
-//        mFileManager.addListener(new RecentUpdateListener() {
-//            @Override
-//            public void onUpdate() {
-//                post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        updateFileIconContent();
-//                    }
-//                });
-//            }
-//        });
-
         mClipManager = RecentClipManager.getInstance(mContext);
-//        mClipManager.addListener(new RecentUpdateListener() {
-//            @Override
-//            public void onUpdate() {
-//                post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        updateClipIconContent();
-//                    }
-//                });
-//            }
-//        });
 
-        mBookmarkManager = BookmarkManager.getInstance(mContext);
-//        mBookmarkManager.addListener(new RecentUpdateListener() {
-//            @Override
-//            public void onUpdate() {
-//                post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        updateBookmarkIconContent();
-//                    }
-//                });
-//            }
-//        });
-
-//        post(new Runnable() {
-//            @Override
-//            public void run() {
-//                updatePhotoIconContent();
-//                updateFileIconContent();
-//                updateClipIconContent();
-//                updateBookmarkIconContent();
-//            }
-//        });
         mShadowLine = findViewById(R.id.top_view_shadow_line);
     }
 
@@ -252,49 +173,6 @@ public class TopView extends FrameLayout {
             }
         }
     };
-
-//    private void updatePhotoIconContent() {
-//        List<ImageInfo> mList = mPhotoManager.getImageList();
-//        if (mList.size() > 0) {
-//            mPhotos.setIconBackground(R.drawable.topbar_photo);
-//            Bitmap bmp = BitmapUtils.getSquareBitmap(mList.get(0).filePath, mTopbarPhotoIconContentSize);
-//            if (bmp != null) {
-//                mPhotos.setIconContent(bmp);
-//            }
-//        } else {
-//            mPhotos.setIconBackground(R.drawable.topview_photo_default);
-//            mPhotos.resetIconContent();
-//        }
-//    }
-
-//    private void updateFileIconContent() {
-//        List<FileInfo> mList = mFileManager.getFileList();
-//        if (mList.size() > 0) {
-//            mFile.setIconBackground(R.drawable.topbar_file);
-//            mFile.setIconContent(mContext.getResources().getDrawable(mList.get(0).getIconId()));
-//        }else{
-//            mFile.setIconBackground(R.drawable.topview_file_default);
-//            mFile.resetIconContent();
-//        }
-//    }
-
-//    private void updateClipIconContent() {
-//        List<CopyHistoryItem> list = mClipManager.getCopyList();
-//        if (list != null && list.size() > 0) {
-//            mClipboard.setIconBackground(R.drawable.topbar_clipboard);
-//        } else {
-//            mClipboard.setIconBackground(R.drawable.topview_clipboard_default);
-//        }
-//    }
-
-//    private void updateBookmarkIconContent() {
-//        boolean isEmpty = mBookmarkManager.getBookmarks().size() == 0;
-//        if (isEmpty) {
-//            mBookmark.setIconBackground(R.drawable.bookmark_default);
-//        } else {
-//            mBookmark.setIconBackground(R.drawable.topbar_bookmark);
-//        }
-//    }
 
     public void dimAll(){
         AnimTimeLine timeLine = new AnimTimeLine();
@@ -348,20 +226,17 @@ public class TopView extends FrameLayout {
         mPhotos.setAlpha(0);
         mFile.setAlpha(0);
         mClipboard.setAlpha(0);
-        mBookmark.setAlpha(0);
         Vector3f moveFrom = new Vector3f(0, fromY);
         Vector3f moveTo = new Vector3f();
         Anim photoMove = new Anim(mPhotos, Anim.MOVE, time, Anim.CUBIC_OUT, moveFrom, moveTo);
         Anim fileMove = new Anim(mFile, Anim.MOVE, time, Anim.CUBIC_OUT, moveFrom, moveTo);
         Anim clipboardMove = new Anim(mClipboard, Anim.MOVE, time, Anim.CUBIC_OUT, moveFrom, moveTo);
-        Anim bookmarkMove = new Anim(mBookmark, Anim.MOVE, time, Anim.CUBIC_OUT, moveFrom, moveTo);
 
         Vector3f alphaFrom = new Vector3f();
         Vector3f alphaTo = new Vector3f(0, 0, 1);
         Anim photoAlpha = new Anim(mPhotos, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
         Anim fileAlpha = new Anim(mFile, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
         Anim clipboardAlpha = new Anim(mClipboard, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
-        Anim bookmarkAlpha = new Anim(mBookmark, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
 
         Anim showShadowLine = new Anim(mShadowLine, Anim.TRANSPARENT, 30, Anim.CUBIC_OUT, alphaFrom, alphaTo);
         showShadowLine.setListener(new AnimListener() {
@@ -381,11 +256,9 @@ public class TopView extends FrameLayout {
         mEnterAnimTimeLine.addAnim(photoMove);
         mEnterAnimTimeLine.addAnim(fileMove);
         mEnterAnimTimeLine.addAnim(clipboardMove);
-        mEnterAnimTimeLine.addAnim(bookmarkMove);
         mEnterAnimTimeLine.addAnim(photoAlpha);
         mEnterAnimTimeLine.addAnim(fileAlpha);
         mEnterAnimTimeLine.addAnim(clipboardAlpha);
-        mEnterAnimTimeLine.addAnim(bookmarkAlpha);
         mEnterAnimTimeLine.addAnim(showShadowLine);
         mEnterAnimTimeLine.setAnimListener(new AnimListener() {
             @Override
@@ -402,12 +275,10 @@ public class TopView extends FrameLayout {
                     mPhotos.setAlpha(1);
                     mFile.setAlpha(1);
                     mClipboard.setAlpha(1);
-                    mBookmark.setAlpha(1);
 
                     mPhotos.setTranslationY(0);
                     mFile.setTranslationY(0);
                     mClipboard.setTranslationY(0);
-                    mBookmark.setTranslationY(0);
                     mEnterAnimTimeLine = null;
                 }
             }
@@ -429,24 +300,20 @@ public class TopView extends FrameLayout {
         Anim photoMove = new Anim(mPhotos, Anim.MOVE, time, 0, moveFrom, moveTo);
         Anim fileMove = new Anim(mFile, Anim.MOVE, time, 0, moveFrom, moveTo);
         Anim clipboardMove = new Anim(mClipboard, Anim.MOVE, time, 0, moveFrom, moveTo);
-        Anim bookmarkMove = new Anim(mBookmark, Anim.MOVE, time, 0, moveFrom, moveTo);
 
         Vector3f alphaFrom = new Vector3f(0, 0, 1);
         Vector3f alphaTo = new Vector3f();
         Anim photoAlpha = new Anim(mPhotos, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
         Anim fileAlpha = new Anim(mFile, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
         Anim clipboardAlpha = new Anim(mClipboard, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
-        Anim bookmarkAlpha = new Anim(mBookmark, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
 
         mExitAnimTimeLine = new AnimTimeLine();
         mExitAnimTimeLine.addAnim(photoMove);
         mExitAnimTimeLine.addAnim(fileMove);
         mExitAnimTimeLine.addAnim(clipboardMove);
-        mExitAnimTimeLine.addAnim(bookmarkMove);
         mExitAnimTimeLine.addAnim(photoAlpha);
         mExitAnimTimeLine.addAnim(fileAlpha);
         mExitAnimTimeLine.addAnim(clipboardAlpha);
-        mExitAnimTimeLine.addAnim(bookmarkAlpha);
         mExitAnimTimeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
@@ -460,12 +327,10 @@ public class TopView extends FrameLayout {
                     mPhotos.setAlpha(1);
                     mFile.setAlpha(1);
                     mClipboard.setAlpha(1);
-                    mBookmark.setAlpha(1);
 
                     mPhotos.setTranslationY(0);
                     mFile.setTranslationY(0);
                     mClipboard.setTranslationY(0);
-                    mBookmark.setTranslationY(0);
 
                     setVisibility(View.GONE);
                     resumeToNormal();
