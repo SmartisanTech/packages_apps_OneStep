@@ -84,7 +84,7 @@ public class SideView extends RelativeLayout {
         mExit = (ImageView) findViewById(R.id.exit);
         mLeftShadow = findViewById(R.id.left_shadow);
         mRightShadow = findViewById(R.id.right_shadow);
-        updateUIBySIdebarMode();
+        updateUIBySidebarMode();
         mExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -234,7 +234,7 @@ public class SideView extends RelativeLayout {
         return mContactAdapter;
     }
 
-    private void updateUIBySIdebarMode() {
+    private void updateUIBySidebarMode() {
         if (SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT) {
             //mExit.setBackgroundResource(R.drawable.exit_icon_left);
             mExit.setImageResource(R.drawable.exit_icon_left);
@@ -251,7 +251,7 @@ public class SideView extends RelativeLayout {
     }
 
     public void onSidebarModeChanged(){
-        updateUIBySIdebarMode();
+        updateUIBySidebarMode();
         mResolveAdapter.notifyDataSetChanged();
     }
 

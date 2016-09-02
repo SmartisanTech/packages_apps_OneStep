@@ -46,4 +46,21 @@
     <string name="bookmark_empty_hint">你可以在各应用中，通过点击"分享-添加到书签"，或复制链接将其中的文章图片等添加到书签</string>
     <string name="share_component_name">添加收藏</string>
     <string name="bookmark_source">来自:</string>
+
+    <string name="date_label_today">今天</string>
+    <string name="date_label_yesterday">昨天</string>
+    <string name="date_label_last_week">前7天</string>
+    <string name="date_label_last_month">前30天</string>
+    <string name="date_label_month_January">一月</string>
+    <string name="date_label_month_February">二月</string>
+    <string name="date_label_month_March">三月</string>
+    <string name="date_label_month_April">四月</string>
+    <string name="date_label_month_May">五月</string>
+    <string name="date_label_month_June">六月</string>
+    <string name="date_label_month_July">七月</string>
+    <string name="date_label_month_August">八月</string>
+    <string name="date_label_month_September">九月</string>
+    <string name="date_label_month_October">十月</string>
+    <string name="date_label_month_November">十一月</string>
+    <string name="date_label_month_December">十二月</string>
 </resources>

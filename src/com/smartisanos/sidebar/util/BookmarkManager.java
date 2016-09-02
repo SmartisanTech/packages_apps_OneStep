@@ -112,6 +112,7 @@ public class BookmarkManager extends DataManager implements IClear {
                         NetworkHandler.postTask(NetworkHandler.ACTION_LOAD_BOOKMARK_TITLE, params);
                     }
                     synchronized (mList) {
+                        item.time = System.currentTimeMillis();
                         mList.add(0, item);
                     }
                     notifyListener();
@@ -146,24 +147,27 @@ public class BookmarkManager extends DataManager implements IClear {
         }
     }
 
-    public static class BookmarkItem {
+    public static class BookmarkItem implements Comparable<BookmarkItem> {
         public long id = -1;
         public String title;
-        public int weight;
         public String content_uri;
         public String source;
         public String fullText;
         public long time;
 
-        public void dump() {
-            log.error("BookmarkItem dump");
-            log.error("id          ["+id+"]");
-            log.error("title       ["+title+"]");
-            log.error("weight      ["+weight+"]");
-            log.error("content_uri ["+content_uri+"]");
-            log.error("source      ["+source+"]");
-            log.error("fullText    ["+fullText+"]");
-            log.error("time        ["+time+"]");
+        @Override
+        public int compareTo(BookmarkItem item) {
+            if (item == null) {
+                return -1;
+            }
+            if (time == item.time) {
+                return 0;
+            }
+            if (item.time > time) {
+                return 1;
+            } else {
+                return -1;
+            }
         }
     }
 
@@ -286,26 +290,12 @@ public class BookmarkManager extends DataManager implements IClear {
             return -1;
         }
 
-        public int getMaxWeight() {
-            int weight = -1;
-            List<BookmarkItem> list = list();
-            for (BookmarkItem item : list) {
-                if (item.weight > weight) {
-                    weight = item.weight;
-                }
-            }
-            return weight;
-        }
-
         public long insert(BookmarkItem item) {
             if (item == null) {
                 return -1;
             }
-            int weight = getMaxWeight() + 1;
-            item.weight = weight;
             ContentValues cv = new ContentValues();
             cv.put(TITLE, item.title);
-            cv.put(WEIGHT, item.weight);
             cv.put(CONTENT_URI, item.content_uri);
             cv.put(SOURCE, item.source);
             cv.put(FULL_TEXT, item.fullText);
@@ -324,7 +314,6 @@ public class BookmarkManager extends DataManager implements IClear {
             int result = -1;
             ContentValues cv = new ContentValues();
             cv.put(TITLE, item.title);
-            cv.put(WEIGHT, item.weight);
             cv.put(CONTENT_URI, item.content_uri);
             cv.put(SOURCE, item.source);
             cv.put(FULL_TEXT, item.fullText);
@@ -357,7 +346,7 @@ public class BookmarkManager extends DataManager implements IClear {
             }
         }
 
-        private static final String DEFAULT_ORDER = WEIGHT + " DESC";
+        private static final String DEFAULT_ORDER = ADD_TIME + " DESC";
 
         public List<BookmarkItem> list() {
             List<BookmarkItem> list = new ArrayList<BookmarkItem>();
@@ -367,21 +356,18 @@ public class BookmarkManager extends DataManager implements IClear {
                 if (cursor.moveToFirst()) {
                     int idIndex = cursor.getColumnIndex(ID);
                     int titleIndex = cursor.getColumnIndex(TITLE);
-                    int weightIndex = cursor.getColumnIndex(WEIGHT);
                     int urlIndex = cursor.getColumnIndex(CONTENT_URI);
                     int sourceIndex = cursor.getColumnIndex(SOURCE);
                     int timeIndex = cursor.getColumnIndex(ADD_TIME);
                     do {
                         int id = cursor.getInt(idIndex);
                         String title = cursor.getString(titleIndex);
-                        int weight = cursor.getInt(weightIndex);
                         String content_uri = cursor.getString(urlIndex);
                         String source = cursor.getString(sourceIndex);
                         long time = cursor.getLong(timeIndex);
                         BookmarkItem item = new BookmarkItem();
                         item.id = id;
                         item.title = title;
-                        item.weight = weight;
                         item.content_uri = content_uri;
                         item.source = source;
                         item.time = time;
@@ -397,28 +383,6 @@ public class BookmarkManager extends DataManager implements IClear {
                 }
             }
             return list;
-        }
-
-        public void updateIndex(List<BookmarkItem> items) {
-            if (items == null || items.size() == 0) {
-                return;
-            }
-            SQLiteDatabase db = getWritableDatabase();
-            db.beginTransaction();
-            try {
-                int count = items.size();
-                for (int i = 0; i < count; i++) {
-                    BookmarkItem item = items.get(i);
-                    ContentValues cv = new ContentValues();
-                    cv.put(WEIGHT, item.weight);
-                    db.update(TABLE_NAME, cv, ID + "=?", new String[] {"" + item.id});
-                }
-                db.setTransactionSuccessful();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                db.endTransaction();
-            }
         }
     }
 }

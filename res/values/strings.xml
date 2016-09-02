@@ -46,4 +46,21 @@
     <string name="bookmark_empty_hint">Add to Bookmarks, or copy the link and add the page"'"s text and images to Bookmarks</string>
     <string name="share_component_name">Add to Bookmarks</string>
     <string name="bookmark_source">From:</string>
+
+    <string name="date_label_today">Today</string>
+    <string name="date_label_yesterday">Yesterday</string>
+    <string name="date_label_last_week">Last 7 Days</string>
+    <string name="date_label_last_month">Last 30 Days</string>
+    <string name="date_label_month_January">January</string>
+    <string name="date_label_month_February">February</string>
+    <string name="date_label_month_March">March</string>
+    <string name="date_label_month_April">April</string>
+    <string name="date_label_month_May">May</string>
+    <string name="date_label_month_June">June</string>
+    <string name="date_label_month_July">July</string>
+    <string name="date_label_month_August">August</string>
+    <string name="date_label_month_September">September</string>
+    <string name="date_label_month_October">October</string>
+    <string name="date_label_month_November">November</string>
+    <string name="date_label_month_December">十二月</string>
 </resources>

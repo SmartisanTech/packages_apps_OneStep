@@ -2,14 +2,11 @@ package com.smartisanos.sidebar.view;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,7 +16,6 @@ import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.LOG;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
@@ -217,19 +213,22 @@ public class BookmarkViewGroup extends RoundCornerFrameLayout implements IEmpty,
             if (position >= 0 && mBookmarkAdapter != null) {
                 int count = mBookmarkAdapter.getCount();
                 if (count > position) {
-                    BookmarkManager.BookmarkItem item = mBookmarkAdapter.getItem(position);
-                    if (item != null && item.content_uri != null) {
-                        try {
-                            Uri uri = Uri.parse(item.content_uri);
-                            Intent intent = new Intent();
-                            intent.setAction(Intent.ACTION_VIEW);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.setData(uri);
-                            mContext.startActivity(intent);
+                    Object obj = mBookmarkAdapter.getItem(position);
+                    if (obj instanceof BookmarkManager.BookmarkItem) {
+                        BookmarkManager.BookmarkItem item = (BookmarkManager.BookmarkItem) obj;
+                        if (item != null && item.content_uri != null) {
+                            try {
+                                Uri uri = Uri.parse(item.content_uri);
+                                Intent intent = new Intent();
+                                intent.setAction(Intent.ACTION_VIEW);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.setData(uri);
+                                mContext.startActivity(intent);
 
-                            Utils.resumeSidebar(mContext);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                                Utils.resumeSidebar(mContext);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }

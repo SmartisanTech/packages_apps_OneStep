@@ -3,6 +3,7 @@ package com.smartisanos.sidebar.util;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,12 +15,14 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.RemoteException;
 import android.view.DragEvent;
 import android.view.View;
 
+import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 
 public class Utils {
@@ -245,5 +248,45 @@ public class Utils {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public static String convertDateToLabel(Context context, long currentTime, long time) {
+        long day = 24 * 60 * 60 * 1000;
+        long delta = currentTime - time;
+        if (delta < 0) {
+            delta = 0;
+        }
+        int interval = (int) (delta / day);
+        Resources resources = context.getResources();
+        String label = null;
+        if (interval <= 30) {
+            if (interval == 0) {
+                //today
+                label = resources.getString(R.string.date_label_today);
+            } else if (interval == 1) {
+                //yesterday
+                label = resources.getString(R.string.date_label_yesterday);
+            } else if (interval <= 7) {
+                //last 7 days
+                label = resources.getString(R.string.date_label_last_week);
+            } else {
+                //last 30 days
+                label = resources.getString(R.string.date_label_last_month);
+            }
+        } else {
+            Calendar now = Calendar.getInstance();
+            now.setTimeInMillis(currentTime);
+            Calendar date = Calendar.getInstance();
+            date.setTimeInMillis(time);
+            if (now.get(Calendar.YEAR) == date.get(Calendar.YEAR)) {
+                //same year, show month
+                int month = date.get(Calendar.MONTH);
+                label = resources.getString(Constants.MONTH_ARRAY[month]);
+            } else {
+                //show year
+                label = "" + date.get(Calendar.YEAR);
+            }
+        }
+        return label;
     }
 }
