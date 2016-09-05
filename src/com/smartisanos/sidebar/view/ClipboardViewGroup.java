@@ -211,16 +211,22 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             log.info("onItemClick [" + position + "] [" + id + "]");
-            CopyHistoryItem item = (CopyHistoryItem) mClipboardAdapter.getItem(position);
-            CharSequence text = item.mContent;
-            Utils.copyText(mContext, text, false);
-            if (mClipboardCopyToast != null) {
-                mClipboardCopyToast.cancel();
+            if (mClipboardAdapter == null) {
+                return;
             }
-            mClipboardCopyToast = Toast.makeText(mContext, R.string.text_copied, Toast.LENGTH_SHORT);
-            mClipboardCopyToast.getWindowParams().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
-            mClipboardCopyToast.getWindowParams().token = view.getWindowToken();
-            mClipboardCopyToast.show();
+            Object obj = mClipboardAdapter.getItem(position);
+            if (obj != null && obj instanceof ClipboardAdapter.DataItem) {
+                ClipboardAdapter.DataItem item = (ClipboardAdapter.DataItem) obj;
+                String text = item.mText;
+                Utils.copyText(mContext, text, false);
+                if (mClipboardCopyToast != null) {
+                    mClipboardCopyToast.cancel();
+                }
+                mClipboardCopyToast = Toast.makeText(mContext, R.string.text_copied, Toast.LENGTH_SHORT);
+                mClipboardCopyToast.getWindowParams().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
+                mClipboardCopyToast.getWindowParams().token = view.getWindowToken();
+                mClipboardCopyToast.show();
+            }
         }
     };
 
@@ -232,8 +238,14 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                 log.info("onItemLongClick view is null ["+position+"] ["+id+"]");
                 return false;
             }
-            TextView textView = (TextView) view.findViewById(R.id.text);
-            SidebarUtils.dragText(textView, mContext, textView.getText());
+            if (mClipboardAdapter == null) {
+                return false;
+            }
+            Object obj = mClipboardAdapter.getItem(position);
+            if (obj != null && obj instanceof ClipboardAdapter.DataItem) {
+                ClipboardAdapter.DataItem item = (ClipboardAdapter.DataItem) obj;
+                SidebarUtils.dragText(view, mContext, item.mText);
+            }
             return false;
         }
     };

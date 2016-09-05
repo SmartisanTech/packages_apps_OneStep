@@ -2,34 +2,32 @@ package com.smartisanos.sidebar.view;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentUpdateListener;
 import com.smartisanos.sidebar.util.Utils;
 
-import smartisanos.util.SidebarUtils;
 public class RecentFileAdapter extends BaseAdapter {
 
     private Context mContext;
     private RecentFileManager mFileManager;
-    private List<FileInfo> mList = new ArrayList<FileInfo>();
+    private List<FileInfo> mFileInfoList = new ArrayList<FileInfo>();
+    private List mList = new ArrayList();
     private Handler mHandler;
     private IEmpty mEmpty;
 
@@ -37,7 +35,8 @@ public class RecentFileAdapter extends BaseAdapter {
         mContext = context;
         mEmpty = empty;
         mFileManager = RecentFileManager.getInstance(mContext);
-        mList = mFileManager.getFileList();
+        mFileInfoList = mFileManager.getFileList();
+        updateDataList();
         mHandler = new Handler(Looper.getMainLooper());
         mFileManager.addListener(new RecentUpdateListener() {
             @Override
@@ -45,13 +44,40 @@ public class RecentFileAdapter extends BaseAdapter {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mList = mFileManager.getFileList();
+                        mFileInfoList = mFileManager.getFileList();
+                        updateDataList();
                         RecentFileAdapter.this.notifyDataSetChanged();
                     }
                 });
             }
         });
         notifyEmpty();
+    }
+
+    private void updateDataList() {
+        if (mFileInfoList.size() == 0) {
+            mList.clear();
+            return;
+        }
+        FileInfo[] infos = new FileInfo[mFileInfoList.size()];
+        mFileInfoList.toArray(infos);
+        Arrays.sort(infos);
+        List list = new ArrayList();
+        String preLabel = null;
+        long now = System.currentTimeMillis();
+        for (int i = 0; i < infos.length; i++) {
+            FileInfo info = infos[i];
+            String label = Utils.convertDateToLabel(mContext, now, info.lastTime);
+            if (label != null && !label.equals(preLabel)) {
+                preLabel = label;
+                list.add(label);
+            }
+            list.add(info);
+        }
+        synchronized (mList) {
+            mList.clear();
+            mList.addAll(list);
+        }
     }
 
     private void notifyEmpty() {
@@ -73,6 +99,9 @@ public class RecentFileAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
+        if (position >= mList.size()) {
+            return null;
+        }
         return mList.get(position);
     }
 
@@ -82,39 +111,66 @@ public class RecentFileAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        View res = convertView;
-        if(res == null){
-            res =  View.inflate(mContext,R.layout.recent_file_item, null);
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            View view = View.inflate(mContext,R.layout.recent_file_item, null);
+            LinearLayout dateLabel = (LinearLayout) view.findViewById(R.id.date_label);
+            TextView dateContent = (TextView) view.findViewById(R.id.date_content);
+            LinearLayout recentFileItemView = (LinearLayout) view.findViewById(R.id.recent_file_item);
+            TextView fileNameView = (TextView) view.findViewById(R.id.file_name);
+            ImageView iconView = (ImageView) view.findViewById(R.id.file_icon);
+
+            holder = new ViewHolder();
+            holder.view = view;
+            holder.dateLabel = dateLabel;
+            holder.dateContent = dateContent;
+            holder.recentFileItemView = recentFileItemView;
+            holder.fileNameView = fileNameView;
+            holder.iconView = iconView;
+
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        Object obj = mList.get(position);
+        if (obj instanceof FileInfo) {
+            holder.showItem((FileInfo) obj);
+        } else {
+            holder.showDate((String) obj);
+        }
+        return holder.view;
+    }
+
+    private static class ViewHolder {
+        public View view;
+
+        public LinearLayout dateLabel;
+        public TextView dateContent;
+
+        public LinearLayout recentFileItemView;
+        public ImageView iconView;
+        public TextView fileNameView;
+
+        public void showItem(FileInfo info) {
+            if (dateLabel.getVisibility() == View.VISIBLE) {
+                dateLabel.setVisibility(View.GONE);
+            }
+            if (recentFileItemView.getVisibility() != View.VISIBLE) {
+                recentFileItemView.setVisibility(View.VISIBLE);
+            }
+            fileNameView.setText(new File(info.filePath).getName());
+            iconView.setImageResource(info.getIconId());
         }
 
-        res.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Utils.dismissAllDialog(mContext);
-                try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.addCategory(Intent.CATEGORY_DEFAULT);
-                    intent.setDataAndType(Uri.fromFile(new File(mList.get(position).filePath)), mList.get(position).mimeType);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    // NA
-                }
+        public void showDate(String date) {
+            if (recentFileItemView.getVisibility() == View.VISIBLE) {
+                recentFileItemView.setVisibility(View.GONE);
             }
-        });
-
-        res.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                SidebarUtils.dragFile(v, mContext, new File(mList.get(position).filePath), mList.get(position).mimeType);
-                return true;
+            if (dateLabel.getVisibility() != View.VISIBLE) {
+                dateLabel.setVisibility(View.VISIBLE);
             }
-        });
-        TextView fileName = (TextView)res.findViewById(R.id.file_name);
-        fileName.setText(new File(mList.get(position).filePath).getName());
-        ImageView fileIcon = (ImageView)res.findViewById(R.id.file_icon);
-        fileIcon.setImageResource(mList.get(position).getIconId());
-        return res;
+            dateContent.setText(date);
+        }
     }
 }

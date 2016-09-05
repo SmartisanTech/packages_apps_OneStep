@@ -6,6 +6,25 @@
     android:paddingLeft="12dp"
     android:paddingRight="12dp">
     <LinearLayout
+        android:id="@+id/date_label"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_gravity="center"
+        android:background="#26000000"
+        android:visibility="gone"
+        >
+        <TextView
+            android:id="@+id/date_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:textSize="10dp"
+            android:textColor="#4cffffff"
+            android:paddingLeft="15dp"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/recent_file_item"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
         android:layout_gravity="center_vertical">

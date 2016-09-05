@@ -15,7 +15,7 @@ import java.util.Set;
 
 import libcore.io.Libcore;
 
-public class FileInfo {
+public class FileInfo implements Comparable<FileInfo> {
     public static final String[] MIMETYPE_BLACKLIST = new String[] { "image/*" };
 
     private static final String[] BLACKLIST = new String[] {
@@ -99,7 +99,7 @@ public class FileInfo {
             }
         }
         this.filePath = path;
-        this.mimeType =mimeType;
+        this.mimeType = mimeType;
         this.lastTime = getLastTime(filePath);
     }
 
@@ -212,5 +212,20 @@ public class FileInfo {
             // NA;
         }
         return Math.max(Math.max(aTime, cTime), mTime);
+    }
+
+    @Override
+    public int compareTo(FileInfo info) {
+        if (info == null) {
+            return -1;
+        }
+        if (lastTime == info.lastTime) {
+            return 0;
+        }
+        if (info.lastTime > lastTime) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 }

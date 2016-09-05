@@ -69,7 +69,6 @@ public class BookmarkAdapter extends BaseAdapter {
         List list = new ArrayList();
         String preLabel = null;
         long now = System.currentTimeMillis();
-
         for (int i = 0; i < items.length; i++) {
             BookmarkManager.BookmarkItem item = items[i];
             String label = Utils.convertDateToLabel(mContext, now, item.time);

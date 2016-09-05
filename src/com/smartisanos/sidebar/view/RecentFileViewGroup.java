@@ -2,8 +2,10 @@ package com.smartisanos.sidebar.view;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.RecentFileManager;
+import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
@@ -11,15 +13,24 @@ import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.File;
+
+import smartisanos.util.SidebarUtils;
+
 public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView {
 
+    private Context mContext;
     private ContentView mContentView;
 
     private EmptyView mEmptyView;
@@ -27,6 +38,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
     private ListView mRecentFileList;
     private TextView mTitle;
     private View mClearFile;
+    private RecentFileAdapter mRecentFileAdapter;
 
     private boolean mIsEmpty = true;
 
@@ -46,6 +58,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
     public RecentFileViewGroup(Context context, AttributeSet attrs,
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        mContext = context;
     }
 
     @Override
@@ -60,7 +73,10 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
         mTitle = (TextView) findViewById(R.id.title);
         mClearFile = findViewById(R.id.clear);
         mRecentFileList = (ListView)findViewById(R.id.recentfile_listview);
-        mRecentFileList.setAdapter(new RecentFileAdapter(mContext, this));
+        mRecentFileAdapter = new RecentFileAdapter(mContext, this);
+        mRecentFileList.setAdapter(mRecentFileAdapter);
+        mRecentFileList.setOnItemClickListener(mOnListItemClickedListener);
+        mRecentFileList.setOnItemLongClickListener(mOnListItemLongClickedListener);
 
         mClearFile.setOnClickListener(mClearListener);
     }
@@ -204,4 +220,40 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
         updateUI();
         mClearListener.onConfigurationChanged(newConfig);
     }
+
+    private AdapterView.OnItemClickListener mOnListItemClickedListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            if (mRecentFileAdapter == null) {
+                return;
+            }
+            Object obj = mRecentFileAdapter.getItem(position);
+            if (obj != null && obj instanceof FileInfo) {
+                FileInfo info = (FileInfo) obj;
+                Utils.dismissAllDialog(mContext);
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    intent.setDataAndType(Uri.fromFile(new File(info.filePath)), info.mimeType);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    // NA
+                }
+            }
+        }
+    };
+
+    private AdapterView.OnItemLongClickListener mOnListItemLongClickedListener = new AdapterView.OnItemLongClickListener() {
+
+        @Override
+        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+            Object obj = mRecentFileAdapter.getItem(position);
+            if (obj != null && obj instanceof FileInfo) {
+                FileInfo info = (FileInfo) obj;
+                SidebarUtils.dragFile(view, mContext, new File(info.filePath), info.mimeType);
+            }
+            return false;
+        }
+    };
 }
