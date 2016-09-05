@@ -49,8 +49,9 @@
 
     <string name="date_label_today">今天</string>
     <string name="date_label_yesterday">昨天</string>
-    <string name="date_label_last_week">前7天</string>
-    <string name="date_label_last_month">前30天</string>
+    <string name="date_label_last_week">过去七天</string>
+    <string name="date_label_last_month">最近一个月</string>
+    <string name="date_label_earlier">更早</string>
     <string name="date_label_month_January">一月</string>
     <string name="date_label_month_February">二月</string>
     <string name="date_label_month_March">三月</string>

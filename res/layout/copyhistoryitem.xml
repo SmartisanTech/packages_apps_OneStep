@@ -3,8 +3,7 @@
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="12dp"
-    android:paddingRight="12dp">
+    >
     <LinearLayout
         android:id="@+id/date_label"
         android:layout_width="match_parent"
@@ -23,13 +22,33 @@
             android:paddingLeft="15dp"
             />
     </LinearLayout>
-    <TextView
-        android:id="@+id/text"
+    <LinearLayout
+        android:id="@+id/text_item"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:singleLine="true"
-        android:textSize="12dp"
-        android:textColor="#ccffffff"
-        android:gravity="center_vertical|left"
-        />
+        android:layout_height="51dp"
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="15dp"
+        >
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:textSize="13.5dp"
+            android:textColor="#ccffffff"
+            android:gravity="center_vertical|left"
+            />
+        <ImageView
+            android:id="@+id/copy_item_icon"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:scaleType="fitXY"
+            android:layout_gravity="center_vertical|right"
+            android:background="@drawable/copy_icon"
+            android:layout_marginLeft="13dp"
+            android:layout_marginRight="13dp"
+            />
+    </LinearLayout>
 </com.smartisanos.sidebar.view.ListItemFrameLayout>

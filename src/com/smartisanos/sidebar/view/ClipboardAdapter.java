@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -89,12 +90,17 @@ public class ClipboardAdapter extends BaseAdapter{
             View view =  View.inflate(mContext,R.layout.copyhistoryitem, null);
             LinearLayout dateLabel = (LinearLayout) view.findViewById(R.id.date_label);
             TextView dateContent = (TextView) view.findViewById(R.id.date_content);
+            LinearLayout textItemView = (LinearLayout) view.findViewById(R.id.text_item);
             TextView textView = (TextView) view.findViewById(R.id.text);
+            ImageView copyItemIcon = (ImageView) view.findViewById(R.id.copy_item_icon);
+
             holder = new ViewHolder();
             holder.view = view;
             holder.dateLabel = dateLabel;
             holder.dateContent = dateContent;
+            holder.textItemView = textItemView;
             holder.textView = textView;
+            holder.copyItemIcon = copyItemIcon;
             view.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -115,21 +121,23 @@ public class ClipboardAdapter extends BaseAdapter{
         public LinearLayout dateLabel;
         public TextView dateContent;
 
+        public LinearLayout textItemView;
         public TextView textView;
+        public ImageView copyItemIcon;
 
         public void showItem(DataItem item) {
             if (dateLabel.getVisibility() == View.VISIBLE) {
                 dateLabel.setVisibility(View.GONE);
             }
-            if (textView.getVisibility() != View.VISIBLE) {
-                textView.setVisibility(View.VISIBLE);
+            if (textItemView.getVisibility() != View.VISIBLE) {
+                textItemView.setVisibility(View.VISIBLE);
             }
             textView.setText(item.mText);
         }
 
         public void showDate(String date) {
-            if (textView.getVisibility() == View.VISIBLE) {
-                textView.setVisibility(View.GONE);
+            if (textItemView.getVisibility() == View.VISIBLE) {
+                textItemView.setVisibility(View.GONE);
             }
             if (dateLabel.getVisibility() != View.VISIBLE) {
                 dateLabel.setVisibility(View.VISIBLE);

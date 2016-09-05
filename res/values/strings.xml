@@ -51,6 +51,7 @@
     <string name="date_label_yesterday">Yesterday</string>
     <string name="date_label_last_week">Last 7 Days</string>
     <string name="date_label_last_month">Last 30 Days</string>
+    <string name="date_label_earlier">Earlier</string>
     <string name="date_label_month_January">January</string>
     <string name="date_label_month_February">February</string>
     <string name="date_label_month_March">March</string>

@@ -274,18 +274,20 @@ public class Utils {
                 label = resources.getString(R.string.date_label_last_month);
             }
         } else {
-            Calendar now = Calendar.getInstance();
-            now.setTimeInMillis(currentTime);
-            Calendar date = Calendar.getInstance();
-            date.setTimeInMillis(time);
-            if (now.get(Calendar.YEAR) == date.get(Calendar.YEAR)) {
-                //same year, show month
-                int month = date.get(Calendar.MONTH);
-                label = resources.getString(Constants.MONTH_ARRAY[month]);
-            } else {
-                //show year
-                label = "" + date.get(Calendar.YEAR);
-            }
+            label = resources.getString(R.string.date_label_earlier);
+            //show month & year
+//            Calendar now = Calendar.getInstance();
+//            now.setTimeInMillis(currentTime);
+//            Calendar date = Calendar.getInstance();
+//            date.setTimeInMillis(time);
+//            if (now.get(Calendar.YEAR) == date.get(Calendar.YEAR)) {
+//                //same year, show month
+//                int month = date.get(Calendar.MONTH);
+//                label = resources.getString(Constants.MONTH_ARRAY[month]);
+//            } else {
+//                //show year
+//                label = "" + date.get(Calendar.YEAR);
+//            }
         }
         return label;
     }

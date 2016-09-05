@@ -8,9 +8,11 @@
     <LinearLayout
         android:id="@+id/clipboard_list_title"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="40dp"
+        android:background="#40000000"
         android:orientation="horizontal"
-        android:layout_gravity="center_vertical">
+        android:layout_gravity="center_vertical"
+        >
         <TextView
             android:id="@+id/clipboard_title"
             android:layout_width="wrap_content"
@@ -18,23 +20,27 @@
             android:text="@string/title_clipboard"
             android:textColor="#4cffffff"
             android:textSize="13.5dp"
-            android:layout_marginLeft="12dp"
+            android:layout_marginLeft="15dp"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            />
         <Button
             android:id="@+id/clear"
             android:background="@drawable/clear"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center_vertical"/>
+            android:layout_width="36dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            />
     </LinearLayout>
     <!-- divider -->
     <View
         android:layout_width="match_parent"
         android:layout_height="2px"
-        android:background="#14ffffff"/>
+        android:background="#0fffffff"/>
     <ListView
         android:id="@+id/clipboard_listview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:divider="@drawable/list_view_divider"
+        />
 </LinearLayout>

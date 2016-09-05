@@ -248,6 +248,9 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
 
         @Override
         public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+            if (mRecentFileAdapter == null) {
+                return false;
+            }
             Object obj = mRecentFileAdapter.getItem(position);
             if (obj != null && obj instanceof FileInfo) {
                 FileInfo info = (FileInfo) obj;

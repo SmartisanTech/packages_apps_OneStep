@@ -4,4 +4,5 @@
     <color name="sidebar_root_background">#cc000000</color>
     <color name="light_bg_color">#00000000</color>
     <color name="dark_bg_color">#66000000</color>
+    <color name="content_view_background_color">#40000000</color>
 </resources>

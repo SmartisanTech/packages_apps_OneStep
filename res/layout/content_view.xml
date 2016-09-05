@@ -3,7 +3,7 @@
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
     android:descendantFocusability="afterDescendants"
     android:fitsSystemWindows="true"
-    android:background="@color/dim_color"
+    android:background="#4c000000"
     android:focusable="true" >
     <include layout="@layout/photo_view_group"
         android:visibility="invisible"/>
@@ -14,5 +14,5 @@
     <include layout="@layout/additem_view_group"
         android:visibility="invisible"/>
     <include layout="@layout/bookmark_view_group"
-        android:visibility="invisible"/>
+        android:visibility="gone"/>
 </com.smartisanos.sidebar.view.ContentView>

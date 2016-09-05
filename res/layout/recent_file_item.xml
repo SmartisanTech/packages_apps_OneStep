@@ -3,8 +3,7 @@
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="12dp"
-    android:paddingRight="12dp">
+    >
     <LinearLayout
         android:id="@+id/date_label"
         android:layout_width="match_parent"
@@ -26,23 +25,27 @@
     <LinearLayout
         android:id="@+id/recent_file_item"
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
-        android:layout_gravity="center_vertical">
+        android:layout_height="51dp"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:paddingRight="12dp"
+        >
         <ImageView
             android:id="@+id/file_icon"
-            android:layout_width="17dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_gravity="center_vertical"
-            android:layout_height="20dp"/>
+            />
         <View
-            android:layout_width="12dp"
+            android:layout_width="9dp"
             android:layout_height="match_parent"/>
         <TextView
             android:id="@+id/file_name"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:singleLine="true"
-            android:textSize="12dp"
-            android:textColor="#ccffffff"
+            android:textSize="13.5dp"
+            android:textColor="#e6ffffff"
             android:gravity="center_vertical|left"/>
     </LinearLayout>
 </com.smartisanos.sidebar.view.ListItemFrameLayout>

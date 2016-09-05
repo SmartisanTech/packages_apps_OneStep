@@ -76,7 +76,6 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
         mClipList = (ListView)findViewById(R.id.clipboard_listview);
         mClipboardAdapter = new ClipboardAdapter(mContext, this);
         mClipList.setAdapter(mClipboardAdapter);
-
         mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
         mClipList.setOnItemLongClickListener(mOnClipBoardItemLongClickListener);
         mClearClipboard.setOnClickListener(mClearListener);
@@ -210,7 +209,6 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     private AdapterView.OnItemClickListener mOnClipBoardItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            log.info("onItemClick [" + position + "] [" + id + "]");
             if (mClipboardAdapter == null) {
                 return;
             }
@@ -233,7 +231,6 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     private AdapterView.OnItemLongClickListener mOnClipBoardItemLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-            log.info("onItemLongClick ["+position+"] ["+id+"]");
             if (view == null) {
                 log.info("onItemLongClick view is null ["+position+"] ["+id+"]");
                 return false;
