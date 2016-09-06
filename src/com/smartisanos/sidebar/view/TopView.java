@@ -252,6 +252,22 @@ public class TopView extends FrameLayout {
         });
         showShadowLine.setDelay(170);
 
+        mDarkBgView.setVisibility(View.INVISIBLE);
+        setBgMode(bgMode == SidebarController.BG_MODE_DARK);
+        Anim showBgShadow = new Anim(mDarkBgView, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        showBgShadow.setListener(new AnimListener() {
+            @Override
+            public void onStart() {
+                mDarkBgView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onComplete(int type) {
+                mDarkBgView.setAlpha(1);
+            }
+        });
+        showBgShadow.setDelay(120);
+
         mEnterAnimTimeLine = new AnimTimeLine();
         mEnterAnimTimeLine.addAnim(photoMove);
         mEnterAnimTimeLine.addAnim(fileMove);
@@ -260,6 +276,7 @@ public class TopView extends FrameLayout {
         mEnterAnimTimeLine.addAnim(fileAlpha);
         mEnterAnimTimeLine.addAnim(clipboardAlpha);
         mEnterAnimTimeLine.addAnim(showShadowLine);
+        mEnterAnimTimeLine.addAnim(showBgShadow);
         mEnterAnimTimeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
@@ -271,7 +288,6 @@ public class TopView extends FrameLayout {
                 if (mEnterAnimTimeLine != null) {
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, false);
                     TopView.this.setBackgroundResource(R.drawable.background);
-                    setBgMode(bgMode == SidebarController.BG_MODE_DARK);
                     mPhotos.setAlpha(1);
                     mFile.setAlpha(1);
                     mClipboard.setAlpha(1);

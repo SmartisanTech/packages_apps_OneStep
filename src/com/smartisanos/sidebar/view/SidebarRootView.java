@@ -417,8 +417,31 @@ public class SidebarRootView extends FrameLayout {
         int delta = sidebarWidth;
         int fromX = isLeft ? -delta : delta;
         int time = 150;
+        Vector3f alphaFrom = new Vector3f();
+        Vector3f alphaTo = new Vector3f(0, 0, 1);
         Anim moveAnim = new Anim(this, Anim.MOVE, time, 0, new Vector3f(fromX, 0), new Vector3f());
-        Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+        Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+
+        mSideView.getDarkBgView().setVisibility(View.INVISIBLE);
+        mSideView.getAddAndExitDarkBg().setVisibility(View.INVISIBLE);
+        Anim showShadowBg = new Anim(mSideView.getDarkBgView(), Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        showShadowBg.setListener(new AnimListener() {
+            @Override
+            public void onStart() {
+                mSideView.setBgMode(bgMode == SidebarController.BG_MODE_DARK);
+                mSideView.getDarkBgView().setVisibility(View.VISIBLE);
+                mSideView.getAddAndExitDarkBg().setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onComplete(int type) {
+                mSideView.getDarkBgView().setAlpha(1);
+                mSideView.getAddAndExitDarkBg().setAlpha(1);
+            }
+        });
+        showShadowBg.setDelay(100);
+        showShadowBg.start();
+
         mEnterAnimTimeLine = new AnimTimeLine();
         mEnterAnimTimeLine.addAnim(moveAnim);
         mEnterAnimTimeLine.addAnim(alphaAnim);
@@ -434,7 +457,6 @@ public class SidebarRootView extends FrameLayout {
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_ENTER, false);
                     SidebarRootView.this.setBackgroundResource(R.color.sidebar_root_background);
                     mSideView.setBackgroundResource(R.drawable.background);
-                    mSideView.setBgMode(bgMode == SidebarController.BG_MODE_DARK);
                     SidebarRootView.this.setAlpha(1);
                     SidebarRootView.this.setTranslationX(0);
                     if (shadowView != null) {

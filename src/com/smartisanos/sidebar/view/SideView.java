@@ -472,6 +472,14 @@ public class SideView extends RelativeLayout {
         return timeLine;
     }
 
+    public FrameLayout getDarkBgView() {
+        return mDarkBgView;
+    }
+
+    public LinearLayout getAddAndExitDarkBg() {
+        return mAddAndExitDarkBg;
+    }
+
     public boolean setBgMode(boolean toDark) {
         if (mDarkBgView == null || mAddAndExitDarkBg == null) {
             log.error("mDarkBgView or mAddAndExitDarkBg is null");
