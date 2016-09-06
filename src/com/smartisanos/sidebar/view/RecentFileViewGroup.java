@@ -4,6 +4,7 @@ import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.IEmpty;
+import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
@@ -25,10 +26,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import smartisanos.util.SidebarUtils;
 
 public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView {
+    private static final LOG log = LOG.getInstance(RecentFileViewGroup.class);
 
     private Context mContext;
     private ContentView mContentView;
@@ -129,6 +133,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
     }
 
     public void show(boolean anim) {
+        RecentFileManager.getInstance(mContext).refresh();
         RecentFileManager.getInstance(mContext).startSearchFile();
         setVisibility(VISIBLE);
         if (anim) {
@@ -228,7 +233,10 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
                 return;
             }
             Object obj = mRecentFileAdapter.getItem(position);
-            if (obj != null && obj instanceof FileInfo) {
+            if (obj == null) {
+                return;
+            }
+            if (obj instanceof FileInfo) {
                 FileInfo info = (FileInfo) obj;
                 Utils.dismissAllDialog(mContext);
                 try {
@@ -240,6 +248,14 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
                 } catch (ActivityNotFoundException e) {
                     // NA
                 }
+            } else if (obj instanceof ArrayList) {
+                List<FileInfo> list = (List<FileInfo>)obj;
+                for (FileInfo info : list) {
+                    info.invisibleMode = false;
+                }
+                mRecentFileAdapter.addItems(position, list);
+                mRecentFileAdapter.removeItem(obj);
+                mRecentFileAdapter.notifyDataSetChanged();
             }
         }
     };

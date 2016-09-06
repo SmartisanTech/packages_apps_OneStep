@@ -328,4 +328,8 @@ public class RecentFileManager extends DataManager implements IClear{
         }
         notifyListener();
     }
+
+    public void refresh() {
+        notifyListener();
+    }
 }

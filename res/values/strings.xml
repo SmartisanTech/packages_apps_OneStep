@@ -64,4 +64,5 @@
     <string name="date_label_month_October">October</string>
     <string name="date_label_month_November">November</string>
     <string name="date_label_month_December">十二月</string>
+    <string name="list_view_look_more">More</string>
 </resources>

@@ -49,4 +49,8 @@ public class RecentClipManager extends DataManager implements IClear{
             notifyListener();
         }
     };
+
+    public void refresh() {
+        notifyListener();
+    }
 }

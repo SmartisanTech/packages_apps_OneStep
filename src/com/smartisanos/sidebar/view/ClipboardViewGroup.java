@@ -24,6 +24,9 @@ import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import smartisanos.util.SidebarUtils;
 
 public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView {
@@ -39,6 +42,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
 
     private EmptyView mEmptyView;
     private boolean mIsEmpty = true;
+    private Context mContext;
 
     public ClipboardViewGroup(Context context) {
         this(context, null);
@@ -56,6 +60,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     public ClipboardViewGroup(Context context, AttributeSet attrs,
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        mContext = context;
     }
 
     public void setContentView(ContentView cv){
@@ -125,6 +130,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     }
 
     public void show(boolean anim) {
+        RecentClipManager.getInstance(mContext).refresh();
         setVisibility(View.VISIBLE);
         if (anim) {
             int time = 200;
@@ -213,7 +219,10 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                 return;
             }
             Object obj = mClipboardAdapter.getItem(position);
-            if (obj != null && obj instanceof ClipboardAdapter.DataItem) {
+            if (obj == null) {
+                return;
+            }
+            if (obj instanceof ClipboardAdapter.DataItem) {
                 ClipboardAdapter.DataItem item = (ClipboardAdapter.DataItem) obj;
                 String text = item.mText;
                 Utils.copyText(mContext, text, false);
@@ -224,6 +233,14 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                 mClipboardCopyToast.getWindowParams().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
                 mClipboardCopyToast.getWindowParams().token = view.getWindowToken();
                 mClipboardCopyToast.show();
+            } else if (obj instanceof ArrayList) {
+                List<ClipboardAdapter.DataItem> list = (List<ClipboardAdapter.DataItem>) obj;
+                for (ClipboardAdapter.DataItem item : list) {
+                    item.invisibleMode = false;
+                }
+                mClipboardAdapter.addItems(position, list);
+                mClipboardAdapter.removeItem(obj);
+                mClipboardAdapter.notifyDataSetChanged();
             }
         }
     };
