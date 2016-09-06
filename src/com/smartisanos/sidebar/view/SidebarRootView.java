@@ -165,21 +165,22 @@ public class SidebarRootView extends FrameLayout {
         @Override
         public void onGlobalLayout() {
             getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            mDragging = true;
             mDragView = new DragView(mContext, iconOrig, mListViewItem, mLoc);
             mDragView.showView();
             mTrash.trashAppearWithAnim();
+            mShowDragViewWhenRelayout = null;
         }
     }
 
     private boolean mDragging = false;
+    private ShowDragViewWhenRelayout mShowDragViewWhenRelayout;
     public void startDrag(Drawable icon, View view, int[] loc) {
-        if(mDragging){
+        if(mDragging || mShowDragViewWhenRelayout != null){
             return ;
         }
-        mDragging = true;
-        ShowDragViewWhenRelayout showDragViewWhenRelayout = new ShowDragViewWhenRelayout(
-                icon, view, loc);
-        getViewTreeObserver().addOnGlobalLayoutListener(showDragViewWhenRelayout);
+        mShowDragViewWhenRelayout = new ShowDragViewWhenRelayout(icon, view, loc);
+        getViewTreeObserver().addOnGlobalLayoutListener(mShowDragViewWhenRelayout);
         //set sidebar to full screen
         SidebarController.getInstance(mContext).updateDragWindow(true);
     }
