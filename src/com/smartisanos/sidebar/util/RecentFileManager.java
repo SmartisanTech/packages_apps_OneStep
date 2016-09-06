@@ -11,7 +11,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore.Audio;
-import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Files.FileColumns;
 import android.provider.MediaStore.Video;
 import android.util.Log;
@@ -56,57 +55,20 @@ public class RecentFileManager extends DataManager implements IClear{
     private static final int MSG_UPDATE_DATABASE_LIST = 0;
     private static final int MSG_SEARCH_FILE = 1;
 
-    private static final int MUSIC_TYPE = 1;
-    private static final int VIDEO_TYPE = 2;
-    private static final int FILE_TYPE = 3;
-
     private static final String VOLUME_EXTERNAL = "external";
-    private static final Uri fileUri = Files.getContentUri(VOLUME_EXTERNAL);
-    private static final Uri musicUri = Audio.Media.getContentUri(VOLUME_EXTERNAL);
-    private static final Uri videoUri = Video.Media.getContentUri(VOLUME_EXTERNAL);
-
-    private static final String[] WANTED_MIMETYPE = new String[] {
-        "application/zip",
-        "application/msword",
-        "application/vnd.ms-powerpoint",
-        "text/plain",
-        "application/vnd.ms-excel",
-        "application/pdf"
+    private static final Uri[] URIS = new Uri[] {
+        Audio.Media.getContentUri(VOLUME_EXTERNAL),
+        Video.Media.getContentUri(VOLUME_EXTERNAL)
     };
-
-    private static final String[] WANTED_SUFFIX = new String[] {
-        ".zip",
-        ".7z",
-        ".rar",
-        ".apk",
-        ".pptx",
-        ".ppt",
-        ".key",
-        ".numbers",
-        ".xlsx",
-        ".doc",
-        ".docx",
-        ".pages"
-    };
-
-    private static final String FILE_SELECTION;
-
-    static {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(" + "mime_type == " + ("'" + WANTED_MIMETYPE[0] + "'") + ")");
-        for(int i = 1; i < WANTED_MIMETYPE.length; ++ i) {
-            sb.append(" OR (" + "mime_type == " + ("'" + WANTED_MIMETYPE[i] + "'") + ")");
-        }
-        for(int i = 0; i < WANTED_SUFFIX.length; ++ i) {
-            sb.append(" OR (" + "_data LIKE " + ("'%" + WANTED_SUFFIX[i] + "'") + ")");
-        }
-        FILE_SELECTION = sb.toString();
-    }
 
     private static final String[] TARGET_DIR = new String[]{
         Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/QQfile_recv/",
         Environment.getExternalStorageDirectory().getAbsolutePath()+"/tencent/MicroMsg/Download/",
-        Environment.getExternalStorageDirectory().getAbsolutePath()+"/DingTalk/"
+        Environment.getExternalStorageDirectory().getAbsolutePath()+"/DingTalk/",
+        Environment.getExternalStorageDirectory().getAbsolutePath()+"/微盘/",
+        Environment.getExternalStorageDirectory().getAbsolutePath()+"/yunpan/",
+        Environment.getExternalStorageDirectory().getAbsolutePath()+"/BaiduNetdisk/",
+        Environment.getExternalStorageDirectory().getAbsolutePath()+"/Download/",
     };
 
     private List<FileInfo> mList = new ArrayList<FileInfo>();
@@ -149,12 +111,10 @@ public class RecentFileManager extends DataManager implements IClear{
     public void startFileObserver(){
         synchronized (mDatabaseObserver) {
             if (!mRegistered) {
-                mContext.getContentResolver().registerContentObserver(fileUri,
-                        true, mDatabaseObserver);
-                mContext.getContentResolver().registerContentObserver(musicUri,
-                        true, mDatabaseObserver);
-                mContext.getContentResolver().registerContentObserver(videoUri,
-                        true, mDatabaseObserver);
+                for (Uri uri : URIS) {
+                    mContext.getContentResolver().registerContentObserver(uri,
+                            true, mDatabaseObserver);
+                }
                 mContext.getContentResolver().registerContentObserver(
                         RecorderInfo.RECORDER_URI, true, mDatabaseObserver);
                 mRegistered = true;
@@ -210,12 +170,13 @@ public class RecentFileManager extends DataManager implements IClear{
         }
     }
 
-    private void updateDatabaseContent(){
+    private void updateDatabaseContent() {
         ThreadVerify.verify(false);
         mCursorCacheList.clear();
-        mCursorCacheList.addAll(getFileInfoByCursor(getContentCursor(MUSIC_TYPE)));
-        mCursorCacheList.addAll(getFileInfoByCursor(getContentCursor(VIDEO_TYPE)));
-        mCursorCacheList.addAll(getFileInfoByCursor(getContentCursor(FILE_TYPE)));
+        for (Uri uri : URIS) {
+            mCursorCacheList.addAll(getFileInfoByCursor(mContext
+                    .getContentResolver().query(uri, FILE_PROJECTION, null, null, null)));
+        }
         mCursorCacheList.addAll(RecorderInfo.getFileInfoFromRecorder(mContext));
         if (false) {
             Log.d(TAG, "dump cursor cache list !");
@@ -303,18 +264,6 @@ public class RecentFileManager extends DataManager implements IClear{
             }
         }
         return infos;
-    }
-
-    private Cursor getContentCursor(int type){
-        if(type == MUSIC_TYPE){
-            return mContext.getContentResolver().query(musicUri, FILE_PROJECTION, null,null, null);
-        }else if(type == VIDEO_TYPE){
-            return mContext.getContentResolver().query(videoUri, FILE_PROJECTION, null,null, null);
-        }else if(type == FILE_TYPE){
-            return mContext.getContentResolver().query(fileUri, FILE_PROJECTION, FILE_SELECTION,null, null);
-        }else{
-            return mContext.getContentResolver().query(fileUri, FILE_PROJECTION, FILE_SELECTION,null, null);
-        }
     }
 
     private class ReceiveFileOberver extends FileObserver{
