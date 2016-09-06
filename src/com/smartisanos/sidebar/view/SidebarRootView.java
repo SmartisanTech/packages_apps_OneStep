@@ -279,6 +279,10 @@ public class SidebarRootView extends FrameLayout {
         if (!mDragging) {
             return;
         }
+        if (mDragView == null) {
+            log.error("dropDrag return by mDragView is null");
+            return;
+        }
         mDragDroping = true;
         DropAnim anim = new DropAnim(mDragView);
         anim.setDuration(200);
