@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Path.Direction;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
@@ -14,6 +15,7 @@ public class RoundCornerFrameLayout extends FrameLayout {
 
     private float mRadius;
     private Path mClip;
+    private Drawable mViewMask;
 
     public RoundCornerFrameLayout(Context context) {
         this(context, null);
@@ -32,6 +34,7 @@ public class RoundCornerFrameLayout extends FrameLayout {
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mRadius = context.getResources().getDimensionPixelSize(R.dimen.clip_radius);
+        mViewMask = context.getDrawable(R.drawable.view_mask);
     }
 
     @Override
@@ -47,6 +50,11 @@ public class RoundCornerFrameLayout extends FrameLayout {
         int saveCount = canvas.save();
         canvas.clipPath(mClip);
         super.dispatchDraw(canvas);
+        // draw mask
+        int bottom = mScrollY + mBottom - mTop - mPaddingBottom;
+        mViewMask.setBounds(mScrollX + mPaddingLeft, bottom - mViewMask.getMinimumHeight(),
+                mScrollX + mRight - mLeft - mPaddingRight, bottom);
+        mViewMask.draw(canvas);
         canvas.restoreToCount(saveCount);
     }
 }

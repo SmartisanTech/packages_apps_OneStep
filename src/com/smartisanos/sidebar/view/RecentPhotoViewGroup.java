@@ -22,7 +22,7 @@ import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
-public class RecentPhotoViewGroup extends FrameLayout implements IEmpty, ContentView.ISubView {
+public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView {
     private static final LOG log = LOG.getInstance(RecentPhotoViewGroup.class);
 
     private ContentView mContentView;
