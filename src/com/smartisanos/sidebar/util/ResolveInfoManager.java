@@ -428,7 +428,8 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
                 }
             }
         }
-        if (!addComponent) {
+
+        if (!addComponent && sAutoAddPackageSet.contains(packageName)) {
             for (ResolveInfoGroup rig : rigList) {
                 addResolveInfoGroup(rig);
             }
