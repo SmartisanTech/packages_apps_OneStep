@@ -78,7 +78,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
         mContainer = findViewById(R.id.clipboard_container);
         mTitle = (TextView) findViewById(R.id.clipboard_title);
         mClearClipboard = findViewById(R.id.clear);
-        mClipList = (ListView)findViewById(R.id.clipboard_listview);
+        mClipList = (ListView) findViewById(R.id.clipboard_listview);
         mClipboardAdapter = new ClipboardAdapter(mContext, this);
         mClipList.setAdapter(mClipboardAdapter);
         mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
@@ -130,7 +130,14 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     }
 
     public void show(boolean anim) {
-        RecentClipManager.getInstance(mContext).refresh();
+        mClipList.setSelectionAfterHeaderView();
+        mClipList.requestLayout();
+        post(new Runnable() {
+            @Override
+            public void run() {
+                RecentClipManager.getInstance(mContext).refresh();
+            }
+        });
         setVisibility(View.VISIBLE);
         if (anim) {
             int time = 200;

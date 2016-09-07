@@ -133,8 +133,16 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
     }
 
     public void show(boolean anim) {
-        RecentFileManager.getInstance(mContext).refresh();
         RecentFileManager.getInstance(mContext).startSearchFile();
+        mRecentFileList.setSelectionAfterHeaderView();
+        mRecentFileList.requestLayout();
+        post(new Runnable() {
+            @Override
+            public void run() {
+                RecentFileManager.getInstance(mContext).refresh();
+            }
+        });
+
         setVisibility(VISIBLE);
         if (anim) {
             int time = 200;
