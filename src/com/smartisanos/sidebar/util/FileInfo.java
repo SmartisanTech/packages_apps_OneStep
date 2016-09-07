@@ -1,5 +1,6 @@
 package com.smartisanos.sidebar.util;
 
+import android.content.ClipDescription;
 import android.os.Environment;
 import android.system.ErrnoException;
 import android.text.TextUtils;
@@ -58,6 +59,36 @@ public class FileInfo implements Comparable<FileInfo> {
         PATH_MASK.add("app_style");//storage/emulated/0/ZAKER/DataStr/app_style/app_style.txt
         PATH_MASK.add("zaker");///storage/emulated/0/ZAKER/DataStr/interaction/interaction.txt
         PATH_MASK.add("emotion");///storage/emulated/0/Android/data/com.eg.android.AlipayGphone/files/emotion/magic/1788303168490637619/1788303168490637619.zip
+    }
+
+    private static final Set<String> WANTED_MIMETYPE;
+    private static final Set<String> WANTED_SUFFIX;
+
+    static {
+        WANTED_MIMETYPE = new HashSet<String>();
+        WANTED_MIMETYPE.add("application/zip");
+        WANTED_MIMETYPE.add("application/msword");
+        WANTED_MIMETYPE.add("application/vnd.ms-powerpoint");
+        WANTED_MIMETYPE.add("application/vnd.ms-excel");
+        WANTED_MIMETYPE.add("application/pdf");
+        WANTED_MIMETYPE.add("text/plain");
+        WANTED_MIMETYPE.add("vedio/*");
+        WANTED_MIMETYPE.add("audio/*");
+
+        WANTED_SUFFIX = new HashSet<String>();
+        WANTED_SUFFIX.add("rar");
+        WANTED_SUFFIX.add("zip");
+        WANTED_SUFFIX.add("7z");
+        WANTED_SUFFIX.add("apk");
+        WANTED_SUFFIX.add("pptx");
+        WANTED_SUFFIX.add("ppt");
+        WANTED_SUFFIX.add("key");
+        WANTED_SUFFIX.add("numbers");
+        WANTED_SUFFIX.add("xlsx");
+        WANTED_SUFFIX.add("doc");
+        WANTED_SUFFIX.add("docx");
+        WANTED_SUFFIX.add("pages");
+        WANTED_SUFFIX.add("pdf");
     }
 
     private static final Map<File, Set<String>> sTypeInSpeDir;
@@ -165,11 +196,25 @@ public class FileInfo implements Comparable<FileInfo> {
         return false;
     }
 
+    private static boolean isMimeTypeOrSuffixWanted(String mimeType, String suffix) {
+        if (WANTED_SUFFIX.contains(suffix)) {
+            return true;
+        }
+
+        for (String want_mime : WANTED_MIMETYPE) {
+            if (ClipDescription.compareMimeTypes(want_mime, mimeType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean isMimeTypeAndFilePathValid(String mimeType, String filePath) {
         if (TextUtils.isEmpty(filePath) || TextUtils.isEmpty(mimeType)) {
             return false;
         }
-        if (mimeType.startsWith("image/")) {
+
+        if(!isMimeTypeOrSuffixWanted(mimeType, getSuffix(filePath))) {
             return false;
         }
 
@@ -177,9 +222,11 @@ public class FileInfo implements Comparable<FileInfo> {
         if (isTypeInSpeDir(file)) {
             return false;
         }
+
         if (!file.isFile() || isMaskFile(file.getParentFile())) {
             return false;
         }
+
         if (file.getName().toLowerCase().contains("log")) {
             if (!file.getName().toLowerCase().contains("logo")) {
                 return false;

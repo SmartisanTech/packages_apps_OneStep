@@ -143,6 +143,8 @@ public class RecentFileManager extends DataManager implements IClear{
             for (File file : dir.listFiles()) {
                 if (file.isFile()) {
                     filePathList.add(file.getAbsolutePath());
+                } else {
+                    filePathList.addAll(searchDestinationFolder(file));
                 }
             }
         }
