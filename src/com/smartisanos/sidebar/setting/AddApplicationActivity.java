@@ -90,6 +90,8 @@ public class AddApplicationActivity extends BaseActivity {
             if (view == null) {
                 mHolder = new ViewHolder();
                 view = mInflater.inflate(R.layout.app_picker_item, null);
+                mHolder.spaceViewTop = view.findViewById(R.id.space_top);
+                mHolder.spaceViewBottom = view.findViewById(R.id.space_bottom);
                 mHolder.subViews[0] = (AppPickerSubView) view.findViewById(R.id.app_picker_sub_view_1);
                 mHolder.subViews[1] = (AppPickerSubView) view.findViewById(R.id.app_picker_sub_view_2);
                 mHolder.subViews[2] = (AppPickerSubView) view.findViewById(R.id.app_picker_sub_view_3);
@@ -125,6 +127,7 @@ public class AddApplicationActivity extends BaseActivity {
                 }
             }
 
+            mHolder.updateSpace(position, getCount());
             int bgRes = getBackgrondResId(position, getCount());
             if (bgRes > 0) {
                 mHolder.view.setBackgroundResource(bgRes);
@@ -154,7 +157,15 @@ public class AddApplicationActivity extends BaseActivity {
 
         class ViewHolder {
             View view;
+            View spaceViewTop, spaceViewBottom;
             AppPickerSubView[] subViews = new AppPickerSubView[3];
+
+            public void updateSpace(int postion, int all) {
+                spaceViewTop.setVisibility(postion == 0 ? View.VISIBLE
+                        : View.GONE);
+                spaceViewBottom.setVisibility(postion == all - 1 ? View.VISIBLE
+                        : View.GONE);
+            }
         }
 
         class ViewItem {

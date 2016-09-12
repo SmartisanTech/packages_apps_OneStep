@@ -13,6 +13,7 @@ import android.widget.TextView;
 public class AppPickerSubView extends RelativeLayout implements View.OnClickListener {
 
     private boolean mSelected = false;
+    private View mBackgroundView;
     private ImageView mIcon, mSelectedView;
     private TextView mAppName;
     private OnCheckedChangeListener mListener;
@@ -38,6 +39,7 @@ public class AppPickerSubView extends RelativeLayout implements View.OnClickList
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mBackgroundView = findViewById(R.id.background_view);
         mIcon = (ImageView) findViewById(R.id.icon);
         mSelectedView = (ImageView) findViewById(R.id.selected);
         mAppName = (TextView) findViewById(R.id.app_name);
@@ -58,6 +60,11 @@ public class AppPickerSubView extends RelativeLayout implements View.OnClickList
             mSelectedView.setVisibility(mSelected ? View.VISIBLE : View.INVISIBLE);
             if (mListener != null) {
                 mListener.onCheckedChanged(this, mSelected);
+            }
+            if (mSelected) {
+                mBackgroundView.setBackgroundResource(R.drawable.app_select_bg_selected);
+            } else {
+                mBackgroundView.setBackgroundResource(R.drawable.app_select_bg);
             }
         }
     }

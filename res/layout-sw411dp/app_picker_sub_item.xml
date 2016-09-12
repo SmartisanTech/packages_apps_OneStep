@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.smartisanos.sidebar.setting.AppPickerSubView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="102dp"
-    android:layout_height="116dp">
+    android:layout_width="116dp"
+    android:layout_height="132dp">
     <View
         android:id="@+id/background_view"
-        android:layout_width="84dp"
-        android:layout_height="98dp"
+        android:layout_width="95.75dp"
+        android:layout_height="111.72dp"
         android:layout_centerInParent="true"
         android:background="@drawable/app_select_bg"/>
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="54.72dp"
+        android:layout_height="54.72dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="27dp"
+        android:layout_marginTop="30.79dp"
         android:adjustViewBounds="true"/>
     <TextView
         android:id="@+id/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="86dp"
+        android:maxWidth="98dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:paddingBottom="18dp"
+        android:paddingBottom="20.5dp"
         android:gravity="center"
         android:singleLine="true"
         android:textColor="#9a000000"
-        android:textSize="10dp"/>
+        android:textSize="11.4dp"/>
     <ImageView
         android:id="@+id/selected"
         android:layout_width="wrap_content"
