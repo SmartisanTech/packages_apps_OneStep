@@ -100,10 +100,28 @@ public class AddApplicationActivity extends BaseActivity {
             }
             int index = position * 3;
             for (int i = 0; i < 3; ++i) {
-                if (index + i < mItems.size()) {
-                    mHolder.subViews[i].setAppItem(mItems.get(index + i).appItem, mItems.get(index + i).selected);
+                AppPickerSubView apsv = mHolder.subViews[i];
+                final int pos = index + i;
+                if (pos < mItems.size()) {
+                    final ViewItem ai = mItems.get(pos);
+                    apsv.setVisibility(View.VISIBLE);
+                    apsv.setImageBitmap(ai.appItem.getAvatar());
+                    apsv.setText(ai.appItem.getDisplayName());
+                    apsv.setListener(null);
+                    apsv.setSelected(ai.selected);
+                    apsv.setListener(new AppPickerSubView.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(AppPickerSubView view, boolean isChecked) {
+                            mItems.get(pos).selected = isChecked;
+                            if (isChecked) {
+                                AppManager.getInstance(getApplicationContext()).addAppItem(ai.appItem);
+                            } else {
+                                AppManager.getInstance(getApplicationContext()).removeAppItem(ai.appItem);
+                            }
+                        }
+                    });
                 } else {
-                    mHolder.subViews[i].clear();
+                    apsv.setVisibility(View.INVISIBLE);
                 }
             }
 

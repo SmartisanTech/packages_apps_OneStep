@@ -1,10 +1,9 @@
 package com.smartisanos.sidebar.setting;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.util.AppItem;
-import com.smartisanos.sidebar.util.AppManager;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,10 +12,11 @@ import android.widget.TextView;
 
 public class AppPickerSubView extends RelativeLayout implements View.OnClickListener {
 
-    private AppItem mAppItem;
     private boolean mSelected = false;
     private ImageView mIcon, mSelectedView;
     private TextView mAppName;
+    private OnCheckedChangeListener mListener;
+
     public AppPickerSubView(Context context) {
         this(context, null);
     }
@@ -44,44 +44,34 @@ public class AppPickerSubView extends RelativeLayout implements View.OnClickList
         setOnClickListener(this);
     }
 
-    public void setAppItem(AppItem ai, boolean selected) {
-        mAppItem = ai;
-        mSelected = selected;
-        updateUI();
+    public void setImageBitmap(Bitmap bitmap) {
+        mIcon.setImageBitmap(bitmap);
     }
 
-    public void clear() {
-        mAppItem = null;
-        mSelected = false;
-        updateUI();
+    public void setText(CharSequence cs) {
+        mAppName.setText(cs);
     }
 
-    private void updateUI() {
-        if (mIcon == null || mSelectedView == null) {
-            // inflate not finished
-            return;
-        }
-        if (mAppItem != null) {
-            setVisibility(View.VISIBLE);
-            mIcon.setImageBitmap(mAppItem.getAvatar());
-            mAppName.setText(mAppItem.getDisplayName());
+    public void setSelected(boolean selected) {
+        if (mSelected != selected) {
+            mSelected = selected;
             mSelectedView.setVisibility(mSelected ? View.VISIBLE : View.INVISIBLE);
-        } else {
-            setVisibility(View.INVISIBLE);
+            if (mListener != null) {
+                mListener.onCheckedChanged(this, mSelected);
+            }
         }
+    }
+
+    public void setListener(OnCheckedChangeListener listener) {
+        mListener = listener;
     }
 
     @Override
     public void onClick(View v) {
-        if (mAppItem != null) {
-            if (mSelected) {
-                AppManager.getInstance(mContext).removeAppItem(mAppItem);
-                mSelected = false;
-            } else {
-                AppManager.getInstance(mContext).addAppItem(mAppItem);
-                mSelected = true;
-            }
-            updateUI();
-        }
+        setSelected(!mSelected);
+    }
+
+    public static interface OnCheckedChangeListener {
+        void onCheckedChanged(AppPickerSubView view, boolean isChecked);
     }
 }
