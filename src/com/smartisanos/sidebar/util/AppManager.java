@@ -122,6 +122,17 @@ public class AppManager extends DataManager {
         }
     }
 
+    public boolean isAppItemAdded(AppItem ai) {
+        synchronized (mAddedAppItems) {
+            for (AppItem addedItem : mAddedAppItems) {
+                if (addedItem == ai || addedItem.equals(ai)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public List<AppItem> getAddedAppItem() {
         List<AppItem> ret = new ArrayList<AppItem>();
         synchronized (mAddedAppItems) {

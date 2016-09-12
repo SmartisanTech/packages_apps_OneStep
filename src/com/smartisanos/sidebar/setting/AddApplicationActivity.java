@@ -5,6 +5,8 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,9 +56,22 @@ public class AddApplicationActivity extends BaseActivity {
         private AppManager.RecentUpdateListener mUpdateListener = new AppManager.RecentUpdateListener() {
             @Override
             public void onUpdate() {
-                //refreshData();
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onDataChange();
+                    }
+                });
             }
         };
+
+        private void onDataChange() {
+            for (ViewItem vi : mItems) {
+                boolean added = AppManager.getInstance(getApplicationContext()).isAppItemAdded(vi.appItem);
+                vi.selected = added;
+            }
+            notifyDataSetChanged();
+        }
 
         private void refreshData() {
             mItems.clear();

@@ -329,6 +329,17 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         notifyUpdate();
     }
 
+    public boolean isResolveInfoGroupAdded(ResolveInfoGroup rig) {
+        synchronized (mList) {
+            for (ResolveInfoGroup addedItem : mList) {
+                if (addedItem == rig || addedItem.equals(rig)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public List<ResolveInfoGroup> getAddedResolveInfoGroup() {
         List<ResolveInfoGroup> ret = new ArrayList<ResolveInfoGroup>();
         synchronized (mList) {

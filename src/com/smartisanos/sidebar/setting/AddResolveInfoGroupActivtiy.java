@@ -7,6 +7,8 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import android.widget.ListView;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarStatus;
+import com.smartisanos.sidebar.util.AppManager;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 
@@ -57,9 +60,31 @@ public class AddResolveInfoGroupActivtiy extends BaseActivity {
 
         private Context mContext;
         private List<Item> mList = new ArrayList<Item>();
+
         public AddResolveInfoGroupAdapter(Context context) {
             mContext = context;
             refreshData();
+            ResolveInfoManager.getInstance(mContext).addListener(mUpdateListener);
+        }
+
+        private ResolveInfoManager.ResolveInfoUpdateListener mUpdateListener = new ResolveInfoManager.ResolveInfoUpdateListener() {
+            @Override
+            public void onUpdate() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onDataChange();
+                    }
+                });
+            }
+        };
+
+        private void onDataChange() {
+            for (Item item : mList) {
+                boolean added = ResolveInfoManager.getInstance(mContext).isResolveInfoGroupAdded(item.rig);
+                item.checked = added;
+            }
+            notifyDataSetChanged();
         }
 
         private void refreshData() {
