@@ -25,6 +25,7 @@ import com.smartisanos.sidebar.util.AppItem;
 import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
+import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 
 public class SideView extends RelativeLayout {
@@ -109,6 +110,7 @@ public class SideView extends RelativeLayout {
         mSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Utils.dismissAllDialog(mContext);
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_LAUNCHER);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
