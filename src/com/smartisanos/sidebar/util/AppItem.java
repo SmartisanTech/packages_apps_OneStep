@@ -1,5 +1,6 @@
 package com.smartisanos.sidebar.util;
 
+import java.lang.ref.SoftReference;
 import java.util.Comparator;
 import java.util.List;
 
@@ -17,6 +18,8 @@ public class AppItem implements SidebarItem {
     private int mIndex;
     public final ResolveInfo mResolveInfo;
 
+    private SoftReference<Bitmap> mAvatar;
+
     public AppItem(Context context, ResolveInfo ri) {
         mContext = context;
         mResolveInfo = ri;
@@ -29,7 +32,15 @@ public class AppItem implements SidebarItem {
 
     @Override
     public Bitmap getAvatar() {
-        return BitmapUtils.drawableToBitmap(mResolveInfo.loadIcon(mContext.getPackageManager()));
+        if (mAvatar != null) {
+            Bitmap ret = mAvatar.get();
+            if (ret != null) {
+                return ret;
+            }
+        }
+        Bitmap ret = BitmapUtils.drawableToBitmap(mResolveInfo.loadIcon(mContext.getPackageManager()));
+        mAvatar = new SoftReference<Bitmap>(ret);
+        return ret;
     }
 
     @Override

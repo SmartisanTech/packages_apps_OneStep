@@ -28,7 +28,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
     private static final String TAG = ResolveInfoGroup.class.getName();
 
     private Context mContext;
-    private SoftReference<Bitmap> mBlackWhiteIcon = null;
+    private SoftReference<Bitmap> mAvatar = null;
     private int mIndex = -1;
     public boolean isNewAdd = false;
 
@@ -93,7 +93,20 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
 
     @Override
     public Bitmap getAvatar() {
-        return BitmapUtils.drawableToBitmap(loadIcon());
+        Bitmap ret;
+        if (mAvatar != null) {
+            ret = mAvatar.get();
+            if (ret != null) {
+                return ret;
+            }
+        }
+        Drawable icon = loadIcon();
+        if (icon == null) {
+            return null;
+        }
+        ret = BitmapUtils.drawableToBitmap(icon);
+        mAvatar = new SoftReference<Bitmap>(ret);
+        return ret;
     }
 
     public Drawable loadIcon(){
@@ -111,22 +124,10 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
         }
     }
 
-    public Bitmap loadBlackWhiteIcon() {
-        if (mBlackWhiteIcon != null) {
-            Bitmap ret = mBlackWhiteIcon.get();
-            if (ret != null) {
-                return ret;
-            }
-        }
-        Bitmap ret = BitmapUtils.convertToBlackWhite(loadIcon());
-        mBlackWhiteIcon = new SoftReference<Bitmap>(ret);
-        return ret;
-    }
-
-    public void onIconChanged(){
-        if(mBlackWhiteIcon != null){
-            mBlackWhiteIcon.clear();
-            mBlackWhiteIcon = null;
+    public void onIconChanged() {
+        if (mAvatar != null) {
+            mAvatar.clear();
+            mAvatar = null;
         }
     }
 
