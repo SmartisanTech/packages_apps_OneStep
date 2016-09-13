@@ -208,7 +208,6 @@ public class AppManager extends DataManager {
             mAddedAppItems.clear();
             mAddedAppItems.addAll(list);
         }
-        android.util.Log.d("sigh1988", "sizee -> " + mAddedAppItems.size());
         notifyListener();
     }
 
