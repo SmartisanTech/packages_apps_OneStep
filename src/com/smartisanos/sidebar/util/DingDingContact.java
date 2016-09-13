@@ -75,7 +75,18 @@ public class DingDingContact extends ContactItem {
 
     @Override
     public boolean openUI(Context context) {
-        //TODO need dingding support
+        Intent intent = new Intent("com.alibaba.android.rimet.SEND");
+        intent.putExtra("user_id", uid);
+        intent.putExtra("user_id_string", encodedUid);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setType(ClipDescription.MIMETYPE_TEXT_PLAIN);
+        intent.putExtra(Intent.EXTRA_TEXT, " ");
+        try {
+            LaunchApp.start(mContext, intent, true, PKG_NAME, 0);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            // NA
+        }
         return false;
     }
 
