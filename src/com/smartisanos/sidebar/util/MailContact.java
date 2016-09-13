@@ -22,7 +22,7 @@ import android.view.DragEvent;
 
 public class MailContact extends ContactItem {
     public static final String PKG_NAME = "com.android.contacts";
-    private static final ComponentName COMP_NAME = new ComponentName("com.android.email","com.android.email.activity.ComposeActivityEmail");
+    private static final ComponentName COMP_NAME = new ComponentName("com.android.email","com.android.mail.compose.ComposeActivity");
 
     private String mMailAddress;
     public MailContact(Context context, CharSequence displayName, String mailAddress) {
