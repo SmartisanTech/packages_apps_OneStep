@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 
 public class RecentPhotoManager extends DataManager implements IClear{
+    private static final LOG log = LOG.getInstance(RecentPhotoManager.class);
 
     private volatile static RecentPhotoManager sInstance;
     public synchronized static RecentPhotoManager getInstance(Context context){
@@ -32,7 +33,9 @@ public class RecentPhotoManager extends DataManager implements IClear{
     private static final String[] thumbCols = new String[] {
         MediaStore.Images.ImageColumns.DATA,
         MediaStore.Images.ImageColumns.MIME_TYPE,
-        MediaStore.Images.ImageColumns._ID };
+        MediaStore.Images.ImageColumns.DATE_TAKEN,
+        MediaStore.Images.ImageColumns._ID,
+    };
 
     private static final String DATABASE_NAME = "UselessPhoto";
 
@@ -101,6 +104,7 @@ public class RecentPhotoManager extends DataManager implements IClear{
                     ImageInfo info = new ImageInfo();
                     info.filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA));
                     info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MIME_TYPE));
+                    info.time = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
                     info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
                     if (!TextUtils.isEmpty(info.filePath)&& !TextUtils.isEmpty(info.mimeType)) {
                         if (!useless.contains(info.id)) {

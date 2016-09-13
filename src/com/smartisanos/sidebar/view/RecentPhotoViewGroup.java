@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
@@ -29,8 +30,8 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
     private View mContainer;
     private TextView mTitle;
     private View mClear;
-    private PhotoGridView mGridView;
     private RecentPhotoAdapter mAdapter;
+    private ListView mListView;
 
     private EmptyView mEmptyView;
     private boolean mIsEmpty = true;
@@ -43,13 +44,11 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
         super(context, attrs, 0);
     }
 
-    public RecentPhotoViewGroup(Context context, AttributeSet attrs,
-            int defStyleAttr) {
+    public RecentPhotoViewGroup(Context context, AttributeSet attrs, int defStyleAttr) {
         this(context, attrs, defStyleAttr, 0);
     }
 
-    public RecentPhotoViewGroup(Context context, AttributeSet attrs,
-            int defStyleAttr, int defStyleRes) {
+    public RecentPhotoViewGroup(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -81,18 +80,18 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
         mContainer = findViewById(R.id.photo_container);
         mTitle = (TextView)findViewById(R.id.title);
         mClear = findViewById(R.id.clear);
-        mGridView = (PhotoGridView) findViewById(R.id.recentphoto_gridview);
-        mGridView.setAdapter(mAdapter = new RecentPhotoAdapter(mContext, this));
-        mGridView.setSelector(R.drawable.grid_view_selector);
+        mListView = (ListView) findViewById(R.id.content_list);
+        mAdapter = new RecentPhotoAdapter(mContext, this);
+        mListView.setAdapter(mAdapter);
         mClear.setOnClickListener(mClearListener);
     }
 
     private ClearListener mClearListener = new ClearListener(new Runnable() {
         @Override
         public void run() {
-            int width = mGridView.getWidth();
+            int width = mListView.getWidth();
             AnimTimeLine timeLine = new AnimTimeLine();
-            Anim moveAnim = new Anim(mGridView, Anim.MOVE, 100, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(width, 0));
+            Anim moveAnim = new Anim(mListView, Anim.MOVE, 100, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(width, 0));
             Anim alphaAnim = new Anim(RecentPhotoViewGroup.this, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
             timeLine.addAnim(moveAnim);
             timeLine.addAnim(alphaAnim);
@@ -104,7 +103,7 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
 
                 @Override
                 public void onComplete(int type) {
-                    mGridView.setTranslationX(0);
+                    mListView.setTranslationX(0);
                     RecentPhotoViewGroup.this.setAlpha(1);
                     RecentPhotoViewGroup.this.setVisibility(View.GONE);
                     RecentPhotoManager.getInstance(mContext).clear();
@@ -136,12 +135,14 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
     }
 
     public void show(boolean anim) {
+        mListView.setSelectionAfterHeaderView();
+        mListView.requestLayout();
         setVisibility(View.VISIBLE);
         if (anim) {
             int time = 200;
             AnimTimeLine timeLine = new AnimTimeLine();
             if (!mIsEmpty) {
-                timeLine.addTimeLine(mGridView.photoAnim(true));
+//                timeLine.addTimeLine(mGridView.photoAnim(true));
             }
             setPivotX(0);
             setPivotY(0);
@@ -164,12 +165,14 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
     }
 
     public void dismiss(boolean anim) {
+        mAdapter.setPhotoExpandedFalse();
+        mAdapter.notifyDataSetChanged();
         mClearListener.dismiss();
         if (anim) {
             int time = 200;
             AnimTimeLine timeLine = new AnimTimeLine();
             if (!mIsEmpty) {
-                timeLine.addTimeLine(mGridView.photoAnim(false));
+//                timeLine.addTimeLine(mGridView.photoAnim(false));
             }
             setPivotX(0);
             setPivotY(0);

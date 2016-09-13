@@ -117,8 +117,6 @@ public class FileInfo implements Comparable<FileInfo> {
     public String filePath = "";
     public String mimeType;
     public long lastTime;
-    public String dateTag;
-    public boolean invisibleMode = false;
 
     public FileInfo(String path){
         this(path, getFileMimeType(path));

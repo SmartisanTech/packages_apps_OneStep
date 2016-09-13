@@ -20,7 +20,9 @@ import com.smartisanos.sidebar.util.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import smartisanos.util.SidebarUtils;
 
@@ -187,8 +189,6 @@ public class ClipboardAdapter extends BaseAdapter{
     public static class DataItem implements Comparable<DataItem> {
         public String mText;
         private long mTime;
-        public String dateTag;
-        public boolean invisibleMode = false;
 
         public DataItem(String content, long time) {
             mText = content;
@@ -226,38 +226,41 @@ public class ClipboardAdapter extends BaseAdapter{
             items[i] = new DataItem(item.mContent, item.mTimeStamp);
         }
         Arrays.sort(items);
-        List list = new ArrayList();
-        String currentLabel = null;
         long now = System.currentTimeMillis();
-        int count = 0;
-        List<DataItem> dataList = new ArrayList<DataItem>();
+        List<String> labelOrder = new ArrayList<String>();
+        Map<String, List<DataItem>> map = new HashMap<String, List<DataItem>>();
         for (int i = 0; i < items.length; i++) {
             DataItem item = items[i];
             String label = Utils.convertDateToLabel(mContext, now, item.mTime);
-            if (label != null && !label.equals(currentLabel)) {
-                if (count > MAX_ITEM_COUNT) {
-                    list.add(dataList);
-                }
-                dataList = new ArrayList<DataItem>();
-                count = 0;
-                currentLabel = label;
-                list.add(label);
+            List<DataItem> list = map.get(label);
+            if (list == null) {
+                list = new ArrayList<DataItem>();
             }
-
-            count = count + 1;
-            item.dateTag = label;
-            if (count > MAX_ITEM_COUNT) {
-                item.invisibleMode = true;
-                dataList.add(item);
-            } else {
-                list.add(item);
-            }
-            if (i == items.length - 1) {
-                if (count > MAX_ITEM_COUNT) {
-                    list.add(dataList);
-                }
+            list.add(item);
+            map.put(label, list);
+            if (!labelOrder.contains(label)) {
+                labelOrder.add(label);
             }
         }
+
+        List list = new ArrayList();
+        for (int i = 0; i < labelOrder.size(); i++) {
+            String label = labelOrder.get(i);
+            List<DataItem> dataList = map.get(label);
+            if (label == null || dataList == null) {
+                continue;
+            }
+            list.add(label);
+            if (dataList.size() > MAX_ITEM_COUNT) {
+                list.addAll(dataList.subList(0, MAX_ITEM_COUNT));
+                List<DataItem> hideList = new ArrayList<DataItem>();
+                hideList.addAll(dataList.subList(MAX_ITEM_COUNT, dataList.size()));
+                list.add(hideList);
+            } else {
+                list.addAll(dataList);
+            }
+        }
+        map.clear();
         synchronized (mList) {
             mList.clear();
             mList.addAll(list);

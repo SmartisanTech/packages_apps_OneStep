@@ -258,9 +258,6 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
                 }
             } else if (obj instanceof ArrayList) {
                 List<FileInfo> list = (List<FileInfo>)obj;
-                for (FileInfo info : list) {
-                    info.invisibleMode = false;
-                }
                 mRecentFileAdapter.addItems(position, list);
                 mRecentFileAdapter.removeItem(obj);
                 mRecentFileAdapter.notifyDataSetChanged();

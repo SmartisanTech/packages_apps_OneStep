@@ -12,6 +12,8 @@ import android.os.Looper;
 import android.os.Message;
 
 public final class ImageLoader {
+    private static final LOG log = LOG.getInstance(ImageLoader.class);
+
     private static final int THREAD_NUM = 3;
     private static final int MSG_IMAGE_LOAD = 1;
     private BitmapCache mCache;
@@ -26,18 +28,20 @@ public final class ImageLoader {
         }
     }
 
-    private Map<String, Callback> mLoadingTasks = new HashMap<String, Callback>();
+    private List<Callback> mLoadingTasks = new ArrayList<Callback>();
 
-    public void removeLoadingTask(String path) {
-        if (path == null) {
+    public void removeLoadingTask(Callback callback) {
+        if (callback == null) {
             return;
         }
         ThreadVerify.verify(true);
-        mLoadingTasks.remove(path);
+        synchronized (mLoadingTasks) {
+            mLoadingTasks.remove(callback);
+        }
     }
 
     public void loadImage(String filepath, Callback callback) {
-        if (filepath == null) {
+        if (filepath == null || callback == null) {
             return;
         }
         Bitmap cur = mCache.getBitmapDirectly(filepath);
@@ -46,13 +50,12 @@ public final class ImageLoader {
             return;
         }
         ThreadVerify.verify(true);
-        if (mLoadingTasks.containsKey(filepath)) {
-            Callback oldCallback = mLoadingTasks.get(filepath);
-            if (oldCallback != null) {
-                oldCallback.setCancel();
-            }
+        if (mLoadingTasks.contains(callback)) {
+            return;
         }
-        mLoadingTasks.put(filepath, callback);
+        synchronized (mLoadingTasks) {
+            mLoadingTasks.add(callback);
+        }
         LoadItem item = new LoadItem();
         item.filePath = filepath;
         item.callback = callback;
@@ -73,9 +76,6 @@ public final class ImageLoader {
                 LoadItem item = (LoadItem) msg.obj;
                 ImageLoader.Callback callback = item.callback;
                 if (callback != null) {
-                    if (callback.isCancelled()) {
-                        return;
-                    }
                     Bitmap bm = mCache.getBitmap(item.filePath);
                     callback.onLoadComplete(item.filePath, bm);
                 }
@@ -90,8 +90,6 @@ public final class ImageLoader {
 
     public interface Callback {
         void onLoadComplete(String filePath, Bitmap bitmap);
-        void setCancel();
-        boolean isCancelled();
     }
 
     public void clearCache() {

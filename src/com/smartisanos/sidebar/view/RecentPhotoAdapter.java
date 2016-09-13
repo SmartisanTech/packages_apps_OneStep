@@ -1,12 +1,13 @@
 package com.smartisanos.sidebar.view;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.util.BitmapCache;
-import com.smartisanos.sidebar.util.BitmapUtils;
+import com.smartisanos.sidebar.util.DataManager.RecentUpdateListener;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.ImageInfo;
 import com.smartisanos.sidebar.util.ImageLoader;
@@ -14,22 +15,15 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.Utils;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.graphics.drawable.BitmapDrawable;
 
 import smartisanos.util.SidebarUtils;
 
@@ -38,12 +32,13 @@ public class RecentPhotoAdapter extends BaseAdapter {
 
     private Context mContext;
     private RecentPhotoManager mPhotoManager;
-    private List<ImageInfo> mList = new ArrayList<ImageInfo>();
+    private List<ImageInfo> mImageInfoList = new ArrayList<ImageInfo>();
+    private List mList = new ArrayList();
 
     private ImageLoader mImageLoader;
     private Handler mHandler;
-    private View mOpenGalleryView;
     private IEmpty mEmpty;
+
     public RecentPhotoAdapter(Context context, IEmpty empty) {
         mContext = context;
         mEmpty = empty;
@@ -51,14 +46,16 @@ public class RecentPhotoAdapter extends BaseAdapter {
         mPhotoManager = RecentPhotoManager.getInstance(mContext);
         int maxPhotoSize = mContext.getResources().getDimensionPixelSize(R.dimen.recent_photo_size);
         mImageLoader = new ImageLoader(maxPhotoSize);
-        mList = mPhotoManager.getImageList();
-        mPhotoManager.addListener(new RecentPhotoManager.RecentUpdateListener() {
+        mImageInfoList = mPhotoManager.getImageList();
+        updateDataList();
+        mPhotoManager.addListener(new RecentUpdateListener() {
             @Override
             public void onUpdate() {
                 mHandler.post(new Runnable(){
                     @Override
                     public void run() {
-                        mList = mPhotoManager.getImageList();
+                        mImageInfoList = mPhotoManager.getImageList();
+                        updateDataList();
                         notifyDataSetChanged();
                     }
                 });
@@ -67,22 +64,59 @@ public class RecentPhotoAdapter extends BaseAdapter {
         notifyEmpty();
     }
 
-    private View.OnClickListener mOpenGalleryListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            try {
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.setPackage("com.android.gallery3d");
-                intent.putExtra("package_name", "com.smartisanos.sidebar");
-                intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
-                Utils.dismissAllDialog(mContext);
-            } catch (ActivityNotFoundException e) {
-                // NA
+    public void setPhotoExpandedFalse() {
+        //create a new PhotoGridView.PhotoData, adapter will reset
+        updateDataList();
+    }
+
+    private void updateDataList() {
+        if (mImageInfoList.size() == 0) {
+            mList.clear();
+            return;
+        }
+        ImageInfo[] images = new ImageInfo[mImageInfoList.size()];
+        mImageInfoList.toArray(images);
+        Arrays.sort(images);
+
+        long now = System.currentTimeMillis();
+        List<String> labelOrder = new ArrayList<String>();
+        Map<String, List<ImageInfo>> map = new HashMap<String, List<ImageInfo>>();
+        for (int i = 0; i < images.length; i++) {
+            ImageInfo info = images[i];
+            String label = Utils.convertDateToLabel(mContext, now, info.time);
+            List<ImageInfo> list = map.get(label);
+            if (list == null) {
+                list = new ArrayList<ImageInfo>();
+            }
+            list.add(info);
+            map.put(label, list);
+            if (!labelOrder.contains(label)) {
+                labelOrder.add(label);
             }
         }
-    };
+
+        List list = new ArrayList();
+        for (int i = 0; i < labelOrder.size(); i++) {
+            String label = labelOrder.get(i);
+            List<ImageInfo> photoList = map.get(label);
+            if (label == null || photoList == null) {
+                continue;
+            }
+            list.add(label);
+            boolean showGallery = false;
+            if (i == 0) {
+                showGallery = true;
+            }
+            PhotoGridView.PhotoData data = new PhotoGridView.PhotoData(photoList);
+            data.showGallery(showGallery);
+            list.add(data);
+        }
+        map.clear();
+        synchronized (mList) {
+            mList.clear();
+            mList.addAll(list);
+        }
+    }
 
     private void notifyEmpty() {
         if (mEmpty != null) {
@@ -98,12 +132,12 @@ public class RecentPhotoAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mList.size() + 1;
+        return mList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return mList.get(position);
     }
 
     @Override
@@ -112,130 +146,74 @@ public class RecentPhotoAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView,
-            ViewGroup parent) {
-        View ret = null;
-        ViewHolder vh = null;
-        if (convertView != null) {
-            ret = convertView;
-            vh = (ViewHolder) convertView.getTag();
+    public int getItemViewType(int position) {
+        if (mList.size() == 0) {
+            return 1;
+        }
+        return position;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        int count = mList.size();
+        if (count < 1) {
+            count = 1;
+        }
+        return count;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.photo_block, null);
+            LinearLayout dateLabel = (LinearLayout) view.findViewById(R.id.date_label);
+            TextView textContent = (TextView) view.findViewById(R.id.date_content);
+            PhotoGridView photoGridView = (PhotoGridView) view.findViewById(R.id.photo_grid_view);
+
+            holder = new ViewHolder();
+            holder.view = view;
+            holder.dateLabel = dateLabel;
+            holder.textContent = textContent;
+            holder.photoGridView = photoGridView;
+            holder.view.setTag(holder);
         } else {
-            ret = LayoutInflater.from(mContext).inflate(R.layout.recent_photo_item, null);
-            vh = new ViewHolder();
-            vh.imageView = (ImageView) ret.findViewById(R.id.image);
-            vh.textView = (TextView) ret.findViewById(R.id.load_fail);
-            vh.openGalleryViewGroup = ret.findViewById(R.id.open_gallery);
-            vh.openGalleryViewGroup.setOnClickListener(mOpenGalleryListener);
-            ret.setTag(vh);
+            holder = (ViewHolder) convertView.getTag();
         }
-        vh.filePath = null;
-        vh.updateUIByPosition(position);
-        if (position <= 0) {
-            return ret;
+        Object obj = mList.get(position);
+        if (obj instanceof PhotoGridView.PhotoData) {
+            PhotoGridView.PhotoData data = (PhotoGridView.PhotoData) obj;
+            holder.showPhotos(data);
+        } else if (obj instanceof String) {
+            holder.showDate((String) obj);
         }
-
-        final ImageInfo ii = mList.get(position - 1);
-        vh.filePath = ii.filePath;
-
-        mImageLoader.loadImage(ii.filePath, new ImageLoaderCallback(vh));
-
-        vh.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Utils.dismissAllDialog(mContext);
-                try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setPackage("com.android.gallery3d");
-                    intent.putExtra("package_name", "com.smartisanos.sidebar");
-                    intent.setDataAndType(ii.getContentUri(mContext), ii.mimeType);
-                    intent.addCategory(Intent.CATEGORY_DEFAULT);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    // NA
-                }
-            }
-        });
-
-        vh.imageView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                SidebarUtils.dragImage(v, mContext, new File(ii.filePath), ii.mimeType);
-                return true;
-            }
-        });
-        return ret;
+        return holder.view;
     }
 
-    class ImageLoaderCallback implements ImageLoader.Callback {
-        private ViewHolder mViewHolder;
+    private class ViewHolder {
+        public View view;
+        public LinearLayout dateLabel;
+        public TextView textContent;
+        public PhotoGridView photoGridView;
 
-        public ImageLoaderCallback(ViewHolder vh) {
-            mViewHolder = vh;
-        }
-
-        @Override
-        public void onLoadComplete(final String filePath, Bitmap bitmap) {
-            final Bitmap newBitmap = BitmapUtils.allNewBitmap(bitmap);
-            mViewHolder.imageView.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (mViewHolder.filePath != null && mViewHolder.filePath.equals(filePath)) {
-                        mViewHolder.updateBitmap(newBitmap);
-                    }
-                }
-            });
-        }
-
-        private volatile boolean mCancelled = false;
-
-        @Override
-        public void setCancel() {
-            mCancelled = true;
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return mCancelled;
-        }
-    }
-
-    class ViewHolder {
-        public ImageView imageView;
-        public TextView textView;
-        public View openGalleryViewGroup;
-        public String filePath;
-
-        public void updateUIByPosition(int position) {
-            if (position <= 0) {
-                imageView.setVisibility(View.GONE);
-                textView.setVisibility(View.GONE);
-                openGalleryViewGroup.setVisibility(View.VISIBLE);
-            } else {
-                imageView.setVisibility(View.VISIBLE);
-                textView.setVisibility(View.GONE);
-                openGalleryViewGroup.setVisibility(View.GONE);
+        public void showPhotos(PhotoGridView.PhotoData data) {
+            if (dateLabel.getVisibility() != View.GONE) {
+                dateLabel.setVisibility(View.GONE);
             }
+            if (photoGridView.getVisibility() != View.VISIBLE) {
+                photoGridView.setVisibility(View.VISIBLE);
+            }
+            photoGridView.setPhotoData(data, mImageLoader);
         }
 
-        public void updateBitmap(Bitmap bmp) {
-            if (bmp == null) {
-                textView.setVisibility(View.VISIBLE);
-                imageView.setVisibility(View.GONE);
-            } else {
-                textView.setVisibility(View.GONE);
-                imageView.setVisibility(View.VISIBLE);
-                Drawable oldBg = imageView.getBackground();
-                imageView.setBackground(new BitmapDrawable(mContext.getResources(),bmp));
-                if (oldBg != null) {
-                    if (oldBg instanceof BitmapDrawable) {
-                        Bitmap oldBitmap = ((BitmapDrawable) oldBg).getBitmap();
-                        if (oldBitmap != null) {
-                            oldBitmap.recycle();
-                        }
-                    }
-                }
+        public void showDate(String date) {
+            if (photoGridView.getVisibility() != View.GONE) {
+                photoGridView.setVisibility(View.GONE);
             }
+            if (dateLabel.getVisibility() != View.VISIBLE) {
+                dateLabel.setVisibility(View.VISIBLE);
+            }
+            textContent.setText(date);
         }
     }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.smartisanos.sidebar.view.RecentPhotoItemView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.smartisanos.sidebar.view.ListItemFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -42,4 +43,22 @@
             android:textColor="#60ffffff"
             android:text="@string/open_gallery"/>
     </RelativeLayout>
-</com.smartisanos.sidebar.view.RecentPhotoItemView>
+    <RelativeLayout
+        android:id="@+id/show_more"
+        android:layout_width="@dimen/recent_photo_size"
+        android:layout_height="@dimen/recent_photo_size"
+        android:layout_margin="@dimen/recent_photo_padding"
+        android:background="@drawable/more_photo"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/show_more_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="@dimen/open_gallery_item_text_bottom"
+            android:textSize="10dp"
+            android:textColor="#60ffffff"
+            android:text="@string/list_view_look_more"/>
+    </RelativeLayout>
+</com.smartisanos.sidebar.view.ListItemFrameLayout>

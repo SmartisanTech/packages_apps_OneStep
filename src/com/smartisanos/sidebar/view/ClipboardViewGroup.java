@@ -242,9 +242,6 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                 mClipboardCopyToast.show();
             } else if (obj instanceof ArrayList) {
                 List<ClipboardAdapter.DataItem> list = (List<ClipboardAdapter.DataItem>) obj;
-                for (ClipboardAdapter.DataItem item : list) {
-                    item.invisibleMode = false;
-                }
                 mClipboardAdapter.addItems(position, list);
                 mClipboardAdapter.removeItem(obj);
                 mClipboardAdapter.notifyDataSetChanged();

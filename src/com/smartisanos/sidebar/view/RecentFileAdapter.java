@@ -3,7 +3,9 @@ package com.smartisanos.sidebar.view;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.os.Handler;
@@ -65,37 +67,40 @@ public class RecentFileAdapter extends BaseAdapter {
         FileInfo[] infos = new FileInfo[mFileInfoList.size()];
         mFileInfoList.toArray(infos);
         Arrays.sort(infos);
-        List list = new ArrayList();
-        String preLabel = null;
         long now = System.currentTimeMillis();
-        int count = 0;
-        List<FileInfo> fileList = new ArrayList<FileInfo>();
+        List<String> labelOrder = new ArrayList<String>();
+        Map<String, List<FileInfo>> map = new HashMap<String, List<FileInfo>>();
         for (int i = 0; i < infos.length; i++) {
             FileInfo info = infos[i];
             String label = Utils.convertDateToLabel(mContext, now, info.lastTime);
-            if (label != null && !label.equals(preLabel)) {
-                if (count > MAX_ITEM_COUNT) {
-                    list.add(fileList);
-                }
-                fileList = new ArrayList<FileInfo>();
-                count = 0;
-                preLabel = label;
-                list.add(label);
+            List<FileInfo> list = map.get(label);
+            if (list == null) {
+                list = new ArrayList<FileInfo>();
             }
-            count = count + 1;
-            info.dateTag = label;
-            if (count > MAX_ITEM_COUNT) {
-                info.invisibleMode = true;
-                fileList.add(info);
-            } else {
-                list.add(info);
-            }
-            if (i == infos.length - 1) {
-                if (count > MAX_ITEM_COUNT) {
-                    list.add(fileList);
-                }
+            list.add(info);
+            map.put(label, list);
+            if (!labelOrder.contains(label)) {
+                labelOrder.add(label);
             }
         }
+        List list = new ArrayList();
+        for (int i = 0; i < labelOrder.size(); i++) {
+            String label = labelOrder.get(i);
+            List<FileInfo> infoList = map.get(label);
+            if (label == null || infoList == null) {
+                continue;
+            }
+            list.add(label);
+            if (infoList.size() > MAX_ITEM_COUNT) {
+                list.addAll(infoList.subList(0, MAX_ITEM_COUNT));
+                List<FileInfo> hideList = new ArrayList<FileInfo>();
+                hideList.addAll(infoList.subList(MAX_ITEM_COUNT, infoList.size()));
+                list.add(hideList);
+            } else {
+                list.addAll(infoList);
+            }
+        }
+        map.clear();
         synchronized (mList) {
             mList.clear();
             mList.addAll(list);
