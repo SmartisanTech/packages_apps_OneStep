@@ -303,6 +303,9 @@ public class TopView extends FrameLayout {
                     mPhotos.setTranslationY(0);
                     mFile.setTranslationY(0);
                     mClipboard.setTranslationY(0);
+                    if (SidebarController.getInstance(mContext).getSidebarStatus() == SidebarStatus.UNNAME) {
+                        dimAll();
+                    }
                     mEnterAnimTimeLine = null;
                 }
             }
@@ -338,6 +341,19 @@ public class TopView extends FrameLayout {
         mExitAnimTimeLine.addAnim(photoAlpha);
         mExitAnimTimeLine.addAnim(fileAlpha);
         mExitAnimTimeLine.addAnim(clipboardAlpha);
+        final boolean dimMode = SidebarController.getInstance(mContext).getSidebarStatus() == SidebarStatus.UNNAME;
+        if (dimMode) {
+            Anim leftAlphaAnim = new Anim(mLeft, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+            Anim rightAlphaAnim = new Anim(mRight, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+            Anim leftMoveAnim = new Anim(mLeft, Anim.MOVE, time, 0, moveFrom, moveTo);
+            Anim rightMoveAnim = new Anim(mRight, Anim.MOVE, time, 0, moveFrom, moveTo);
+
+            mExitAnimTimeLine.addAnim(leftAlphaAnim);
+            mExitAnimTimeLine.addAnim(rightAlphaAnim);
+            mExitAnimTimeLine.addAnim(leftMoveAnim);
+            mExitAnimTimeLine.addAnim(rightMoveAnim);
+        }
+
         mExitAnimTimeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
@@ -356,6 +372,15 @@ public class TopView extends FrameLayout {
                     mFile.setTranslationY(0);
                     mClipboard.setTranslationY(0);
 
+                    if (dimMode) {
+                        mLeft.setTranslationY(0);
+                        mLeft.setAlpha(1);
+                        mLeft.setVisibility(INVISIBLE);
+                        mRight.setTranslationY(0);
+                        mRight.setAlpha(1);
+                        mRight.setVisibility(INVISIBLE);
+                        resumeToNormal();
+                    }
                     setVisibility(View.GONE);
                     mExitAnimTimeLine = null;
                 }

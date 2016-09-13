@@ -133,6 +133,10 @@ public class SidebarController {
         mSidebarRoot.requestStatus(mStatus);
     }
 
+    public SidebarStatus getSidebarStatus() {
+        return mStatus;
+    }
+
     private void start(){
         updateTopViewWindowBySidebarMode();
         updateContentViewWindowBySidebarMode();
@@ -308,10 +312,6 @@ public class SidebarController {
 
     public void dismissContent(boolean anim) {
         mContentView.dismiss(mContentView.getCurrentContent(), anim);
-    }
-
-    public void dimTopView(){
-        mTopView.dimAll();
     }
 
     public void resumeTopView(){

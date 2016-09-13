@@ -110,11 +110,6 @@ public class TopItemView extends FrameLayout implements ITopItem {
         return timeLine;
     }
 
-    public void resumeWithoutAnim() {
-        mTopDimView.setVisibility(View.GONE);
-        mBackDimView.setVisibility(GONE);
-    }
-
     public AnimTimeLine resume() {
         setClickable(true);
         AnimTimeLine timeLine = new AnimTimeLine();

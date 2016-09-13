@@ -26,7 +26,11 @@ import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
+import com.smartisanos.sidebar.util.anim.AnimTimeLine;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 
 public class SideView extends RelativeLayout {
     private static final LOG log = LOG.getInstance(SideView.class);
@@ -48,6 +52,9 @@ public class SideView extends RelativeLayout {
     private FrameLayout mDarkBgView;
     private LinearLayout mAddAndExitDarkBg;
     private SidebarListView mDraggedListView;
+
+    private LinearLayout mSideViewContentNormal;
+    private LinearLayout mSideViewContentDragged;
 
     public SideView(Context context) {
         this(context, null);
@@ -119,19 +126,17 @@ public class SideView extends RelativeLayout {
             }
         });
 
+        mSideViewContentNormal = (LinearLayout) findViewById(R.id.side_view_normal);
+        mSideViewContentDragged = (LinearLayout) findViewById(R.id.side_view_dragged);
+
 //        //ongoing
         mOngoingList = (SidebarListView) findViewById(R.id.ongoinglist);
         mOngoingList.setSideView(this);
-        //mOngoingList.setNeedFootView(true);
         mOngoingList.setAdapter(new OngoingAdapter(mContext));
 
         mOngoingListFake = (SidebarListView) findViewById(R.id.ongoinglist_fake);
         mOngoingListFake.setSideView(this);
-        //mOngoingListFake.setNeedFootView(true);
-        mOngoingListFake.setIsFake(true);
         mOngoingListFake.setAdapter(new OngoingAdapter(mContext));
-
-        mOngoingList.setFake(mOngoingListFake);
 
         //contact
         mContactList = (SidebarListView) findViewById(R.id.contactlist);
@@ -144,10 +149,7 @@ public class SideView extends RelativeLayout {
         mContactListFake = (SidebarListView) findViewById(R.id.contactlist_fake);
         mContactListFake.setSideView(this);
         mContactListFake.setNeedFootView(true);
-        mContactListFake.setIsFake(true);
         mContactListFake.setAdapter(new ContactListAdapter(mContext));
-
-        mContactList.setFake(mContactListFake);
 
         //resolve
         mAppList = (SidebarListView) findViewById(R.id.applist);
@@ -158,20 +160,18 @@ public class SideView extends RelativeLayout {
 
         mShareListFake = (SidebarListView) findViewById(R.id.sharelist);
         mShareListFake.setSideView(this);
-        mShareListFake.setIsFake(true);
         mShareListFake.setAdapter(mResolveAdapter = new ResolveInfoListAdapter(mContext));
 
-        mAppList.setFake(mShareListFake);
         mScrollView = (ScrollView) findViewById(R.id.sideview_scroll_list);
     }
 
     public void requestStatus(SidebarStatus status) {
         if(status == SidebarStatus.NORMAL) {
-            mAppList.setVisibility(View.VISIBLE);
-            mShareListFake.setVisibility(View.INVISIBLE);
+            mSideViewContentDragged.setVisibility(GONE);
+            mSideViewContentNormal.setVisibility(VISIBLE);
         } else {
-            mAppList.setVisibility(View.INVISIBLE);
-            mShareListFake.setVisibility(View.VISIBLE);
+            mSideViewContentDragged.setVisibility(VISIBLE);
+            mSideViewContentNormal.setVisibility(GONE);
         }
     }
 
@@ -206,32 +206,134 @@ public class SideView extends RelativeLayout {
         return true;
     }
 
+    private AnimTimeLine mSwitchContentAnim;
+
+    private void onDragStart(final DragEvent event) {
+        if (mSwitchContentAnim != null) {
+            mSwitchContentAnim.cancel();
+        }
+        boolean leftMode = (SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
+        int width = getWidth();
+        final int outTo;
+        final int inFrom;
+        if (leftMode) {
+            outTo = -width;
+            inFrom = -width;
+        } else {
+            outTo = width;
+            inFrom = width;
+        }
+        int time = 200;
+        Anim moveOut = new Anim(mSideViewContentNormal, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(outTo, 0));
+        moveOut.setListener(new AnimListener() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onComplete(int type) {
+                mSideViewContentNormal.setVisibility(GONE);
+                mSideViewContentDragged.setVisibility(VISIBLE);
+            }
+        });
+        Anim moveIn = new Anim(mSideViewContentDragged, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(inFrom, 0), new Vector3f());
+        moveIn.setDelay(time);
+        mSwitchContentAnim = new AnimTimeLine();
+        mSwitchContentAnim.addAnim(moveOut);
+        mSwitchContentAnim.addAnim(moveIn);
+        mSwitchContentAnim.setAnimListener(new AnimListener() {
+            @Override
+            public void onStart() {
+                //show mSideViewContentDragged
+                mOngoingListFake.onDragStart(event);
+                mContactListFake.onDragStart(event);
+                mShareListFake.onDragStart(event);
+                mSideViewContentDragged.setTranslationX(outTo);
+            }
+
+            @Override
+            public void onComplete(int type) {
+                if (mSwitchContentAnim != null) {
+                    mSideViewContentNormal.setVisibility(GONE);
+                    mSideViewContentDragged.setVisibility(VISIBLE);
+                    mSideViewContentDragged.setTranslationX(0);
+                    mSwitchContentAnim = null;
+                }
+            }
+        });
+        mSwitchContentAnim.start();
+    }
+
+    private void onDragEnd(DragEvent event) {
+        if (mSwitchContentAnim != null) {
+            mSwitchContentAnim.cancel();
+        }
+        boolean leftMode = (SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
+        int width = getWidth();
+        final int outTo;
+        final int inFrom;
+        if (leftMode) {
+            outTo = -width;
+            inFrom = -width;
+        } else {
+            outTo = width;
+            inFrom = width;
+        }
+        int time = 200;
+        Anim moveOut = new Anim(mSideViewContentDragged, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(outTo, 0));
+        moveOut.setListener(new AnimListener() {
+            @Override
+            public void onStart() {
+                mSideViewContentNormal.setTranslationX(outTo);
+            }
+
+            @Override
+            public void onComplete(int type) {
+                mSideViewContentDragged.setVisibility(GONE);
+                mSideViewContentNormal.setVisibility(VISIBLE);
+                mOngoingListFake.onDragEnd();
+                mContactListFake.onDragEnd();
+                mShareListFake.onDragEnd();
+            }
+        });
+        Anim moveIn = new Anim(mSideViewContentNormal, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(inFrom, 0), new Vector3f());
+        moveIn.setDelay(time);
+
+        mSwitchContentAnim = new AnimTimeLine();
+        mSwitchContentAnim.addAnim(moveOut);
+        mSwitchContentAnim.addAnim(moveIn);
+        mSwitchContentAnim.setAnimListener(new AnimListener() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onComplete(int type) {
+                if (mSwitchContentAnim != null) {
+                    mSideViewContentNormal.setTranslationX(0);
+                    mSideViewContentNormal.setVisibility(VISIBLE);
+                    mSideViewContentDragged.setVisibility(GONE);
+                    mSwitchContentAnim = null;
+                }
+            }
+        });
+        mSwitchContentAnim.start();
+    }
+
     @Override
     public boolean dispatchDragEvent(DragEvent event) {
         int action = event.getAction();
         FloatText.handleDragEvent(mContext, event);
         switch (action) {
         case DragEvent.ACTION_DRAG_STARTED:
-            mOngoingList.onDragStart(event);
-            mContactList.onDragStart(event);
-            mAppList.onDragStart(event);
+            onDragStart(event);
             return super.dispatchDragEvent(event);
         case DragEvent.ACTION_DRAG_ENDED:
             boolean ret = super.dispatchDragEvent(event);
-            mOngoingList.onDragEnd();
-            mContactList.onDragEnd();
-            mAppList.onDragEnd();
+            onDragEnd(event);
             return ret;
         }
         return super.dispatchDragEvent(event);
-    }
-
-    public ResolveInfoListAdapter getResolveListAdapter() {
-        return mResolveAdapter;
-    }
-
-    public ContactListAdapter getContactListAdapter() {
-        return mContactAdapter;
     }
 
     private void updateUIBySidebarMode() {

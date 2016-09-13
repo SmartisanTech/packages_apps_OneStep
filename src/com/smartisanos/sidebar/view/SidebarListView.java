@@ -36,8 +36,6 @@ public class SidebarListView extends ListView {
 
     private boolean mNeedFootView = false;
     private View mFootView;
-    private boolean mCanAccpeeDrag = true;
-    private boolean mIsFake = false;
     private SideView mSideView;
 
     private SidebarItem mDraggedItem;
@@ -64,6 +62,28 @@ public class SidebarListView extends ListView {
 
     public void setSideView(SideView view) {
         mSideView = view;
+    }
+
+    private DragEventAdapter mDragEventAdapter;
+
+    @Override
+    public void setAdapter(ListAdapter adapter) {
+        super.setAdapter(adapter);
+        if (adapter != null && adapter instanceof DragEventAdapter) {
+            mDragEventAdapter = (DragEventAdapter) adapter;
+        }
+    }
+
+    public void onDragStart(DragEvent event) {
+        if (mDragEventAdapter != null) {
+            mDragEventAdapter.onDragStart(event);
+        }
+    }
+
+    public void onDragEnd() {
+        if (mDragEventAdapter != null) {
+            mDragEventAdapter.onDragEnd();
+        }
     }
 
     private AdapterView.OnItemLongClickListener mOnLongClickListener = new AdapterView.OnItemLongClickListener() {
@@ -180,14 +200,7 @@ public class SidebarListView extends ListView {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        if (mIsFake) {
-            return;
-        }
         getViewTreeObserver().addOnGlobalLayoutListener(mAddItemWithAnimListener);
-    }
-
-    public void setIsFake(boolean isFake) {
-        mIsFake = isFake;
     }
 
     private ViewTreeObserver.OnGlobalLayoutListener mAddItemWithAnimListener = new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -237,176 +250,6 @@ public class SidebarListView extends ListView {
             timeLine.start();
         }
     };
-
-    public void setCanAcceptDrag(boolean can){
-        mCanAccpeeDrag = can;
-    }
-
-    @Override
-    public boolean dispatchDragEvent(DragEvent event) {
-        if(!mCanAccpeeDrag){
-            return false;
-        }
-        return super.dispatchDragEvent(event);
-    }
-
-    public void setFake(SidebarListView fake){
-        mFake = fake;
-    }
-
-    private DragEventAdapter mAdapter;
-    private SidebarListView mFake;
-    private DragEvent mDragEvent;
-
-    @Override
-    public void setAdapter(ListAdapter adapter) {
-        super.setAdapter(adapter);
-        if(adapter instanceof DragEventAdapter){
-            mAdapter = (DragEventAdapter) adapter;
-        }else{
-            mAdapter = null;
-        }
-    }
-
-    public List<View> getDisplayedChildViews() {
-        Rect visibleRect = new Rect();
-        getLocalVisibleRect(visibleRect);
-        List<View> views = new ArrayList<View>();
-        int viewCount = getChildCount();
-        for (int i = 0; i < viewCount; i++) {
-            View child = getChildAt(i);
-            if (child == null) {
-                continue;
-            }
-            int top = child.getTop();
-            int bottom = child.getBottom();
-            if (bottom < visibleRect.top || top > visibleRect.bottom) {
-                //out of visible rect
-                continue;
-            }
-            views.add(child);
-        }
-        return views;
-    }
-
-    private static final int ANIM_DURA = 150;
-
-    private void showAnimWhenIn() {
-        getRootView().getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        getRootView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        final long animDelay = 15;
-                        final List<View> childs = getDisplayedChildViews();
-                        for (int i = 0; i < childs.size(); ++i) {
-                            final View child = childs.get(i);
-                            child.setAlpha(0);
-                            child.setTranslationY(-20f);
-                            ViewPropertyAnimator anim = child
-                                    .animate()
-                                    .alpha(1)
-                                    .translationY(0)
-                                    .setDuration(ANIM_DURA)
-                                    .setInterpolator(
-                                            new DecelerateInterpolator(1.5f));
-                            anim.setStartDelay(animDelay * i + 200);
-                            anim.start();
-                        }
-                    }
-                });
-    }
-
-    public void onDragStart(DragEvent event) {
-        if (mDragEvent != null) {
-            mDragEvent.recycle();
-            mDragEvent = null;
-        }
-        mDragEvent = DragEvent.obtain(event);
-        if (mAdapter != null) {
-            if (mFake == null) {
-                // no anim!;
-                mAdapter.onDragStart(mDragEvent);
-                return;
-            }
-            // we dismiss
-            dismiss();
-
-            // fake filter and show
-            mFake.onDragStart(mDragEvent);
-            mFake.showAnimWhenIn();
-            mFake.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void onDragEnd() {
-        if (mDragEvent != null) {
-            mDragEvent.recycle();
-            mDragEvent = null;
-        }
-        if (mAdapter != null) {
-            if (mFake == null) {
-                // no anim
-                mAdapter.onDragEnd();
-                return;
-            }
-            // fake dismiss
-            mFake.dismiss();
-
-            // we show
-            showAnimWhenIn();
-            setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void dismiss() {
-        final long delayStep = 15;
-        final List<View> childs = getDisplayedChildViews();
-        AnimTimeLine timeLine = new AnimTimeLine();
-        int count = childs.size();
-        boolean emptyAnimList = true;
-        for (int i = 0; i < count; i++) {
-            View child = childs.get(i);
-            child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            child.setDrawingCacheEnabled(false);
-            child.setAlpha(1);
-            child.setTranslationY(0);
-
-            long moveDelay = delayStep * i;
-            long alphaDelay = delayStep * (count - i);
-
-            int fromY = 0;
-            int toY = -20;
-            Anim moveAnim = new Anim(child, Anim.MOVE, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(0, fromY), new Vector3f(0, toY));
-            moveAnim.setDelay(moveDelay);
-            Anim alphaAnim = new Anim(child, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
-            alphaAnim.setDelay(alphaDelay);
-            emptyAnimList = false;
-            timeLine.addAnim(moveAnim);
-            timeLine.addAnim(alphaAnim);
-        }
-        timeLine.setAnimListener(new AnimListener() {
-            @Override
-            public void onStart() {
-            }
-
-            @Override
-            public void onComplete(int type) {
-                setVisibility(View.INVISIBLE);
-                for (View child : childs) {
-                    child.setLayerType(View.LAYER_TYPE_NONE, null);
-                    child.setDrawingCacheEnabled(true);
-                    child.setAlpha(1);
-                    child.setTranslationY(0);
-                }
-            }
-        });
-        if (emptyAnimList) {
-            setVisibility(View.INVISIBLE);
-        } else {
-            timeLine.start();
-        }
-    }
 
     private void pointToNewPositionWithAnim(int position) {
         int count = getCount() - getFooterViewsCount();

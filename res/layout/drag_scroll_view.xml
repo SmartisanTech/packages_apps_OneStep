@@ -9,27 +9,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <LinearLayout
+            android:id="@+id/side_view_dragged"
             android:orientation="vertical"
             android:layout_marginBottom="48dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            >
             <com.smartisanos.sidebar.view.SidebarListView
                 android:id="@+id/ongoinglist_fake"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="invisible"/>
+                />
             <com.smartisanos.sidebar.view.SidebarListView
                 android:id="@+id/contactlist_fake"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="invisible"/>
+                />
             <com.smartisanos.sidebar.view.SidebarListView
                 android:id="@+id/sharelist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="invisible"/>
+                />
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/side_view_normal"
             android:orientation="vertical"
             android:layout_marginBottom="48dp"
             android:layout_width="wrap_content"
