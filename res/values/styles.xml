@@ -17,4 +17,10 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
     </style>
+    <style name="ListViewGeneralStyleWithDivider">
+        <item name="android:listSelector">@android:color/transparent</item>
+        <item name="android:overScrollMode">always</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
 </resources>

@@ -1,7 +1,7 @@
 package com.smartisanos.sidebar.setting;
 
-import smartisanos.widget.SettingItemSwitch;
 
+import smartisanos.widget.SwitchEx;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,12 +10,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
@@ -117,26 +119,23 @@ public class AddResolveInfoGroupActivtiy extends BaseActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             final Item item = mList.get(position);
-            SettingItemSwitch view = null;
-            if(convertView == null) {
-                view =  new SettingItemSwitch(mContext);
+            View view = convertView;
+            ViewHolder vh = null;
+            if (view == null) {
+                view = LayoutInflater.from(mContext).inflate(R.layout.setting_item_switch_layout, null);
+                vh = new ViewHolder();
+                vh.iconView = view.findViewById(R.id.item_icon);
+                vh.titleView = (TextView) view.findViewById(R.id.item_title);
+                vh.switchView = (SwitchEx) view.findViewById(R.id.item_switch);
+                view.setTag(vh);
             } else {
-                view = (SettingItemSwitch) convertView;
+                vh = (ViewHolder) view.getTag();
             }
-
-            /**
-            view.setOnCheckedChangeListener(null);
-            view.setChecked(settingItem.mChecked);
-            view.getSwitch().setId(settingItem.mId);
-            view.setOnCheckedChangeListener(Settings.this);
-            view.setId(settingItem.mId);
-            view.setBackgroundResource(settingItem.mBgRes);
-            view.setTitle(settingItem.mTitleRes);
-            view.setIconResource(settingItem.mIconRes);
-            **/
-            view.setOnCheckedChangeListener(null);
-            view.setChecked(item.checked);
-            view.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            vh.iconView.setBackground(item.rig.loadIcon());
+            vh.titleView.setText(item.rig.getDisplayName());
+            vh.switchView.setOnCheckedChangeListener(null);
+            vh.switchView.setChecked(item.checked);
+            vh.switchView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView,
                         boolean isChecked) {
@@ -148,10 +147,13 @@ public class AddResolveInfoGroupActivtiy extends BaseActivity {
                     }
                 }
             });
-
-            view.setTitle(item.rig.getDisplayName());
-            view.setBackgroundResource(R.drawable.common_icon_picker_bg_middle);
             return view;
+        }
+
+        final class ViewHolder {
+            public View iconView;
+            public TextView titleView;
+            public SwitchEx switchView;
         }
 
         private final class Item {

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="60dp" >
+    <RelativeLayout
+        android:id="@+id/icon_group"
+        android:layout_width="34dp"
+        android:layout_height="31dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="12dp">
+        <View
+            android:id="@+id/item_icon"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"/>
+        <View
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/drag_in"/>
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/item_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/icon_group"
+        android:layout_marginLeft="12dp"
+        android:layout_centerVertical="true"
+        android:singleLine="true"
+        android:textColor="@color/setting_item_text_color"
+        android:textSize="18dp" />
+    <smartisanos.widget.SwitchEx
+        android:id="@+id/item_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="18dp" />
+</RelativeLayout>
