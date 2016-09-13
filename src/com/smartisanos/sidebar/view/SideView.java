@@ -163,6 +163,7 @@ public class SideView extends RelativeLayout {
         mShareListFake.setAdapter(mResolveAdapter = new ResolveInfoListAdapter(mContext));
 
         mScrollView = (ScrollView) findViewById(R.id.sideview_scroll_list);
+        Utils.setAlwaysCanAcceptDragForAll(this, true);
     }
 
     public void requestStatus(SidebarStatus status) {

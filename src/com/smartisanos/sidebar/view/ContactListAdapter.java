@@ -120,6 +120,7 @@ public class ContactListAdapter extends DragEventAdapter {
         holder.restore();
         boolean isLeftMode = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
         holder.setItem(item, mDragEvent != null, isLeftMode);
+        Utils.setAlwaysCanAcceptDrag(holder.view, true);
         holder.view.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {

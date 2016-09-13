@@ -24,6 +24,7 @@ import android.net.NetworkInfo;
 import android.os.RemoteException;
 import android.view.DragEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
@@ -67,6 +68,16 @@ public class Utils {
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void setAlwaysCanAcceptDragForAll(View view, boolean can) {
+        setAlwaysCanAcceptDrag(view, can);
+        if (view instanceof ViewGroup) {
+            ViewGroup vg = (ViewGroup) view;
+            for (int i = 0; i < vg.getChildCount(); ++i) {
+                setAlwaysCanAcceptDragForAll(vg.getChildAt(i), can);
+            }
         }
     }
 
