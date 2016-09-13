@@ -111,10 +111,8 @@ public class SidebarListView extends ListView {
 
     public void dropBackSidebarItem() {
         if (mDraggedItem != null) {
-            ListAdapter adatper = getAdapter();
-            if ((adatper instanceof DragSortAdapter)) {
-                DragSortAdapter dsa = (DragSortAdapter) adatper;
-                dsa.moveItemPostion(mDraggedItem, mDragPosition);
+            if (mDragEventAdapter != null) {
+                mDragEventAdapter.moveItemPostion(mDraggedItem, mDragPosition);
             }
             dragEnd();
         }
