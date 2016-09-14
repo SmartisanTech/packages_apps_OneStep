@@ -65,9 +65,6 @@ public class FloatText {
         }
 //        log.error("clear !");
         mPopupWindow.dismiss();
-        mPopupWindow = null;
-        mFloatView = null;
-        mText = null;
     }
 
     private static ViewTreeObserver.OnGlobalLayoutListener mTextViewObs = new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -102,13 +99,12 @@ public class FloatText {
                 int yOffset = loc[1];
                 int viewWidth = view.getWidth();
                 int viewHeight = view.getHeight();
-                int textWidth = mText.getWidth();//int) mText.getPaint().measureText(text);
+                int textWidth = mText.getWidth();
                 int maxTextWidth = mText.getMaxWidth();
                 if (textWidth > maxTextWidth) {
                     textWidth = maxTextWidth;
                 }
-//                log.error("textWidth = ["+textWidth+"], max width ["+maxTextWidth+"]");
-                int width = textWidth;//Constants.FloatTextValue.textBgIntrinsicWidth / 2 + textWidth;
+                int width = textWidth;
                 int height = Constants.FloatTextValue.textBgIntrinsicHeight;
                 if (width < Constants.FloatTextValue.textBgMinimumWidth) {
                     width = Constants.FloatTextValue.textBgMinimumWidth;
@@ -116,7 +112,6 @@ public class FloatText {
                 if (height < Constants.FloatTextValue.textBgMinimumHeight) {
                     height = Constants.FloatTextValue.textBgMinimumHeight;
                 }
-//                log.error("show loc init ["+loc[0]+", "+loc[1]+"] text size ("+width+", "+height+")");
                 if (SidebarController.getInstance(context).getSidebarMode() == SidebarMode.MODE_LEFT) {
                     xOffset = xOffset + viewWidth + Constants.FloatTextValue.paddingWithSidebar;
                     yOffset = yOffset + (viewHeight - height) / 2;
@@ -124,7 +119,6 @@ public class FloatText {
                     xOffset = xOffset - width - Constants.FloatTextValue.paddingWithSidebar;
                     yOffset = yOffset + (viewHeight - height) / 2;
                 }
-//                log.error("show loc final ["+xOffset+", "+yOffset+"], RIGHT ["+(xOffset + width)+"]");
                 if (!mPopupWindow.isShowing()) {
                     SideView sideView = SidebarController.getInstance(context).getSideView();
                     mPopupWindow.showAtLocation(sideView, Gravity.NO_GRAVITY, xOffset, yOffset);
@@ -137,7 +131,6 @@ public class FloatText {
 
     public static void hide() {
         if (mFloatView != null) {
-//            log.error("hide !");
             mFloatView.setVisibility(View.INVISIBLE);
         }
     }
