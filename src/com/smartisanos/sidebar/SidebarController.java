@@ -315,7 +315,9 @@ public class SidebarController {
     }
 
     public void resumeTopView(){
-        mTopView.resumeToNormal();
+        if (mTopView != null) {
+            mTopView.resumeToNormal();
+        }
     }
 
     private final ISidebar.Stub mBinder = new ISidebar.Stub() {
