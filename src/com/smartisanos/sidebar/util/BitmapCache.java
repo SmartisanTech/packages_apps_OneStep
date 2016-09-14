@@ -43,15 +43,17 @@ public class BitmapCache {
         if (ret != null) {
             return ret;
         }
+        BitmapFactory.Options boundOptions = new BitmapFactory.Options();
+        boundOptions.inJustDecodeBounds = true;
+        //Just Decode Bounds
+        BitmapFactory.decodeFile(filepath, boundOptions);
+        int inSampleSize = boundOptions.outHeight > boundOptions.outWidth ? boundOptions.outHeight / mSize
+                : boundOptions.outWidth / mSize;
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        Bitmap bitmap = null;
-        bitmap = BitmapFactory.decodeFile(filepath, options);
-        options.inSampleSize = options.outHeight > options.outWidth ? options.outHeight / mSize
-                : options.outWidth / mSize;
+        options.inSampleSize = inSampleSize;
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.RGB_565;
-        bitmap = BitmapFactory.decodeFile(filepath, options);
+        Bitmap bitmap = BitmapFactory.decodeFile(filepath, options);
         if(bitmap == null){
             return null;
         }
