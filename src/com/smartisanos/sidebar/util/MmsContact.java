@@ -78,12 +78,14 @@ public class MmsContact extends ContactItem {
             intent.setType("image/*");
             intent.setClassName("com.android.mms", "com.android.mms.ui.ComposeMessageActivity");
         }
-        try {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(intent);
-            return true;
-        } catch (ActivityNotFoundException e) {
-            // NA
+        if (intent != null) {
+            try {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
+                return true;
+            } catch (ActivityNotFoundException e) {
+                // NA
+            }
         }
         return false;
     }
