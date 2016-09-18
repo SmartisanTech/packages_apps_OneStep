@@ -44,10 +44,12 @@ public class FloatText {
 
     private static void init(Context context) {
         if (mPopupWindow != null) {
+            log.error("init failed by mPopupWindow is not null");
             return;
         }
 //        log.error("init !");
         mFloatView = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.float_text_layout, null);
+        mFloatView.setVisibility(View.INVISIBLE);
         mText = (TextView) mFloatView.findViewById(R.id.text_content);
         mPopupWindow = new PopupWindow(mFloatView,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -65,6 +67,7 @@ public class FloatText {
         }
 //        log.error("clear !");
         mPopupWindow.dismiss();
+        mPopupWindow = null;
     }
 
     private static ViewTreeObserver.OnGlobalLayoutListener mTextViewObs = new ViewTreeObserver.OnGlobalLayoutListener() {
