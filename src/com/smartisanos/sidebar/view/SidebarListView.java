@@ -88,6 +88,11 @@ public class SidebarListView extends ListView {
             viewLoc[0] = viewLoc[0] + view.getWidth() / 2;
             viewLoc[1] = viewLoc[1] + view.getHeight() / 2;
             mDraggedItem = (SidebarItem) SidebarListView.this.getAdapter().getItem(position);
+            if (mDraggedItem == null) {
+                // see ticket 136616 http://mantis.smartisan.cn/view.php?id=136616
+                log.error("mDraggedItem == null !  position -> " + position
+                        + ", count -> " + SidebarListView.this.getAdapter().getCount());
+            }
             mDragPosition = position;
             Drawable icon = new BitmapDrawable(getResources(), mDraggedItem.getAvatar());
             SidebarController.getInstance(mContext).getSidebarRootView().startDrag(icon, view, viewLoc);
