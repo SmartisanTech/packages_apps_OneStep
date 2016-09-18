@@ -202,6 +202,17 @@ public class AppManager extends DataManager {
         }
     }
 
+    public void onIconChanged(Set<String> packages) {
+        synchronized (mAddedAppItems) {
+            for (AppItem ai : mAddedAppItems) {
+                if (packages.contains(ai.getPackageName())) {
+                    ai.onIconChanged();
+                }
+            }
+        }
+        notifyListener();
+    }
+
     private void initList() {
         List<AppItem> list = mDatabase.getAddedAppItem();
         synchronized(mAddedAppItems) {

@@ -124,11 +124,6 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         thread.start();
         mHandler = new ResolveInfoManagerHandler(thread.getLooper());
         mHandler.obtainMessage(MSG_UPDATE_LIST).sendToTarget();
-
-        // register receiver
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_UPDATE_ICON);
-        mContext.registerReceiver(mReceiver, filter);
     }
 
     @Override
@@ -515,7 +510,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         }
     }
 
-    private void onIconChanged(Set<String> packages){
+    public void onIconChanged(Set<String> packages){
         synchronized(mList){
             for(ResolveInfoGroup rig : mList){
                 if(packages.contains(rig.getPackageName())){
@@ -525,28 +520,4 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         }
         notifyUpdate();
     }
-
-    private static final String ACTION_UPDATE_ICON = "com.smartisanos.launcher.update_icon";
-    private static final String EXTRA_PACKAGENAME = "extra_packagename";
-
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (ACTION_UPDATE_ICON.equals(action)) {
-                String packageNames = intent.getStringExtra(EXTRA_PACKAGENAME);
-                if (packageNames != null) {
-                    String[] packagearr = packageNames.split(",");
-                    if (packagearr != null) {
-                        Set<String> packages = new HashSet<String>();
-                        for (String pkg : packagearr) {
-                            packages.add(pkg);
-                        }
-                        onIconChanged(packages);
-                    }
-                }
-            }
-        }
-    };
 }

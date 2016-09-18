@@ -104,6 +104,13 @@ public class AppItem implements SidebarItem {
         return mResolveInfo.activityInfo.name;
     }
 
+    public void onIconChanged() {
+        if (mAvatar != null) {
+            mAvatar.clear();
+            mAvatar = null;
+        }
+    }
+
     public static AppItem fromData(Context context, String pkgName, String componentName) {
         if (TextUtils.isEmpty(pkgName) || TextUtils.isEmpty(componentName)) {
             return null;

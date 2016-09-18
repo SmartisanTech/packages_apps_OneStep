@@ -1,5 +1,8 @@
 package com.smartisanos.sidebar;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,10 +22,12 @@ import android.widget.FrameLayout;
 
 import com.android.internal.sidebar.ISidebar;
 import com.android.internal.sidebar.ISidebarService;
+import com.smartisanos.sidebar.util.AppManager;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.OngoingManager;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
+import com.smartisanos.sidebar.util.ResolveInfoManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.view.ContentView;
@@ -102,9 +107,15 @@ public class SidebarController {
                         }
                     }
                 });
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        mContext.registerReceiver(mBroadcastReceiver, filter);
+
+        IntentFilter closeSystemDialogFilter = new IntentFilter();
+        closeSystemDialogFilter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        mContext.registerReceiver(mBroadcastReceiver, closeSystemDialogFilter);
+
+        // register receiver
+        IntentFilter iconChangeFilter = new IntentFilter();
+        iconChangeFilter.addAction(ACTION_UPDATE_ICON);
+        mContext.registerReceiver(mIconChangeReceiver, iconChangeFilter);
     }
 
     private void onSidebarModeChanged(){
@@ -409,4 +420,29 @@ public class SidebarController {
             }
         }
     }
+
+    private static final String ACTION_UPDATE_ICON = "com.smartisanos.launcher.update_icon";
+    private static final String EXTRA_PACKAGENAME = "extra_packagename";
+
+    private BroadcastReceiver mIconChangeReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (ACTION_UPDATE_ICON.equals(action)) {
+                String packageNames = intent.getStringExtra(EXTRA_PACKAGENAME);
+                if (packageNames != null) {
+                    String[] packagearr = packageNames.split(",");
+                    if (packagearr != null) {
+                        Set<String> packages = new HashSet<String>();
+                        for (String pkg : packagearr) {
+                            packages.add(pkg);
+                        }
+                        ResolveInfoManager.getInstance(mContext).onIconChanged(packages);
+                        AppManager.getInstance(mContext).onIconChanged(packages);
+                    }
+                }
+            }
+        }
+    };
 }
