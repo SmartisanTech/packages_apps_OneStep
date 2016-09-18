@@ -104,7 +104,7 @@ public class ContactListAdapter extends DragEventAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        final ViewHolder holder;
         ContactItem item = mAcceptableContacts.get(position);
         if (convertView == null) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.contact_item, null);
@@ -130,12 +130,14 @@ public class ContactListAdapter extends DragEventAdapter {
                 case DragEvent.ACTION_DRAG_STARTED:
                     return true;
                 case DragEvent.ACTION_DRAG_ENTERED:
+                    FloatText.show(mContext, holder.view, holder.mItem.getDisplayName().toString());
                     vh.view.animate().scaleX(SCALE_SIZE).scaleY(SCALE_SIZE)
                     .setInterpolator(new AccelerateDecelerateInterpolator())
                     .setStartDelay(0)
                     .setDuration(100).start();
                     return true;
                 case DragEvent.ACTION_DRAG_EXITED:
+                    FloatText.hide();
                     vh.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
                     return true;
                 case DragEvent.ACTION_DRAG_LOCATION:
