@@ -119,15 +119,12 @@ public class FileInfo implements Comparable<FileInfo> {
     public long lastTime;
 
     public FileInfo(String path){
-        this(path, getFileMimeType(path));
+        this(path, null);
     }
 
     public FileInfo(String path, String mimeType){
         if (TextUtils.isEmpty(mimeType)) {
             mimeType = getFileMimeType(path);
-            if (TextUtils.isEmpty(mimeType)) {
-                mimeType = "application/*";
-            }
         }
         this.filePath = path;
         this.mimeType = mimeType;
@@ -200,7 +197,7 @@ public class FileInfo implements Comparable<FileInfo> {
         }
 
         for (String want_mime : WANTED_MIMETYPE) {
-            if (ClipDescription.compareMimeTypes(want_mime, mimeType)) {
+            if (ClipDescription.compareMimeTypes(mimeType, want_mime)) {
                 return true;
             }
         }
@@ -235,7 +232,7 @@ public class FileInfo implements Comparable<FileInfo> {
 
     public static String getSuffix(String fileName) {
         int index = fileName.lastIndexOf(".");
-        if (index != -1) {
+        if (index > 0) {
             return fileName.substring(index + 1).toLowerCase(Locale.US);
         } else {
             return "";
