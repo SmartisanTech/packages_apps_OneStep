@@ -8,6 +8,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
 import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -156,9 +157,11 @@ public class SideView extends RelativeLayout {
         //resolve
         mAppList = (SidebarListView) findViewById(R.id.applist);
         mAppList.setSideView(this);
+        mAppList.addHeaderView(LayoutInflater.from(mContext).inflate(R.layout.switch_app, null));
         mAppAdapter = new AppListAdapter(mContext);
         mAppList.setAdapter(mAppAdapter);
         mAppList.setOnItemClickListener(mAppItemOnClickListener);
+
         mShareList = (SidebarListView) findViewById(R.id.sharelist);
         mShareList.setSideView(this);
         mShareList.setAdapter(mResolveAdapter = new ResolveInfoListAdapter(mContext));
@@ -352,9 +355,17 @@ public class SideView extends RelativeLayout {
     private AdapterView.OnItemClickListener mAppItemOnClickListener = new AdapterView.OnItemClickListener() {
 
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            AppItem ai = (AppItem) mAppAdapter.getItem(position);
-            ai.openUI(mContext);
+        public void onItemClick(AdapterView<?> adapterView, View view,int position, long id) {
+            if (position == 0) {
+                // applist has one headview-,-
+                Utils.launchPreviousApp(mContext);
+            } else {
+                position--;
+                if (position < mAppAdapter.getCount()) {
+                    AppItem ai = (AppItem) mAppAdapter.getItem(position);
+                    ai.openUI(mContext);
+                }
+            }
         }
     };
 

@@ -83,6 +83,10 @@ public class SidebarListView extends ListView {
     private AdapterView.OnItemLongClickListener mOnLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            if (position < getHeaderViewsCount()
+                    || position >= getChildCount() - getFooterViewsCount()) {
+                return false;
+            }
             int[] viewLoc = new int[2];
             view.getLocationOnScreen(viewLoc);
             viewLoc[0] = viewLoc[0] + view.getWidth() / 2;
@@ -117,7 +121,7 @@ public class SidebarListView extends ListView {
     public void dropBackSidebarItem() {
         if (mDraggedItem != null) {
             if (mDragEventAdapter != null) {
-                mDragEventAdapter.moveItemPostion(mDraggedItem, mDragPosition);
+                mDragEventAdapter.moveItemPostion(mDraggedItem, mDragPosition - this.getHeaderViewsCount());
             }
             dragEnd();
         }
@@ -142,17 +146,15 @@ public class SidebarListView extends ListView {
 
     public void dragObjectMove(int rawX, int rawY) {
         if (Utils.inArea(rawX, rawY, this)) {
-            int count = getAdapter().getCount();
+            int count = getAdapter().getCount() - getHeaderViewsCount() - getFooterViewsCount();
             if (count > 0) {
-                //convert global coordinate to view local coordinate
+                // convert global coordinate to view local coordinate
                 Rect drawingRect = new Rect();
                 getDrawingRect(drawingRect);
                 int[] localLoc = convertToLocalCoordinate(rawX, rawY, drawingRect);
-                int subViewHeight = drawingRect.bottom / count;
+                int subViewHeight = drawingRect.bottom / getChildCount();
                 int position = localLoc[1] / subViewHeight;
-                if (position >= 0 && position < count) {
-                    pointToNewPositionWithAnim(position);
-                }
+                pointToNewPositionWithAnim(position);
             }
         }
     }
@@ -249,27 +251,32 @@ public class SidebarListView extends ListView {
     };
 
     private void pointToNewPositionWithAnim(int position) {
-        int count = getCount() - getFooterViewsCount();
-        if (position < 0 || position >= count || mDragPosition == position) {
-            return;
+        int headViewCount = getHeaderViewsCount();
+        int count = getCount() - getFooterViewsCount() - headViewCount;
+        if (position < this.getHeaderViewsCount()
+                || position >= this.getChildCount() - this.getFooterViewsCount()
+                || mDragPosition == position) {
+            return ;
         }
+        int begin = headViewCount;
+        int end = begin + count;
         // check invisible count
         int invisibleViewCount = 0;
-        for (int i = 0; i < count; i++) {
+        for (int i = begin; i < end; i++) {
             View view = getChildAt(i);
             if (view.getVisibility() != View.VISIBLE) {
                 invisibleViewCount++;
             }
         }
         if (invisibleViewCount != 1) {
-            for (int i = 0; i < count; i++) {
+            for (int i = begin; i < end; i++) {
                 View view = getChildAt(i);
                 if (view.getVisibility() == View.INVISIBLE) {
                     log.error("dump INVISIBLE VIEW " + view);
                 }
             }
             if (invisibleViewCount != 1) {
-                for (int i = 0; i < count; i++) {
+                for (int i = begin; i < end; i++) {
                     View view = getChildAt(i);
                     if (view.getVisibility() == View.INVISIBLE) {
                         log.error("dump INVISIBLE VIEW " + view);
@@ -280,9 +287,10 @@ public class SidebarListView extends ListView {
         }
 
         mDragPosition = position;
+        position -= this.getHeaderViewsCount();
         View[] viewArr = new View[count];
         int index = 0;
-        for (int i = 0; i < count; i++) {
+        for (int i = begin; i < end; i++) {
             View view = getChildAt(i);
             if (view.getVisibility() == View.INVISIBLE) {
                 viewArr[position] = view;
@@ -295,6 +303,9 @@ public class SidebarListView extends ListView {
         }
         AnimTimeLine moveAnimTimeLine = new AnimTimeLine();
         int toY = 0;
+        for (int i = 0; i < headViewCount; ++i) {
+            toY += getChildAt(i).getHeight();
+        }
         for (int i = 0; i < viewArr.length; i++) {
             View view = viewArr[i];
             int fromY = (int) view.getY();

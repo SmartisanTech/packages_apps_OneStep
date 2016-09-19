@@ -344,4 +344,23 @@ public class Utils {
         }
         return packageInfo == null;
     }
+
+    public static void launchPreviousApp(Context context) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RecentTaskInfo> recentTasks = am.getRecentTasks(2, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
+        if (recentTasks.size() >= 2) {
+            int taskId = recentTasks.get(1).id;
+            if (taskId >= 0) {
+                am.moveTaskToFront(taskId, ActivityManager.MOVE_TASK_WITH_HOME);
+            } else {
+                Intent intent = new Intent(recentTasks.get(1).baseIntent);
+                if (intent != null && intent.getComponent() != null) {
+                    intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
+                            | Intent.FLAG_ACTIVITY_TASK_ON_HOME
+                            | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivityAsUser(intent, UserHandle.CURRENT);
+                }
+            }
+        }
+    }
 }
