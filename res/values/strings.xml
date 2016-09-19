@@ -15,10 +15,10 @@
     <string name="add_contact_mail">Email Contact</string>
     <string name="add_contact_mms">Messaging Contact</string>
     <string name="open_gallery">Open Albums</string>
-    <string name="title_confirm_delete_history_photo">Clearing the history will not delete images</string>
-    <string name="title_confirm_delete_history_file">Clearing the history will not delete files</string>
-    <string name="title_confirm_delete_history_clipboard">Contents of the clipboard can"'"t be recovered once it is cleared</string>
-    <string name="title_confirm_delete_bookmark">Bookmarks can"'"t be recovered once deleted.</string>
+    <string name="title_confirm_delete_history_photo">Clearing The History Will Not Delete Images</string>
+    <string name="title_confirm_delete_history_file">Clearing The History Will Not Delete Files</string>
+    <string name="title_confirm_delete_history_clipboard">Contents Of The Clipboard Can"'"t Be Recovered Once It Is Cleared</string>
+    <string name="title_confirm_delete_bookmark">Bookmarks Can"'"t Be Recovered Once Deleted.</string>
     <string name="clear">Clear</string>
     <string name="add_wechat_hint">Once in WeChat, look at the Details page of a friend and tap the "three dot" icon at the upper right to add a shortcut for that friend to the Launcher</string>
 
