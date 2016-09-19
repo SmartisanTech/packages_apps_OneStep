@@ -18,6 +18,23 @@ import android.text.TextUtils;
 public class RecentPhotoManager extends DataManager implements IClear{
     private static final LOG log = LOG.getInstance(RecentPhotoManager.class);
 
+    private static final String[] DO_NOT_SUPPORT_TYPE = new String[] {
+            "dng"
+    };
+
+    public static boolean isSupportedType(String path) {
+        if (path == null) {
+            return false;
+        }
+        String imgPath = path.toLowerCase();
+        for (String type : DO_NOT_SUPPORT_TYPE) {
+            if (imgPath.endsWith(type)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private volatile static RecentPhotoManager sInstance;
     public synchronized static RecentPhotoManager getInstance(Context context){
         if(sInstance == null){
@@ -107,7 +124,7 @@ public class RecentPhotoManager extends DataManager implements IClear{
                     info.time = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
                     info.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
                     if (!TextUtils.isEmpty(info.filePath)&& !TextUtils.isEmpty(info.mimeType)) {
-                        if (!useless.contains(info.id)) {
+                        if (!useless.contains(info.id) && isSupportedType(info.filePath)) {
                             imageList.add(info);
                         }
                     }
