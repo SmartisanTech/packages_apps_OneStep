@@ -173,8 +173,7 @@ public class WechatContact extends ContactItem {
         public static final String WEIGHT        = "weight";
         public static final String LAUNCH_INTENT = "launchIntent";
         public static final String AVATAR        = "avatar";
-        public static final String UID           = "uid";
-
+        public static final String UID           = "user_id";
 
         public static final String[] columns = new String[] {ID, DISPLAY_NAME, WEIGHT, UID, LAUNCH_INTENT, AVATAR};
         private static final Map<String, String> columnProps = new HashMap<String, String>();
@@ -231,9 +230,10 @@ public class WechatContact extends ContactItem {
             log.error("upgradeTo => " + version);
             switch (version) {
                 case 2 : {
-                    String[] columns = new String[] {ID, DISPLAY_NAME, WEIGHT, LAUNCH_INTENT, AVATAR};
                     String sql = generateCreateSQL(TABLE_NAME, columns, columnProps);
-                    formatTable(db, TABLE_NAME, columns, sql);
+                    String[] oldColumns = new String[] {ID, DISPLAY_NAME, WEIGHT, LAUNCH_INTENT, AVATAR};
+                    boolean success = formatTable(db, TABLE_NAME, oldColumns, sql);
+                    log.error("formatTable ["+TABLE_NAME+"] => " + success);
                     break;
                 }
             }
@@ -250,7 +250,7 @@ public class WechatContact extends ContactItem {
             boolean success = true;
             db.beginTransaction();
             try {
-                formatTableImpl(db, tableName, columns, createSql);
+                success = formatTableImpl(db, tableName, columns, createSql);
                 db.setTransactionSuccessful();
             } catch (Exception e) {
                 success = false;
@@ -279,14 +279,14 @@ public class WechatContact extends ContactItem {
          * @param columns backup data columns
          * @param createSql sql for create table
          */
-        private static void formatTableImpl(SQLiteDatabase db, final String tableName, final String[] columns, String createSql) {
+        private static boolean formatTableImpl(SQLiteDatabase db, final String tableName, final String[] columns, String createSql) {
             if (tableName == null) {
                 log.error("mergeTable return by tableName is null");
-                return;
+                return false;
             }
             if (columns == null || columns.length == 0) {
                 log.error("mergeTable return by columns is empty");
-                return;
+                return false;
             }
             // rename old table
             String oldTableName = tableName + "_old";
@@ -308,6 +308,7 @@ public class WechatContact extends ContactItem {
             db.execSQL(mergeSql);
             // drop tmp table
             db.execSQL(dropTableSql(oldTableName));
+            return true;
         }
 
         private long getRecordId(WechatContact info) {
