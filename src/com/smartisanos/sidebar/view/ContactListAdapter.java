@@ -19,6 +19,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -26,6 +27,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimListener;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 
 public class ContactListAdapter extends DragEventAdapter {
     private static float SCALE_SIZE = 1.4f;
@@ -37,6 +41,8 @@ public class ContactListAdapter extends DragEventAdapter {
     private List<ContactItem> mAcceptableContacts = new ArrayList<ContactItem>();
     private DragEvent mDragEvent;
     private Handler mHandler;
+    public boolean isEnableIconShadow = false;
+
     public ContactListAdapter(Context context) {
         mContext = context;
         mHandler = new Handler(Looper.getMainLooper());
@@ -102,6 +108,8 @@ public class ContactListAdapter extends DragEventAdapter {
         return position;
     }
 
+    private Anim mIconTouchedAnim;
+
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
@@ -113,6 +121,42 @@ public class ContactListAdapter extends DragEventAdapter {
             holder.typeIcon = (ImageView) view.findViewById(R.id.type_icon);
             holder.displayName = (TextView) view.findViewById(R.id.display_name);
             holder.view = view;
+            if (isEnableIconShadow) {
+                view.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(final View view, MotionEvent motionEvent) {
+                        if (view == null || motionEvent == null) {
+                            return false;
+                        }
+                        int action = motionEvent.getAction();
+                        if (action != MotionEvent.ACTION_DOWN) {
+                            return false;
+                        }
+                        if (mIconTouchedAnim != null) {
+                            mIconTouchedAnim.cancel();
+                        }
+                        view.setAlpha(0.4f);
+                        mIconTouchedAnim = new Anim(view, Anim.TRANSPARENT, 100, Anim.CUBIC_OUT, new Vector3f(0, 0, 0.4f), new Vector3f(0, 0, 1));
+                        mIconTouchedAnim.setListener(new AnimListener() {
+                            @Override
+                            public void onStart() {
+
+                            }
+
+                            @Override
+                            public void onComplete(int type) {
+                                if (mIconTouchedAnim != null) {
+                                    view.setAlpha(1);
+                                    mIconTouchedAnim = null;
+                                }
+                            }
+                        });
+                        mIconTouchedAnim.setDelay(200);
+                        mIconTouchedAnim.start();
+                        return false;
+                    }
+                });
+            }
             view.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();

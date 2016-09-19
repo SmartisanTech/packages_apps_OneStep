@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,7 +20,10 @@ import com.smartisanos.sidebar.util.AppItem;
 import com.smartisanos.sidebar.util.AppManager;
 import com.smartisanos.sidebar.util.DataManager;
 import com.smartisanos.sidebar.util.LOG;
+import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
+import com.smartisanos.sidebar.util.anim.Vector3f;
 
 public class AppListAdapter extends DragEventAdapter {
     private static final LOG log = LOG.getInstance(AppListAdapter.class);
@@ -154,6 +158,8 @@ public class AppListAdapter extends DragEventAdapter {
         mManager.updateOrder();
     }
 
+    private Anim mIconTouchedAnim;
+
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
@@ -161,6 +167,40 @@ public class AppListAdapter extends DragEventAdapter {
         if (convertView == null || !(convertView instanceof RelativeLayout)) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.app_item, null);
             ImageView iconImage = (ImageView) view.findViewById(R.id.avatar_image_view);
+            view.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(final View view, MotionEvent motionEvent) {
+                    if (view == null || motionEvent == null) {
+                        return false;
+                    }
+                    int action = motionEvent.getAction();
+                    if (action != MotionEvent.ACTION_DOWN) {
+                        return false;
+                    }
+                    if (mIconTouchedAnim != null) {
+                        mIconTouchedAnim.cancel();
+                    }
+                    view.setAlpha(0.4f);
+                    mIconTouchedAnim = new Anim(view, Anim.TRANSPARENT, 100, Anim.CUBIC_OUT, new Vector3f(0, 0, 0.4f), new Vector3f(0, 0, 1));
+                    mIconTouchedAnim.setListener(new AnimListener() {
+                        @Override
+                        public void onStart() {
+
+                        }
+
+                        @Override
+                        public void onComplete(int type) {
+                            if (mIconTouchedAnim != null) {
+                                view.setAlpha(1);
+                                mIconTouchedAnim = null;
+                            }
+                        }
+                    });
+                    mIconTouchedAnim.setDelay(200);
+                    mIconTouchedAnim.start();
+                    return false;
+                }
+            });
 
             holder = new ViewHolder();
             holder.view = view;

@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -145,6 +144,7 @@ public class SideView extends RelativeLayout {
         mContactList.setSideView(this);
         mContactList.setNeedFootView(true);
         mContactAdapter = new ContactListAdapter(mContext);
+        mContactAdapter.isEnableIconShadow = true;
         mContactList.setAdapter(mContactAdapter);
         mContactList.setOnItemClickListener(mContactItemOnClickListener);
 
@@ -225,9 +225,7 @@ public class SideView extends RelativeLayout {
         }
         boolean leftMode = (SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
         int outTo = leftMode ? -getWidth() : getWidth();
-        int time = 200;
-        Anim moveOut = new Anim(mSideViewContentNormal, Anim.MOVE, time,
-                Anim.CUBIC_OUT, new Vector3f(), new Vector3f(outTo, 0));
+        Anim moveOut = new Anim(mSideViewContentNormal, Anim.MOVE, 200, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(outTo, 0));
         moveOut.setListener(new AnimListener() {
             @Override
             public void onStart() {
@@ -236,21 +234,21 @@ public class SideView extends RelativeLayout {
             @Override
             public void onComplete(int type) {
                 mSideViewContentNormal.setVisibility(GONE);
-                mSideViewContentDragged.setVisibility(VISIBLE);
             }
         });
         mOngoingListFake.onDragStart(event);
         mContactListFake.onDragStart(event);
         mShareList.onDragStart(event);
         mSideViewContentDragged.setTranslationX(outTo);
-        Anim moveIn = new Anim(mSideViewContentDragged, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(outTo, 0), new Vector3f());
-        moveIn.setDelay(time);
+        Anim moveIn = new Anim(mSideViewContentDragged, Anim.MOVE, 200, Anim.CUBIC_OUT, new Vector3f(outTo, 0), new Vector3f());
+        moveIn.setDelay(150);
         mSwitchContentAnim = new AnimTimeLine();
         mSwitchContentAnim.addAnim(moveOut);
         mSwitchContentAnim.addAnim(moveIn);
         mSwitchContentAnim.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
+                mSideViewContentDragged.setVisibility(VISIBLE);
             }
 
             @Override
@@ -272,8 +270,7 @@ public class SideView extends RelativeLayout {
         }
         boolean leftMode = (SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
         int outTo = leftMode ? -getWidth() : getWidth();
-        int time = 200;
-        Anim moveOut = new Anim(mSideViewContentDragged, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(outTo, 0));
+        Anim moveOut = new Anim(mSideViewContentDragged, Anim.MOVE, 200, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(outTo, 0));
         moveOut.setListener(new AnimListener() {
             @Override
             public void onStart() {
@@ -290,8 +287,8 @@ public class SideView extends RelativeLayout {
             }
         });
         mSideViewContentNormal.setTranslationX(outTo);
-        Anim moveIn = new Anim(mSideViewContentNormal, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(outTo, 0), new Vector3f());
-        moveIn.setDelay(time);
+        Anim moveIn = new Anim(mSideViewContentNormal, Anim.MOVE, 200, Anim.CUBIC_OUT, new Vector3f(outTo, 0), new Vector3f());
+        moveIn.setDelay(150);
 
         mSwitchContentAnim = new AnimTimeLine();
         mSwitchContentAnim.addAnim(moveOut);
