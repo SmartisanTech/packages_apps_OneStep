@@ -219,13 +219,23 @@ public class WechatContact extends ContactItem {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            log.error("update db to version => " + newVersion);
+            log.error("update db to version => old ["+oldVersion+"] new ["+newVersion+"]");
             //to version 2
-            int version = oldVersion + 1;
-            if (version == 2) {
-                String[] columns = new String[] {ID, DISPLAY_NAME, WEIGHT, LAUNCH_INTENT, AVATAR};
-                String sql = generateCreateSQL(TABLE_NAME, columns, columnProps);
-                formatTable(db, TABLE_NAME, columns, sql);
+            for (int i = oldVersion; i < newVersion; i++) {
+                int version = oldVersion + 1;
+                upgradeTo(db, version);
+            }
+        }
+
+        private void upgradeTo(SQLiteDatabase db, int version) {
+            log.error("upgradeTo => " + version);
+            switch (version) {
+                case 2 : {
+                    String[] columns = new String[] {ID, DISPLAY_NAME, WEIGHT, LAUNCH_INTENT, AVATAR};
+                    String sql = generateCreateSQL(TABLE_NAME, columns, columnProps);
+                    formatTable(db, TABLE_NAME, columns, sql);
+                    break;
+                }
             }
         }
 
