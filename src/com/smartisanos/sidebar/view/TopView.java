@@ -171,8 +171,7 @@ public class TopView extends FrameLayout {
                 });
                 animTimeLine.start();
             } else {
-                if (mController.getCurrentContentType() == mViewToType
-                        .get(itemView)) {
+                if (mController.getCurrentContentType() == mViewToType.get(itemView)) {
                     mController.dismissContent(true);
                     resumeToNormal();
                 } else {
@@ -191,6 +190,11 @@ public class TopView extends FrameLayout {
     }
 
     public void resumeToNormal() {
+        if (AnimStatusManager.getInstance().getStatus(AnimStatusManager.ON_TOP_VIEW_RESUME)) {
+            log.error("ON_TOP_VIEW_RESUME is true, return !");
+            return;
+        }
+        AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_RESUME, true);
         AnimTimeLine timeLine = new AnimTimeLine();
         for (ITopItem view : mViewToType.keySet()) {
             timeLine.addTimeLine(view.resume());
@@ -198,7 +202,6 @@ public class TopView extends FrameLayout {
         timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
-                AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_RESUME, true);
             }
 
             @Override
@@ -364,6 +367,7 @@ public class TopView extends FrameLayout {
             public void onComplete(int type) {
                 if (mExitAnimTimeLine != null) {
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_EXIT, false);
+                    resumeToNormal();
                     mPhotos.setAlpha(1);
                     mFile.setAlpha(1);
                     mClipboard.setAlpha(1);
@@ -379,7 +383,6 @@ public class TopView extends FrameLayout {
                         mRight.setTranslationY(0);
                         mRight.setAlpha(1);
                         mRight.setVisibility(INVISIBLE);
-                        resumeToNormal();
                     }
                     setVisibility(View.GONE);
                     mExitAnimTimeLine = null;
