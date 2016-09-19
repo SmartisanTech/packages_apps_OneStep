@@ -11,7 +11,12 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
+import com.smartisanos.sidebar.SidebarApplication;
+import com.smartisanos.sidebar.receiver.ShortcutReceiver;
+
 public class ContactManager extends DataManager{
+    private static final LOG log = LOG.getInstance(ContactManager.class);
+
     private volatile static ContactManager sInstance;
     public synchronized static ContactManager getInstance(Context context){
         if(sInstance == null){
@@ -59,6 +64,14 @@ public class ContactManager extends DataManager{
         }
         notifyListener();
         mHandler.obtainMessage(MSG_UPDATE_ORDER).sendToTarget();
+    }
+
+    public void removeDoppelgangerShortcut(String pkg) {
+        if (pkg == null) {
+            return;
+        }
+        log.error("removeDoppelgangerShortcut ["+pkg+"]");
+        mHandler.obtainMessage(MSG_REMOVE_DOPPELGANGER, pkg).sendToTarget();
     }
 
     public void addContact(ContactItem ci) {
@@ -150,6 +163,8 @@ public class ContactManager extends DataManager{
     private static final int MSG_DELETE_CONTACT = 1;
     private static final int MSG_UPDATE_ORDER = 2;
     private static final int MSG_READ_CONTACTS = 3;
+    private static final int MSG_REMOVE_DOPPELGANGER = 4;
+
     private class ContactManagerHandler extends Handler {
         public ContactManagerHandler(Looper looper) {
             super(looper, null, false);
@@ -157,23 +172,54 @@ public class ContactManager extends DataManager{
 
         @Override
         public void handleMessage(Message msg) {
-            ContactItem ci = (ContactItem) msg.obj;
             switch (msg.what) {
-            case MSG_SAVE_CONTACT:
-                ci.save();
-                break;
-            case MSG_DELETE_CONTACT:
-                ci.deleteFromDatabase();
-                break;
-            case MSG_UPDATE_ORDER:
-                synchronized(mContacts){
-                    for(ContactItem cni : mContacts){
-                        cni.save();
-                    }
+                case MSG_SAVE_CONTACT : {
+                    ContactItem ci = (ContactItem) msg.obj;
+                    ci.save();
+                    break;
                 }
-                break;
-            case MSG_READ_CONTACTS:
-                readContacts();
+                case MSG_DELETE_CONTACT : {
+                    ContactItem ci = (ContactItem) msg.obj;
+                    ci.deleteFromDatabase();
+                    break;
+                }
+                case MSG_UPDATE_ORDER : {
+                    synchronized(mContacts){
+                        for(ContactItem cni : mContacts){
+                            cni.save();
+                        }
+                    }
+                    break;
+                }
+                case MSG_READ_CONTACTS : {
+                    readContacts();
+                    break;
+                }
+                case MSG_REMOVE_DOPPELGANGER : {
+                    String pkg = (String) msg.obj;
+                    if (pkg == null) {
+                        break;
+                    }
+                    if (pkg.equals(ShortcutReceiver.WECHAT)) {
+                        WechatContact.removeDoppelgangerShortcut(mContext);
+                        List<ContactItem> removeList = new ArrayList<ContactItem>();
+                        synchronized(mContacts) {
+                            for (ContactItem item : mContacts) {
+                                if (item instanceof WechatContact) {
+                                    WechatContact contact = (WechatContact) item;
+                                    if (contact.getUserId() == UserPackage.USER_DOPPELGANGER) {
+                                        removeList.add(item);
+                                    }
+                                }
+                            }
+                            for (ContactItem item : removeList) {
+                                mContacts.remove(item);
+                            }
+                        }
+                    }
+                    notifyListener();
+                    break;
+                }
             }
         }
     }

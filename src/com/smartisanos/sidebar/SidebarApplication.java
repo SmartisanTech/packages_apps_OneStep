@@ -5,6 +5,7 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.MailContactsHelper;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.ThreadVerify;
+import com.smartisanos.sidebar.util.UserPackage;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 
 import android.app.Application;
@@ -27,6 +28,7 @@ public class SidebarApplication extends Application {
         super.onCreate();
         myself = this;
         Constants.init(this);
+        UserPackage.registerCallback(this);
         AnimStatusManager.getInstance().reset();
         ThreadVerify.PROCESS_ID = Process.myTid();
         setStrictMode();
@@ -38,6 +40,7 @@ public class SidebarApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
+        UserPackage.unregisterCallback(this);
         myself = null;
         RecentFileManager.getInstance(getApplicationContext()).stopFileObserver();
     }

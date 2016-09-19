@@ -20,14 +20,24 @@ import java.util.Map;
 import com.smartisanos.sidebar.R;
 
 public class WechatContact extends ContactItem {
+    private static final LOG log = LOG.getInstance(WechatContact.class);
 
     public static final String PKG_NAME = "com.tencent.mm";
 
     private String mIntent;
+    private int mUid;
 
     public WechatContact(Context context, String name, String intent, Bitmap icon) {
         super(context, icon, name);
         mIntent = intent;
+    }
+
+    public int getUserId() {
+        return mUid;
+    }
+
+    public void setUserId(int id) {
+        mUid = id;
     }
 
     @Override
@@ -58,16 +68,19 @@ public class WechatContact extends ContactItem {
             intent.putExtra("wechat_text", event.getClipData().getItemAt(0).getText());
         } catch (URISyntaxException e) {
             e.printStackTrace();
+        }
+        if (intent == null) {
+            //lose intent
             return false;
         }
-
+        log.error("start with uid ["+mUid+"]");
         try {
-            LaunchApp.start(mContext, intent, true, PKG_NAME, 0);
+            LaunchApp.start(mContext, intent, true, PKG_NAME, mUid);
             return true;
-        } catch (ActivityNotFoundException e) {
-            // NA
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -88,6 +101,11 @@ public class WechatContact extends ContactItem {
             // NA
         }
         return false;
+    }
+
+    public static void removeDoppelgangerShortcut(Context context) {
+        String where = DatabaseHelper.UID + "=" + UserPackage.USER_DOPPELGANGER;
+        DatabaseHelper.getInstance(context).remove(where);
     }
 
     @Override
@@ -133,7 +151,7 @@ public class WechatContact extends ContactItem {
 
     public static final class DatabaseHelper extends SQLiteOpenHelper {
 
-        private static final int DB_VERSION = 1;
+        private static final int DB_VERSION = 2;
         private static final String DB_NAME = "wechat_contacts";
 
         private volatile static DatabaseHelper sInstance;
@@ -155,13 +173,16 @@ public class WechatContact extends ContactItem {
         public static final String WEIGHT        = "weight";
         public static final String LAUNCH_INTENT = "launchIntent";
         public static final String AVATAR        = "avatar";
+        public static final String UID           = "uid";
 
-        public static final String[] columns = new String[] {ID, DISPLAY_NAME, WEIGHT, LAUNCH_INTENT, AVATAR};
+
+        public static final String[] columns = new String[] {ID, DISPLAY_NAME, WEIGHT, UID, LAUNCH_INTENT, AVATAR};
         private static final Map<String, String> columnProps = new HashMap<String, String>();
         static {
             columnProps.put(ID,                "INTEGER PRIMARY KEY");
             columnProps.put(DISPLAY_NAME,      "TEXT");
             columnProps.put(WEIGHT,            "INTEGER");
+            columnProps.put(UID,               "INTEGER");
             columnProps.put(LAUNCH_INTENT,     "TEXT");
             columnProps.put(AVATAR,            "BLOB");
         }
@@ -197,7 +218,86 @@ public class WechatContact extends ContactItem {
         }
 
         @Override
-        public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            log.error("update db to version => " + newVersion);
+            //to version 2
+            int version = oldVersion + 1;
+            if (version == 2) {
+                String[] columns = new String[] {ID, DISPLAY_NAME, WEIGHT, LAUNCH_INTENT, AVATAR};
+                String sql = generateCreateSQL(TABLE_NAME, columns, columnProps);
+                formatTable(db, TABLE_NAME, columns, sql);
+            }
+        }
+
+        /**
+         * merge data from old table to new table.
+         * make sure table name won't change and column name & type is same with old table
+         * @param tableName
+         * @param columns backup data columns
+         * @param createSql sql for create table
+         */
+        public static boolean formatTable(SQLiteDatabase db, final String tableName, final String[] columns, String createSql) {
+            boolean success = true;
+            db.beginTransaction();
+            try {
+                formatTableImpl(db, tableName, columns, createSql);
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
+                success = false;
+                e.printStackTrace();
+            } finally {
+                try {
+                    db.endTransaction();
+                } catch (Exception e) {
+                    success = false;
+                    e.printStackTrace();
+                }
+            }
+            return success;
+        }
+
+        private static final String DROP_TABLE_SQL_PREFIX = "DROP TABLE IF EXISTS ";
+
+        public static String dropTableSql(String tableName) {
+            return DROP_TABLE_SQL_PREFIX + tableName;
+        }
+
+        /**
+         * merge data from old table to new table.
+         * make sure table name won't change and column name & type is same with old table
+         * @param tableName
+         * @param columns backup data columns
+         * @param createSql sql for create table
+         */
+        private static void formatTableImpl(SQLiteDatabase db, final String tableName, final String[] columns, String createSql) {
+            if (tableName == null) {
+                log.error("mergeTable return by tableName is null");
+                return;
+            }
+            if (columns == null || columns.length == 0) {
+                log.error("mergeTable return by columns is empty");
+                return;
+            }
+            // rename old table
+            String oldTableName = tableName + "_old";
+            String renameTableSql = "ALTER TABLE " + tableName + " RENAME TO " + oldTableName;
+            db.execSQL(renameTableSql);
+            // create table with format
+            db.execSQL(createSql);
+            // merge data to new table
+            StringBuffer buffer = new StringBuffer();
+            for (int i = 0; i < columns.length; i++) {
+                buffer.append(columns[i]);
+                if (i != (columns.length - 1)) {
+                    buffer.append(", ");
+                }
+            }
+            String mergeColumns = buffer.toString();
+            String mergeSql = "INSERT INTO " + tableName + " (" + mergeColumns +
+                    ") SELECT " + mergeColumns + " FROM " + oldTableName;
+            db.execSQL(mergeSql);
+            // drop tmp table
+            db.execSQL(dropTableSql(oldTableName));
         }
 
         private long getRecordId(WechatContact info) {
@@ -226,6 +326,7 @@ public class WechatContact extends ContactItem {
             long recordId = getRecordId(info);
             long result = -1;
             ContentValues cv = new ContentValues();
+            cv.put(UID, info.mUid);
             cv.put(DISPLAY_NAME, info.mDisplayName.toString());
             cv.put(WEIGHT, info.getIndex());
             cv.put(LAUNCH_INTENT, info.mIntent);
@@ -246,10 +347,21 @@ public class WechatContact extends ContactItem {
             long recordId = getRecordId(info);
             if (recordId > 0) {
                 String where = ID + "=" + recordId;
-                int affectedRow = getWritableDatabase().delete(TABLE_NAME, where, null);
+                return remove(where);
+            }
+            return false;
+        }
+
+        public boolean remove(String where) {
+            ThreadVerify.verify(false);
+            try {
+                SQLiteDatabase db = getWritableDatabase();
+                int affectedRow = db.delete(TABLE_NAME, where, null);
                 if (affectedRow > 0) {
                     return true;
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return false;
         }
@@ -265,13 +377,16 @@ public class WechatContact extends ContactItem {
                     int weightIndex = cursor.getColumnIndex(WEIGHT);
                     int intentIndex = cursor.getColumnIndex(LAUNCH_INTENT);
                     int avatarIndex = cursor.getColumnIndex(AVATAR);
+                    int uidIndex    = cursor.getColumnIndex(UID);
                     do {
-                        String name = cursor.getString(nameIndex);
-                        int weight = cursor.getInt(weightIndex);
+                        String name   = cursor.getString(nameIndex);
+                        int weight    = cursor.getInt(weightIndex);
                         String intent = cursor.getString(intentIndex);
+                        int uid       = cursor.getInt(uidIndex);
                         byte[] avatar = cursor.getBlob(avatarIndex);
-                        Bitmap icon = BitmapUtils.Bytes2Bitmap(avatar);
+                        Bitmap icon   = BitmapUtils.Bytes2Bitmap(avatar);
                         WechatContact contact = new WechatContact(mContext, name, intent, icon);
+                        contact.setUserId(uid);
                         contact.setIndex(weight);
                         list.add(contact);
                     } while (cursor.moveToNext());

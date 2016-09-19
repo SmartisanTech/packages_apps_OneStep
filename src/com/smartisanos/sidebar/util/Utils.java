@@ -11,17 +11,19 @@ import java.util.regex.Pattern;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.ActivityManagerNative;
+import android.app.AppGlobals;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.RemoteException;
+import android.os.UserHandle;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -331,5 +333,15 @@ public class Utils {
             name = name.substring(24);
         }
         return name;
+    }
+
+    public static boolean appIsDoubleOpen(String pkg) {
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = AppGlobals.getPackageManager().getPackageInfo(pkg, 0, UserHandle.USER_DOPPELGANGER);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return packageInfo == null;
     }
 }
