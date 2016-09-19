@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -158,13 +159,21 @@ public class SideView extends RelativeLayout {
         mAppAdapter = new AppListAdapter(mContext);
         mAppList.setAdapter(mAppAdapter);
         mAppList.setOnItemClickListener(mAppItemOnClickListener);
-
         mShareList = (SidebarListView) findViewById(R.id.sharelist);
         mShareList.setSideView(this);
         mShareList.setAdapter(mResolveAdapter = new ResolveInfoListAdapter(mContext));
 
         mScrollView = (ScrollView) findViewById(R.id.sideview_scroll_list);
         Utils.setAlwaysCanAcceptDragForAll(mSideViewContentDragged, true);
+        ViewGroup vg = (ViewGroup) mSideViewContentDragged.getParent();
+        vg.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                //this is necessary, if the parent of mSideViewContentDragged return false, the sideview
+                //will not dispatch event to mSideViewContentDragged ...
+                return true;
+            }
+        });
     }
 
     public void requestStatus(SidebarStatus status) {
