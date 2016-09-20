@@ -72,7 +72,7 @@ public class FileInfo implements Comparable<FileInfo> {
         WANTED_MIMETYPE.add("application/vnd.ms-excel");
         WANTED_MIMETYPE.add("application/pdf");
         WANTED_MIMETYPE.add("text/plain");
-        WANTED_MIMETYPE.add("vedio/*");
+        WANTED_MIMETYPE.add("video/*");
         WANTED_MIMETYPE.add("audio/*");
 
         WANTED_SUFFIX = new HashSet<String>();
