@@ -146,23 +146,6 @@ public class RecentPhotoAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getItemViewType(int position) {
-        if (mList.size() == 0) {
-            return 1;
-        }
-        return position;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        int count = mList.size();
-        if (count < 1) {
-            count = 1;
-        }
-        return count;
-    }
-
-    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
