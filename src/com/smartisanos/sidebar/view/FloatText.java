@@ -96,8 +96,14 @@ public class FloatText {
         mText.post(new Runnable() {
             @Override
             public void run() {
-                ViewTreeObserver observer = mText.getViewTreeObserver();
-                observer.addOnGlobalLayoutListener(mTextViewObs);
+                if (mText == null) {
+                    log.error("show failed by mText is null");
+                    return;
+                }
+                if (mPopupWindow == null) {
+                    log.error("show failed by mPopupWindow is null");
+                    return;
+                }
                 int xOffset = loc[0];
                 int yOffset = loc[1];
                 int viewWidth = view.getWidth();
@@ -125,7 +131,10 @@ public class FloatText {
                 if (!mPopupWindow.isShowing()) {
                     SideView sideView = SidebarController.getInstance(context).getSideView();
                     mPopupWindow.showAtLocation(sideView, Gravity.NO_GRAVITY, xOffset, yOffset);
+                    ViewTreeObserver observer = mText.getViewTreeObserver();
+                    observer.addOnGlobalLayoutListener(mTextViewObs);
                 } else {
+                    mFloatView.setVisibility(View.VISIBLE);
                     mPopupWindow.update(xOffset, yOffset, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 }
             }
