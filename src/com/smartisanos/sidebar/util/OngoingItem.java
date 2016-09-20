@@ -183,6 +183,8 @@ public class OngoingItem implements SidebarItem {
         if(extraIntent != null){
             realIntent.putExtra(Intent.EXTRA_INTENT, extraIntent);
         }
+        //smartisan intent, processed more quickly
+        realIntent.addFlags(Intent.FLAG_RECEIVER_SM_USER_AWARE);
         context.sendBroadcast(realIntent);
     }
 
