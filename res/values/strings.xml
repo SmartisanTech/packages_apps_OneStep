@@ -66,4 +66,5 @@
     <string name="list_view_look_more">More</string>
     <string name="add_app_to_sidebar">Add App To Sidebar</string>
     <string name="add_share_to_sidebar">Add Share To Sidebar</string>
+    <string name="contact_added">Added</string>
 </resources>

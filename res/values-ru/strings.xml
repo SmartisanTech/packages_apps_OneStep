@@ -45,4 +45,5 @@
     <string name="bookmark_empty_hint">Вы можете в приложениях кликать"Поделиться-Добавить в закладку" или копировать ссылку чтобы добавить статьи или фото в закладку</string>
     <string name="share_component_name">Добавить в избранное</string>
     <string name="bookmark_source">Из:</string>
+    <string name="contact_added">Добавить</string>
 </resources>

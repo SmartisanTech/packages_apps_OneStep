@@ -10,7 +10,9 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.widget.Toast;
 
+import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarApplication;
 import com.smartisanos.sidebar.receiver.ShortcutReceiver;
 
@@ -32,6 +34,8 @@ public class ContactManager extends DataManager{
     private Context mContext;
     private List<ContactItem> mContacts = new ArrayList<ContactItem>();
     private Handler mHandler;
+
+    private Toast mContactAddedToast;
     private ContactManager(Context context){
         mContext = context;
         HandlerThread thread = new HandlerThread(ContactManager.class.getName());
@@ -81,6 +85,7 @@ public class ContactManager extends DataManager{
                     ci.setIndex(mContacts.get(i).getIndex());
                     mContacts.set(i, ci);
                     saveContact(ci);
+                    showContactAddedToast();
                     notifyListener();
                     return;
                 }
@@ -98,8 +103,9 @@ public class ContactManager extends DataManager{
             }
             ci.isNewAdd = true;
             mContacts.add(0, ci);
-            notifyListener();
             saveContact(ci);
+            showContactAddedToast();
+            notifyListener();
         }
     }
 
@@ -114,6 +120,14 @@ public class ContactManager extends DataManager{
                 }
             }
         }
+    }
+
+    private void showContactAddedToast() {
+        if (mContactAddedToast != null) {
+            mContactAddedToast.cancel();
+        }
+        mContactAddedToast = Toast.makeText(mContext, R.string.contact_added, Toast.LENGTH_SHORT);
+        mContactAddedToast.show();
     }
 
     private void saveContact(ContactItem ci){
