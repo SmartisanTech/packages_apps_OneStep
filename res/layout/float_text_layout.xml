@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:visibility="invisible"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <TextView
         android:id="@+id/text_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/float_app_name_bg"
         android:textColor="#ffffff"
-        android:textSize="13dp"
+        android:textSize="@dimen/float_text_size"
         android:ellipsize="end"
         android:maxWidth="104dp"
         android:maxLines="1"
-        android:gravity="center"
-        />
-</LinearLayout>
+        android:gravity="center"/>
+</FrameLayout>

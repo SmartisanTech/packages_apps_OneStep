@@ -318,12 +318,13 @@ public class SideView extends RelativeLayout {
     @Override
     public boolean dispatchDragEvent(DragEvent event) {
         int action = event.getAction();
-        FloatText.handleDragEvent(mContext, event);
         switch (action) {
         case DragEvent.ACTION_DRAG_STARTED:
+            FloatText.getInstance(mContext).start();
             onDragStart(event);
             return super.dispatchDragEvent(event);
         case DragEvent.ACTION_DRAG_ENDED:
+            FloatText.getInstance(mContext).end();
             boolean ret = super.dispatchDragEvent(event);
             onDragEnd(event);
             return ret;

@@ -48,8 +48,6 @@ public class Constants {
         SHADOW_BG_COLOR_DARK = resources.getColor(R.color.dark_bg_color);
         share_item_offset_x = resources.getDimensionPixelSize(R.dimen.share_item_icon_offset_x);
         share_item_offset_y = resources.getDimensionPixelSize(R.dimen.share_item_icon_offset_y);
-
-        FloatTextValue.init(resources);
     }
 
     public static int[] getWindowSize(Context context) {
@@ -66,31 +64,5 @@ public class Constants {
             size[1] = metrics.widthPixels;
         }
         return size;
-    }
-
-    public static class FloatTextValue {
-        public static int paddingWithSidebar;
-        public static int textBgIntrinsicWidth;
-        public static int textBgMinimumWidth;
-        public static int textBgIntrinsicHeight;
-        public static int textBgMinimumHeight;
-
-        public static Paint textPaint;
-
-        public static void init(Resources resources) {
-            paddingWithSidebar = resources.getDimensionPixelSize(R.dimen.float_text_padding_with_sidebar);
-            Drawable bg = resources.getDrawable(R.drawable.float_app_name_bg);
-            textBgIntrinsicWidth  = bg.getIntrinsicWidth();
-            textBgMinimumWidth    = bg.getMinimumWidth();
-            textBgIntrinsicHeight = bg.getIntrinsicHeight();
-            textBgMinimumHeight   = bg.getMinimumHeight();
-
-            int textSize = resources.getDimensionPixelSize(R.dimen.float_text_size);
-            textPaint = new Paint();
-            textPaint.setTextSize(textSize);
-            textPaint.setAntiAlias(true);
-            textPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
-            textPaint.setStyle(Paint.Style.FILL);
-        }
     }
 }

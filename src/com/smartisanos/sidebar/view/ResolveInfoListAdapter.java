@@ -191,16 +191,14 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
                     case DragEvent.ACTION_DRAG_STARTED:
                         return true;
                     case DragEvent.ACTION_DRAG_ENTERED:
-//                        log.d("ACTION_DRAG_ENTERED");
-                        FloatText.show(mContext, holder.view, holder.resolveInfoGroup.getDisplayName().toString());
+                        FloatText.getInstance(mContext).show(holder.view, holder.resolveInfoGroup.getDisplayName());
                         holder.view.animate().scaleX(SCALE_SIZE).scaleY(SCALE_SIZE)
                         .setInterpolator(new AccelerateDecelerateInterpolator())
                         .setStartDelay(0)
                         .setDuration(100).start();
                         return true;
                     case DragEvent.ACTION_DRAG_EXITED:
-//                        log.d("ACTION_DRAG_EXITED");
-                        FloatText.hide();
+                        FloatText.getInstance(mContext).hide();
                         holder.view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
                         return true;
                     case DragEvent.ACTION_DRAG_LOCATION:
