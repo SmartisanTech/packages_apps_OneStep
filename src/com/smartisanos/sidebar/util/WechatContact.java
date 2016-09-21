@@ -88,14 +88,13 @@ public class WechatContact extends ContactItem {
         Intent intent = null;
         try {
             intent = Intent.parseUri(mIntent, 0);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return false;
         }
 
         try {
-            LaunchApp.start(mContext, intent, true, PKG_NAME, 0);
+            LaunchApp.start(mContext, intent, true, PKG_NAME, mUid);
             return true;
         } catch (ActivityNotFoundException e) {
             // NA
