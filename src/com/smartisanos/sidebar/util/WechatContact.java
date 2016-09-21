@@ -383,7 +383,7 @@ public class WechatContact extends ContactItem {
             try {
                 cursor = getReadableDatabase().query(TABLE_NAME, null, null, null, null, null, null);
                 if (cursor.moveToFirst()) {
-                    int nameIndex = cursor.getColumnIndex(DISPLAY_NAME);
+                    int nameIndex   = cursor.getColumnIndex(DISPLAY_NAME);
                     int weightIndex = cursor.getColumnIndex(WEIGHT);
                     int intentIndex = cursor.getColumnIndex(LAUNCH_INTENT);
                     int avatarIndex = cursor.getColumnIndex(AVATAR);
