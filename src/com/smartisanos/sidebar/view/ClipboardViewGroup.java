@@ -142,26 +142,25 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
         if (anim) {
             int time = 200;
             AnimTimeLine timeLine = new AnimTimeLine();
+            final View view;
             if (mIsEmpty) {
-                int height = mEmptyView.getHeight();
-                mEmptyView.setPivotY(0);
-                Anim moveAnim = new Anim(mEmptyView, Anim.TRANSLATE, time, Anim.CUBIC_OUT, new Vector3f(0, -height), new Vector3f());
-                moveAnim.setListener(new AnimListener() {
-                    @Override
-                    public void onStart() {
-                    }
-                    @Override
-                    public void onComplete(int type) {
-                        mEmptyView.setY(0);
-                    }
-                });
-                timeLine.addAnim(moveAnim);
+                view = mEmptyView;
             } else {
-                int height = mClipList.getHeight();
-                mClipList.setPivotY(0);
-                Anim moveAnim = new Anim(mClipList, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(0, -height), new Vector3f());
-                timeLine.addAnim(moveAnim);
+                view = mClipList;
             }
+            int height = view.getHeight();
+            view.setPivotY(0);
+            Anim moveAnim = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(0, -height / 2), new Vector3f());
+            moveAnim.setListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                }
+                @Override
+                public void onComplete(int type) {
+                    view.setTranslationY(0);
+                }
+            });
+            timeLine.addAnim(moveAnim);
             setPivotY(0);
             Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 0.6f), new Vector3f(0, 1));
             timeLine.addAnim(scaleAnim);
