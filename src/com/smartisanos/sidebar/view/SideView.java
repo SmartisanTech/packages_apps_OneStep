@@ -359,11 +359,13 @@ public class SideView extends RelativeLayout {
         public void onItemClick(AdapterView<?> adapterView, View view,int position, long id) {
             if (position == 0) {
                 // applist has one headview-,-
+                Utils.dismissAllDialog(mContext);
                 Utils.launchPreviousApp(mContext);
             } else {
                 position--;
                 if (position < mAppAdapter.getCount()) {
                     AppItem ai = (AppItem) mAppAdapter.getItem(position);
+                    Utils.dismissAllDialog(mContext);
                     ai.openUI(mContext);
                 }
             }
@@ -378,6 +380,7 @@ public class SideView extends RelativeLayout {
                 return;
             }
             ContactItem ci = (ContactItem) mContactAdapter.getItem(position);
+            Utils.dismissAllDialog(mContext);
             ci.openUI(mContext);
         }
     };

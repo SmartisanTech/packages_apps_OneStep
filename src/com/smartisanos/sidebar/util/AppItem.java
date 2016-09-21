@@ -71,7 +71,6 @@ public class AppItem implements SidebarItem {
 
     @Override
     public boolean openUI(Context context) {
-        Utils.dismissAllDialog(context);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
