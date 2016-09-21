@@ -12,6 +12,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.ActivityManagerNative;
 import android.app.AppGlobals;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -22,6 +23,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.view.DragEvent;
@@ -291,19 +293,6 @@ public class Utils {
             }
         } else {
             label = resources.getString(R.string.date_label_earlier);
-            //show month & year
-//            Calendar now = Calendar.getInstance();
-//            now.setTimeInMillis(currentTime);
-//            Calendar date = Calendar.getInstance();
-//            date.setTimeInMillis(time);
-//            if (now.get(Calendar.YEAR) == date.get(Calendar.YEAR)) {
-//                //same year, show month
-//                int month = date.get(Calendar.MONTH);
-//                label = resources.getString(Constants.MONTH_ARRAY[month]);
-//            } else {
-//                //show year
-//                label = "" + date.get(Calendar.YEAR);
-//            }
         }
         return label;
     }
@@ -361,6 +350,36 @@ public class Utils {
                     context.startActivityAsUser(intent, UserHandle.CURRENT);
                 }
             }
+        }
+    }
+
+    public static void openGallery(Context context) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.setPackage("com.android.gallery3d");
+            intent.putExtra("package_name", "com.smartisanos.sidebar");
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            dismissAllDialog(context);
+        } catch (ActivityNotFoundException e) {
+            // NA
+        }
+    }
+
+    public static void openPhotoWithGallery(Context context, ImageInfo info) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setPackage("com.android.gallery3d");
+            intent.putExtra("package_name", "com.smartisanos.sidebar");
+            Uri uri = info.getContentUri(context);
+            intent.setDataAndType(uri, info.mimeType);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+            dismissAllDialog(context);
+        } catch (ActivityNotFoundException e) {
+            // NA
         }
     }
 }

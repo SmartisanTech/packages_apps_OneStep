@@ -1,9 +1,7 @@
 package com.smartisanos.sidebar.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -28,34 +26,18 @@ public final class ImageLoader {
         }
     }
 
-    private List<Callback> mLoadingTasks = new ArrayList<Callback>();
-
-    public void removeLoadingTask(Callback callback) {
-        if (callback == null) {
-            return;
-        }
-        ThreadVerify.verify(true);
-        synchronized (mLoadingTasks) {
-            mLoadingTasks.remove(callback);
-        }
-    }
-
     public void loadImage(String filepath, Callback callback) {
         if (filepath == null || callback == null) {
             return;
         }
+        /**
         Bitmap cur = mCache.getBitmapDirectly(filepath);
         if(cur != null){
             callback.onLoadComplete(filepath, cur);
             return;
         }
+        **/
         ThreadVerify.verify(true);
-        if (mLoadingTasks.contains(callback)) {
-            return;
-        }
-        synchronized (mLoadingTasks) {
-            mLoadingTasks.add(callback);
-        }
         LoadItem item = new LoadItem();
         item.filePath = filepath;
         item.callback = callback;
@@ -75,7 +57,7 @@ public final class ImageLoader {
             case MSG_IMAGE_LOAD:
                 LoadItem item = (LoadItem) msg.obj;
                 ImageLoader.Callback callback = item.callback;
-                if (callback != null) {
+                if (callback != null && callback.valid()) {
                     Bitmap bm = mCache.getBitmap(item.filePath);
                     callback.onLoadComplete(item.filePath, bm);
                 }
@@ -89,6 +71,7 @@ public final class ImageLoader {
     }
 
     public interface Callback {
+        boolean valid();
         void onLoadComplete(String filePath, Bitmap bitmap);
     }
 

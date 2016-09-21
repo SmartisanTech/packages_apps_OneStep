@@ -165,8 +165,6 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
     }
 
     public void dismiss(boolean anim) {
-        mAdapter.setPhotoExpandedFalse();
-        mAdapter.notifyDataSetChanged();
         mClearListener.dismiss();
         if (anim) {
             int time = 200;
@@ -189,6 +187,7 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
                     setVisibility(View.GONE);
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_RECENT_PHOTO_LIST_ANIM, false);
                     setScaleY(1);
+                    mAdapter.setPhotoExpandedFalse();
                 }
             });
             timeLine.start();

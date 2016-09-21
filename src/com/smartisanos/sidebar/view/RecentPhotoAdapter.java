@@ -2,6 +2,7 @@ package com.smartisanos.sidebar.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +17,10 @@ import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.Utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +36,9 @@ public class RecentPhotoAdapter extends BaseAdapter {
     private Context mContext;
     private RecentPhotoManager mPhotoManager;
     private List<ImageInfo> mImageInfoList = new ArrayList<ImageInfo>();
-    private List mList = new ArrayList();
+    private boolean[] mExpand = new boolean[DAY_INTERVAL.length];
+    private Map<Integer, List<ImageInfo>> mIntervals = new HashMap<Integer, List<ImageInfo>>();
+    private int mFirstInterval;
 
     private ImageLoader mImageLoader;
     private Handler mHandler;
@@ -66,61 +71,32 @@ public class RecentPhotoAdapter extends BaseAdapter {
 
     public void setPhotoExpandedFalse() {
         //create a new PhotoGridView.PhotoData, adapter will reset
-        updateDataList();
+        for(int i = 0; i < mExpand.length; ++ i) {
+            mExpand[i] = false;
+        }
+        notifyDataSetChanged();
     }
 
     private void updateDataList() {
-        if (mImageInfoList.size() == 0) {
-            mList.clear();
-            return;
-        }
-        ImageInfo[] images = new ImageInfo[mImageInfoList.size()];
-        mImageInfoList.toArray(images);
-        Arrays.sort(images);
-
+        mIntervals.clear();
+        mFirstInterval = Integer.MAX_VALUE;
         long now = System.currentTimeMillis();
-        List<String> labelOrder = new ArrayList<String>();
-        Map<String, List<ImageInfo>> map = new HashMap<String, List<ImageInfo>>();
-        for (int i = 0; i < images.length; i++) {
-            ImageInfo info = images[i];
-            String label = Utils.convertDateToLabel(mContext, now, info.time);
-            List<ImageInfo> list = map.get(label);
+        for (int i = 0; i < mImageInfoList.size(); i++) {
+            ImageInfo info = mImageInfoList.get(i);
+            int interval = getInterval(now, info.time);
+            List<ImageInfo> list = mIntervals.get(interval);
             if (list == null) {
                 list = new ArrayList<ImageInfo>();
+                mIntervals.put(interval, list);
+                mFirstInterval = Math.min(mFirstInterval, interval);
             }
             list.add(info);
-            map.put(label, list);
-            if (!labelOrder.contains(label)) {
-                labelOrder.add(label);
-            }
-        }
-
-        List list = new ArrayList();
-        for (int i = 0; i < labelOrder.size(); i++) {
-            String label = labelOrder.get(i);
-            List<ImageInfo> photoList = map.get(label);
-            if (label == null || photoList == null) {
-                continue;
-            }
-            list.add(label);
-            boolean showGallery = false;
-            if (i == 0) {
-                showGallery = true;
-            }
-            PhotoGridView.PhotoData data = new PhotoGridView.PhotoData(photoList);
-            data.showGallery(showGallery);
-            list.add(data);
-        }
-        map.clear();
-        synchronized (mList) {
-            mList.clear();
-            mList.addAll(list);
         }
     }
 
     private void notifyEmpty() {
         if (mEmpty != null) {
-            mEmpty.setEmpty(mList.size() == 0);
+            mEmpty.setEmpty(getCount() == 0);
         }
     }
 
@@ -132,12 +108,16 @@ public class RecentPhotoAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mList.size();
+        int total = 0;
+        for(int i = 0; i < DAY_INTERVAL.length; ++ i) {
+            total += getIntervalCount(i);
+        }
+        return total;
     }
 
     @Override
     public Object getItem(int position) {
-        return mList.get(position);
+        return position;
     }
 
     @Override
@@ -147,62 +127,146 @@ public class RecentPhotoAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.photo_block, null);
-            LinearLayout dateLabel = (LinearLayout) view.findViewById(R.id.date_label);
-            TextView textContent = (TextView) view.findViewById(R.id.date_content);
-            PhotoGridView photoGridView = (PhotoGridView) view.findViewById(R.id.photo_grid_view);
-
-            holder = new ViewHolder();
-            holder.view = view;
-            holder.dateLabel = dateLabel;
-            holder.textContent = textContent;
-            holder.photoGridView = photoGridView;
-            holder.view.setTag(holder);
+        View view = convertView;
+        ViewHolder vh = null;
+        if(view == null) {
+            view = LayoutInflater.from(mContext).inflate(R.layout.photo_line, null);
+            vh = new ViewHolder();
+            vh.dateView = (TextView)view.findViewById(R.id.date);
+            vh.subView[0] = (PhotoLineSubView)view.findViewById(R.id.photo_line_sub_view_1);
+            vh.subView[1] = (PhotoLineSubView)view.findViewById(R.id.photo_line_sub_view_2);
+            vh.subView[2] = (PhotoLineSubView)view.findViewById(R.id.photo_line_sub_view_3);
+            view.setTag(vh);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+            vh = (ViewHolder) view.getTag();
         }
-        Object obj = mList.get(position);
-        if (obj instanceof PhotoGridView.PhotoData) {
-            PhotoGridView.PhotoData data = (PhotoGridView.PhotoData) obj;
-            holder.showPhotos(data);
-        } else if (obj instanceof String) {
-            holder.showDate((String) obj);
+        vh.reset();
+
+        int now = 0;
+        int our_interval = 0;
+        int interval_line = 0;
+        for(int i = 0; i < DAY_INTERVAL.length; ++ i) {
+            if(now + getIntervalCount(i) > position) {
+                our_interval = i;
+                interval_line = position - now;
+                break;
+            }
+            now += getIntervalCount(i);
         }
-        return holder.view;
-    }
-
-    private class ViewHolder {
-        public View view;
-        public LinearLayout dateLabel;
-        public TextView textContent;
-        public PhotoGridView photoGridView;
-
-        public void showPhotos(PhotoGridView.PhotoData data) {
-            if (dateLabel.getVisibility() != View.GONE) {
-                dateLabel.setVisibility(View.GONE);
-            }
-            if (photoGridView.getVisibility() != View.VISIBLE) {
-                photoGridView.setVisibility(View.VISIBLE);
-            }
-            photoGridView.setPhotoData(data, mImageLoader);
+        if(interval_line == 0) {
+            // show date
+            vh.dateView.setText(LABEL_INTERVAL[our_interval]);
+            vh.dateView.setVisibility(View.VISIBLE);
         }
 
-        public void showDate(String date) {
-            if (photoGridView.getVisibility() != View.GONE) {
-                photoGridView.setVisibility(View.GONE);
-            }
-            if (dateLabel.getVisibility() != View.VISIBLE) {
-                dateLabel.setVisibility(View.VISIBLE);
-            }
-            textContent.setText(date);
+        List<ImageInfo> intervalInfos = mIntervals.get(our_interval);
+        int startIndex = interval_line * 3;
+        int needExpandNumber = 9;
+        if(our_interval == mFirstInterval) {
+            startIndex -= 1;
+            needExpandNumber -- ;
         }
+
+        int starti = 0;
+        if(position == 0) {
+            vh.subView[0].showOpenGallery();
+            starti ++ ;
+        }
+
+        for(int i = starti; i < 3; ++ i) {
+            int index = startIndex + i;
+            if(index < intervalInfos.size()) {
+                if(interval_line * 3 + i == 8) {
+                    boolean expand = mExpand[our_interval];
+                    if(intervalInfos.size() > needExpandNumber && !expand) {
+                        // show expand button;
+                        vh.subView[i].showMorePhoto(new showMoreListener(our_interval, vh.subView[i], intervalInfos.get(index)));
+                        continue;
+                    }
+                }
+                // set Image
+                vh.subView[i].setImageLoader(mImageLoader);
+                vh.subView[i].showPhoto(intervalInfos.get(index));
+            } else {
+                // NA;
+            }
+        }
+        return view;
     }
 
     public void clearCache() {
         if (mImageLoader != null) {
             mImageLoader.clearCache();
+        }
+    }
+
+    private int getIntervalCount(int i) {
+        List<ImageInfo> list = mIntervals.get(i);
+        if(list != null) {
+            // consider expand later ..
+            int line = (list.size() + (i == mFirstInterval ? 1 : 0) + 2) / 3;
+            if(mExpand[i]) {
+                return line;
+            } else {
+                return Math.min(line, 3);
+            }
+        }
+        return 0;
+    }
+
+    public static int getInterval(long currentTime, long time) {
+        int curDay = (int) (currentTime / (24L * 60 * 60 * 1000));
+        int photoDay = (int) (time / (24L * 60 * 60 * 1000));
+        int delta = curDay - photoDay;
+        for (int i = 0; i < DAY_INTERVAL.length; ++i) {
+            if (delta <= DAY_INTERVAL[i]) {
+                return i;
+            }
+        }
+        // should never go here !
+        return DAY_INTERVAL.length - 1;
+    }
+
+    private static final int[] DAY_INTERVAL = new int[] { 0, 1, 7, 30, Integer.MAX_VALUE };
+
+    private static final int[] LABEL_INTERVAL = new int[] {
+            R.string.date_label_today,
+            R.string.date_label_yesterday,
+            R.string.date_label_last_week,
+            R.string.date_label_last_month,
+            R.string.date_label_earlier };
+
+    class ViewHolder {
+        public TextView dateView;
+        public PhotoLineSubView[] subView;
+        public ViewHolder() {
+            subView = new PhotoLineSubView[3];
+        }
+        public void reset() {
+            dateView.setVisibility(View.GONE);
+            for(PhotoLineSubView view : subView) {
+                view.reset();
+            }
+        }
+    }
+
+    class showMoreListener implements View.OnClickListener {
+        private int mInterval;
+        private PhotoLineSubView mView;
+        private ImageInfo mInfo;
+        public showMoreListener(int interval, PhotoLineSubView view, ImageInfo imageinfo) {
+            mInterval = interval;
+            mView = view;
+            mInfo = imageinfo;
+        }
+
+        @Override
+        public void onClick(View v) {
+            mExpand[mInterval] = true;
+            notifyDataSetChanged();
+            mView.reset();
+            mView.setImageLoader(mImageLoader);
+            mView.showPhoto(mInfo);
         }
     }
 }
