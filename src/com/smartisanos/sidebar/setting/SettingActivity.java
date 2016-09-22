@@ -55,8 +55,8 @@ public class SettingActivity extends BaseActivity {
                         if(isChecked) {
                             boolean left = Settings.Global.getInt(
                                     getContentResolver(), Settings.Global.ONE_HAND_MODE, 1) == 0;
-                            SidebarUtils.requestEnterSidebarMode(left ? BIT_SIDEBAR_IN_RIGHT_TOP_MODE
-                                            : BIT_SIDEBAR_IN_LEFT_TOP_MODE);
+                            SidebarUtils.requestEnterSidebarMode(left ? BIT_SIDEBAR_IN_LEFT_TOP_MODE
+                                            : BIT_SIDEBAR_IN_RIGHT_TOP_MODE);
                         }
                     }
                 });
