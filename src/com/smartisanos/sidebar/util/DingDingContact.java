@@ -22,11 +22,13 @@ public class DingDingContact extends ContactItem {
     public static final String PKG_NAME = "com.alibaba.android.rimet";
     public final long uid;
     public final String encodedUid;
+    public final int systemUid;
 
-    public DingDingContact(Context context, long uid, String encodedUid, Bitmap avatar, CharSequence displayName) {
+    public DingDingContact(Context context, int systemUid, long uid, String encodedUid, Bitmap avatar, CharSequence displayName) {
         super(context, avatar, displayName);
         this.uid = uid;
         this.encodedUid = encodedUid;
+        this.systemUid = systemUid;
     }
 
     @Override
@@ -64,7 +66,7 @@ public class DingDingContact extends ContactItem {
         }
 
         try {
-            LaunchApp.start(mContext, intent, true, PKG_NAME, 0);
+            LaunchApp.start(mContext, intent, true, PKG_NAME, systemUid);
             return true;
         } catch (ActivityNotFoundException e) {
             // NA
@@ -82,7 +84,7 @@ public class DingDingContact extends ContactItem {
         intent.setType(ClipDescription.MIMETYPE_TEXT_PLAIN);
         intent.putExtra(Intent.EXTRA_TEXT, " ");
         try {
-            LaunchApp.start(mContext, intent, true, PKG_NAME, 0);
+            LaunchApp.start(mContext, intent, true, PKG_NAME, systemUid);
             return true;
         } catch (ActivityNotFoundException e) {
             // NA
@@ -143,8 +145,9 @@ public class DingDingContact extends ContactItem {
             return sInstance;
         }
 
+        private static final String TABLE_CONTACTS = "contacts";
         private static final String DB_NAME = "dingding_contacts";
-        private static final int DB_VERSION = 1;
+        private static final int DB_VERSION = 2;
 
         private Context mContext;
         private DatabaseHelper(Context context) {
@@ -152,19 +155,42 @@ public class DingDingContact extends ContactItem {
             mContext = context;
         }
 
+        private static final String CREATE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_CONTACTS + " ("
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "system_uid INTEGER,"
+                + "uid TEXT,"
+                + "encoded_uid TEXT,"
+                + "avatar BLOB,"
+                + "display_name TEXT,"
+                + "weight INTEGER);";
+
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + TABLE_CONTACTS + " (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + "uid TEXT,"
-                    + "encoded_uid TEXT,"
-                    + "avatar BLOB,"
-                    + "display_name TEXT,"
-                    + "weight INTEGER);");
+            db.execSQL(CREATE_SQL);
+        }
+
+        private static final String DROP_TABLE_SQL_PREFIX = "DROP TABLE IF EXISTS ";
+
+        public static String dropTableSql(String tableName) {
+            return DROP_TABLE_SQL_PREFIX + tableName;
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            //NA
+            if (oldVersion == 1) {
+                //drop old table, create new one
+                String dropSql = dropTableSql(TABLE_CONTACTS);
+                try {
+                    db.beginTransaction();
+                    db.execSQL(dropSql);
+                    db.execSQL(CREATE_SQL);
+                    db.setTransactionSuccessful();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    db.endTransaction();
+                }
+            }
         }
 
         public int getId(DingDingContact ddc) {
@@ -200,6 +226,7 @@ public class DingDingContact extends ContactItem {
             int id = getId(ddc);
             // insert
             ContentValues cv = new ContentValues();
+            cv.put(ContactColumns.SYS_UID, ddc.systemUid);
             cv.put(ContactColumns.UID, ddc.uid + "");
             cv.put(ContactColumns.ENCODED_UID, ddc.encodedUid);
             cv.put(ContactColumns.AVATAR, BitmapUtils.Bitmap2Bytes(ddc.getAvatar()));
@@ -223,6 +250,15 @@ public class DingDingContact extends ContactItem {
             }
         }
 
+        public void remove(String where) {
+            ThreadVerify.verify(false);
+            try {
+                getWritableDatabase().delete(TABLE_CONTACTS, where, null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         public List<ContactItem> getContacts() {
             ThreadVerify.verify(false);
             List<ContactItem> ret = new ArrayList<ContactItem>();
@@ -230,12 +266,13 @@ public class DingDingContact extends ContactItem {
             try {
                 cursor = getReadableDatabase().query("contacts", null, null, null, null, null, null);
                 while (cursor.moveToNext()) {
+                    int systemUid = cursor.getInt(cursor.getColumnIndex(ContactColumns.SYS_UID));
                     long uid = Long.parseLong(cursor.getString(cursor.getColumnIndex(ContactColumns.UID)));
                     String encodedUid = cursor.getString(cursor.getColumnIndex(ContactColumns.ENCODED_UID));
                     Bitmap avatar = BitmapUtils.Bytes2Bitmap(cursor.getBlob(cursor.getColumnIndex(ContactColumns.AVATAR)));
                     String display_name = cursor.getString(cursor.getColumnIndex(ContactColumns.DISPLAY_NAME));
                     int index = cursor.getInt(cursor.getColumnIndex(ContactColumns.WEIGHT));
-                    DingDingContact ddc = new DingDingContact(mContext, uid, encodedUid, avatar, display_name);
+                    DingDingContact ddc = new DingDingContact(mContext, systemUid, uid, encodedUid, avatar, display_name);
                     ddc.setIndex(index);
                     ret.add(ddc);
                 }
@@ -249,13 +286,18 @@ public class DingDingContact extends ContactItem {
             return ret;
         }
 
-        private static final String TABLE_CONTACTS = "contacts";
         static class ContactColumns implements BaseColumns{
+            static final String SYS_UID = "system_uid";
             static final String UID = "uid";
             static final String ENCODED_UID = "encoded_uid";
             static final String AVATAR = "avatar";
             static final String DISPLAY_NAME = "display_name";
             static final String WEIGHT = "weight";
         }
+    }
+
+    public static void removeDoppelgangerShortcut(Context context) {
+        String where = DatabaseHelper.ContactColumns.SYS_UID + "=" + UserPackage.USER_DOPPELGANGER;
+        DatabaseHelper.getInstance(context).remove(where);
     }
 }
