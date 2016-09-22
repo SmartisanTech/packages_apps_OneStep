@@ -5,18 +5,14 @@ import java.util.List;
 
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
-import com.smartisanos.sidebar.util.BitmapUtils;
-import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.ContactManager;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.Utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;

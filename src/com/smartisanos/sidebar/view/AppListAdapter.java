@@ -12,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
@@ -164,7 +163,7 @@ public class AppListAdapter extends DragEventAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         AppItem ai = mAcceptableAppItems.get(position);
-        if (convertView == null || !(convertView instanceof RelativeLayout)) {
+        if (convertView == null) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.app_item, null);
             ImageView iconImage = (ImageView) view.findViewById(R.id.avatar_image_view);
             view.setOnTouchListener(new View.OnTouchListener() {
