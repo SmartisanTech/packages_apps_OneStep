@@ -33,6 +33,7 @@ public class LaunchApp {
             }
             isDoppelganger = isAppInDoppelgangerStatus(context, packageName);
         }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             if (!isDoppelganger) {
                 context.startActivity(intent);
@@ -40,7 +41,6 @@ public class LaunchApp {
                 intent.putExtra(EXTRA_HAD_CHOOSE, true);
                 intent.putExtra(EXTRA_USER_ID, userId);
                 intent.putExtra(INTENT_EXTRA_FOR_FLIP_ANIMATION, false);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 //UserHandle.USER_DOPPELGANGER
                 context.startActivityAsUser(intent, null, new UserHandle(userId));
             }
