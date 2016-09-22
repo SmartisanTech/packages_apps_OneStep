@@ -58,6 +58,8 @@ public class SideView extends RelativeLayout {
     private LinearLayout mSideViewContentNormal;
     private LinearLayout mSideViewContentDragged;
 
+    private DimSpaceView mDimView;
+
     public SideView(Context context) {
         this(context, null);
     }
@@ -87,6 +89,7 @@ public class SideView extends RelativeLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mDimView = (DimSpaceView)findViewById(R.id.side_dim_view);
         mDarkBgView = (FrameLayout) findViewById(R.id.side_view_dark_bg);
         mAddAndExitDarkBg = (LinearLayout) findViewById(R.id.exit_and_add_dark_bg);
         mExitAndAdd = findViewById(R.id.exit_and_add);
@@ -510,5 +513,14 @@ public class SideView extends RelativeLayout {
         mDarkBgView.setBackgroundColor(color);
         mAddAndExitDarkBg.setBackgroundColor(color);
         return true;
+    }
+
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (enabled) {
+            mDimView.resume().start();
+        } else {
+            mDimView.dim().start();
+        }
     }
 }

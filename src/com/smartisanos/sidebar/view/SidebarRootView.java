@@ -35,7 +35,6 @@ public class SidebarRootView extends FrameLayout {
     private SideView mSideView;
     private int sidebarWidth;
     private Trash mTrash;
-
     public SidebarRootView(Context context) {
         this(context, null);
     }
@@ -542,5 +541,9 @@ public class SidebarRootView extends FrameLayout {
         } else {// dragview
             return (childCount - 2);
         }
+    }
+
+    public void setEnabled(boolean enabled) {
+        mSideView.setEnabled(enabled);
     }
 }

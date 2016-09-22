@@ -58,6 +58,11 @@
                 </LinearLayout>
             </LinearLayout>
         </FrameLayout>
+    <com.smartisanos.sidebar.view.DimSpaceView
+        android:id="@+id/side_dim_view"
+        android:background="@color/dim_color"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
     </com.smartisanos.sidebar.view.SideView>
     <ImageView
         android:id="@+id/trash_with_shadow"

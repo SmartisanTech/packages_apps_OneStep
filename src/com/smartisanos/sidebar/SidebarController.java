@@ -175,6 +175,15 @@ public class SidebarController {
         RecentFileManager.getInstance(mContext).stopFileObserver();
     }
 
+    public void setEnabled(boolean enabled) {
+        mSidebarRoot.setEnabled(enabled);
+        if(enabled) {
+            mTopView.resumeToNormal();
+        } else {
+            mTopView.dimAll();
+        }
+    }
+
     private void AddWindows() {
         addTopViewWindow();
         addContentViewWindow();
@@ -377,6 +386,16 @@ public class SidebarController {
         public void updateOngoing(ComponentName name, int token,
                 int pendingNumbers, CharSequence title, int pid) throws RemoteException {
             OngoingManager.getInstance(mContext).updateOngoing(name, token, pendingNumbers, title, pid);
+        }
+
+        @Override
+        public void setEnabled(final boolean enabled) throws RemoteException {
+            mHandler.post(new Runnable(){
+                @Override
+                public void run() {
+                    SidebarController.this.setEnabled(enabled);
+                }
+            });
         }
     };
 
