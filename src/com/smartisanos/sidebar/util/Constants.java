@@ -23,21 +23,6 @@ public class Constants {
     public static int share_item_offset_x;
     public static int share_item_offset_y;
 
-    public static int[] MONTH_ARRAY = new int[] {
-            R.string.date_label_month_January,
-            R.string.date_label_month_February,
-            R.string.date_label_month_March,
-            R.string.date_label_month_April,
-            R.string.date_label_month_May,
-            R.string.date_label_month_June,
-            R.string.date_label_month_July,
-            R.string.date_label_month_August,
-            R.string.date_label_month_September,
-            R.string.date_label_month_October,
-            R.string.date_label_month_November,
-            R.string.date_label_month_December
-    };
-
     public static void init(Context context) {
         int[] size = getWindowSize(context);
         WindowWidth = size[0];

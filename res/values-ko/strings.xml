@@ -46,4 +46,5 @@
     <string name="share_component_name">즐겨찾기 추가</string>
     <string name="bookmark_source">출처:</string>
     <string name="contact_added">추가됨</string>
+    <string name="load_more">더 보기</string>
 </resources>

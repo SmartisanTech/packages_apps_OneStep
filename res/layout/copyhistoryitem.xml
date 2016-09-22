@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:textSize="12dp"
             android:textColor="#9affffff"
-            android:text="@string/list_view_look_more"
+            android:text="@string/load_more"
             />
     </LinearLayout>
 </com.smartisanos.sidebar.view.ListItemFrameLayout>

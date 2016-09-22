@@ -72,7 +72,7 @@ public class PhotoLineSubView extends FrameLayout {
         TextView openText = (TextView)findViewById(R.id.open_gallery_text);
         openText.setText(R.string.open_gallery);
         TextView moreText = (TextView)findViewById(R.id.show_more_text);
-        moreText.setText(R.string.list_view_look_more);
+        moreText.setText(R.string.load_more);
         loadFailedText.setText(R.string.fail_to_load_image);
     }
 

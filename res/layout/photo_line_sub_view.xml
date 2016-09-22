@@ -59,6 +59,6 @@
             android:paddingBottom="@dimen/open_gallery_item_text_bottom"
             android:textSize="10dp"
             android:textColor="#60ffffff"
-            android:text="@string/list_view_look_more"/>
+            android:text="@string/load_more"/>
     </RelativeLayout>
 </com.smartisanos.sidebar.view.PhotoLineSubView>
