@@ -21,7 +21,7 @@
     <string name="title_confirm_delete_history_clipboard">清空剪贴板内容将无法恢复</string>
     <string name="title_confirm_delete_bookmark">清空收藏内容将无法恢复</string>
     <string name="clear">清空</string>
-    <string name="add_wechat_hint">进入微信，在微信好友详情界面点击右上角三点图标，选择将好友“添加到桌面”</string>
+    <string name="add_wechat_hint">打开微信通讯录，点击你要添加的好友，进入好友详细资料界面，点击右上角图标，选择“添加到桌面”。移除桌面联系人时，侧边栏联系人不会消失</string>
 
     <string name="back_text">返回</string>
 
@@ -53,7 +53,7 @@
     <string name="date_label_last_month">最近一个月</string>
     <string name="date_label_earlier">更早</string>
     <string name="load_more">显示更多</string>
-    <string name="add_app_to_sidebar">添加边栏应用</string>
-    <string name="add_share_to_sidebar">添加拖拽分享</string>
+    <string name="add_app_to_sidebar">添加侧栏应用</string>
+    <string name="add_share_to_sidebar">设置拖拽分享项</string>
     <string name="contact_added">已添加</string>
 </resources>
