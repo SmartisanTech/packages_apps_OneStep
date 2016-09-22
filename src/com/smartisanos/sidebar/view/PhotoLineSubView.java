@@ -3,6 +3,7 @@ package com.smartisanos.sidebar.view;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -24,6 +25,8 @@ import java.io.File;
 import smartisanos.util.SidebarUtils;
 
 public class PhotoLineSubView extends FrameLayout {
+    private static final int IMAGE_COLOR = Color.parseColor("#9a404040");
+
     ImageView photoImageView;
     TextView loadFailedText;
     RelativeLayout openGallery;
@@ -89,7 +92,7 @@ public class PhotoLineSubView extends FrameLayout {
 
     public void showPhoto(ImageInfo info) {
         photoImageView.setVisibility(View.VISIBLE);
-        if (imageInfo == info) {
+        if (imageInfo != null && imageInfo.filePath.equals(info.filePath)) {
             return ;
         }
         imageInfo = info;
@@ -110,6 +113,16 @@ public class PhotoLineSubView extends FrameLayout {
 
         if(mCallBack != null) {
             mCallBack.setValid(false);
+        }
+        Drawable oldBg = photoImageView.getBackground();
+        photoImageView.setBackgroundColor(IMAGE_COLOR);
+        if (oldBg != null && (oldBg instanceof BitmapDrawable)) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) oldBg;
+            bitmapDrawable.setCallback(null);
+            Bitmap oldBitmap = bitmapDrawable.getBitmap();
+            if (oldBitmap != null) {
+                oldBitmap.recycle();
+            }
         }
         mImageLoader.loadImage(imageInfo.filePath, mCallBack = new ImageLoaderCallBack());
     }
