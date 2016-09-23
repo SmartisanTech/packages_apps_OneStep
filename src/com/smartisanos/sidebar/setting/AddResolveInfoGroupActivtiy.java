@@ -26,16 +26,17 @@ public class AddResolveInfoGroupActivtiy extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mAdapter.refreshData();
+    protected void onStart() {
+        super.onStart();
+        mAdapter.onStart();
         SidebarController.getInstance(getApplicationContext()).requestStatus(
                 SidebarStatus.UNNAME);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
+        mAdapter.onStop();
         SidebarController.getInstance(getApplicationContext()).requestStatus(
                 SidebarStatus.NORMAL);
     }

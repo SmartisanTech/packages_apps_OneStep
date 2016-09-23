@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -35,6 +37,7 @@ public class PhotoLineSubView extends FrameLayout {
     private ImageInfo imageInfo;
     private ImageLoader mImageLoader;
     private ImageLoaderCallBack mCallBack;
+    private Handler mHandler;
 
     public PhotoLineSubView(Context context) {
         this(context, null);
@@ -52,6 +55,7 @@ public class PhotoLineSubView extends FrameLayout {
     public PhotoLineSubView(Context context, AttributeSet attrs,
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -179,7 +183,7 @@ public class PhotoLineSubView extends FrameLayout {
             if(newBitmap == null) {
                 return ;
             }
-            post(new SetBitmapTask(newBitmap, imageInfo.filePath));
+            mHandler.post(new SetBitmapTask(newBitmap, imageInfo.filePath));
         }
     }
 

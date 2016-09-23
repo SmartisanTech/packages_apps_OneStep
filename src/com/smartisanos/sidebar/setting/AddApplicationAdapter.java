@@ -6,7 +6,6 @@ import java.util.List;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +19,10 @@ public final class AddApplicationAdapter extends BaseAdapter {
 
     private List<ViewItem> mItems = new ArrayList<ViewItem>();
     private Context mContext;
-    LayoutInflater mInflater;
 
     public AddApplicationAdapter(Context context) {
         mContext = context;
-        mInflater = LayoutInflater.from(context);
         refreshData();
-        AppManager.getInstance(context).addListener(mUpdateListener);
     }
 
     private AppManager.RecentUpdateListener mUpdateListener = new AppManager.RecentUpdateListener() {
@@ -47,6 +43,16 @@ public final class AddApplicationAdapter extends BaseAdapter {
             vi.selected = added;
         }
         notifyDataSetChanged();
+    }
+
+    public void onStart() {
+        refreshData();
+        notifyDataSetChanged();
+        AppManager.getInstance(mContext).addListener(mUpdateListener);
+    }
+
+    public void onStop() {
+        AppManager.getInstance(mContext).removeListener(mUpdateListener);
     }
 
     public void refreshData() {
@@ -80,7 +86,7 @@ public final class AddApplicationAdapter extends BaseAdapter {
         ViewHolder mHolder = null;
         if (view == null) {
             mHolder = new ViewHolder();
-            view = mInflater.inflate(R.layout.app_picker_item, null);
+            view = LayoutInflater.from(mContext).inflate(R.layout.app_picker_item, null);
             mHolder.spaceViewTop = view.findViewById(R.id.space_top);
             mHolder.spaceViewBottom = view.findViewById(R.id.space_bottom);
             mHolder.subViews[0] = (AppPickerSubView) view.findViewById(R.id.app_picker_sub_view_1);

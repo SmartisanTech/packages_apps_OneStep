@@ -28,7 +28,6 @@ public final class AddResolveInfoGroupAdapter extends BaseAdapter {
     public AddResolveInfoGroupAdapter(Context context) {
         mContext = context;
         refreshData();
-        ResolveInfoManager.getInstance(mContext).addListener(mUpdateListener);
     }
 
     private ResolveInfoManager.ResolveInfoUpdateListener mUpdateListener = new ResolveInfoManager.ResolveInfoUpdateListener() {
@@ -49,6 +48,16 @@ public final class AddResolveInfoGroupAdapter extends BaseAdapter {
             item.checked = added;
         }
         notifyDataSetChanged();
+    }
+
+    public void onStart() {
+        refreshData();
+        notifyDataSetChanged();
+        ResolveInfoManager.getInstance(mContext).addListener(mUpdateListener);
+    }
+
+    public void onStop() {
+        ResolveInfoManager.getInstance(mContext).removeListener(mUpdateListener);
     }
 
     public void refreshData() {

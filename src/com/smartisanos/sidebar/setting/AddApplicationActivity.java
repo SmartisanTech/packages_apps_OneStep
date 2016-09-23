@@ -23,8 +23,14 @@ public class AddApplicationActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mAdapter.refreshData();
+    protected void onStart() {
+        super.onStart();
+        mAdapter.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAdapter.onStop();
     }
 }
