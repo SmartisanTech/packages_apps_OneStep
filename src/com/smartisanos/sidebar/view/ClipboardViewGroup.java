@@ -232,12 +232,11 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                 ClipboardAdapter.DataItem item = (ClipboardAdapter.DataItem) obj;
                 String text = item.mText;
                 Utils.copyText(mContext, text, false);
+                Utils.resumeSidebar(mContext);
                 if (mClipboardCopyToast != null) {
                     mClipboardCopyToast.cancel();
                 }
                 mClipboardCopyToast = Toast.makeText(mContext, R.string.text_copied, Toast.LENGTH_SHORT);
-                mClipboardCopyToast.getWindowParams().type = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
-                mClipboardCopyToast.getWindowParams().token = view.getWindowToken();
                 mClipboardCopyToast.show();
             } else if (obj instanceof ArrayList) {
                 List<ClipboardAdapter.DataItem> list = (List<ClipboardAdapter.DataItem>) obj;
