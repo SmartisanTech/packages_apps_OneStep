@@ -2,7 +2,6 @@ package com.smartisanos.sidebar.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,42 +32,42 @@ public class AppManager extends DataManager {
         return sInstance;
     }
 
-    private static final Set<String> sAutoAddPackageSet;
+    private static final List<String> sAutoAddPackageList;
     static {
         // package
-        sAutoAddPackageSet = new HashSet<String>();
-        sAutoAddPackageSet.add("com.tencent.mm");
-        sAutoAddPackageSet.add("com.sina.weibo");
-        sAutoAddPackageSet.add("com.tencent.mobileqq");
-        sAutoAddPackageSet.add("com.tencent.mobileqqi");
-        sAutoAddPackageSet.add("com.smartisanos.notes");
-        sAutoAddPackageSet.add("com.android.email");
-        sAutoAddPackageSet.add("com.android.calendar");
-        sAutoAddPackageSet.add("com.taobao.taobao");
-        sAutoAddPackageSet.add("com.evernote");
-        sAutoAddPackageSet.add("com.wunderkinder.wunderlistandroid");
-        sAutoAddPackageSet.add("com.alibaba.android.rimet");
-        sAutoAddPackageSet.add("com.meitu.meiyancamera");
-        sAutoAddPackageSet.add("com.netease.cloudmusic");
-        sAutoAddPackageSet.add("com.eg.android.AlipayGphone");
-        sAutoAddPackageSet.add("com.zhihu.android");
-        sAutoAddPackageSet.add("com.zhihu.daily.android");
-        sAutoAddPackageSet.add("com.youku.phone");
-        sAutoAddPackageSet.add("com.sdu.didi.psnger");
-        sAutoAddPackageSet.add("com.ubercab");
-        sAutoAddPackageSet.add("com.homelink.android");
-        sAutoAddPackageSet.add("com.baidu.BaiduMap");
-        sAutoAddPackageSet.add("com.autonavi.minimap");
-        sAutoAddPackageSet.add("com.smartisanos.appstore");
-        sAutoAddPackageSet.add("com.neuralprisma");
-        sAutoAddPackageSet.add("com.twitter.android");
-        sAutoAddPackageSet.add("com.instagram.android");
-        sAutoAddPackageSet.add("com.whatsapp");
-        sAutoAddPackageSet.add("com.facebook.katana");
-        sAutoAddPackageSet.add("com.google.android.youtube");
-        sAutoAddPackageSet.add("com.android.chrome");
-        sAutoAddPackageSet.add("com.android.browser");
-        sAutoAddPackageSet.add("com.android.vending");
+        sAutoAddPackageList = new ArrayList<String>();
+        sAutoAddPackageList.add("com.tencent.mm");
+        sAutoAddPackageList.add("com.sina.weibo");
+        sAutoAddPackageList.add("com.tencent.mobileqq");
+        sAutoAddPackageList.add("com.tencent.mobileqqi");
+        sAutoAddPackageList.add("com.smartisanos.notes");
+        sAutoAddPackageList.add("com.android.email");
+        sAutoAddPackageList.add("com.android.calendar");
+        sAutoAddPackageList.add("com.taobao.taobao");
+        sAutoAddPackageList.add("com.evernote");
+        sAutoAddPackageList.add("com.wunderkinder.wunderlistandroid");
+        sAutoAddPackageList.add("com.alibaba.android.rimet");
+        sAutoAddPackageList.add("com.meitu.meiyancamera");
+        sAutoAddPackageList.add("com.netease.cloudmusic");
+        sAutoAddPackageList.add("com.eg.android.AlipayGphone");
+        sAutoAddPackageList.add("com.zhihu.android");
+        sAutoAddPackageList.add("com.zhihu.daily.android");
+        sAutoAddPackageList.add("com.youku.phone");
+        sAutoAddPackageList.add("com.sdu.didi.psnger");
+        sAutoAddPackageList.add("com.ubercab");
+        sAutoAddPackageList.add("com.homelink.android");
+        sAutoAddPackageList.add("com.baidu.BaiduMap");
+        sAutoAddPackageList.add("com.autonavi.minimap");
+        sAutoAddPackageList.add("com.smartisanos.appstore");
+        sAutoAddPackageList.add("com.neuralprisma");
+        sAutoAddPackageList.add("com.twitter.android");
+        sAutoAddPackageList.add("com.instagram.android");
+        sAutoAddPackageList.add("com.whatsapp");
+        sAutoAddPackageList.add("com.facebook.katana");
+        sAutoAddPackageList.add("com.google.android.youtube");
+        sAutoAddPackageList.add("com.android.chrome");
+        sAutoAddPackageList.add("com.android.browser");
+        sAutoAddPackageList.add("com.android.vending");
     }
 
     private Context mContext;
@@ -189,16 +188,8 @@ public class AppManager extends DataManager {
     }
 
     public void onPackageAdded(String packageName) {
-        if (sAutoAddPackageSet.contains(packageName)) {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            intent.setPackage(packageName);
-            List<ResolveInfo> ris = mContext.getPackageManager().queryIntentActivities(intent, 0);
-            if (ris != null && ris.size() > 0) {
-                for (ResolveInfo ri : ris) {
-                    addAppItem(new AppItem(mContext, ri));
-                }
-            }
+        if (sAutoAddPackageList.contains(packageName)) {
+            addPackage(packageName);
         }
     }
 
@@ -220,6 +211,18 @@ public class AppManager extends DataManager {
             mAddedAppItems.addAll(list);
         }
         notifyListener();
+    }
+
+    private void addPackage(String packageName) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setPackage(packageName);
+        List<ResolveInfo> ris = mContext.getPackageManager().queryIntentActivities(intent, 0);
+        if (ris != null && ris.size() > 0) {
+            for (ResolveInfo ri : ris) {
+                addAppItem(new AppItem(mContext, ri));
+            }
+        }
     }
 
     private static final int MSG_INIT_LIST = 0;
@@ -273,6 +276,29 @@ public class AppManager extends DataManager {
                     + " ( _id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + "packagename TEXT," + "componentname TEXT, " + "weight INTEGER"
                     + ");");
+            // pre install package
+            List<AppItem> appList = new ArrayList<AppItem>();
+            for (String packageName : sAutoAddPackageList) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                intent.setPackage(packageName);
+                List<ResolveInfo> ris = mContext.getPackageManager().queryIntentActivities(intent, 0);
+                if (ris != null && ris.size() > 0) {
+                    for (ResolveInfo ri : ris) {
+                        appList.add(new AppItem(mContext, ri));
+                    }
+                }
+            }
+            for (int i = 0; i < appList.size(); ++i) {
+                appList.get(i).setIndex(appList.size() - 1 - i);
+            }
+            for (AppItem ai : appList) {
+                ContentValues cv = new ContentValues();
+                cv.put(AppsColumns.PACKAGE_NAME, ai.getPackageName());
+                cv.put(AppsColumns.COMPONENT_NAME, ai.getComponentName());
+                cv.put(AppsColumns.WEIGHT, ai.getIndex());
+                db.insert(TABLE_APPS, null, cv);
+            }
         }
 
         @Override
