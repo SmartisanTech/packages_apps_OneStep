@@ -331,7 +331,7 @@ public class Utils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return packageInfo == null;
+        return packageInfo != null;
     }
 
     public static void launchPreviousApp(Context context) {
