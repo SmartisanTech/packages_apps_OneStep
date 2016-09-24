@@ -355,6 +355,13 @@ public class TopView extends FrameLayout {
             mExitAnimTimeLine.addAnim(rightAlphaAnim);
             mExitAnimTimeLine.addAnim(leftMoveAnim);
             mExitAnimTimeLine.addAnim(rightMoveAnim);
+        } else {
+            if (mLeft.getVisibility() == VISIBLE) {
+                mLeft.setVisibility(INVISIBLE);
+            }
+            if (mRight.getVisibility() == VISIBLE) {
+                mRight.setVisibility(INVISIBLE);
+            }
         }
 
         mExitAnimTimeLine.setAnimListener(new AnimListener() {
