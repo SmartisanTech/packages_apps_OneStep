@@ -59,8 +59,8 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         sAutoAddPackageSet.add("com.instagram.android");
         // component
         sAutoAddPackageList = new ArrayList<ComponentName>();
-        sAutoAddPackageList.add(new ComponentName("com.tencent.mm.ui", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
-        sAutoAddPackageList.add(new ComponentName("com.tencent.mm.ui", "com.tencent.mm.ui.tools.ShareImgUI"));
+        sAutoAddPackageList.add(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
+        sAutoAddPackageList.add(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI"));
         sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.JumpActivity"));
         sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.qfileJumpActivity"));
         sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqqi", "com.tencent.mobileqq.activity.JumpActivity"));
