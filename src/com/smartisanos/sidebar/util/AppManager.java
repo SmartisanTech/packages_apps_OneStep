@@ -102,6 +102,7 @@ public class AppManager extends DataManager {
                 }
                 item.setIndex(maxIndex + 1);
             }
+            item.newAdded = true;
             mAddedAppItems.add(0, item);
         }
         mHandler.obtainMessage(MSG_SAVE, item).sendToTarget();

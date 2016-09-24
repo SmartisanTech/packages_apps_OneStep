@@ -15,9 +15,7 @@ import android.widget.ListView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
-import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
-import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
@@ -206,46 +204,33 @@ public class SidebarListView extends ListView {
         @Override
         public void onGlobalLayout() {
             getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            //show anim
-            int count = getChildCount();
-            if (count == 0) {
-                return;
-            }
-            View view = getChildAt(0);
-            if (view.getTag() == null) {
-                return;
-            }
-            boolean isNewAdded = false;
-            if (view.getTag() instanceof ResolveInfoListAdapter.ViewHolder) {
-                ResolveInfoGroup data = ((ResolveInfoListAdapter.ViewHolder) view.getTag()).resolveInfoGroup;
-                if (data != null) {
-                    if (data.isNewAdd) {
-                        data.isNewAdd = false;
-                        isNewAdded = true;
-                    }
-                }
-            } else if (view.getTag() instanceof ContactListAdapter.ViewHolder) {
-                ContactItem data = ((ContactListAdapter.ViewHolder) view.getTag()).mItem;
-                if (data != null) {
-                    if (data.isNewAdd) {
-                        data.isNewAdd = false;
-                        isNewAdded = true;
-                    }
-                }
-            }
-            if (!isNewAdded) {
+            ListAdapter adapter = getAdapter();
+            if (adapter == null || adapter.getCount() <= 0) {
                 return;
             }
             int time = 200;
             AnimTimeLine timeLine = new AnimTimeLine();
-            Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
-            Anim scaleBigAnim = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0.3f, 0.3f), new Vector3f(1.2f, 1.2f));
-            Anim scaleNormal = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1.2f, 1.2f), new Vector3f(1, 1));
-            scaleNormal.setDelay(time);
-
-            timeLine.addAnim(alphaAnim);
-            timeLine.addAnim(scaleBigAnim);
-            timeLine.addAnim(scaleNormal);
+            for (int i = 0; i < adapter.getCount(); ++i) {
+                Object obj = adapter.getItem(i);
+                if (obj != null && obj instanceof SidebarItem) {
+                    SidebarItem item = (SidebarItem) obj;
+                    if (!item.newAdded) {
+                        continue;
+                    }
+                    item.newAdded = false;
+                    View view = getChildAt(i);
+                    Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time,
+                            Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+                    Anim scaleBigAnim = new Anim(view, Anim.SCALE, time,
+                            Anim.CUBIC_OUT, new Vector3f(0.3f, 0.3f), new Vector3f(1.2f, 1.2f));
+                    Anim scaleNormal = new Anim(view, Anim.SCALE, time,
+                            Anim.CUBIC_OUT, new Vector3f(1.2f, 1.2f), new Vector3f(1, 1));
+                    scaleNormal.setDelay(time);
+                    timeLine.addAnim(alphaAnim);
+                    timeLine.addAnim(scaleBigAnim);
+                    timeLine.addAnim(scaleNormal);
+                }
+            }
             timeLine.start();
         }
     };

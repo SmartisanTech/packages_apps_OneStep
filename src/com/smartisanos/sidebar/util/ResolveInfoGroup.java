@@ -14,7 +14,6 @@ import android.content.ClipDescription;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -22,32 +21,22 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.DragEvent;
 
-public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
-        SidebarItem {
+public class ResolveInfoGroup extends SidebarItem {
     private static final long serialVersionUID = 1L;
     private static final String TAG = ResolveInfoGroup.class.getName();
 
     private Context mContext;
+    private List<ResolveInfo> mResolveInfos = new ArrayList<ResolveInfo>();
     private SoftReference<Bitmap> mAvatar = null;
-    private int mIndex = -1;
-    public boolean isNewAdd = false;
 
     public ResolveInfoGroup(Context context){
         super();
         mContext = context;
     }
 
-    public void setIndex(int index) {
-        mIndex = index;
-    }
-
-    public int getIndex() {
-        return mIndex;
-    }
-
     public String getPackageName(){
-        if(size() > 0){
-            return get(0).activityInfo.packageName;
+        if(mResolveInfos.size() > 0){
+            return mResolveInfos.get(0).activityInfo.packageName;
         }else{
             return null;
         }
@@ -55,11 +44,11 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
 
     //format : name_1|name_2| .. |name_n
     public String getComponentNames(){
-        if(size() <= 0){
+        if (mResolveInfos.size() <= 0) {
             return null;
         }
         List<String> ls = new ArrayList<String>();
-        for(ResolveInfo ri : this){
+        for(ResolveInfo ri : mResolveInfos){
             ls.add(ri.activityInfo.name);
         }
         Collections.sort(ls);
@@ -72,10 +61,10 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
     }
 
     public boolean valid(Context context){
-        if(size() <= 0){
+        if (mResolveInfos.size() <= 0) {
             return false;
         }
-        for(ResolveInfo ri : this){
+        for(ResolveInfo ri : mResolveInfos){
             try {
                 context.getPackageManager().getActivityInfo(new ComponentName(ri.activityInfo.packageName,ri.activityInfo.name), 0);
             } catch (NameNotFoundException e) {
@@ -83,8 +72,8 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
             }
         }
         SameGroupComparator sgc = new SameGroupComparator();
-        for (int i = 1; i < size(); ++i) {
-            if (sgc.compare(get(i - 1), get(i)) != 0) {
+        for (int i = 1; i < mResolveInfos.size(); ++i) {
+            if (sgc.compare(mResolveInfos.get(i - 1), mResolveInfos.get(i)) != 0) {
                 return false;
             }
         }
@@ -110,10 +99,10 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
     }
 
     public Drawable loadIcon(){
-        if(size() <= 0){
+        if (mResolveInfos.size() <= 0) {
             return null;
         }else{
-            ResolveInfo info = get(0);
+            ResolveInfo info = mResolveInfos.get(0);
             Drawable drawable = IconRedirect.getRedirectIcon(info.activityInfo.packageName, info.activityInfo.name, mContext);
             if (drawable != null) {
                 return drawable;
@@ -133,7 +122,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
 
     public boolean acceptDragEvent(Context context, DragEvent event) {
         if (event == null || event.getClipDescription().getMimeTypeCount() <= 0
-                || size() <= 0) {
+                || mResolveInfos.size() <= 0) {
             return false;
         }
 
@@ -146,7 +135,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
             sharingIntent.setType("text/plain");
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(sharingIntent, 0);
             if (infos != null) {
-                for (ResolveInfo ri1 : this) {
+                for (ResolveInfo ri1 : mResolveInfos) {
                     for (ResolveInfo ri2 : infos) {
                         if (sameComponet(ri1, ri2)) {
                             return true;
@@ -166,7 +155,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
             intent.setPackage(getPackageName());
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
             if (infos != null) {
-                for (ResolveInfo ri1 : this) {
+                for (ResolveInfo ri1 : mResolveInfos) {
                     for (ResolveInfo ri2 : infos) {
                         if (sameComponet(ri1, ri2)) {
                             return true;
@@ -187,7 +176,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
         if (event.getClipData().getItemCount() <= 0
                 || event.getClipDescription() == null
                 || event.getClipDescription().getMimeTypeCount() <= 0
-                || size() <= 0) {
+                || mResolveInfos.size() <= 0) {
             return false;
         }
 
@@ -206,7 +195,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
             intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText());
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
             if (infos != null) {
-                for (ResolveInfo ri1 : this) {
+                for (ResolveInfo ri1 : mResolveInfos) {
                     for (ResolveInfo ri2 : infos) {
                         if (sameComponet(ri1, ri2)) {
                             intent.setComponent(new ComponentName(
@@ -240,7 +229,7 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
 
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
             if (infos != null) {
-                for (ResolveInfo ri1 : this) {
+                for (ResolveInfo ri1 : mResolveInfos) {
                     for (ResolveInfo ri2 : infos) {
                         if (sameComponet(ri1, ri2)) {
                             intent.setComponent(new ComponentName(
@@ -264,13 +253,25 @@ public class ResolveInfoGroup extends ArrayList<ResolveInfo> implements
     }
 
     public boolean containsComponent(ComponentName cn) {
-        for (ResolveInfo ri : this) {
+        for (ResolveInfo ri : mResolveInfos) {
             if (ri.activityInfo.packageName.equals(cn.getPackageName())
                     && ri.activityInfo.name.equals(cn.getClassName())) {
                 return true;
             }
         }
         return false;
+    }
+
+    public void add(ResolveInfo ri) {
+        mResolveInfos.add(ri);
+    }
+
+    public int size() {
+        return mResolveInfos.size();
+    }
+
+    public ResolveInfo get(int i) {
+        return mResolveInfos.get(i);
     }
 
     public static ResolveInfoGroup fromData(Context context, String pkgName, String componentNames){

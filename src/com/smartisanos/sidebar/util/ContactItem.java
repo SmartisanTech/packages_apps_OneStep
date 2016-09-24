@@ -9,14 +9,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.DragEvent;
 
-public abstract class ContactItem implements SidebarItem {
+public abstract class ContactItem extends SidebarItem {
     protected Context mContext;
     protected Bitmap mAvatar;
     protected Bitmap mAvatarWithGray;
     protected CharSequence mDisplayName;
-    protected int mIndex;
-
-    public boolean isNewAdd = false;
 
     public ContactItem(Context context, Bitmap avatar, CharSequence displayName) {
         mContext = context;
@@ -35,14 +32,6 @@ public abstract class ContactItem implements SidebarItem {
 
     public CharSequence getDisplayName() {
         return mDisplayName;
-    }
-
-    public int getIndex() {
-        return mIndex;
-    }
-
-    public void setIndex(int index) {
-        mIndex = index;
     }
 
     public final void delete(){

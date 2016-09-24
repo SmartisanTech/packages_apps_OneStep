@@ -101,7 +101,7 @@ public class ContactManager extends DataManager{
                 }
                 ci.setIndex(maxIndex + 1);
             }
-            ci.isNewAdd = true;
+            ci.newAdded = true;
             mContacts.add(0, ci);
             saveContact(ci);
             showContactAddedToast();

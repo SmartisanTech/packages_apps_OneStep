@@ -209,7 +209,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
                 }
                 rig.setIndex(maxIndex + 1);
             }
-            rig.isNewAdd = true;
+            rig.newAdded = true;
             mList.add(0, rig);
         }
         mHandler.obtainMessage(MSG_SAVE, rig).sendToTarget();

@@ -13,7 +13,7 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.view.DragEvent;
 
-public class OngoingItem implements SidebarItem {
+public class OngoingItem extends SidebarItem {
 
     private ComponentName mName;
     private int mToken;
@@ -186,15 +186,5 @@ public class OngoingItem implements SidebarItem {
         //smartisan intent, processed more quickly
         realIntent.addFlags(Intent.FLAG_RECEIVER_SM_USER_AWARE);
         context.sendBroadcast(realIntent);
-    }
-
-    @Override
-    public void setIndex(int index) {
-        // NA
-    }
-
-    @Override
-    public int getIndex() {
-        return 0;
     }
 }

@@ -12,10 +12,9 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.view.DragEvent;
 
-public class AppItem implements SidebarItem {
+public class AppItem extends SidebarItem {
 
     private Context mContext;
-    private int mIndex;
     public final ResolveInfo mResolveInfo;
 
     private SoftReference<Bitmap> mAvatar;
@@ -41,16 +40,6 @@ public class AppItem implements SidebarItem {
         Bitmap ret = BitmapUtils.drawableToBitmap(mResolveInfo.loadIcon(mContext.getPackageManager()));
         mAvatar = new SoftReference<Bitmap>(ret);
         return ret;
-    }
-
-    @Override
-    public void setIndex(int index) {
-        mIndex = index;
-    }
-
-    @Override
-    public int getIndex() {
-        return mIndex;
     }
 
     @Override
