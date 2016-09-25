@@ -187,7 +187,7 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
                     setVisibility(View.GONE);
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_RECENT_PHOTO_LIST_ANIM, false);
                     setScaleY(1);
-                    mAdapter.setPhotoExpandedFalse();
+                    mAdapter.shrink();
                 }
             });
             timeLine.start();

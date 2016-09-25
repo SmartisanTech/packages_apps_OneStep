@@ -2,6 +2,7 @@ package com.smartisanos.sidebar.view;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -112,9 +113,7 @@ public class RecentFileAdapter extends BaseAdapter {
     }
 
     public void shrink() {
-        for(int i = 0; i < mExpand.length; ++ i) {
-            mExpand[i] = false;
-        }
+        Arrays.fill(mExpand, false);
         notifyDataSetChanged();
     }
 

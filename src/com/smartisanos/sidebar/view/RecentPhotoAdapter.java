@@ -69,11 +69,8 @@ public class RecentPhotoAdapter extends BaseAdapter {
         notifyEmpty();
     }
 
-    public void setPhotoExpandedFalse() {
-        //create a new PhotoGridView.PhotoData, adapter will reset
-        for(int i = 0; i < mExpand.length; ++ i) {
-            mExpand[i] = false;
-        }
+    public void shrink() {
+        Arrays.fill(mExpand, false);
         notifyDataSetChanged();
     }
 
