@@ -1,6 +1,7 @@
 package com.smartisanos.sidebar.view;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -244,10 +245,12 @@ public class SidebarRootView extends FrameLayout {
             moveTo = new int[2];
             ImageView icon = mDragView.mDragViewIcon;
             icon.getLocationOnScreen(moveFrom);
-            log.error("loc from ("+moveFrom[0]+", "+moveFrom[1]+")");
             mDragView.mListViewItem.getLocationOnScreen(moveTo);
-            int dragViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.drag_view_icon_size);
-            int itemViewSize = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_list_item_img_size);
+            Resources resources = mContext.getResources();
+            //list item has padding top, so set real loc Y
+            moveTo[1] = moveTo[1] + resources.getDimensionPixelSize(R.dimen.sidebar_list_item_padding_top);
+            int dragViewSize = resources.getDimensionPixelSize(R.dimen.drag_view_icon_size);
+            int itemViewSize = resources.getDimensionPixelSize(R.dimen.sidebar_list_item_img_size);
             scaleTo = (float) ((1.0 * itemViewSize) / (1.0 * dragViewSize));
         }
 
@@ -289,9 +292,17 @@ public class SidebarRootView extends FrameLayout {
             return;
         }
         mDragDroping = true;
-        DropAnim anim = new DropAnim(mDragView);
-        anim.setDuration(200);
-        mDragView.mView.startAnimation(anim);
+        mDragView.hideBubble();
+        final ViewTreeObserver observer = mDragView.mView.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                observer.removeOnGlobalLayoutListener(this);
+                DropAnim anim = new DropAnim(mDragView);
+                anim.setDuration(200);
+                mDragView.mView.startAnimation(anim);
+            }
+        });
     }
 
     public DragView getDraggedView() {

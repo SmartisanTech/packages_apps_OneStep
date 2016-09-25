@@ -3,7 +3,7 @@
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingTop="3dp"
+    android:paddingTop="@dimen/sidebar_list_item_padding_top"
     android:paddingBottom="3dp">
     <View
         android:layout_width="48dp"
