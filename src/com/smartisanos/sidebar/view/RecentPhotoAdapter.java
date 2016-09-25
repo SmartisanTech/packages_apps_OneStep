@@ -36,7 +36,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
     private Context mContext;
     private RecentPhotoManager mPhotoManager;
     private List<ImageInfo> mImageInfoList = new ArrayList<ImageInfo>();
-    private boolean[] mExpand = new boolean[DAY_INTERVAL.length];
+    private boolean[] mExpand = new boolean[Utils.Interval.DAY_INTERVAL.length];
     private Map<Integer, List<ImageInfo>> mIntervals = new HashMap<Integer, List<ImageInfo>>();
     private int mFirstInterval;
 
@@ -83,7 +83,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
         long now = System.currentTimeMillis();
         for (int i = 0; i < mImageInfoList.size(); i++) {
             ImageInfo info = mImageInfoList.get(i);
-            int interval = getInterval(now, info.time);
+            int interval = Utils.Interval.getInterval(now, info.time);
             List<ImageInfo> list = mIntervals.get(interval);
             if (list == null) {
                 list = new ArrayList<ImageInfo>();
@@ -109,7 +109,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         int total = 0;
-        for(int i = 0; i < DAY_INTERVAL.length; ++ i) {
+        for(int i = 0; i < Utils.Interval.DAY_INTERVAL.length; ++ i) {
             total += getIntervalCount(i);
         }
         return total;
@@ -145,7 +145,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
         int now = 0;
         int our_interval = 0;
         int interval_line = 0;
-        for(int i = 0; i < DAY_INTERVAL.length; ++ i) {
+        for(int i = 0; i < Utils.Interval.DAY_INTERVAL.length; ++ i) {
             if(now + getIntervalCount(i) > position) {
                 our_interval = i;
                 interval_line = position - now;
@@ -155,7 +155,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
         }
         if(interval_line == 0) {
             // show date
-            vh.dateView.setText(LABEL_INTERVAL[our_interval]);
+            vh.dateView.setText(Utils.Interval.LABEL_INTERVAL[our_interval]);
             vh.dateView.setVisibility(View.VISIBLE);
         }
 
@@ -213,28 +213,6 @@ public class RecentPhotoAdapter extends BaseAdapter {
         }
         return 0;
     }
-
-    public static int getInterval(long currentTime, long time) {
-        int curDay = (int) (currentTime / (24L * 60 * 60 * 1000));
-        int photoDay = (int) (time / (24L * 60 * 60 * 1000));
-        int delta = curDay - photoDay;
-        for (int i = 0; i < DAY_INTERVAL.length; ++i) {
-            if (delta <= DAY_INTERVAL[i]) {
-                return i;
-            }
-        }
-        // should never go here !
-        return DAY_INTERVAL.length - 1;
-    }
-
-    private static final int[] DAY_INTERVAL = new int[] { 0, 1, 7, 30, Integer.MAX_VALUE };
-
-    private static final int[] LABEL_INTERVAL = new int[] {
-            R.string.date_label_today,
-            R.string.date_label_yesterday,
-            R.string.date_label_last_week,
-            R.string.date_label_last_month,
-            R.string.date_label_earlier };
 
     class ViewHolder {
         public TextView dateView;

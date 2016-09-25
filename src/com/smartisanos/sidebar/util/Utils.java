@@ -1,5 +1,6 @@
 package com.smartisanos.sidebar.util;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -381,5 +382,42 @@ public class Utils {
         } catch (ActivityNotFoundException e) {
             // NA
         }
+    }
+
+    public static void openFile(Context context, FileInfo info) {
+        Utils.dismissAllDialog(context);
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setDataAndType(Uri.fromFile(new File(info.filePath)), info.mimeType);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            // NA
+        }
+    }
+
+    public static final class Interval {
+        public static int getInterval(long currentTime, long time) {
+            int curDay = (int) (currentTime / (24L * 60 * 60 * 1000));
+            int photoDay = (int) (time / (24L * 60 * 60 * 1000));
+            int delta = curDay - photoDay;
+            for (int i = 0; i < DAY_INTERVAL.length; ++i) {
+                if (delta <= DAY_INTERVAL[i]) {
+                    return i;
+                }
+            }
+            // should never go here !
+            return DAY_INTERVAL.length - 1;
+        }
+
+        public static final int[] DAY_INTERVAL = new int[] { 0, 1, 7, 30, Integer.MAX_VALUE };
+
+        public static final int[] LABEL_INTERVAL = new int[] {
+                R.string.date_label_today,
+                R.string.date_label_yesterday,
+                R.string.date_label_last_week,
+                R.string.date_label_last_month,
+                R.string.date_label_earlier };
     }
 }

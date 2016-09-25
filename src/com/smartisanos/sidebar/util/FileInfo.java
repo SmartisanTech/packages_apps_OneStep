@@ -263,13 +263,13 @@ public class FileInfo implements Comparable<FileInfo> {
         if (info == null) {
             return -1;
         }
-        if (lastTime == info.lastTime) {
-            return 0;
+        if (lastTime != info.lastTime) {
+            if (info.lastTime > lastTime) {
+                return 1;
+            } else {
+                return -1;
+            }
         }
-        if (info.lastTime > lastTime) {
-            return 1;
-        } else {
-            return -1;
-        }
+        return filePath.compareTo(info.filePath);
     }
 }

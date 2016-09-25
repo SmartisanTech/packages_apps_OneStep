@@ -29,8 +29,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import smartisanos.util.SidebarUtils;
-
 public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView {
     private static final LOG log = LOG.getInstance(RecentFileViewGroup.class);
 
@@ -79,8 +77,6 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
         mRecentFileList = (ListView)findViewById(R.id.recentfile_listview);
         mRecentFileAdapter = new RecentFileAdapter(mContext, this);
         mRecentFileList.setAdapter(mRecentFileAdapter);
-        mRecentFileList.setOnItemClickListener(mOnListItemClickedListener);
-        mRecentFileList.setOnItemLongClickListener(mOnListItemLongClickedListener);
 
         mClearFile.setOnClickListener(mClearListener);
     }
@@ -214,6 +210,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
                     view.setScaleY(1);
                     view.setAlpha(1);
                     setVisibility(View.GONE);
+                    mRecentFileAdapter.shrink();
                 }
             });
             timeLine.start();
@@ -232,51 +229,4 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
         updateUI();
         mClearListener.onConfigurationChanged(newConfig);
     }
-
-    private AdapterView.OnItemClickListener mOnListItemClickedListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if (mRecentFileAdapter == null) {
-                return;
-            }
-            Object obj = mRecentFileAdapter.getItem(position);
-            if (obj == null) {
-                return;
-            }
-            if (obj instanceof FileInfo) {
-                FileInfo info = (FileInfo) obj;
-                Utils.dismissAllDialog(mContext);
-                try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.addCategory(Intent.CATEGORY_DEFAULT);
-                    intent.setDataAndType(Uri.fromFile(new File(info.filePath)), info.mimeType);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    // NA
-                }
-            } else if (obj instanceof ArrayList) {
-                List<FileInfo> list = (List<FileInfo>)obj;
-                mRecentFileAdapter.addItems(position, list);
-                mRecentFileAdapter.removeItem(obj);
-                mRecentFileAdapter.notifyDataSetChanged();
-            }
-        }
-    };
-
-    private AdapterView.OnItemLongClickListener mOnListItemLongClickedListener = new AdapterView.OnItemLongClickListener() {
-
-        @Override
-        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if (mRecentFileAdapter == null) {
-                return false;
-            }
-            Object obj = mRecentFileAdapter.getItem(position);
-            if (obj != null && obj instanceof FileInfo) {
-                FileInfo info = (FileInfo) obj;
-                SidebarUtils.dragFile(view, mContext, new File(info.filePath), info.mimeType);
-            }
-            return false;
-        }
-    };
 }
