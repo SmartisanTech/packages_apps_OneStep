@@ -7,12 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -371,7 +369,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         ret.add(new ResolveInfoGroup(mContext));
         ret.get(0).add(allri.get(0));
         for(int i = 1; i < allri.size(); ++ i){
-            if(sgc.compare(ret.get(ret.size() - 1).get(0), allri.get(i)) != 0){
+            if(sgc.compare(allri.get(i - 1), allri.get(i)) != 0){
                 ret.add(new ResolveInfoGroup(mContext));
             }
             ret.get(ret.size() - 1).add(allri.get(i));

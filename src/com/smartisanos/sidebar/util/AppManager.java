@@ -343,10 +343,8 @@ public class AppManager extends DataManager {
                 cursor = getReadableDatabase().query(
                         TABLE_APPS,
                         null,
-                        AppsColumns.PACKAGE_NAME + "=? and "
-                                + AppsColumns.COMPONENT_NAME + "=?",
-                        new String[] { item.mResolveInfo.activityInfo.packageName,
-                                item.mResolveInfo.activityInfo.name }, null, null, null);
+                        AppsColumns.PACKAGE_NAME + "=? and " + AppsColumns.COMPONENT_NAME + "=?",
+                        new String[] { item.getPackageName(), item.getComponentName() }, null, null, null);
                 if (cursor.moveToFirst()) {
                     return cursor.getInt(cursor.getColumnIndex(AppsColumns._ID));
                 }

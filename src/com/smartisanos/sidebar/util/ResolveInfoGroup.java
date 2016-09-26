@@ -14,7 +14,6 @@ import android.content.ClipDescription;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -22,11 +21,10 @@ import android.text.TextUtils;
 import android.view.DragEvent;
 
 public class ResolveInfoGroup extends SidebarItem {
-    private static final long serialVersionUID = 1L;
     private static final String TAG = ResolveInfoGroup.class.getName();
 
     private Context mContext;
-    private List<ResolveInfo> mResolveInfos = new ArrayList<ResolveInfo>();
+    private List<ComponentName> mNames = new ArrayList<ComponentName>();
     private SoftReference<Bitmap> mAvatar = null;
 
     public ResolveInfoGroup(Context context){
@@ -35,8 +33,8 @@ public class ResolveInfoGroup extends SidebarItem {
     }
 
     public String getPackageName(){
-        if(mResolveInfos.size() > 0){
-            return mResolveInfos.get(0).activityInfo.packageName;
+        if(size() > 0){
+            return mNames.get(0).getPackageName();
         }else{
             return null;
         }
@@ -44,12 +42,12 @@ public class ResolveInfoGroup extends SidebarItem {
 
     //format : name_1|name_2| .. |name_n
     public String getComponentNames(){
-        if (mResolveInfos.size() <= 0) {
+        if (size() <= 0) {
             return null;
         }
         List<String> ls = new ArrayList<String>();
-        for(ResolveInfo ri : mResolveInfos){
-            ls.add(ri.activityInfo.name);
+        for(ComponentName name : mNames){
+            ls.add(name.getClassName());
         }
         Collections.sort(ls);
         StringBuilder sb = new StringBuilder();
@@ -58,26 +56,6 @@ public class ResolveInfoGroup extends SidebarItem {
             sb.append("|" + ls.get(i));
         }
         return sb.toString();
-    }
-
-    public boolean valid(Context context){
-        if (mResolveInfos.size() <= 0) {
-            return false;
-        }
-        for(ResolveInfo ri : mResolveInfos){
-            try {
-                context.getPackageManager().getActivityInfo(new ComponentName(ri.activityInfo.packageName,ri.activityInfo.name), 0);
-            } catch (NameNotFoundException e) {
-                return false;
-            }
-        }
-        SameGroupComparator sgc = new SameGroupComparator();
-        for (int i = 1; i < mResolveInfos.size(); ++i) {
-            if (sgc.compare(mResolveInfos.get(i - 1), mResolveInfos.get(i)) != 0) {
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override
@@ -98,19 +76,43 @@ public class ResolveInfoGroup extends SidebarItem {
         return ret;
     }
 
-    public Drawable loadIcon(){
-        if (mResolveInfos.size() <= 0) {
-            return null;
-        }else{
-            ResolveInfo info = mResolveInfos.get(0);
-            Drawable drawable = IconRedirect.getRedirectIcon(info.activityInfo.packageName, info.activityInfo.name, mContext);
+    public Drawable loadIcon() {
+        if (size() > 0) {
+            ComponentName name = mNames.get(0);
+            Drawable drawable = IconRedirect.getRedirectIcon(name.getPackageName(), name.getClassName(), mContext);
             if (drawable != null) {
                 return drawable;
             } else {
-                return info.loadIcon(mContext.getPackageManager());
+                List<ResolveInfo> ris = ResolveInfoManager.getInstance(mContext).getAllResolveInfoByPackageName(getPackageName());
+                if (ris != null) {
+                    for (ResolveInfo ri : ris) {
+                        if (name.equals(new ComponentName(
+                                ri.activityInfo.packageName,
+                                ri.activityInfo.name))) {
+                            return ri.loadIcon(mContext.getPackageManager());
+                        }
+                    }
+                }
             }
-
         }
+        return null;
+    }
+
+    @Override
+    public CharSequence getDisplayName() {
+        if (size() > 0) {
+            ComponentName cn = mNames.get(0);
+            List<ResolveInfo> ris = ResolveInfoManager.getInstance(mContext).getAllResolveInfoByPackageName(getPackageName());
+            if(ris != null) {
+                for (ResolveInfo ri : ris) {
+                    if (cn.equals(new ComponentName(
+                            ri.activityInfo.packageName, ri.activityInfo.name))) {
+                        return ri.loadLabel(mContext.getPackageManager());
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void onIconChanged() {
@@ -122,7 +124,7 @@ public class ResolveInfoGroup extends SidebarItem {
 
     public boolean acceptDragEvent(Context context, DragEvent event) {
         if (event == null || event.getClipDescription().getMimeTypeCount() <= 0
-                || mResolveInfos.size() <= 0) {
+                || size() <= 0) {
             return false;
         }
 
@@ -135,9 +137,9 @@ public class ResolveInfoGroup extends SidebarItem {
             sharingIntent.setType("text/plain");
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(sharingIntent, 0);
             if (infos != null) {
-                for (ResolveInfo ri1 : mResolveInfos) {
+                for (ComponentName name : mNames) {
                     for (ResolveInfo ri2 : infos) {
-                        if (sameComponet(ri1, ri2)) {
+                        if (name.equals(new ComponentName(ri2.activityInfo.packageName, ri2.activityInfo.name))) {
                             return true;
                         }
                     }
@@ -155,9 +157,9 @@ public class ResolveInfoGroup extends SidebarItem {
             intent.setPackage(getPackageName());
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
             if (infos != null) {
-                for (ResolveInfo ri1 : mResolveInfos) {
+                for (ComponentName name : mNames) {
                     for (ResolveInfo ri2 : infos) {
-                        if (sameComponet(ri1, ri2)) {
+                        if (name.equals(new ComponentName(ri2.activityInfo.packageName, ri2.activityInfo.name))) {
                             return true;
                         }
                     }
@@ -176,7 +178,7 @@ public class ResolveInfoGroup extends SidebarItem {
         if (event.getClipData().getItemCount() <= 0
                 || event.getClipDescription() == null
                 || event.getClipDescription().getMimeTypeCount() <= 0
-                || mResolveInfos.size() <= 0) {
+                || size() <= 0) {
             return false;
         }
 
@@ -195,12 +197,10 @@ public class ResolveInfoGroup extends SidebarItem {
             intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText());
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
             if (infos != null) {
-                for (ResolveInfo ri1 : mResolveInfos) {
+                for (ComponentName name : mNames) {
                     for (ResolveInfo ri2 : infos) {
-                        if (sameComponet(ri1, ri2)) {
-                            intent.setComponent(new ComponentName(
-                                    ri1.activityInfo.packageName,
-                                    ri1.activityInfo.name));
+                        if (name.equals(new ComponentName(ri2.activityInfo.packageName, ri2.activityInfo.name))) {
+                            intent.setComponent(name);
                             Utils.dismissAllDialog(mContext);
                             context.startActivity(intent);
                             return true;
@@ -229,12 +229,10 @@ public class ResolveInfoGroup extends SidebarItem {
 
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
             if (infos != null) {
-                for (ResolveInfo ri1 : mResolveInfos) {
+                for (ComponentName name : mNames) {
                     for (ResolveInfo ri2 : infos) {
-                        if (sameComponet(ri1, ri2)) {
-                            intent.setComponent(new ComponentName(
-                                    ri1.activityInfo.packageName,
-                                    ri1.activityInfo.name));
+                        if (name.equals(new ComponentName(ri2.activityInfo.packageName, ri2.activityInfo.name))) {
+                            intent.setComponent(name);
                             Utils.dismissAllDialog(mContext);
                             context.startActivity(intent);
                             return true;
@@ -253,9 +251,8 @@ public class ResolveInfoGroup extends SidebarItem {
     }
 
     public boolean containsComponent(ComponentName cn) {
-        for (ResolveInfo ri : mResolveInfos) {
-            if (ri.activityInfo.packageName.equals(cn.getPackageName())
-                    && ri.activityInfo.name.equals(cn.getClassName())) {
+        for (ComponentName name : mNames) {
+            if (name.equals(cn)) {
                 return true;
             }
         }
@@ -263,46 +260,28 @@ public class ResolveInfoGroup extends SidebarItem {
     }
 
     public void add(ResolveInfo ri) {
-        mResolveInfos.add(ri);
+        mNames.add(new ComponentName(ri.activityInfo.packageName, ri.activityInfo.name));
     }
 
     public int size() {
-        return mResolveInfos.size();
+        return mNames.size();
     }
 
-    public ResolveInfo get(int i) {
-        return mResolveInfos.get(i);
+    public ComponentName get(int i) {
+        return mNames.get(i);
     }
 
-    public static ResolveInfoGroup fromData(Context context, String pkgName, String componentNames){
-        ResolveInfoGroup rig = new ResolveInfoGroup(context);
-        String[] names = componentNames.split("\\|");
-        if(names == null) {
-            return null;
-        }
-        List<ResolveInfo> list = ResolveInfoManager.getInstance(context).getAllResolveInfoByPackageName(pkgName);
-        for (int i = 0; i < list.size(); ++i) {
-            boolean ok = false;
-            for (int j = 0; j < names.length; ++j) {
-                if (list.get(i).activityInfo.name.equals(names[j])) {
-                    ok = true;
-                    break;
+    public static ResolveInfoGroup fromData(Context context, String pkgName, String componentNames) {
+        List<ResolveInfoGroup> rigs = ResolveInfoManager.getInstance(context).getAllResolveInfoGroupByPackageName(pkgName);
+        if (rigs != null) {
+            for (ResolveInfoGroup rig : rigs) {
+                String names = rig.getComponentNames();
+                if (names != null && names.equals(componentNames)) {
+                    return rig;
                 }
             }
-            if (ok) {
-                rig.add(list.get(i));
-            }
         }
-        if (rig.size() != names.length) {
-            return null;
-        }
-        SameGroupComparator sgc = new SameGroupComparator();
-        for (int i = 1; i < rig.size(); ++i) {
-            if (sgc.compare(rig.get(i - 1), rig.get(i)) != 0) {
-                return null;
-            }
-        }
-        return rig;
+        return null;
     }
 
     public static boolean sameComponet(ResolveInfo ri1, ResolveInfo ri2){
@@ -393,12 +372,11 @@ public class ResolveInfoGroup extends SidebarItem {
             if (ri.labelRes != 0) {
                 return ri.labelRes;
             }
-            if (ri.activityInfo != null) {
-                if (ri.activityInfo.labelRes != 0) {
-                    return ri.activityInfo.labelRes;
-                } else if (ri.activityInfo.applicationInfo.labelRes != 0) {
-                    return ri.activityInfo.applicationInfo.labelRes;
-                }
+            if(ri.activityInfo.labelRes != 0) {
+                return ri.activityInfo.labelRes;
+            }
+            if (ri.activityInfo.applicationInfo.labelRes != 0) {
+                return ri.activityInfo.applicationInfo.labelRes;
             }
             return 0;
         }
@@ -414,15 +392,6 @@ public class ResolveInfoGroup extends SidebarItem {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public CharSequence getDisplayName() {
-        if(size() <= 0){
-            return null;
-        }else{
-            return get(0).loadLabel(mContext.getPackageManager());
-        }
     }
 
     @Override

@@ -15,18 +15,37 @@ import android.view.DragEvent;
 public class AppItem extends SidebarItem {
 
     private Context mContext;
-    public final ResolveInfo mResolveInfo;
-
+    public final ComponentName mName;
     private SoftReference<Bitmap> mAvatar;
+    private CharSequence mDisplayName;
+    public AppItem(Context context, ComponentName name) {
+        mContext = context;
+        mName = name;
+    }
 
     public AppItem(Context context, ResolveInfo ri) {
         mContext = context;
-        mResolveInfo = ri;
+        mName = new ComponentName(ri.activityInfo.packageName, ri.activityInfo.name);
+    }
+
+    private ResolveInfo getResolveInfo() {
+        List<ResolveInfo> ris = mContext.getPackageManager().queryIntentActivities(Intent.makeMainActivity(mName), 0);
+        if (ris != null && ris.size() > 0) {
+            return ris.get(0);
+        }
+        return null;
     }
 
     @Override
     public CharSequence getDisplayName() {
-        return mResolveInfo.loadLabel(mContext.getPackageManager());
+        if (mDisplayName != null) {
+            return mDisplayName;
+        }
+        ResolveInfo ri = getResolveInfo();
+        if (ri != null) {
+            return mDisplayName = ri.loadLabel(mContext.getPackageManager());
+        }
+        return null;
     }
 
     @Override
@@ -37,9 +56,13 @@ public class AppItem extends SidebarItem {
                 return ret;
             }
         }
-        Bitmap ret = BitmapUtils.drawableToBitmap(mResolveInfo.loadIcon(mContext.getPackageManager()));
-        mAvatar = new SoftReference<Bitmap>(ret);
-        return ret;
+        ResolveInfo ri = getResolveInfo();
+        if (ri != null) {
+            Bitmap ret = BitmapUtils.drawableToBitmap(ri.loadIcon(mContext.getPackageManager()));
+            mAvatar = new SoftReference<Bitmap>(ret);
+            return ret;
+        }
+        return null;
     }
 
     @Override
@@ -63,9 +86,7 @@ public class AppItem extends SidebarItem {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        intent.setComponent(new ComponentName(
-                mResolveInfo.activityInfo.packageName,
-                mResolveInfo.activityInfo.name));
+        intent.setComponent(mName);
         mContext.startActivity(intent);
         return true;
     }
@@ -76,21 +97,15 @@ public class AppItem extends SidebarItem {
             return false;
         }
         AppItem other = (AppItem) o;
-        if (mResolveInfo.activityInfo.packageName
-                .equals(other.mResolveInfo.activityInfo.packageName)
-                && mResolveInfo.activityInfo.name
-                        .equals(other.mResolveInfo.activityInfo.name)) {
-            return true;
-        }
-        return super.equals(o);
+        return mName.equals(other.mName);
     }
 
     public String getPackageName() {
-        return mResolveInfo.activityInfo.packageName;
+        return mName.getPackageName();
     }
 
     public String getComponentName() {
-        return mResolveInfo.activityInfo.name;
+        return mName.getClassName();
     }
 
     public void onIconChanged() {
@@ -112,7 +127,7 @@ public class AppItem extends SidebarItem {
             for (int i = 0; i < list.size(); ++i) {
                 ResolveInfo ri = list.get(i);
                 if (ri.activityInfo.name.equals(componentName)) {
-                    return new AppItem(context, ri);
+                    return new AppItem(context, new ComponentName(pkgName, componentName));
                 }
             }
         }
