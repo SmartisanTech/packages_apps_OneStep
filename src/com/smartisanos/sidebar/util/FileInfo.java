@@ -64,6 +64,8 @@ public class FileInfo implements Comparable<FileInfo> {
     private static final Set<String> WANTED_MIMETYPE;
     private static final Set<String> WANTED_SUFFIX;
 
+    private static final Map<String, String> sExtensionToMimeTypeMap;
+
     static {
         WANTED_MIMETYPE = new HashSet<String>();
         WANTED_MIMETYPE.add("application/zip");
@@ -89,6 +91,20 @@ public class FileInfo implements Comparable<FileInfo> {
         WANTED_SUFFIX.add("docx");
         WANTED_SUFFIX.add("pages");
         WANTED_SUFFIX.add("pdf");
+
+        sExtensionToMimeTypeMap = new HashMap<String, String>();
+        sExtensionToMimeTypeMap.put("pages", "application/x-iwork-numbers-sffnumbers");
+        sExtensionToMimeTypeMap.put("numbers", "application/x-iwork-pages-sffpages");
+        sExtensionToMimeTypeMap.put("key", "application/x-iwork-keynote-sffkey");
+        sExtensionToMimeTypeMap.put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        sExtensionToMimeTypeMap.put("7z", "application/x-7z-compressed");
+
+        for (String suffix : WANTED_SUFFIX) {
+            if (TextUtils.isEmpty(getMimeTypeBySuffix(suffix))) {
+                throw new IllegalArgumentException(
+                        "we can't get correct mimetype for some wanted suffix ! like -> " + suffix);
+            }
+        }
     }
 
     private static final Map<File, Set<String>> sTypeInSpeDir;
@@ -124,7 +140,7 @@ public class FileInfo implements Comparable<FileInfo> {
 
     public FileInfo(String path, String mimeType){
         if (TextUtils.isEmpty(mimeType)) {
-            mimeType = getFileMimeType(path);
+            mimeType = getMimeTypeByFilePath(path);
         }
         this.filePath = path;
         this.mimeType = mimeType;
@@ -239,9 +255,17 @@ public class FileInfo implements Comparable<FileInfo> {
         }
     }
 
-    public static String getFileMimeType(String filePath){
+    public static String getMimeTypeByFilePath(String filePath) {
         String suffix = getSuffix(new File(filePath).getName());
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(suffix);
+        return getMimeTypeBySuffix(suffix);
+    }
+
+    public static String getMimeTypeBySuffix(String suffix) {
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(suffix);
+        if (TextUtils.isEmpty(mimeType)) {
+            mimeType = sExtensionToMimeTypeMap.get(suffix);
+        }
+        return mimeType;
     }
 
     public static long getLastTime(String path){
