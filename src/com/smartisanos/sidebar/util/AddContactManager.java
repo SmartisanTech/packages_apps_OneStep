@@ -105,6 +105,7 @@ public class AddContactManager extends DataManager {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     try {
+                                        Utils.dismissAllDialog(mContext);
                                         Intent intent = new Intent(Intent.ACTION_MAIN);
                                         ComponentName cmp = new ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
                                         intent.setComponent(cmp);
@@ -112,7 +113,6 @@ public class AddContactManager extends DataManager {
                                         intent.addCategory(Intent.CATEGORY_LAUNCHER);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                         mContext.startActivity(intent);
-                                        Utils.dismissAllDialog(mContext);
                                     } catch (ActivityNotFoundException e) {
                                         Log.d(TAG, "wechat not installed !", e);
                                     }
