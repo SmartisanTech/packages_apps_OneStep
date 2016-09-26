@@ -292,6 +292,15 @@ public class SidebarRootView extends FrameLayout {
             return;
         }
         mDragDroping = true;
+        //calculate icon loc, bubble will hide, move icon to right loc
+        int[] iconLoc = new int[2];
+        int deltaX = (mDragView.mView.getWidth() - mDragView.mDragViewIcon.getWidth()) / 2;
+        int deltaY = mDragView.mView.getHeight() - mDragView.mDragViewIcon.getHeight();
+        mDragView.mView.getLocationOnScreen(iconLoc);
+        iconLoc[0] = iconLoc[0] + deltaX;
+        iconLoc[1] = iconLoc[1] + deltaY;
+        mDragView.mView.setTranslationX(iconLoc[0]);
+        mDragView.mView.setTranslationY(iconLoc[1]);
         mDragView.hideBubble();
         final ViewTreeObserver observer = mDragView.mView.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
