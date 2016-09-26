@@ -189,7 +189,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
             if (mIsEmpty) {
                 view = mEmptyView;
             } else {
-                view = mClipList;
+                view = mContainer;
             }
             view.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             view.setPivotY(0);

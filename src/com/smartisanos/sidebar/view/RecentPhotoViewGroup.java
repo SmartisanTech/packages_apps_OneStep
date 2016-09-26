@@ -141,12 +141,26 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
         if (anim) {
             int time = 200;
             AnimTimeLine timeLine = new AnimTimeLine();
-            if (!mIsEmpty) {
-//                timeLine.addTimeLine(mGridView.photoAnim(true));
+            final View view;
+            if (mIsEmpty) {
+                view = mEmptyView;
+            } else {
+                view = mListView;
             }
-            setPivotX(0);
-            setPivotY(0);
+            int height = view.getHeight();
+            view.setPivotY(0);
+            Anim moveAnim = new Anim(view, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(0, -height / 2), new Vector3f());
+            moveAnim.setListener(new AnimListener() {
+                @Override
+                public void onStart() {
+                }
+                @Override
+                public void onComplete(int type) {
+                    view.setTranslationY(0);
+                }
+            });
             Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 0.6f), new Vector3f(0, 1));
+            timeLine.addAnim(moveAnim);
             timeLine.addAnim(scaleAnim);
             timeLine.setAnimListener(new AnimListener() {
                 @Override
@@ -167,14 +181,18 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
     public void dismiss(boolean anim) {
         mClearListener.dismiss();
         if (anim) {
-            int time = 200;
             AnimTimeLine timeLine = new AnimTimeLine();
-            if (!mIsEmpty) {
-//                timeLine.addTimeLine(mGridView.photoAnim(false));
+            final View view;
+            if (mIsEmpty) {
+                view = mEmptyView;
+            } else {
+                view = mContainer;
             }
-            setPivotX(0);
-            setPivotY(0);
-            Anim scaleAnim = new Anim(this, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(0, 1), new Vector3f(0, 0.6f));
+            int time = 200;
+            view.setPivotY(0);
+            Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+            Anim scaleAnim = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(1, 0.6f));
+            timeLine.addAnim(alphaAnim);
             timeLine.addAnim(scaleAnim);
             timeLine.setAnimListener(new AnimListener() {
                 @Override
@@ -184,9 +202,10 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
 
                 @Override
                 public void onComplete(int type) {
-                    setVisibility(View.GONE);
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_RECENT_PHOTO_LIST_ANIM, false);
-                    setScaleY(1);
+                    view.setScaleY(1);
+                    view.setAlpha(1);
+                    setVisibility(View.GONE);
                     mAdapter.shrink();
                 }
             });
