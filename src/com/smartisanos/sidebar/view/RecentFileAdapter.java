@@ -32,7 +32,8 @@ import smartisanos.util.SidebarUtils;
 public class RecentFileAdapter extends BaseAdapter {
     private static final LOG log = LOG.getInstance(RecentFileAdapter.class);
 
-    private static final int MAX_ITEM_COUNT = 7;
+    private static final int[] sNeedExpandNumber = new int[] { 15, 15, 30, 30,
+            60 };
 
     private Context mContext;
     private RecentFileManager mFileManager;
@@ -124,7 +125,7 @@ public class RecentFileAdapter extends BaseAdapter {
             if(mExpand[i]) {
                 return line;
             } else {
-                return Math.min(line, MAX_ITEM_COUNT);
+                return Math.min(line, sNeedExpandNumber[i]);
             }
         }
         return 0;
@@ -154,7 +155,7 @@ public class RecentFileAdapter extends BaseAdapter {
         }
 
         List<FileInfo> intervalInfos = mIntervals.get(our_interval);
-        if(interval_line == MAX_ITEM_COUNT - 1 && !mExpand[our_interval] && interval_line != intervalInfos.size() - 1) {
+        if(interval_line == sNeedExpandNumber[our_interval] - 1 && !mExpand[our_interval] && interval_line != intervalInfos.size() - 1) {
             rfiv.showMoreTag(new showMoreListener(our_interval, rfiv, intervalInfos.get(interval_line)));
         } else {
             rfiv.showItem(intervalInfos.get(interval_line));

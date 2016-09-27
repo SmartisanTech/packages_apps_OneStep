@@ -33,6 +33,9 @@ import smartisanos.util.SidebarUtils;
 public class RecentPhotoAdapter extends BaseAdapter {
     private static final LOG log = LOG.getInstance(RecentPhotoAdapter.class);
 
+    private static final int[] sNeedExpandNumber = new int[] { 30, 30, 60, 60,
+            60 };
+
     private Context mContext;
     private RecentPhotoManager mPhotoManager;
     private List<ImageInfo> mImageInfoList = new ArrayList<ImageInfo>();
@@ -157,8 +160,9 @@ public class RecentPhotoAdapter extends BaseAdapter {
         }
 
         List<ImageInfo> intervalInfos = mIntervals.get(our_interval);
+        boolean expand = mExpand[our_interval];
         int startIndex = interval_line * 3;
-        int needExpandNumber = 9;
+        int needExpandNumber = sNeedExpandNumber[our_interval];
         if(our_interval == mFirstInterval) {
             startIndex -= 1;
             needExpandNumber -- ;
@@ -170,11 +174,14 @@ public class RecentPhotoAdapter extends BaseAdapter {
             starti ++ ;
         }
 
+        int size = intervalInfos.size();
+        if (!expand) {
+            size = Math.min(needExpandNumber, intervalInfos.size());
+        }
         for(int i = starti; i < 3; ++ i) {
             int index = startIndex + i;
-            if(index < intervalInfos.size()) {
-                if(interval_line * 3 + i == 8) {
-                    boolean expand = mExpand[our_interval];
+            if(index < size) {
+                if(interval_line * 3 + i == sNeedExpandNumber[our_interval] - 1) {
                     if(intervalInfos.size() > needExpandNumber && !expand) {
                         // show expand button;
                         vh.subView[i].showMorePhoto(new showMoreListener(our_interval, vh.subView[i], intervalInfos.get(index)));
@@ -205,7 +212,7 @@ public class RecentPhotoAdapter extends BaseAdapter {
             if(mExpand[i]) {
                 return line;
             } else {
-                return Math.min(line, 3);
+                return Math.min(line, (sNeedExpandNumber[i] + 2) / 3);
             }
         }
         return 0;

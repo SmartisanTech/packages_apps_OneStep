@@ -21,7 +21,9 @@ import com.smartisanos.sidebar.util.Utils;
 
 public class ClipboardAdapter extends BaseAdapter{
     private static LOG log = LOG.getInstance(ClipboardAdapter.class);
-    private static final int MAX_ITEM_COUNT = 7;
+
+    private static final int[] sNeedExpandNumber = new int[] { 15, 15, 30, 30,
+        60 };
 
     private Context mContext;
     private RecentClipManager mClipManager;
@@ -81,7 +83,7 @@ public class ClipboardAdapter extends BaseAdapter{
             if(mExpand[i]) {
                 return line;
             } else {
-                return Math.min(line, MAX_ITEM_COUNT);
+                return Math.min(line, sNeedExpandNumber[i]);
             }
         }
         return 0;
@@ -142,7 +144,7 @@ public class ClipboardAdapter extends BaseAdapter{
         }
 
         List<CopyHistoryItem> intervalInfos = mIntervals.get(our_interval);
-        if(interval_line == MAX_ITEM_COUNT - 1 && !mExpand[our_interval] && interval_line != intervalInfos.size() - 1) {
+        if(interval_line == sNeedExpandNumber[our_interval] - 1 && !mExpand[our_interval] && interval_line != intervalInfos.size() - 1) {
             civ.showMoreTag(new showMoreListener(our_interval, civ, intervalInfos.get(interval_line)));
         } else {
             civ.showItem(intervalInfos.get(interval_line));
