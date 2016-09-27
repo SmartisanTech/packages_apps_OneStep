@@ -376,7 +376,7 @@ public class Utils {
             Uri uri = info.getContentUri(context);
             intent.setDataAndType(uri, info.mimeType);
             intent.addCategory(Intent.CATEGORY_DEFAULT);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             context.startActivity(intent);
             dismissAllDialog(context);
         } catch (ActivityNotFoundException e) {
