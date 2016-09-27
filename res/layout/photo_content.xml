@@ -13,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/title_photo"
-            android:textColor="#4cffffff"
+            android:textColor="@color/content_view_title_color"
             android:textSize="13.5dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"

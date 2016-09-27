@@ -7,11 +7,11 @@
         android:id="@+id/text_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/float_app_name_bg"
+        android:background="@drawable/float_text_bg"
         android:textColor="#ffffff"
         android:textSize="@dimen/float_text_size"
         android:ellipsize="end"
-        android:maxWidth="104dp"
+        android:maxWidth="180dp"
         android:maxLines="1"
         android:gravity="center"/>
 </FrameLayout>

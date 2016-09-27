@@ -10,7 +10,7 @@
         android:layout_height="24dp"
         android:gravity="left|center_vertical"
         android:textSize="10dp"
-        android:textColor="#4cffffff"
+        android:textColor="@color/content_view_interval_time_color"
         android:background="#26000000"
         android:visibility="gone"
         android:paddingLeft="15dp"/>

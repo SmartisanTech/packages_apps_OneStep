@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
@@ -95,14 +96,14 @@ public final class AddResolveInfoGroupAdapter extends BaseAdapter {
         if (view == null) {
             view = LayoutInflater.from(mContext).inflate(R.layout.setting_item_switch_layout, null);
             vh = new ViewHolder();
-            vh.iconView = view.findViewById(R.id.item_icon);
+            vh.iconView = (ImageView) view.findViewById(R.id.item_icon);
             vh.titleView = (TextView) view.findViewById(R.id.item_title);
             vh.switchView = (SwitchEx) view.findViewById(R.id.item_switch);
             view.setTag(vh);
         } else {
             vh = (ViewHolder) view.getTag();
         }
-        vh.iconView.setBackground(item.rig.loadIcon());
+        vh.iconView.setImageBitmap(item.rig.getAvatar());
         vh.titleView.setText(item.rig.getDisplayName());
         vh.switchView.setOnCheckedChangeListener(null);
         vh.switchView.setChecked(item.checked);
@@ -122,7 +123,7 @@ public final class AddResolveInfoGroupAdapter extends BaseAdapter {
     }
 
     final class ViewHolder {
-        public View iconView;
+        public ImageView iconView;
         public TextView titleView;
         public SwitchEx switchView;
     }

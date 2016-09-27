@@ -76,7 +76,7 @@ public class ResolveInfoGroup extends SidebarItem {
         return ret;
     }
 
-    public Drawable loadIcon() {
+    private Drawable loadIcon() {
         if (size() > 0) {
             ComponentName name = mNames.get(0);
             Drawable drawable = IconRedirect.getRedirectIcon(name.getPackageName(), name.getClassName(), mContext);

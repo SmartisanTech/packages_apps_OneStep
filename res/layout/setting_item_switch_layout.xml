@@ -9,7 +9,7 @@
         android:layout_height="31dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="12dp">
-        <View
+        <ImageView
             android:id="@+id/item_icon"
             android:layout_width="29dp"
             android:layout_height="29dp"
