@@ -1,5 +1,11 @@
 package com.smartisanos.sidebar.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import android.content.Context;
 import android.content.CopyHistoryItem;
 import android.os.Handler;
@@ -7,55 +13,78 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentClipManager;
 import com.smartisanos.sidebar.util.Utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import smartisanos.util.SidebarUtils;
-
 public class ClipboardAdapter extends BaseAdapter{
     private static LOG log = LOG.getInstance(ClipboardAdapter.class);
+    private static final int MAX_ITEM_COUNT = 7;
 
     private Context mContext;
     private RecentClipManager mClipManager;
+
     private List<CopyHistoryItem> mCopyHistoryItemList = new ArrayList<CopyHistoryItem>();
-    private List mList = new ArrayList();
+    private boolean[] mExpand = new boolean[Utils.Interval.DAY_INTERVAL.length];
+    private Map<Integer, List<CopyHistoryItem>> mIntervals = new HashMap<Integer, List<CopyHistoryItem>>();
+
     private Handler mHandler;
     private IEmpty mEmpty;
     public ClipboardAdapter(Context context, IEmpty empty){
         mContext = context;
         mEmpty = empty;
-        mClipManager = RecentClipManager.getInstance(mContext);
-        mCopyHistoryItemList = mClipManager.getCopyList();
-        updateDataList();
         mHandler = new Handler(Looper.getMainLooper());
+        mClipManager = RecentClipManager.getInstance(mContext);
         mClipManager.addListener(new RecentClipManager.RecentUpdateListener(){
             @Override
             public void onUpdate() {
                 mHandler.post(new Runnable(){
                     @Override
                     public void run() {
-                        mCopyHistoryItemList = mClipManager.getCopyList();
                         updateDataList();
-                        notifyDataSetChanged();
                     }
                 });
             }
         });
+        updateDataList();
         notifyEmpty();
+    }
+
+    public void shrink() {
+        Arrays.fill(mExpand, false);
+        notifyDataSetChanged();
+    }
+
+    private void updateDataList() {
+        mCopyHistoryItemList = mClipManager.getCopyList();
+        mIntervals.clear();
+        long now = System.currentTimeMillis();
+        for (int i = 0; i < mCopyHistoryItemList.size(); i++) {
+            CopyHistoryItem item = mCopyHistoryItemList.get(i);
+            int interval = Utils.Interval.getInterval(now, item.mTimeStamp);
+            List<CopyHistoryItem> list = mIntervals.get(interval);
+            if (list == null) {
+                list = new ArrayList<CopyHistoryItem>();
+                mIntervals.put(interval, list);
+            }
+            list.add(item);
+        }
+        notifyDataSetChanged();
+    }
+
+    private int getIntervalCount(int i) {
+        List<CopyHistoryItem> list = mIntervals.get(i);
+        if(list != null) {
+            int line = list.size();
+            if(mExpand[i]) {
+                return line;
+            } else {
+                return Math.min(line, MAX_ITEM_COUNT);
+            }
+        }
+        return 0;
     }
 
     private void notifyEmpty() {
@@ -72,12 +101,16 @@ public class ClipboardAdapter extends BaseAdapter{
 
     @Override
     public int getCount() {
-        return mList == null ? 0 : mList.size();
+        int total = 0;
+        for(int i = 0; i < Utils.Interval.DAY_INTERVAL.length; ++ i) {
+            total += getIntervalCount(i);
+        }
+        return total;
     }
 
     @Override
     public Object getItem(int position) {
-        return mList.get(position);
+        return position;
     }
 
     @Override
@@ -85,185 +118,54 @@ public class ClipboardAdapter extends BaseAdapter{
         return position;
     }
 
-    public void removeItem(Object item) {
-        if (item == null) {
-            return;
-        }
-        mList.remove(item);
-    }
-
-    public void addItems(int index, List<DataItem> list) {
-        if (list == null || list.size() == 0) {
-            return;
-        }
-        mList.addAll(index, list);
-    }
-
     @Override
-    public View getView(int position, View convertView, ViewGroup parent){
-        ViewHolder holder;
-        if(convertView == null) {
-            View view =  View.inflate(mContext,R.layout.copyhistoryitem, null);
-            LinearLayout dateLabel = (LinearLayout) view.findViewById(R.id.date_label);
-            TextView dateContent = (TextView) view.findViewById(R.id.date_content);
-            LinearLayout textItemView = (LinearLayout) view.findViewById(R.id.text_item);
-            TextView textView = (TextView) view.findViewById(R.id.text);
-            ImageView copyItemIcon = (ImageView) view.findViewById(R.id.copy_item_icon);
-            LinearLayout moreLabel = (LinearLayout) view.findViewById(R.id.more_label);
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = new ClipboardItemView(mContext);
+        }
+        ClipboardItemView civ = (ClipboardItemView) convertView;
+        civ.reset();
 
-            holder = new ViewHolder();
-            holder.view = view;
-            holder.dateLabel = dateLabel;
-            holder.dateContent = dateContent;
-            holder.textItemView = textItemView;
-            holder.textView = textView;
-            holder.copyItemIcon = copyItemIcon;
-            holder.moreLabel = moreLabel;
-            view.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        int now = 0;
+        int our_interval = 0;
+        int interval_line = 0;
+        for(int i = 0; i < Utils.Interval.DAY_INTERVAL.length; ++ i) {
+            if(now + getIntervalCount(i) > position) {
+                our_interval = i;
+                interval_line = position - now;
+                break;
+            }
+            now += getIntervalCount(i);
+        }
+        if(interval_line == 0) {
+            civ.showDate(Utils.Interval.LABEL_INTERVAL[our_interval]);
         }
 
-        Object obj = mList.get(position);
-        if (obj instanceof DataItem) {
-            holder.showItem((DataItem) obj);
-        } else if (obj instanceof String) {
-            holder.showDate((String) obj);
+        List<CopyHistoryItem> intervalInfos = mIntervals.get(our_interval);
+        if(interval_line == MAX_ITEM_COUNT - 1 && !mExpand[our_interval] && interval_line != intervalInfos.size() - 1) {
+            civ.showMoreTag(new showMoreListener(our_interval, civ, intervalInfos.get(interval_line)));
         } else {
-            holder.showMoreTag();
+            civ.showItem(intervalInfos.get(interval_line));
         }
-        return holder.view;
+        return civ;
     }
 
-    private static class ViewHolder {
-        public View view;
-
-        public LinearLayout dateLabel;
-        public TextView dateContent;
-
-        public LinearLayout textItemView;
-        public TextView textView;
-        public ImageView copyItemIcon;
-
-        public LinearLayout moreLabel;
-
-        public void showItem(DataItem item) {
-            if (moreLabel.getVisibility() != View.GONE) {
-                moreLabel.setVisibility(View.GONE);
-            }
-            if (dateLabel.getVisibility() != View.GONE) {
-                dateLabel.setVisibility(View.GONE);
-            }
-            if (textItemView.getVisibility() != View.VISIBLE) {
-                textItemView.setVisibility(View.VISIBLE);
-            }
-            textView.setText(item.mText);
-        }
-
-        public void showDate(String date) {
-            if (moreLabel.getVisibility() != View.GONE) {
-                moreLabel.setVisibility(View.GONE);
-            }
-            if (textItemView.getVisibility() != View.GONE) {
-                textItemView.setVisibility(View.GONE);
-            }
-            if (dateLabel.getVisibility() != View.VISIBLE) {
-                dateLabel.setVisibility(View.VISIBLE);
-            }
-            dateContent.setText(date);
-        }
-
-        public void showMoreTag() {
-            if (textItemView.getVisibility() != View.GONE) {
-                textItemView.setVisibility(View.GONE);
-            }
-            if (dateLabel.getVisibility() != View.GONE) {
-                dateLabel.setVisibility(View.GONE);
-            }
-            if (moreLabel.getVisibility() != View.VISIBLE) {
-                moreLabel.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    public static class DataItem implements Comparable<DataItem> {
-        public String mText;
-        private long mTime;
-
-        public DataItem(String content, long time) {
-            mText = content;
-            mTime = time;
+    class showMoreListener implements View.OnClickListener {
+        private int mInterval;
+        private ClipboardItemView mView;
+        private CopyHistoryItem mItem;
+        public showMoreListener(int interval, ClipboardItemView view, CopyHistoryItem item) {
+            mInterval = interval;
+            mView = view;
+            mItem = item;
         }
 
         @Override
-        public int compareTo(DataItem item) {
-            if (item == null) {
-                return -1;
-            }
-            if (mTime == item.mTime) {
-                return 0;
-            }
-            if (item.mTime > mTime) {
-                return 1;
-            } else {
-                return -1;
-            }
-        }
-    }
-
-    private static final int MAX_ITEM_COUNT = 7;
-
-    private void updateDataList() {
-        if (mCopyHistoryItemList.size() == 0) {
-            mList.clear();
-            return;
-        }
-        int size = mCopyHistoryItemList.size();
-        DataItem[] items = new DataItem[size];
-        for (int i = 0; i < size; i++) {
-            //convert CopyHistoryItem to DataItem
-            CopyHistoryItem item = mCopyHistoryItemList.get(i);
-            items[i] = new DataItem(item.mContent, item.mTimeStamp);
-        }
-        Arrays.sort(items);
-        long now = System.currentTimeMillis();
-        List<String> labelOrder = new ArrayList<String>();
-        Map<String, List<DataItem>> map = new HashMap<String, List<DataItem>>();
-        for (int i = 0; i < items.length; i++) {
-            DataItem item = items[i];
-            String label = Utils.convertDateToLabel(mContext, now, item.mTime);
-            List<DataItem> list = map.get(label);
-            if (list == null) {
-                list = new ArrayList<DataItem>();
-            }
-            list.add(item);
-            map.put(label, list);
-            if (!labelOrder.contains(label)) {
-                labelOrder.add(label);
-            }
-        }
-
-        List list = new ArrayList();
-        for (int i = 0; i < labelOrder.size(); i++) {
-            String label = labelOrder.get(i);
-            List<DataItem> dataList = map.get(label);
-            if (label == null || dataList == null) {
-                continue;
-            }
-            list.add(label);
-            if (dataList.size() > MAX_ITEM_COUNT) {
-                list.addAll(dataList.subList(0, MAX_ITEM_COUNT));
-                List<DataItem> hideList = new ArrayList<DataItem>();
-                hideList.addAll(dataList.subList(MAX_ITEM_COUNT, dataList.size()));
-                list.add(hideList);
-            } else {
-                list.addAll(dataList);
-            }
-        }
-        map.clear();
-        synchronized (mList) {
-            mList.clear();
-            mList.addAll(list);
+        public void onClick(View v) {
+            mView.reset();
+            mView.showItem(mItem);
+            mExpand[mInterval] = true;
+            notifyDataSetChanged();
         }
     }
 }

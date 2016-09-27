@@ -1,33 +1,23 @@
 package com.smartisanos.sidebar.view;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.content.CopyHistoryItem;
-import android.content.res.Configuration;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentClipManager;
-import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import smartisanos.util.SidebarUtils;
 
 public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView {
     private static final LOG log = LOG.getInstance(ClipboardViewGroup.class);
@@ -81,8 +71,6 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
         mClipList = (ListView) findViewById(R.id.clipboard_listview);
         mClipboardAdapter = new ClipboardAdapter(mContext, this);
         mClipList.setAdapter(mClipboardAdapter);
-        mClipList.setOnItemClickListener(mOnClipBoardItemClickListener);
-        mClipList.setOnItemLongClickListener(mOnClipBoardItemLongClickListener);
         mClearClipboard.setOnClickListener(mClearListener);
     }
 
@@ -209,6 +197,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                     view.setScaleY(1);
                     view.setAlpha(1);
                     setVisibility(View.GONE);
+                    mClipboardAdapter.shrink();
                 }
             });
             timeLine.start();
@@ -216,55 +205,6 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
             setVisibility(View.GONE);
         }
     }
-
-    private Toast mClipboardCopyToast = null;
-    private AdapterView.OnItemClickListener mOnClipBoardItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if (mClipboardAdapter == null) {
-                return;
-            }
-            Object obj = mClipboardAdapter.getItem(position);
-            if (obj == null) {
-                return;
-            }
-            if (obj instanceof ClipboardAdapter.DataItem) {
-                ClipboardAdapter.DataItem item = (ClipboardAdapter.DataItem) obj;
-                String text = item.mText;
-                Utils.copyText(mContext, text, false);
-                Utils.resumeSidebar(mContext);
-                if (mClipboardCopyToast != null) {
-                    mClipboardCopyToast.cancel();
-                }
-                mClipboardCopyToast = Toast.makeText(mContext, R.string.text_copied, Toast.LENGTH_SHORT);
-                mClipboardCopyToast.show();
-            } else if (obj instanceof ArrayList) {
-                List<ClipboardAdapter.DataItem> list = (List<ClipboardAdapter.DataItem>) obj;
-                mClipboardAdapter.addItems(position, list);
-                mClipboardAdapter.removeItem(obj);
-                mClipboardAdapter.notifyDataSetChanged();
-            }
-        }
-    };
-
-    private AdapterView.OnItemLongClickListener mOnClipBoardItemLongClickListener = new AdapterView.OnItemLongClickListener() {
-        @Override
-        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if (view == null) {
-                log.info("onItemLongClick view is null ["+position+"] ["+id+"]");
-                return false;
-            }
-            if (mClipboardAdapter == null) {
-                return false;
-            }
-            Object obj = mClipboardAdapter.getItem(position);
-            if (obj != null && obj instanceof ClipboardAdapter.DataItem) {
-                ClipboardAdapter.DataItem item = (ClipboardAdapter.DataItem) obj;
-                SidebarUtils.dragText(view, mContext, item.mText);
-            }
-            return false;
-        }
-    };
 
     private void updateUI(){
         mTitle.setText(R.string.title_clipboard);
