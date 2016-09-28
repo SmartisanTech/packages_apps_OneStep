@@ -80,6 +80,7 @@ public class MmsContact extends ContactItem {
         }
         if (intent != null) {
             try {
+                intent.putExtra("need_finish", true);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(intent);
                 return true;
@@ -94,6 +95,7 @@ public class MmsContact extends ContactItem {
     public boolean openUI(Context context) {
         try {
             Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + mPhoneNumber));
+            intent.putExtra("need_finish", true);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
             return true;
