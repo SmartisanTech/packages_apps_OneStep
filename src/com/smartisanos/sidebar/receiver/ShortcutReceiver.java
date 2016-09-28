@@ -4,20 +4,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Binder;
 import android.os.Parcelable;
-import android.os.UserHandle;
 
 import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.ContactManager;
 import com.smartisanos.sidebar.util.LOG;
-import com.smartisanos.sidebar.util.UserPackage;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.WechatContact;
 import com.smartisanos.sidebar.R;
@@ -27,7 +23,6 @@ public class ShortcutReceiver extends BroadcastReceiver {
 
     public static final String ACTION_INSTALL_SHORTCUT = "com.android.launcher.action.INSTALL_SHORTCUT";
     public static final String ACTION_UNINSTALL_SHORTCUT = "com.android.launcher.action.UNINSTALL_SHORTCUT";
-    public static final String EXTRA_UID = "extra_uid";
 
     public static final String WECHAT = "com.tencent.mm";
     public static final String[] SUPPORTED_APPS = new String[] {
@@ -111,19 +106,7 @@ public class ShortcutReceiver extends BroadcastReceiver {
         log.error("handleInstallShortcut ["+name+"]");
         log.error("lunch intent ["+intentUri+"]");
         WechatContact contact = new WechatContact(context, name, intentUri, icon);
-        int callingUid = data.getIntExtra(EXTRA_UID, -1);
-        //lose callingUid
-        if(callingUid == -1) {
-            callingUid = Binder.getCallingUid();
-        }
-        int userId = UserHandle.getUserId(callingUid);
-        int uid = 0;
-        if (userId == UserPackage.USER_DOPPELGANGER) {
-            uid = UserPackage.USER_DOPPELGANGER;
-        } else if (Utils.appIsDoubleOpen(WECHAT)) {
-            uid = UserPackage.USER_DOPPELGANGER;
-        }
-        contact.setUserId(uid);
+        contact.setUserId(Utils.getUidFromIntent(data));
         ContactManager.getInstance(context).addContact(contact);
     }
 

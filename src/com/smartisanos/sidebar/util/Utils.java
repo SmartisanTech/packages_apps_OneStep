@@ -25,6 +25,7 @@ import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.view.DragEvent;
@@ -325,14 +326,16 @@ public class Utils {
         return name;
     }
 
-    public static boolean appIsDoubleOpen(String pkg) {
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = AppGlobals.getPackageManager().getPackageInfo(pkg, 0, UserHandle.USER_DOPPELGANGER);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static int getUidFromIntent(Intent intent) {
+        int callingUid = intent.getIntExtra("extra_uid", Binder.getCallingUid());
+        if (UserHandle.getUserId(callingUid) == UserPackage.USER_DOPPELGANGER) {
+            return UserPackage.USER_DOPPELGANGER;
         }
-        return packageInfo != null;
+        return 0;
+    }
+
+    public static boolean isDoppelgangerIntent(Intent intent) {
+        return getUidFromIntent(intent) == UserPackage.USER_DOPPELGANGER;
     }
 
     public static void launchPreviousApp(Context context) {
