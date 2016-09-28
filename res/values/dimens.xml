@@ -8,8 +8,8 @@
     <dimen name="topbar_file_icon_content_paddingTop">10dp</dimen>
     <dimen name="contact_avatar_size">32dp</dimen>
 
-    <dimen name="drag_scroll_view_top_area">64dp</dimen>
-    <dimen name="drag_scroll_view_bottom_area">128dp</dimen>
+    <dimen name="drag_scroll_view_top_area">96dp</dimen>
+    <dimen name="drag_scroll_view_bottom_area">192dp</dimen>
     <!-- drag view values -->
     <dimen name="dragViewScale">12dp</dimen>
     <dimen name="clip_radius">6dp</dimen>

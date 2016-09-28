@@ -45,6 +45,7 @@ public class DragScrollView extends ScrollView {
 
         private ScrollView mView;
         private DragEvent mEvent;
+        private float mRate = 1.0f;
         private int mInitDel = 0;
         private int mScrollDirection = 0;
         private int mTopArea;
@@ -55,21 +56,32 @@ public class DragScrollView extends ScrollView {
             mBottomArea = getResources().getDimensionPixelSize(R.dimen.drag_scroll_view_bottom_area);
         }
 
+        private float getInterpolation(float rate) {
+            return rate * rate;
+        }
+
+        private void setRate(float rate) {
+            mRate = 1.0f + getInterpolation(rate) * 3;
+        }
+
         public boolean onDragEvent(DragEvent event){
             int action = event.getAction();
             if(action ==  DragEvent.ACTION_DRAG_LOCATION){
                 float y = event.getY();
                 if(y < mTopArea && !isScrollUp()){
                     setEvent(event);
+                    setRate((mTopArea - y)  * 1.0f / mTopArea);
                     scroll(DIRECTION_DOWN);
                     return true;
                 }else if(y > mView.getHeight() - mBottomArea && !isScrollBottom()){
                     setEvent(event);
+                    setRate(1 - (mView.getHeight() - y)  * 1.0f / mBottomArea);
                     scroll(DIRECTION_UP);
                     return true;
                 }
             }
             setEvent(null);
+            setRate(0.0f);
             scroll(DIRECTION_NONE);
             return false;
         }
@@ -113,7 +125,7 @@ public class DragScrollView extends ScrollView {
         private Runnable mScrollRunnable = new Runnable() {
             @Override
             public void run() {
-                mView.scrollBy(0, mInitDel * mScrollDirection);
+                mView.scrollBy(0, (int) (mInitDel * mScrollDirection * mRate));
                 mView.postDelayed(mScrollRunnable, DELAY);
                 if (mEvent != null) {
                     DragScrollView.super.dispatchDragEvent(mEvent);

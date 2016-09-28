@@ -2,8 +2,9 @@
     xmlns:smartisanos="http://schemas.android.com/apk/res/smartisanos"
     android:id="@+id/sideview_scroll_list"
     android:scrollbars="none"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:overScrollMode="always"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <FrameLayout
         android:paddingTop="4dp"
         android:layout_width="wrap_content"
@@ -11,7 +12,7 @@
         <LinearLayout
             android:id="@+id/side_view_dragged"
             android:orientation="vertical"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="96dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"

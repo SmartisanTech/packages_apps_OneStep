@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.smartisanos.sidebar.view.SidebarRootView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.smartisanos.sidebar.view.SidebarRootView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:smartisanos="http://schemas.android.com/apk/res/smartisanos"
     android:id="@+id/sidebar_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
     <com.smartisanos.sidebar.view.SideView
         android:id="@+id/sidebar"
         android:layout_width="48dp"
@@ -58,11 +56,11 @@
                 </LinearLayout>
             </LinearLayout>
         </FrameLayout>
-    <com.smartisanos.sidebar.view.DimSpaceView
-        android:id="@+id/side_dim_view"
-        android:background="@color/dim_color"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        <com.smartisanos.sidebar.view.DimSpaceView
+            android:id="@+id/side_dim_view"
+            android:background="@color/dim_color"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </com.smartisanos.sidebar.view.SideView>
     <ImageView
         android:id="@+id/trash_with_shadow"
