@@ -142,7 +142,7 @@
 
     <application
         android:name="com.smartisanos.sidebar.SidebarApplication"
-        android:icon="@drawable/info"
+        android:icon="@drawable/ic_launcher"
         android:persistent="true"
         android:supportsRtl="true"
         android:allowClearUserData="false"
@@ -208,7 +208,7 @@
         </receiver>
         <activity
             android:name=".setting.SettingActivity"
-            android:icon="@drawable/setting"
+            android:icon="@drawable/ic_launcher"
             android:theme="@style/SettingTheme"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
