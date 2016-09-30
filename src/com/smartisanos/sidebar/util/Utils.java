@@ -12,13 +12,11 @@ import java.util.regex.Pattern;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.ActivityManagerNative;
-import android.app.AppGlobals;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
@@ -36,8 +34,6 @@ import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 
 public class Utils {
-    private static final LOG log = LOG.getInstance(Utils.class);
-
     static void sendCloseSystemWindows(Context context, String reason) {
         if (ActivityManagerNative.isSystemReady()) {
             try {
@@ -48,7 +44,6 @@ public class Utils {
     }
 
     public static void resumeSidebar(Context context){
-        log.error("super method resumeSidebar !");
         SidebarController.getInstance(context).resumeTopView();
         SidebarController.getInstance(context).dismissContent(true);
         SidebarController.getInstance(context).getSidebarRootView().stopDrag();

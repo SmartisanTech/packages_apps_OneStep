@@ -405,7 +405,6 @@ public class SidebarController {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
-                log.info("reason -> " + intent.getStringExtra("reason"));
                 Utils.resumeSidebar(context);
             }
         }
@@ -427,7 +426,6 @@ public class SidebarController {
         if (mode == BG_MODE_DARK || mode == BG_MODE_LIGHT) {
             boolean toDark = (mode == BG_MODE_DARK);
             if (mSideView != null && mTopView != null) {
-                log.error("setBgMode toDark ["+toDark+"]");
                 if (!mTopView.setBgMode(toDark)
                         || !mSideView.setBgMode(toDark)) {
                     //set bg mode failed, revert bg
