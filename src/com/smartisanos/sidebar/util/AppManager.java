@@ -17,6 +17,8 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
+import android.util.Log;
 
 public class AppManager extends DataManager {
     private volatile static AppManager sInstance;
@@ -191,6 +193,30 @@ public class AppManager extends DataManager {
     public void onPackageAdded(String packageName) {
         if (sAutoAddPackageList.contains(packageName)) {
             addPackage(packageName);
+        }
+    }
+
+    public void onPackageUpdate(String packageName) {
+        if(!TextUtils.isEmpty(packageName)) {
+            boolean changed = false;
+            synchronized(mAddedAppItems) {
+                for(int i = 0; i < mAddedAppItems.size(); ++ i) {
+                    AppItem ai = mAddedAppItems.get(i);
+                    if(packageName.equals(ai.getPackageName())) {
+                        if(!ai.isValid()) {
+                            mHandler.obtainMessage(MSG_DELETE, ai).sendToTarget();
+                            mAddedAppItems.remove(i);
+                            i--;;
+                            changed = true;
+                        }
+                    }
+                }
+            }
+            if(changed) {
+                // we remove the old one, now add the new one ..
+                addPackage(packageName);
+                notifyListener();
+            }
         }
     }
 

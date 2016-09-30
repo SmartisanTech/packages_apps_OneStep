@@ -20,6 +20,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import com.smartisanos.sidebar.util.ResolveInfoGroup.SameGroupComparator;
@@ -463,6 +464,28 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         if (!addComponent && sAutoAddPackageList.contains(packageName)) {
             for (ResolveInfoGroup rig : rigList) {
                 addResolveInfoGroup(rig);
+            }
+        }
+    }
+
+    public void onPackageUpdate(String packageName) {
+        if (!TextUtils.isEmpty(packageName)) {
+            boolean changed = false;
+            synchronized (mList) {
+                for (int i = 0; i < mList.size(); ++i) {
+                    ResolveInfoGroup rig = mList.get(i);
+                    if (packageName.equals(rig.getPackageName())) {
+                        if (!rig.isValid()) {
+                            mList.remove(i);
+                            i--;
+                            mHandler.obtainMessage(MSG_DELETE, rig).sendToTarget();
+                            changed = true;
+                        }
+                    }
+                }
+            }
+            if (changed) {
+                notifyUpdate();
             }
         }
     }

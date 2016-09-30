@@ -115,6 +115,10 @@ public class AppItem extends SidebarItem {
         }
     }
 
+    public boolean isValid() {
+        return fromData(mContext, getPackageName(), getComponentName()) != null;
+    }
+
     public static AppItem fromData(Context context, String pkgName, String componentName) {
         if (TextUtils.isEmpty(pkgName) || TextUtils.isEmpty(componentName)) {
             return null;

@@ -32,6 +32,9 @@ public class PackagesMonitor extends BroadcastReceiver {
                 AppManager.getInstance(context).onPackageAdded(packageName);
                 AddContactManager.getInstance(context).onPackageAdded(packageName);
                 ContactManager.getInstance(context).onPackageAdded(packageName);
+            } else {
+                ResolveInfoManager.getInstance(context).onPackageUpdate(packageName);
+                AppManager.getInstance(context).onPackageUpdate(packageName);
             }
         }
     }

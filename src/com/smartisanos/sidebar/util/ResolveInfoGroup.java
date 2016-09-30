@@ -271,6 +271,10 @@ public class ResolveInfoGroup extends SidebarItem {
         return mNames.get(i);
     }
 
+    public boolean isValid() {
+        return fromData(mContext, getPackageName(), getComponentNames()) != null;
+    }
+
     public static ResolveInfoGroup fromData(Context context, String pkgName, String componentNames) {
         List<ResolveInfoGroup> rigs = ResolveInfoManager.getInstance(context).getAllResolveInfoGroupByPackageName(pkgName);
         if (rigs != null) {
