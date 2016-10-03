@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import com.smartisanos.sidebar.R;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +21,7 @@ import android.os.Message;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 public class AppManager extends DataManager {
     private volatile static AppManager sInstance;
@@ -72,10 +75,14 @@ public class AppManager extends DataManager {
         sAutoAddPackageList.add("com.android.vending");
     }
 
+    private static final int sMaxNumber = 20;
+
     private Context mContext;
     private Handler mHandler;
     private List<AppItem> mAddedAppItems = new ArrayList<AppItem>();
     private AppDatabase mDatabase;
+
+    private Toast mLimitToast;
 
     private AppManager(Context context) {
         mContext = context;
@@ -86,11 +93,21 @@ public class AppManager extends DataManager {
         mHandler.obtainMessage(MSG_INIT_LIST).sendToTarget();
     }
 
-    public void addAppItem(AppItem item) {
+    public boolean addAppItem(AppItem item) {
+        return addAppItemInternal(item, true);
+    }
+
+    private boolean addAppItemInternal(AppItem item, boolean showToast) {
         synchronized (mAddedAppItems) {
+            if (mAddedAppItems.size() >= sMaxNumber) {
+                if (showToast) {
+                    showToastDueToLimit();
+                }
+                return false;
+            }
             for (int i = 0; i < mAddedAppItems.size(); ++i) {
                 if (mAddedAppItems.get(i).equals(item)) {
-                    return;
+                    return true;
                 }
             }
             if (mAddedAppItems.size() == 0) {
@@ -109,6 +126,7 @@ public class AppManager extends DataManager {
         }
         mHandler.obtainMessage(MSG_SAVE, item).sendToTarget();
         notifyListener();
+        return true;
     }
 
     public void removeAppItem(AppItem item) {
@@ -231,6 +249,16 @@ public class AppManager extends DataManager {
         notifyListener();
     }
 
+    private void showToastDueToLimit() {
+        if (mLimitToast != null) {
+            mLimitToast.cancel();
+        }
+        mLimitToast = Toast.makeText(mContext, mContext.getResources()
+                .getString(R.string.add_at_most_app_number, sMaxNumber),
+                Toast.LENGTH_SHORT);
+        mLimitToast.show();
+    }
+
     private void initList() {
         List<AppItem> list = mDatabase.getAddedAppItem();
         synchronized(mAddedAppItems) {
@@ -247,7 +275,7 @@ public class AppManager extends DataManager {
         List<ResolveInfo> ris = mContext.getPackageManager().queryIntentActivities(intent, 0);
         if (ris != null && ris.size() > 0) {
             for (ResolveInfo ri : ris) {
-                addAppItem(new AppItem(mContext, ri));
+                addAppItemInternal(new AppItem(mContext, ri), false);
             }
         }
     }

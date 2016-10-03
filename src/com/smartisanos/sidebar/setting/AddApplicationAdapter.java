@@ -99,23 +99,26 @@ public final class AddApplicationAdapter extends BaseAdapter {
         }
         int index = position * 3;
         for (int i = 0; i < 3; ++i) {
-            AppPickerSubView apsv = mHolder.subViews[i];
+            final AppPickerSubView apsv = mHolder.subViews[i];
             final int pos = index + i;
             if (pos < mItems.size()) {
                 final ViewItem ai = mItems.get(pos);
                 apsv.setVisibility(View.VISIBLE);
                 apsv.setImageBitmap(ai.appItem.getAvatar());
                 apsv.setText(ai.appItem.getDisplayName());
-                apsv.setListener(null);
                 apsv.setSelected(ai.selected);
-                apsv.setListener(new AppPickerSubView.OnCheckedChangeListener() {
+                apsv.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(AppPickerSubView view, boolean isChecked) {
-                        mItems.get(pos).selected = isChecked;
-                        if (isChecked) {
-                            AppManager.getInstance(mContext).addAppItem(ai.appItem);
+                    public void onClick(View v) {
+                        if (!apsv.isSelected()) {
+                            if (AppManager.getInstance(mContext).addAppItem(ai.appItem)) {
+                                mItems.get(pos).selected = true;
+                                apsv.setSelected(true);
+                            }
                         } else {
                             AppManager.getInstance(mContext).removeAppItem(ai.appItem);
+                            mItems.get(pos).selected = false;
+                            apsv.setSelected(false);
                         }
                     }
                 });

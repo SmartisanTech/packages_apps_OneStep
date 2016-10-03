@@ -13,7 +13,6 @@ import android.os.Message;
 import android.widget.Toast;
 
 import com.smartisanos.sidebar.R;
-import com.smartisanos.sidebar.SidebarApplication;
 import com.smartisanos.sidebar.receiver.ShortcutReceiver;
 
 public class ContactManager extends DataManager{
@@ -31,11 +30,15 @@ public class ContactManager extends DataManager{
         return sInstance;
     }
 
+    private static final int sMaxNumber = 10;
+
     private Context mContext;
     private List<ContactItem> mContacts = new ArrayList<ContactItem>();
     private Handler mHandler;
 
+    private Toast mLimitToast;
     private Toast mContactAddedToast;
+
     private ContactManager(Context context){
         mContext = context;
         HandlerThread thread = new HandlerThread(ContactManager.class.getName());
@@ -78,8 +81,12 @@ public class ContactManager extends DataManager{
         mHandler.obtainMessage(MSG_REMOVE_DOPPELGANGER, pkg).sendToTarget();
     }
 
-    public void addContact(ContactItem ci) {
+    public boolean addContact(ContactItem ci) {
         synchronized (mContacts) {
+            if(mContacts.size() >= sMaxNumber) {
+                showToastDueToLimit();
+                return false;
+            }
             for (int i = 0; i < mContacts.size(); ++i) {
                 if (ci.sameContact(mContacts.get(i))) {
                     ci.setIndex(mContacts.get(i).getIndex());
@@ -87,7 +94,7 @@ public class ContactManager extends DataManager{
                     saveContact(ci);
                     showContactAddedToast();
                     notifyListener();
-                    return;
+                    return true;
                 }
             }
             if (mContacts.size() == 0) {
@@ -106,6 +113,7 @@ public class ContactManager extends DataManager{
             saveContact(ci);
             showContactAddedToast();
             notifyListener();
+            return true;
         }
     }
 
@@ -120,6 +128,17 @@ public class ContactManager extends DataManager{
                 }
             }
         }
+    }
+
+
+    private void showToastDueToLimit() {
+        if (mLimitToast != null) {
+            mLimitToast.cancel();
+        }
+        mLimitToast = Toast.makeText(mContext, mContext.getResources()
+                .getString(R.string.add_at_most_contact_number, sMaxNumber),
+                Toast.LENGTH_SHORT);
+        mLimitToast.show();
     }
 
     private void showContactAddedToast() {

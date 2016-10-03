@@ -92,7 +92,7 @@ public final class AddResolveInfoGroupAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         final Item item = mList.get(position);
         View view = convertView;
-        ViewHolder vh = null;
+        final ViewHolder vh;
         if (view == null) {
             view = LayoutInflater.from(mContext).inflate(R.layout.setting_item_switch_layout, null);
             vh = new ViewHolder();
@@ -111,11 +111,18 @@ public final class AddResolveInfoGroupAdapter extends BaseAdapter {
             @Override
             public void onCheckedChanged(CompoundButton buttonView,
                     boolean isChecked) {
-                item.checked = isChecked;
-                if(isChecked) {
-                    ResolveInfoManager.getInstance(mContext).addResolveInfoGroup(item.rig);
+                if (item.checked == isChecked) {
+                    return;
+                }
+                if (isChecked) {
+                    if (ResolveInfoManager.getInstance(mContext).addResolveInfoGroup(item.rig)) {
+                        item.checked = true;
+                    } else {
+                        vh.switchView.setChecked(false);
+                    }
                 } else {
                     ResolveInfoManager.getInstance(mContext).delete(item.rig);
+                    item.checked = false;
                 }
             }
         });

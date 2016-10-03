@@ -10,13 +10,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class AppPickerSubView extends RelativeLayout implements View.OnClickListener {
+public class AppPickerSubView extends RelativeLayout {
 
     private boolean mSelected = false;
     private View mBackgroundView;
     private ImageView mIcon, mSelectedView;
     private TextView mAppName;
-    private OnCheckedChangeListener mListener;
 
     public AppPickerSubView(Context context) {
         this(context, null);
@@ -43,7 +42,6 @@ public class AppPickerSubView extends RelativeLayout implements View.OnClickList
         mIcon = (ImageView) findViewById(R.id.icon);
         mSelectedView = (ImageView) findViewById(R.id.selected);
         mAppName = (TextView) findViewById(R.id.app_name);
-        setOnClickListener(this);
     }
 
     public void setImageBitmap(Bitmap bitmap) {
@@ -58,9 +56,6 @@ public class AppPickerSubView extends RelativeLayout implements View.OnClickList
         if (mSelected != selected) {
             mSelected = selected;
             mSelectedView.setVisibility(mSelected ? View.VISIBLE : View.INVISIBLE);
-            if (mListener != null) {
-                mListener.onCheckedChanged(this, mSelected);
-            }
             if (mSelected) {
                 mBackgroundView.setBackgroundResource(R.drawable.app_select_bg_selected);
             } else {
@@ -69,16 +64,7 @@ public class AppPickerSubView extends RelativeLayout implements View.OnClickList
         }
     }
 
-    public void setListener(OnCheckedChangeListener listener) {
-        mListener = listener;
-    }
-
-    @Override
-    public void onClick(View v) {
-        setSelected(!mSelected);
-    }
-
-    public static interface OnCheckedChangeListener {
-        void onCheckedChanged(AppPickerSubView view, boolean isChecked);
+    public boolean isSelected() {
+        return mSelected;
     }
 }

@@ -55,4 +55,7 @@
     <string name="add_app_to_sidebar">Add App To Sidebar</string>
     <string name="add_share_to_sidebar">Add Share To Sidebar</string>
     <string name="contact_added">Added</string>
+    <string name="add_at_most_contact_number">最多可添加%d个联系人快捷方式</string>
+    <string name="add_at_most_app_number">最多可添加%d个应用快捷方式</string>
+    <string name="add_at_most_share_number">最多可添加%d个分享快捷方式</string>
 </resources>

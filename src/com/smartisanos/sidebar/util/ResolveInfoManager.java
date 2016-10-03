@@ -22,7 +22,9 @@ import android.os.Message;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Pair;
+import android.widget.Toast;
 
+import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.util.ResolveInfoGroup.SameGroupComparator;
 
 public class ResolveInfoManager extends SQLiteOpenHelper {
@@ -115,10 +117,15 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
     public static final String[] ACTIONS = new String[] { Intent.ACTION_SEND,
             Intent.ACTION_SEND_MULTIPLE };
 
+    private static final int sMaxNumber = 20;
+
     private Context mContext;
     private List<ResolveInfoGroup> mList = new ArrayList<ResolveInfoGroup>();
     private List<ResolveInfoUpdateListener> mListeners = new ArrayList<ResolveInfoUpdateListener>();
     private Handler mHandler;
+
+    private Toast mLimitToast;
+
     private ResolveInfoManager(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         context = context.getApplicationContext();
@@ -211,14 +218,24 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         }
     }
 
-    public void addResolveInfoGroup(final ResolveInfoGroup rig){
-        if(rig == null || rig.size() <= 0){
-            return;
+    public boolean addResolveInfoGroup(ResolveInfoGroup rig) {
+        return addResolveInfoGroupInternal(rig, true);
+    }
+
+    private boolean addResolveInfoGroupInternal(ResolveInfoGroup rig, boolean showToast) {
+        if (rig == null || rig.size() <= 0) {
+            return false;
         }
         synchronized (mList) {
+            if (mList.size() >= sMaxNumber) {
+                if (showToast) {
+                    showToastDueToLimit();
+                }
+                return false;
+            }
             for (int i = 0; i < mList.size(); ++i) {
                 if (mList.get(i).equals(rig)) {
-                    return;
+                    return true;
                 }
             }
             if (mList.size() == 0) {
@@ -237,6 +254,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         }
         mHandler.obtainMessage(MSG_SAVE, rig).sendToTarget();
         notifyUpdate();
+        return true;
     }
 
     public void updateOrder() {
@@ -245,6 +263,16 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         }
         notifyUpdate();
         mHandler.obtainMessage(MSG_SAVE_ORDER).sendToTarget();
+    }
+
+    private void showToastDueToLimit() {
+        if (mLimitToast != null) {
+            mLimitToast.cancel();
+        }
+        mLimitToast = Toast.makeText(mContext, mContext.getResources()
+                .getString(R.string.add_at_most_share_number, sMaxNumber),
+                Toast.LENGTH_SHORT);
+        mLimitToast.show();
     }
 
     private void saveOrderForList(){
@@ -453,7 +481,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
             if (cn.getPackageName().equals(packageName)) {
                 for (ResolveInfoGroup rig : rigList) {
                     if (rig.containsComponent(cn)) {
-                        addResolveInfoGroup(rig);
+                        addResolveInfoGroupInternal(rig, false);
                         addComponent = true;
                         break;
                     }
@@ -463,7 +491,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
 
         if (!addComponent && sAutoAddPackageList.contains(packageName)) {
             for (ResolveInfoGroup rig : rigList) {
-                addResolveInfoGroup(rig);
+                addResolveInfoGroupInternal(rig, false);
             }
         }
     }
