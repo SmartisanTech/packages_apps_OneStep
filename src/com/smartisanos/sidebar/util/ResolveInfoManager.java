@@ -40,30 +40,41 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
     private static final String DB_NAME ="resolveinfo";
     private static final int DB_VERSION = 1;
 
-    private static final Set<String> sAutoAddPackageSet;
-    private static final List<ComponentName> sAutoAddPackageList;
+    private static final List<String> sAutoAddPackageList;
+    private static final List<ComponentName> sAutoAddComponentList;
 
     static {
         // package
-        sAutoAddPackageSet = new HashSet<String>();
-        sAutoAddPackageSet.add("com.sina.weibo");
-        sAutoAddPackageSet.add("com.taobao.taobao");
-        sAutoAddPackageSet.add("com.evernote");
-        sAutoAddPackageSet.add("com.wunderkinder.wunderlistandroid");
-        sAutoAddPackageSet.add("com.meitu.meiyancamera");
-        sAutoAddPackageSet.add("com.google.android.youtube");
-        sAutoAddPackageSet.add("com.facebook.katana");
-        sAutoAddPackageSet.add("com.whatsapp");
-        sAutoAddPackageSet.add("com.instagram.android");
+        sAutoAddPackageList = new ArrayList<String>();
+        sAutoAddPackageList.add("com.sina.weibo");
+        sAutoAddPackageList.add("com.smartisanos.notes");
+        sAutoAddPackageList.add("com.android.email");
+        sAutoAddPackageList.add("com.android.calendar");
+        sAutoAddPackageList.add("com.taobao.taobao");
+        sAutoAddPackageList.add("com.evernote");
+        sAutoAddPackageList.add("com.wunderkinder.wunderlistandroid");
+        sAutoAddPackageList.add("com.android.mms");
+        sAutoAddPackageList.add("com.meitu.meiyancamera");
+        sAutoAddPackageList.add("com.google.android.youtube");
+        sAutoAddPackageList.add("com.facebook.katana");
+        sAutoAddPackageList.add("com.whatsapp");
+        sAutoAddPackageList.add("com.instagram.android");
         // component
-        sAutoAddPackageList = new ArrayList<ComponentName>();
-        sAutoAddPackageList.add(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
-        sAutoAddPackageList.add(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI"));
-        sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.JumpActivity"));
-        sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.qfileJumpActivity"));
-        sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqqi", "com.tencent.mobileqq.activity.JumpActivity"));
-        sAutoAddPackageList.add(new ComponentName("com.tencent.mobileqqi", "com.tencent.mobileqq.activity.qfileJumpActivity"));
-        sAutoAddPackageList.add(new ComponentName("com.twitter.android", "com.twitter.android.composer.ComposerActivity"));
+        sAutoAddComponentList = new ArrayList<ComponentName>();
+        sAutoAddComponentList.add(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
+        sAutoAddComponentList.add(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareImgUI"));
+        sAutoAddComponentList.add(new ComponentName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.JumpActivity"));
+        sAutoAddComponentList.add(new ComponentName("com.tencent.mobileqq", "com.tencent.mobileqq.activity.qfileJumpActivity"));
+        sAutoAddComponentList.add(new ComponentName("com.tencent.mobileqqi", "com.tencent.mobileqq.activity.JumpActivity"));
+        sAutoAddComponentList.add(new ComponentName("com.tencent.mobileqqi", "com.tencent.mobileqq.activity.qfileJumpActivity"));
+        sAutoAddComponentList.add(new ComponentName("com.twitter.android", "com.twitter.android.composer.ComposerActivity"));
+
+        // check ourself
+        for (ComponentName cn : sAutoAddComponentList) {
+            if (sAutoAddPackageList.contains(cn.getPackageName())) {
+                throw new IllegalArgumentException("auto-add package contains auto-add component !");
+            }
+        }
     }
 
     private static final Set<String> sBlackList;
@@ -100,13 +111,6 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         sBlackCompList.add(new Pair<String, String>("com.tencent.mm", "com.tencent.mm.plugin.accountsync.ui.ContactsSyncUI"));
     }
 
-    private static final String[] sPrePackages= new String[]{
-        "com.android.email",
-        "com.smartisanos.notes",
-        "com.android.mms",
-        "com.android.calendar"
-    };
-
     public static final String[] ACTIONS = new String[] { Intent.ACTION_SEND,
             Intent.ACTION_SEND_MULTIPLE };
 
@@ -131,21 +135,41 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
                 + "packagename TEXT," + "names TEXT, " + "weight INTEGER"
                 + ");");
 
-        int weight = 0;
-        for (int i = sPrePackages.length - 1; i >= 0; --i) {
-            List<ResolveInfoGroup> list = getAllResolveInfoGroupByPackageName(sPrePackages[i]);
+        List<ResolveInfoGroup> rigs = new ArrayList<ResolveInfoGroup>();
+        // pre install part 1, component name
+        for (ComponentName cn : sAutoAddComponentList) {
+            List<ResolveInfoGroup> list = getAllResolveInfoGroupByPackageName(cn.getPackageName());
             if (list != null) {
                 for (ResolveInfoGroup rig : list) {
-                    if (rig != null && rig.size() > 0) {
-                        // add to database
-                        ContentValues cv = new ContentValues();
-                        cv.put(ResolveInfoColumns.PACKAGE_NAME,rig.getPackageName());
-                        cv.put(ResolveInfoColumns.COMPONENT_NAMES,rig.getComponentNames());
-                        cv.put(ResolveInfoColumns.WEIGHT, weight ++);
-                        db.insert(TABLE_RESOLVEINFO, null, cv);
+                    if (rig.containsComponent(cn)) {
+                        if (!rigs.contains(rig)) {
+                            rigs.add(rig);
+                        }
                     }
                 }
             }
+        }
+
+        // pre install part2, package name
+        for (String packageName : sAutoAddPackageList) {
+            List<ResolveInfoGroup> list = getAllResolveInfoGroupByPackageName(packageName);
+            if (list != null) {
+                rigs.addAll(list);
+            }
+        }
+
+        // update index
+        for (int i = 0; i < rigs.size(); ++i) {
+            rigs.get(i).setIndex(rigs.size() - 1 - i);
+        }
+
+        // add to database
+        for (ResolveInfoGroup rig : rigs) {
+            ContentValues cv = new ContentValues();
+            cv.put(ResolveInfoColumns.PACKAGE_NAME, rig.getPackageName());
+            cv.put(ResolveInfoColumns.COMPONENT_NAMES, rig.getComponentNames());
+            cv.put(ResolveInfoColumns.WEIGHT, rig.getIndex());
+            db.insert(TABLE_RESOLVEINFO, null, cv);
         }
     }
 
@@ -423,8 +447,8 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         }
         // see component list first
         boolean addComponent = false;
-        for (int i = 0; i < sAutoAddPackageList.size(); ++i) {
-            ComponentName cn = sAutoAddPackageList.get(i);
+        for (int i = 0; i < sAutoAddComponentList.size(); ++i) {
+            ComponentName cn = sAutoAddComponentList.get(i);
             if (cn.getPackageName().equals(packageName)) {
                 for (ResolveInfoGroup rig : rigList) {
                     if (rig.containsComponent(cn)) {
@@ -436,7 +460,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
             }
         }
 
-        if (!addComponent && sAutoAddPackageSet.contains(packageName)) {
+        if (!addComponent && sAutoAddPackageList.contains(packageName)) {
             for (ResolveInfoGroup rig : rigList) {
                 addResolveInfoGroup(rig);
             }
