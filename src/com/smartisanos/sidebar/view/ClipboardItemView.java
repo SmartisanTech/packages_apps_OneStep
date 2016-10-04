@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -73,7 +74,7 @@ public class ClipboardItemView extends LinearLayout {
             public void onClick(View v) {
               Utils.copyText(mContext, item.mContent, false);
               Utils.resumeSidebar(mContext);
-              Toast.makeText(mContext, R.string.text_copied, Toast.LENGTH_SHORT).show();
+              Toast.makeText(mContext, mContext.getResources().getString(R.string.text_copied), Toast.LENGTH_SHORT, WindowManager.LayoutParams.TYPE_SYSTEM_ERROR).show();
             }
         });
 
