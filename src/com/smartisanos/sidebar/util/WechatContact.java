@@ -340,7 +340,7 @@ public class WechatContact extends ContactItem {
             cv.put(DISPLAY_NAME, info.mDisplayName.toString());
             cv.put(WEIGHT, info.getIndex());
             cv.put(LAUNCH_INTENT, info.mIntent);
-            cv.put(AVATAR, BitmapUtils.Bitmap2Bytes(info.getAvatar()));
+            cv.put(AVATAR, BitmapUtils.Drawable2Bytes(info.getAvatar()));
             if (recordId > 0) {
                 //update
                 String whereCase = ID + "=" + recordId;

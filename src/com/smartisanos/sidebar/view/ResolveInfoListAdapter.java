@@ -235,7 +235,7 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
             if (info == null) {
                 return;
             }
-            iconImageView.setImageBitmap(resolveInfoGroup.getAvatar());
+            iconImageView.setImageDrawable(resolveInfoGroup.getAvatar());
             int offsetX = Constants.share_item_offset_x;
             if (isLeftMode) {
                 offsetX = -offsetX;

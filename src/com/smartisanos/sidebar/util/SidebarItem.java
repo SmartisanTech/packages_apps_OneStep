@@ -1,7 +1,7 @@
 package com.smartisanos.sidebar.util;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.DragEvent;
 
 public abstract class SidebarItem {
@@ -18,7 +18,7 @@ public abstract class SidebarItem {
 
     public abstract CharSequence getDisplayName();
 
-    public abstract Bitmap getAvatar();
+    public abstract Drawable getAvatar();
 
     public abstract void delete();
 

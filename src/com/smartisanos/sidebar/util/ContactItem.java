@@ -7,27 +7,24 @@ import com.smartisanos.sidebar.PendingDragEventTask;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.DragEvent;
 
 public abstract class ContactItem extends SidebarItem {
     protected Context mContext;
-    protected Bitmap mAvatar;
+    protected Drawable mAvatar;
     protected Bitmap mAvatarWithGray;
     protected CharSequence mDisplayName;
 
     public ContactItem(Context context, Bitmap avatar, CharSequence displayName) {
         mContext = context;
-        mAvatar = avatar;
-        mAvatarWithGray = BitmapUtils.convertToBlackWhite(mAvatar);
+        mAvatar = new BitmapDrawable(context.getResources(), avatar);
         mDisplayName = displayName;
     }
 
-    public Bitmap getAvatar() {
+    public Drawable getAvatar() {
         return mAvatar;
-    }
-
-    public Bitmap getAvatarWithGray() {
-        return mAvatarWithGray;
     }
 
     public CharSequence getDisplayName() {

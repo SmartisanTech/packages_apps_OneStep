@@ -217,7 +217,7 @@ public class MmsContact extends ContactItem {
             ContentValues cv = new ContentValues();
             cv.put(ContactColumns.CONTACT_ID, contact.mContactId + "");
             cv.put(ContactColumns.PHONE_NUMBER, contact.mPhoneNumber);
-            cv.put(ContactColumns.AVATAR, BitmapUtils.Bitmap2Bytes(contact.getAvatar()));
+            cv.put(ContactColumns.AVATAR, BitmapUtils.Drawable2Bytes(contact.getAvatar()));
             cv.put(ContactColumns.DISPLAY_NAME, contact.getDisplayName().toString());
             cv.put(ContactColumns.WEIGHT, contact.getIndex());
             if (id != 0) {

@@ -229,7 +229,7 @@ public class DingDingContact extends ContactItem {
             cv.put(ContactColumns.SYS_UID, ddc.systemUid);
             cv.put(ContactColumns.UID, ddc.uid + "");
             cv.put(ContactColumns.ENCODED_UID, ddc.encodedUid);
-            cv.put(ContactColumns.AVATAR, BitmapUtils.Bitmap2Bytes(ddc.getAvatar()));
+            cv.put(ContactColumns.AVATAR, BitmapUtils.Drawable2Bytes(ddc.getAvatar()));
             cv.put(ContactColumns.DISPLAY_NAME, ddc.getDisplayName().toString());
             cv.put(ContactColumns.WEIGHT, ddc.getIndex());
             if (id != 0) {

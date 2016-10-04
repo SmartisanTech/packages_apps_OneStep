@@ -104,7 +104,7 @@ public final class AddApplicationAdapter extends BaseAdapter {
             if (pos < mItems.size()) {
                 final ViewItem ai = mItems.get(pos);
                 apsv.setVisibility(View.VISIBLE);
-                apsv.setImageBitmap(ai.appItem.getAvatar());
+                apsv.setImageDrawable(ai.appItem.getAvatar());
                 apsv.setText(ai.appItem.getDisplayName());
                 apsv.setSelected(ai.selected);
                 apsv.setOnClickListener(new View.OnClickListener() {

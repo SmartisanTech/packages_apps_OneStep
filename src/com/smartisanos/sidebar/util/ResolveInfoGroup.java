@@ -25,7 +25,7 @@ public class ResolveInfoGroup extends SidebarItem {
 
     private Context mContext;
     private List<ComponentName> mNames = new ArrayList<ComponentName>();
-    private SoftReference<Bitmap> mAvatar = null;
+    private SoftReference<Drawable> mAvatar = null;
 
     public ResolveInfoGroup(Context context){
         super();
@@ -59,20 +59,18 @@ public class ResolveInfoGroup extends SidebarItem {
     }
 
     @Override
-    public Bitmap getAvatar() {
-        Bitmap ret;
+    public Drawable getAvatar() {
+        Drawable ret;
         if (mAvatar != null) {
             ret = mAvatar.get();
             if (ret != null) {
                 return ret;
             }
         }
-        Drawable icon = loadIcon();
-        if (icon == null) {
-            return null;
+        ret = loadIcon();
+        if (ret != null) {
+            mAvatar = new SoftReference<Drawable>(ret);
         }
-        ret = BitmapUtils.drawableToBitmap(icon);
-        mAvatar = new SoftReference<Bitmap>(ret);
         return ret;
     }
 

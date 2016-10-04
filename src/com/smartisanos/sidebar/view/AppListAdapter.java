@@ -228,7 +228,7 @@ public class AppListAdapter extends DragEventAdapter {
 
         public void setInfo(AppItem ai) {
             this.ai = ai;
-            iconImageView.setImageBitmap(ai.getAvatar());
+            iconImageView.setImageDrawable(ai.getAvatar());
         }
 
         public void restore(){

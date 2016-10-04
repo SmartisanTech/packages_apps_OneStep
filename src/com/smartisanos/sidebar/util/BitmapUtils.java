@@ -194,6 +194,10 @@ public class BitmapUtils {
         return baos.toByteArray();
     }
 
+    public static byte[] Drawable2Bytes(Drawable drawable) {
+        return Bitmap2Bytes(drawableToBitmap(drawable));
+    }
+
     public static Bitmap Bytes2Bitmap(byte[] b) {
         if (b.length != 0) {
             return BitmapFactory.decodeByteArray(b, 0, b.length);

@@ -3,7 +3,7 @@ package com.smartisanos.sidebar.setting;
 import com.smartisanos.sidebar.R;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -44,8 +44,8 @@ public class AppPickerSubView extends RelativeLayout {
         mAppName = (TextView) findViewById(R.id.app_name);
     }
 
-    public void setImageBitmap(Bitmap bitmap) {
-        mIcon.setImageBitmap(bitmap);
+    public void setImageDrawable(Drawable drawable) {
+        mIcon.setImageDrawable(drawable);
     }
 
     public void setText(CharSequence cs) {

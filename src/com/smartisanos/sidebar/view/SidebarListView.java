@@ -96,7 +96,7 @@ public class SidebarListView extends ListView {
                         + ", count -> " + SidebarListView.this.getAdapter().getCount());
             }
             mDragPosition = position;
-            Drawable icon = new BitmapDrawable(getResources(), mDraggedItem.getAvatar());
+            Drawable icon = mDraggedItem.getAvatar();
             SidebarController.getInstance(mContext).getSidebarRootView().startDrag(icon, view, viewLoc);
             mSideView.setDraggedList(SidebarListView.this);
             view.setVisibility(View.INVISIBLE);

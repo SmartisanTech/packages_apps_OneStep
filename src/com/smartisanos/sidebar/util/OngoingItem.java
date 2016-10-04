@@ -9,7 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.DragEvent;
 
@@ -43,7 +43,7 @@ public class OngoingItem extends SidebarItem {
     }
 
     @Override
-    public Bitmap getAvatar() {
+    public Drawable getAvatar() {
         return null;
     }
 

@@ -8,7 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.DragEvent;
 
@@ -16,7 +16,7 @@ public class AppItem extends SidebarItem {
 
     private Context mContext;
     public final ComponentName mName;
-    private SoftReference<Bitmap> mAvatar;
+    private SoftReference<Drawable> mAvatar;
     private CharSequence mDisplayName;
     public AppItem(Context context, ComponentName name) {
         mContext = context;
@@ -49,17 +49,17 @@ public class AppItem extends SidebarItem {
     }
 
     @Override
-    public Bitmap getAvatar() {
+    public Drawable getAvatar() {
         if (mAvatar != null) {
-            Bitmap ret = mAvatar.get();
+            Drawable ret = mAvatar.get();
             if (ret != null) {
                 return ret;
             }
         }
         ResolveInfo ri = getResolveInfo();
         if (ri != null) {
-            Bitmap ret = BitmapUtils.drawableToBitmap(ri.loadIcon(mContext.getPackageManager()));
-            mAvatar = new SoftReference<Bitmap>(ret);
+            Drawable ret = ri.loadIcon(mContext.getPackageManager());
+            mAvatar = new SoftReference<Drawable>(ret);
             return ret;
         }
         return null;

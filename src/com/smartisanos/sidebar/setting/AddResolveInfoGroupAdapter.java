@@ -103,7 +103,7 @@ public final class AddResolveInfoGroupAdapter extends BaseAdapter {
         } else {
             vh = (ViewHolder) view.getTag();
         }
-        vh.iconView.setImageBitmap(item.rig.getAvatar());
+        vh.iconView.setImageDrawable(item.rig.getAvatar());
         vh.titleView.setText(item.rig.getDisplayName());
         vh.switchView.setOnCheckedChangeListener(null);
         vh.switchView.setChecked(item.checked);

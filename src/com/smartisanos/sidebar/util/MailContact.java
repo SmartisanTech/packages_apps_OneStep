@@ -196,7 +196,7 @@ public class MailContact extends ContactItem {
             // insert
             ContentValues cv = new ContentValues();
             cv.put(ContactColumns.MAIL_ADDRESS, contact.mMailAddress);
-            cv.put(ContactColumns.AVATAR, BitmapUtils.Bitmap2Bytes(contact.getAvatar()));
+            cv.put(ContactColumns.AVATAR, BitmapUtils.Drawable2Bytes(contact.getAvatar()));
             cv.put(ContactColumns.DISPLAY_NAME, contact.getDisplayName().toString());
             cv.put(ContactColumns.WEIGHT, contact.getIndex());
             if (id != 0) {

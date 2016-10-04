@@ -213,7 +213,7 @@ public class ContactListAdapter extends DragEventAdapter {
             }
             typeIcon.setImageResource(item.getTypeIcon());
             displayName.setText(item.getDisplayName());
-            contactAvatar.setImageBitmap(mItem.getAvatar());
+            contactAvatar.setImageDrawable(mItem.getAvatar());
             if(dragging) {
                 contactAvatar.setScaleX(0.8f);
                 contactAvatar.setScaleY(0.8f);
