@@ -153,12 +153,8 @@ public class SidebarController {
         updateContentViewWindowBySidebarMode();
         updateSideViewWindowBySidebarMode();
 
-        int bgMode = BG_MODE_LIGHT;
-        if (Utils.launcherIsTopActivity(mContext)) {
-            bgMode = BG_MODE_DARK;
-        }
-        mTopView.show(true, bgMode);
-        mSidebarRoot.show(true, bgMode);
+        mTopView.show(true);
+        mSidebarRoot.show(true);
     }
 
     public void onEnterAnimComplete() {
@@ -168,8 +164,8 @@ public class SidebarController {
 
     private void stop(){
         AnimStatusManager.getInstance().reset();
-        mTopView.show(false, 0);
-        mSidebarRoot.show(false, 0);
+        mTopView.show(false);
+        mSidebarRoot.show(false);
         dismissContent(false);
         RecentPhotoManager.getInstance(mContext).stopObserver();
         RecentFileManager.getInstance(mContext).stopFileObserver();
@@ -255,12 +251,14 @@ public class SidebarController {
             }
             lp.flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
             lp.flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR;
+            mSidebarRoot.setBackgroundResource(R.color.sidebar_root_background);
         } else {
             if (mSidebarRoot.getTrash() != null) {
                 mSidebarRoot.getTrash().hideTrashView();
             }
             lp.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR;
             lp.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+            mSidebarRoot.setBackgroundResource(android.R.color.transparent);
         }
         mWindowManager.updateViewLayout(mSidebarRoot, lp);
     }
@@ -409,34 +407,6 @@ public class SidebarController {
             }
         }
     };
-
-    public static final int BG_MODE_DARK = 1;
-    public static final int BG_MODE_LIGHT = 2;
-
-    private int mBgMode = -1;
-
-    public void updateBgMode(int mode) {
-        updateBgMode(mode, false);
-    }
-
-    public void updateBgMode(int mode, boolean force) {
-        if (mBgMode == mode && !force) {
-            return;
-        }
-        if (mode == BG_MODE_DARK || mode == BG_MODE_LIGHT) {
-            boolean toDark = (mode == BG_MODE_DARK);
-            if (mSideView != null && mTopView != null) {
-                if (!mTopView.setBgMode(toDark)
-                        || !mSideView.setBgMode(toDark)) {
-                    //set bg mode failed, revert bg
-                    mTopView.setBgMode(false);
-                    mSideView.setBgMode(false);
-                } else {
-                    mBgMode = mode;
-                }
-            }
-        }
-    }
 
     private static final String ACTION_UPDATE_ICON = "com.smartisanos.launcher.update_icon";
     private static final String EXTRA_PACKAGENAME = "extra_packagename";

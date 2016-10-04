@@ -51,8 +51,6 @@ public class SideView extends RelativeLayout {
     private ContactListAdapter mContactAdapter;
 
     private Context mContext;
-    private FrameLayout mDarkBgView;
-    private LinearLayout mAddAndExitDarkBg;
     private SidebarListView mDraggedListView;
 
     private LinearLayout mSideViewContentNormal;
@@ -90,8 +88,6 @@ public class SideView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mDimView = (DimSpaceView)findViewById(R.id.side_dim_view);
-        mDarkBgView = (FrameLayout) findViewById(R.id.side_view_dark_bg);
-        mAddAndExitDarkBg = (LinearLayout) findViewById(R.id.exit_and_add_dark_bg);
         mExitAndAdd = findViewById(R.id.exit_and_add);
         mExit = (ImageView) findViewById(R.id.exit);
         mLeftShadow = findViewById(R.id.left_shadow);
@@ -491,28 +487,6 @@ public class SideView extends RelativeLayout {
     public void restoreView() {
         restoreListItemView(mContactList);
         restoreListItemView(mAppList);
-    }
-
-    public FrameLayout getDarkBgView() {
-        return mDarkBgView;
-    }
-
-    public LinearLayout getAddAndExitDarkBg() {
-        return mAddAndExitDarkBg;
-    }
-
-    public boolean setBgMode(boolean toDark) {
-        if (mDarkBgView == null || mAddAndExitDarkBg == null) {
-            log.error("mDarkBgView or mAddAndExitDarkBg is null");
-            return false;
-        }
-        int color = Constants.SHADOW_BG_COLOR_LIGHT;
-        if (toDark) {
-            color = Constants.SHADOW_BG_COLOR_DARK;
-        }
-        mDarkBgView.setBackgroundColor(color);
-        mAddAndExitDarkBg.setBackgroundColor(color);
-        return true;
     }
 
     public void setEnabled(boolean enabled) {

@@ -2,9 +2,6 @@ package com.smartisanos.sidebar.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
@@ -17,9 +14,6 @@ public class Constants {
     public static int WindowWidth;
     public static int WindowHeight;
 
-    public static int SHADOW_BG_COLOR_LIGHT;
-    public static int SHADOW_BG_COLOR_DARK;
-
     public static int share_item_offset_x;
     public static int share_item_offset_y;
 
@@ -29,8 +23,6 @@ public class Constants {
         WindowHeight = size[1];
 
         Resources resources = context.getResources();
-        SHADOW_BG_COLOR_LIGHT = resources.getColor(R.color.light_bg_color);
-        SHADOW_BG_COLOR_DARK = resources.getColor(R.color.dark_bg_color);
         share_item_offset_x = resources.getDimensionPixelSize(R.dimen.share_item_icon_offset_x);
         share_item_offset_y = resources.getDimensionPixelSize(R.dimen.share_item_icon_offset_y);
     }

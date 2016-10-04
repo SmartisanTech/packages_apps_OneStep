@@ -56,9 +56,7 @@ public class TopView extends FrameLayout {
 
     private View mShadowLine;
 
-    private boolean mFinishInflated = false;
     private Context mContext;
-    private FrameLayout mDarkBgView;
 
     public TopView(Context context) {
         this(context, null);
@@ -86,8 +84,6 @@ public class TopView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mFinishInflated = true;
-        mDarkBgView = (FrameLayout) findViewById(R.id.top_view_dark_bg);
         mLeft = (DimSpaceView) findViewById(R.id.top_dim_view_left);
         mRight = (DimSpaceView) findViewById(R.id.top_dim_view_right);
 
@@ -229,7 +225,7 @@ public class TopView extends FrameLayout {
 
     private AnimTimeLine mEnterAnimTimeLine = null;
 
-    private void doAnimWhenEnter(final int bgMode) {
+    private void doAnimWhenEnter() {
         mShadowLine.setVisibility(View.INVISIBLE);
         int time = 200;
         int height = getHeight();
@@ -263,18 +259,17 @@ public class TopView extends FrameLayout {
         });
         showShadowLine.setDelay(170);
 
-        mDarkBgView.setVisibility(View.INVISIBLE);
-        setBgMode(bgMode == SidebarController.BG_MODE_DARK);
-        Anim showBgShadow = new Anim(mDarkBgView, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        setVisibility(View.INVISIBLE);
+        Anim showBgShadow = new Anim(this, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, alphaFrom, alphaTo);
         showBgShadow.setListener(new AnimListener() {
             @Override
             public void onStart() {
-                mDarkBgView.setVisibility(View.VISIBLE);
+                setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onComplete(int type) {
-                mDarkBgView.setAlpha(1);
+                setAlpha(1);
             }
         });
         showBgShadow.setDelay(120);
@@ -298,7 +293,7 @@ public class TopView extends FrameLayout {
             public void onComplete(int type) {
                 if (mEnterAnimTimeLine != null) {
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_ENTER, false);
-                    TopView.this.setBackgroundResource(R.drawable.background);
+                    setBackgroundResource(R.drawable.background);
                     mPhotos.setAlpha(1);
                     mFile.setAlpha(1);
                     mClipboard.setAlpha(1);
@@ -319,50 +314,15 @@ public class TopView extends FrameLayout {
     private AnimTimeLine mExitAnimTimeLine = null;
 
     private void doAnimWhenExit() {
-        TopView.this.setBackgroundResource(android.R.color.transparent);
-        mDarkBgView.setBackgroundResource(android.R.color.transparent);
+        setBackgroundResource(android.R.color.transparent);
         mShadowLine.setVisibility(View.INVISIBLE);
         int time = 200;
-        int height = getHeight();
-        int toY = -height;
-        Vector3f moveFrom = new Vector3f();
-        Vector3f moveTo = new Vector3f(0, toY);
-        Anim photoMove = new Anim(mPhotos, Anim.MOVE, time, 0, moveFrom, moveTo);
-        Anim fileMove = new Anim(mFile, Anim.MOVE, time, 0, moveFrom, moveTo);
-        Anim clipboardMove = new Anim(mClipboard, Anim.MOVE, time, 0, moveFrom, moveTo);
-
-        Vector3f alphaFrom = new Vector3f(0, 0, 1);
-        Vector3f alphaTo = new Vector3f();
-        Anim photoAlpha = new Anim(mPhotos, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
-        Anim fileAlpha = new Anim(mFile, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
-        Anim clipboardAlpha = new Anim(mClipboard, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        Anim move = new Anim(this, Anim.MOVE, time, 0, new Vector3f(), new Vector3f(0, - getHeight()));
+        Anim alpha = new Anim(this, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
 
         mExitAnimTimeLine = new AnimTimeLine();
-        mExitAnimTimeLine.addAnim(photoMove);
-        mExitAnimTimeLine.addAnim(fileMove);
-        mExitAnimTimeLine.addAnim(clipboardMove);
-        mExitAnimTimeLine.addAnim(photoAlpha);
-        mExitAnimTimeLine.addAnim(fileAlpha);
-        mExitAnimTimeLine.addAnim(clipboardAlpha);
-        final boolean dimMode = SidebarController.getInstance(mContext).getSidebarStatus() == SidebarStatus.UNNAME;
-        if (dimMode) {
-            Anim leftAlphaAnim = new Anim(mLeft, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
-            Anim rightAlphaAnim = new Anim(mRight, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
-            Anim leftMoveAnim = new Anim(mLeft, Anim.MOVE, time, 0, moveFrom, moveTo);
-            Anim rightMoveAnim = new Anim(mRight, Anim.MOVE, time, 0, moveFrom, moveTo);
-
-            mExitAnimTimeLine.addAnim(leftAlphaAnim);
-            mExitAnimTimeLine.addAnim(rightAlphaAnim);
-            mExitAnimTimeLine.addAnim(leftMoveAnim);
-            mExitAnimTimeLine.addAnim(rightMoveAnim);
-        } else {
-            if (mLeft.getVisibility() == VISIBLE) {
-                mLeft.setVisibility(INVISIBLE);
-            }
-            if (mRight.getVisibility() == VISIBLE) {
-                mRight.setVisibility(INVISIBLE);
-            }
-        }
+        mExitAnimTimeLine.addAnim(move);
+        mExitAnimTimeLine.addAnim(alpha);
 
         mExitAnimTimeLine.setAnimListener(new AnimListener() {
             @Override
@@ -375,22 +335,8 @@ public class TopView extends FrameLayout {
                 if (mExitAnimTimeLine != null) {
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_TOP_VIEW_EXIT, false);
                     resumeToNormal();
-                    mPhotos.setAlpha(1);
-                    mFile.setAlpha(1);
-                    mClipboard.setAlpha(1);
-
-                    mPhotos.setTranslationY(0);
-                    mFile.setTranslationY(0);
-                    mClipboard.setTranslationY(0);
-
-                    if (dimMode) {
-                        mLeft.setTranslationY(0);
-                        mLeft.setAlpha(1);
-                        mLeft.setVisibility(INVISIBLE);
-                        mRight.setTranslationY(0);
-                        mRight.setAlpha(1);
-                        mRight.setVisibility(INVISIBLE);
-                    }
+                    setTranslationY(0);
+                    setAlpha(1);
                     setVisibility(View.GONE);
                     mExitAnimTimeLine = null;
                 }
@@ -399,7 +345,7 @@ public class TopView extends FrameLayout {
         mExitAnimTimeLine.start();
     }
 
-    public void show(boolean show, final int bgMode) {
+    public void show(boolean show) {
         if (show) {
             if (mExitAnimTimeLine != null) {
                 log.error("mExitAnimTimeLine not null");
@@ -412,7 +358,7 @@ public class TopView extends FrameLayout {
                 @Override
                 public void onGlobalLayout() {
                     observer.removeOnGlobalLayoutListener(this);
-                    doAnimWhenEnter(bgMode);
+                    doAnimWhenEnter();
                 }
             });
         } else {
@@ -421,18 +367,5 @@ public class TopView extends FrameLayout {
             }
             doAnimWhenExit();
         }
-    }
-
-    public boolean setBgMode(boolean toDark) {
-        if (mDarkBgView == null) {
-            log.error("mDarkBgView is null");
-            return false;
-        }
-        int color = Constants.SHADOW_BG_COLOR_LIGHT;
-        if (toDark) {
-            color = Constants.SHADOW_BG_COLOR_DARK;
-        }
-        mDarkBgView.setBackgroundColor(color);
-        return true;
     }
 }

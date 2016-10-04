@@ -403,7 +403,7 @@ public class SidebarRootView extends FrameLayout {
         }
     }
 
-    public void show(boolean show, final int bgMode){
+    public void show(boolean show){
         if(show){
             if (mExitAnimTimeLine != null) {
                 log.error("mExitAnimTimeLine not null");
@@ -416,15 +416,12 @@ public class SidebarRootView extends FrameLayout {
                 @Override
                 public void onGlobalLayout() {
                     observer.removeOnGlobalLayoutListener(this);
-                    doAnimWhenEnter(bgMode);
+                    doAnimWhenEnter();
                 }
             });
         }else{
             if (mEnterAnimTimeLine != null) {
                 mEnterAnimTimeLine.cancel();
-            }
-            if (mSideView != null) {
-                mSideView.setBgMode(false);
             }
             doAnimWhenExit();
         }
@@ -432,7 +429,7 @@ public class SidebarRootView extends FrameLayout {
 
     private AnimTimeLine mEnterAnimTimeLine = null;
 
-    private void doAnimWhenEnter(final int bgMode) {
+    private void doAnimWhenEnter() {
         final View shadowView = mSideView.getShadowLineView();
         if (shadowView != null) {
             shadowView.setAlpha(0);
@@ -446,21 +443,17 @@ public class SidebarRootView extends FrameLayout {
         Anim moveAnim = new Anim(this, Anim.MOVE, time, 0, new Vector3f(fromX, 0), new Vector3f());
         Anim alphaAnim = new Anim(this, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
 
-        mSideView.getDarkBgView().setVisibility(View.INVISIBLE);
-        mSideView.getAddAndExitDarkBg().setVisibility(View.INVISIBLE);
-        Anim showShadowBg = new Anim(mSideView.getDarkBgView(), Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        mSideView.setVisibility(View.INVISIBLE);
+        Anim showShadowBg = new Anim(mSideView, Anim.TRANSPARENT, 200, Anim.CUBIC_OUT, alphaFrom, alphaTo);
         showShadowBg.setListener(new AnimListener() {
             @Override
             public void onStart() {
-                mSideView.setBgMode(bgMode == SidebarController.BG_MODE_DARK);
-                mSideView.getDarkBgView().setVisibility(View.VISIBLE);
-                mSideView.getAddAndExitDarkBg().setVisibility(View.VISIBLE);
+                mSideView.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onComplete(int type) {
-                mSideView.getDarkBgView().setAlpha(1);
-                mSideView.getAddAndExitDarkBg().setAlpha(1);
+                mSideView.setAlpha(1);
             }
         });
         showShadowBg.setDelay(100);
@@ -479,10 +472,10 @@ public class SidebarRootView extends FrameLayout {
             public void onComplete(int type) {
                 if (mEnterAnimTimeLine != null) {
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_SIDE_VIEW_ENTER, false);
-                    SidebarRootView.this.setBackgroundResource(R.color.sidebar_root_background);
                     mSideView.setBackgroundResource(R.drawable.background);
-                    SidebarRootView.this.setAlpha(1);
-                    SidebarRootView.this.setTranslationX(0);
+                    //setBackgroundResource(R.color.sidebar_root_background);
+                    setAlpha(1);
+                    setTranslationX(0);
                     if (shadowView != null) {
                         if (type != Anim.ANIM_FINISH_TYPE_CANCELED) {
                             Anim alphaAnim = new Anim(shadowView, Anim.TRANSPARENT, 50, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
@@ -510,7 +503,6 @@ public class SidebarRootView extends FrameLayout {
     private AnimTimeLine mExitAnimTimeLine = null;
 
     private void doAnimWhenExit() {
-        SidebarRootView.this.setBackgroundResource(android.R.color.transparent);
         mSideView.setBackgroundResource(android.R.color.transparent);
         final View shadowView = mSideView.getShadowLineView();
         if (shadowView != null) {

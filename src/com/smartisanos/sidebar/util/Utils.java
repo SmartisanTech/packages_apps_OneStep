@@ -114,23 +114,6 @@ public class Utils {
 
     private static final String LAUNCHER_NAME = "com.smartisanos.launcher.Launcher";
 
-    public static boolean launcherIsTopActivity(Context context) {
-        boolean isMatch = false;
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        try {
-            List<RunningTaskInfo> tasks = am.getRunningTasks(1);
-            if (tasks != null && tasks.size() > 0) {
-                RunningTaskInfo info = tasks.get(0);
-                if (info != null) {
-                    isMatch = info.topActivity.getClassName().equals(LAUNCHER_NAME);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return isMatch;
-    }
-
     public static boolean inArea(float rawX, float rawY, View view) {
         int[] loc = new int[2];
         view.getLocationOnScreen(loc);
