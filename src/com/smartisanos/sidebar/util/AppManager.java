@@ -133,7 +133,7 @@ public class AppManager extends DataManager {
         synchronized (mAddedAppItems) {
             for (int i = 0; i < mAddedAppItems.size(); ++i) {
                 if (mAddedAppItems.get(i).equals(item)) {
-                    mAddedAppItems.remove(i);
+                    mAddedAppItems.remove(i).newRemoved = true;
                     notifyListener();
                     mHandler.obtainMessage(MSG_DELETE, item).sendToTarget();
                     return;

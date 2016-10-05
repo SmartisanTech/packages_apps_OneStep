@@ -157,13 +157,13 @@ public class SideView extends RelativeLayout {
         mAppList = (SidebarListView) findViewById(R.id.applist);
         mAppList.setSideView(this);
         mAppList.addHeaderView(LayoutInflater.from(mContext).inflate(R.layout.switch_app, null));
-        mAppAdapter = new AppListAdapter(mContext);
+        mAppAdapter = new AppListAdapter(mContext, mAppList);
         mAppList.setAdapter(mAppAdapter);
         mAppList.setOnItemClickListener(mAppItemOnClickListener);
 
         mShareList = (SidebarListView) findViewById(R.id.sharelist);
         mShareList.setSideView(this);
-        mShareList.setAdapter(mResolveAdapter = new ResolveInfoListAdapter(mContext));
+        mShareList.setAdapter(mResolveAdapter = new ResolveInfoListAdapter(mContext, mShareList));
 
         mScrollView = (ScrollView) findViewById(R.id.sideview_scroll_list);
         Utils.setAlwaysCanAcceptDragForAll(mSideViewContentDragged, true);

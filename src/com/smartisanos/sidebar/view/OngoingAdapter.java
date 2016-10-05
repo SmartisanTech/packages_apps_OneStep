@@ -18,7 +18,7 @@ import com.smartisanos.sidebar.util.OngoingItem;
 import com.smartisanos.sidebar.util.OngoingManager;
 import com.smartisanos.sidebar.util.Utils;
 
-public class OngoingAdapter extends DragEventAdapter {
+public class OngoingAdapter extends SidebarAdapter {
     private static final float SCALE_SIZE = 1.4f;
     private Context mContext;
     private OngoingManager mManager;
@@ -35,13 +35,7 @@ public class OngoingAdapter extends DragEventAdapter {
         mManager.addListener(new OngoingManager.RecentUpdateListener() {
             @Override
             public void onUpdate() {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mList = mManager.getList();
-                        updateAcceptableList();
-                    }
-                });
+                updateData();
             }
         });
     }
@@ -124,6 +118,11 @@ public class OngoingAdapter extends DragEventAdapter {
     }
 
     @Override
+    public void moveItemPostion(Object object, int index) {
+        // NA
+    }
+
+    @Override
     public void onDragStart(DragEvent event) {
         if (mDragEvent != null) {
             mDragEvent.recycle();
@@ -143,8 +142,15 @@ public class OngoingAdapter extends DragEventAdapter {
         updateAcceptableList();
     }
 
-    public void moveItemPostion(Object object, int index) {
-        // NA
+    @Override
+    public void updateData() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mList = mManager.getList();
+                updateAcceptableList();
+            }
+        });
     }
 
     class ViewHolder {

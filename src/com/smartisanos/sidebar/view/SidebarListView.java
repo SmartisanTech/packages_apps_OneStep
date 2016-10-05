@@ -2,7 +2,6 @@ package com.smartisanos.sidebar.view;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.DragEvent;
@@ -19,6 +18,7 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
+import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
@@ -28,10 +28,27 @@ public class SidebarListView extends ListView {
 
     private boolean mNeedFootView = false;
     private View mFootView;
+
     private SideView mSideView;
+    private SidebarAdapter mAdapter;
 
     private SidebarItem mDraggedItem;
     private int mDragPosition = -1;
+
+    private AnimTimeLine mDatasetChangeTimeLine;
+    private AnimListener mListener = new AnimListener() {
+
+        @Override
+        public void onStart() {
+        }
+
+        @Override
+        public void onComplete(int type) {
+            if(mAdapter != null) {
+                mAdapter.updateData();
+            }
+        }
+    };
 
     public SidebarListView(Context context) {
         this(context, null);
@@ -56,25 +73,23 @@ public class SidebarListView extends ListView {
         mSideView = view;
     }
 
-    private DragEventAdapter mDragEventAdapter;
-
     @Override
     public void setAdapter(ListAdapter adapter) {
         super.setAdapter(adapter);
-        if (adapter != null && adapter instanceof DragEventAdapter) {
-            mDragEventAdapter = (DragEventAdapter) adapter;
+        if (adapter != null && adapter instanceof SidebarAdapter) {
+            mAdapter = (SidebarAdapter) adapter;
         }
     }
 
     public void onDragStart(DragEvent event) {
-        if (mDragEventAdapter != null) {
-            mDragEventAdapter.onDragStart(event);
+        if (mAdapter != null) {
+            mAdapter.onDragStart(event);
         }
     }
 
     public void onDragEnd() {
-        if (mDragEventAdapter != null) {
-            mDragEventAdapter.onDragEnd();
+        if (mAdapter != null) {
+            mAdapter.onDragEnd();
         }
     }
 
@@ -118,8 +133,8 @@ public class SidebarListView extends ListView {
 
     public void dropBackSidebarItem() {
         if (mDraggedItem != null) {
-            if (mDragEventAdapter != null) {
-                mDragEventAdapter.moveItemPostion(mDraggedItem, mDragPosition - this.getHeaderViewsCount());
+            if (mAdapter != null) {
+                mAdapter.moveItemPostion(mDraggedItem, mDragPosition - this.getHeaderViewsCount());
             }
             dragEnd();
         }
@@ -200,38 +215,69 @@ public class SidebarListView extends ListView {
         getViewTreeObserver().addOnGlobalLayoutListener(mAddItemWithAnimListener);
     }
 
+    public void animWhenDatasetChange() {
+        if(mDatasetChangeTimeLine != null && mDatasetChangeTimeLine.isRunning()) {
+            mDatasetChangeTimeLine.cancel();
+        }
+        int time = 200;
+        mDatasetChangeTimeLine = new AnimTimeLine();
+        ListAdapter adapter = getAdapter();
+        if (adapter != null) {
+            for (int i = 0; i < adapter.getCount(); ++i) {
+                Object obj = adapter.getItem(i);
+                View view = getChildAt(i);
+                if(view == null) {
+                    continue;
+                }
+                if (obj != null && obj instanceof SidebarItem) {
+                    SidebarItem item = (SidebarItem) obj;
+                    if (item.newAdded) {
+                        item.newAdded = false;
+                        Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time,
+                                Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
+                        Anim scaleBigAnim = new Anim(view, Anim.SCALE, time,
+                                Anim.CUBIC_OUT, new Vector3f(0.3f, 0.3f), new Vector3f(
+                                        1.2f, 1.2f));
+                        Anim scaleNormal = new Anim(view, Anim.SCALE, time,
+                                Anim.CUBIC_OUT, new Vector3f(1.2f, 1.2f), new Vector3f(
+                                        1, 1));
+                        scaleNormal.setDelay(time);
+                        mDatasetChangeTimeLine.addAnim(alphaAnim);
+                        mDatasetChangeTimeLine.addAnim(scaleBigAnim);
+                        mDatasetChangeTimeLine.addAnim(scaleNormal);
+                    } else if(item.newRemoved) {
+                        item.newRemoved = false;
+                        Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time,
+                                Anim.CUBIC_OUT, new Vector3f(0, 0, 1), new Vector3f());
+                        Anim scaleBigAnim = new Anim(view, Anim.SCALE, time,
+                                Anim.CUBIC_OUT, new Vector3f(1.0f, 1.0f), new Vector3f(
+                                        0.3f, 0.3f));
+                        mDatasetChangeTimeLine.addAnim(alphaAnim);
+                        mDatasetChangeTimeLine.addAnim(scaleBigAnim);
+                    } else {
+                        view.setAlpha(1.0f);
+                        view.setScaleX(1.0f);
+                        view.setScaleY(1.0f);
+                    }
+                }
+            }
+        }
+        if (mListener != null) {
+            if (mDatasetChangeTimeLine.getAnimList() == null
+                    || mDatasetChangeTimeLine.getAnimList().size() == 0) {
+                mListener.onComplete(0);
+            } else {
+                mDatasetChangeTimeLine.setAnimListener(mListener);
+            }
+        }
+        mDatasetChangeTimeLine.start();
+    }
+
     private ViewTreeObserver.OnGlobalLayoutListener mAddItemWithAnimListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
             getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            ListAdapter adapter = getAdapter();
-            if (adapter == null || adapter.getCount() <= 0) {
-                return;
-            }
-            int time = 200;
-            AnimTimeLine timeLine = new AnimTimeLine();
-            for (int i = 0; i < adapter.getCount(); ++i) {
-                Object obj = adapter.getItem(i);
-                if (obj != null && obj instanceof SidebarItem) {
-                    SidebarItem item = (SidebarItem) obj;
-                    if (!item.newAdded) {
-                        continue;
-                    }
-                    item.newAdded = false;
-                    View view = getChildAt(i);
-                    Anim alphaAnim = new Anim(view, Anim.TRANSPARENT, time,
-                            Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
-                    Anim scaleBigAnim = new Anim(view, Anim.SCALE, time,
-                            Anim.CUBIC_OUT, new Vector3f(0.3f, 0.3f), new Vector3f(1.2f, 1.2f));
-                    Anim scaleNormal = new Anim(view, Anim.SCALE, time,
-                            Anim.CUBIC_OUT, new Vector3f(1.2f, 1.2f), new Vector3f(1, 1));
-                    scaleNormal.setDelay(time);
-                    timeLine.addAnim(alphaAnim);
-                    timeLine.addAnim(scaleBigAnim);
-                    timeLine.addAnim(scaleNormal);
-                }
-            }
-            timeLine.start();
+            animWhenDatasetChange();
         }
     };
 

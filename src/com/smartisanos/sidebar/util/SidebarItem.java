@@ -6,6 +6,8 @@ import android.view.DragEvent;
 
 public abstract class SidebarItem {
     public boolean newAdded = false;
+    public boolean newRemoved = false;
+
     private int mIndex = -1;
 
     public void setIndex(int index) {

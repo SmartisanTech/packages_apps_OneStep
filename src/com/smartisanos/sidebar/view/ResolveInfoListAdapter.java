@@ -24,18 +24,20 @@ import com.smartisanos.sidebar.util.ResolveInfoManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 
-public class ResolveInfoListAdapter extends DragEventAdapter {
+public class ResolveInfoListAdapter extends SidebarAdapter {
     private static final LOG log = LOG.getInstance(ResolveInfoListAdapter.class);
     private static final float SCALE_SIZE = 1.4f;
 
     private Context mContext;
+    private SidebarListView mListView;
     private List<ResolveInfoGroup> mResolveInfos;
     private List<ResolveInfoGroup> mAcceptableResolveInfos = new ArrayList<ResolveInfoGroup>();
     private DragEvent mDragEvent;
     private ResolveInfoManager mManager;
     private boolean mPendingUpdate = false;
-    public ResolveInfoListAdapter(Context context) {
+    public ResolveInfoListAdapter(Context context, SidebarListView listView) {
         mContext = context;
+        mListView = listView;
         mManager = ResolveInfoManager.getInstance(context);
         mResolveInfos = mManager.getAddedResolveInfoGroup();
         mAcceptableResolveInfos.addAll(mResolveInfos);
@@ -55,11 +57,16 @@ public class ResolveInfoListAdapter extends DragEventAdapter {
     private ResolveInfoManager.ResolveInfoUpdateListener resolveInfoUpdateListener = new ResolveInfoManager.ResolveInfoUpdateListener() {
         @Override
         public void onUpdate() {
-            updateData();
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    mListView.animWhenDatasetChange();
+                }
+            });
         }
     };
 
-    private void updateData() {
+    public void updateData() {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

@@ -209,7 +209,7 @@ public class ResolveInfoManager extends SQLiteOpenHelper {
         synchronized (mListeners) {
             for (int i = 0; i < mList.size(); ++i) {
                 if (mList.get(i).equals(rig)) {
-                    mList.remove(i);
+                    mList.remove(i).newRemoved = true;
                     notifyUpdate();
                     mHandler.obtainMessage(MSG_DELETE, rig).sendToTarget();
                     return;

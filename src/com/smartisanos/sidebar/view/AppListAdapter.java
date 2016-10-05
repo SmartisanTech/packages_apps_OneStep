@@ -1,6 +1,5 @@
 package com.smartisanos.sidebar.view;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -24,20 +23,19 @@ import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
-public class AppListAdapter extends DragEventAdapter {
+public class AppListAdapter extends SidebarAdapter {
     private static final LOG log = LOG.getInstance(AppListAdapter.class);
 
     private Context mContext;
     private List<AppItem> mAppItems;
-    private List<AppItem> mAcceptableAppItems = new ArrayList<AppItem>();
-    private DragEvent mDragEvent;
     private AppManager mManager;
     private boolean mPendingUpdate = false;
-    public AppListAdapter(Context context) {
+    private SidebarListView mListView;
+    public AppListAdapter(Context context, SidebarListView listview) {
         mContext = context;
+        mListView = listview;
         mManager = AppManager.getInstance(context);
         mAppItems = mManager.getAddedAppItem();
-        mAcceptableAppItems.addAll(mAppItems);
         mManager.addListener(resolveInfoUpdateListener);
         AnimStatusManager.getInstance().addAnimFlagStatusChangedListener(
                 AnimStatusManager.SIDEBAR_ITEM_DRAGGING,
@@ -54,34 +52,30 @@ public class AppListAdapter extends DragEventAdapter {
     private DataManager.RecentUpdateListener resolveInfoUpdateListener = new DataManager.RecentUpdateListener() {
         @Override
         public void onUpdate() {
-            updateData();
+            // do anim first !
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    mListView.animWhenDatasetChange();
+                }
+            });
         }
     };
 
-    private void updateData() {
+    public void updateData() {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 if (AnimStatusManager.getInstance()
                         .canUpdateSidebarList()) {
                     mAppItems = mManager.getAddedAppItem();
-                    updateAcceptableResolveInfos();
+                    notifyDataSetChanged();
                     mPendingUpdate = false;
                 } else {
                     mPendingUpdate = true;
                 }
             }
         });
-    }
-
-    private void updateAcceptableResolveInfos() {
-        mAcceptableAppItems.clear();
-        for (AppItem ai : mAppItems) {
-            if (mDragEvent == null || ai.acceptDragEvent(mContext, mDragEvent)) {
-                mAcceptableAppItems.add(ai);
-            }
-        }
-        notifyDataSetChanged();
     }
 
     @Override
@@ -119,12 +113,12 @@ public class AppListAdapter extends DragEventAdapter {
 
     @Override
     public int getCount() {
-        return mAcceptableAppItems.size();
+        return mAppItems.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mAcceptableAppItems.get(position);
+        return mAppItems.get(position);
     }
 
     @Override
@@ -162,7 +156,7 @@ public class AppListAdapter extends DragEventAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        AppItem ai = mAcceptableAppItems.get(position);
+        AppItem ai = mAppItems.get(position);
         if (convertView == null) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.app_item, null);
             ImageView iconImage = (ImageView) view.findViewById(R.id.avatar_image_view);

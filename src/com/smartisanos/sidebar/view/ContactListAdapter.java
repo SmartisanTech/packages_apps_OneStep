@@ -27,7 +27,7 @@ import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
-public class ContactListAdapter extends DragEventAdapter {
+public class ContactListAdapter extends SidebarAdapter {
     private static float SCALE_SIZE = 1.4f;
     private static final LOG log = LOG.getInstance(ContactListAdapter.class);
 
@@ -48,13 +48,7 @@ public class ContactListAdapter extends DragEventAdapter {
         mManager.addListener(new ContactManager.RecentUpdateListener() {
             @Override
             public void onUpdate() {
-                mHandler.post(new Runnable(){
-                    @Override
-                    public void run() {
-                        mContacts = mManager.getContactList();
-                        updateAcceptableResolveInfos();
-                    }
-                });
+                updateData();
             }
         });
     }
@@ -67,6 +61,24 @@ public class ContactListAdapter extends DragEventAdapter {
             }
         }
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void moveItemPostion(Object object, int index) {
+        ContactItem item = (ContactItem) object;
+        if(index < 0){
+            index = 0;
+        }
+        if(index >= mContacts.size()){
+            index = mContacts.size() - 1;
+        }
+        int now = mContacts.indexOf(item);
+        if(now == -1 || now == index){
+            return ;
+        }
+        mContacts.remove(now);
+        mContacts.add(index, item);
+        onOrderChange();
     }
 
     @Override
@@ -87,6 +99,17 @@ public class ContactListAdapter extends DragEventAdapter {
         mDragEvent.recycle();
         mDragEvent = null;
         updateAcceptableResolveInfos();
+    }
+
+    @Override
+    public void updateData() {
+        mHandler.post(new Runnable(){
+            @Override
+            public void run() {
+                mContacts = mManager.getContactList();
+                updateAcceptableResolveInfos();
+            }
+        });
     }
 
     @Override
@@ -241,23 +264,6 @@ public class ContactListAdapter extends DragEventAdapter {
             return -1;
         }
         return mContacts.indexOf(item);
-    }
-
-    public void moveItemPostion(Object object, int index) {
-        ContactItem item = (ContactItem) object;
-        if(index < 0){
-            index = 0;
-        }
-        if(index >= mContacts.size()){
-            index = mContacts.size() - 1;
-        }
-        int now = mContacts.indexOf(item);
-        if(now == -1 || now == index){
-            return ;
-        }
-        mContacts.remove(now);
-        mContacts.add(index, item);
-        onOrderChange();
     }
 
     private void onOrderChange(){
