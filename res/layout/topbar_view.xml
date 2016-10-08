@@ -32,4 +32,18 @@
         android:layout_height="4dp"
         android:background="@drawable/top_shadow"
         android:layout_gravity="bottom"/>
+    <View
+        android:id="@+id/right_shadow"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:alpha="0.35"
+        android:background="@drawable/right_shadow"/>
+    <View
+        android:id="@+id/left_shadow"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:alpha="0.35"
+        android:background="@drawable/left_shadow"/>
 </com.smartisanos.sidebar.view.TopView>

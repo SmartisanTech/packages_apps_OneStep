@@ -5,6 +5,7 @@
     <color name="content_view_background_color">#40000000</color>
     <color name="setting_item_text_color">#cc000000</color>
     <color name="content_view_title_color">#b3ffffff</color>
+    <color name="content_view_interval_background_color">#5a000000</color>
     <color name="content_view_interval_time_color">#b3ffffff</color>
-    <color name="content_view_interval_more_color">#55ffffff</color>
+    <color name="content_view_interval_more_color">#3fffffff</color>
 </resources>

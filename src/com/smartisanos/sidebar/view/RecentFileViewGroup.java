@@ -2,11 +2,9 @@ package com.smartisanos.sidebar.view;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
-import com.smartisanos.sidebar.util.FileInfo;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentFileManager;
-import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
@@ -14,25 +12,16 @@ import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 import com.smartisanos.sidebar.view.ContentView.ContentType;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpty, ContentView.ISubView {
     private static final LOG log = LOG.getInstance(RecentFileViewGroup.class);
 
-    private Context mContext;
     private ContentView mContentView;
 
     private EmptyView mEmptyView;
@@ -60,7 +49,6 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
     public RecentFileViewGroup(Context context, AttributeSet attrs,
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        mContext = context;
     }
 
     @Override
@@ -79,6 +67,8 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
         mRecentFileList.setAdapter(mRecentFileAdapter);
 
         mClearFile.setOnClickListener(mClearListener);
+
+        updateUI();
     }
 
     private ClearListener mClearListener = new ClearListener(new Runnable() {
@@ -174,7 +164,6 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
                 @Override
                 public void onComplete(int type) {
                     AnimStatusManager.getInstance().setStatus(AnimStatusManager.ON_FILE_LIST_ANIM, false);
-                    mRecentFileList.setY(0);
                     setScaleY(1);
                 }
             });

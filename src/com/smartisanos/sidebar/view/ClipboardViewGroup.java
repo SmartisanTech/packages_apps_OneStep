@@ -66,12 +66,14 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
         mEmptyView.setHint(R.string.clipboard_empty_hint);
 
         mContainer = findViewById(R.id.clipboard_container);
-        mTitle = (TextView) findViewById(R.id.clipboard_title);
+        mTitle = (TextView) findViewById(R.id.title);
         mClearClipboard = findViewById(R.id.clear);
         mClipList = (ListView) findViewById(R.id.clipboard_listview);
         mClipboardAdapter = new ClipboardAdapter(mContext, this);
         mClipList.setAdapter(mClipboardAdapter);
         mClearClipboard.setOnClickListener(mClearListener);
+
+        updateUI();
     }
 
     private ClearListener mClearListener = new ClearListener(new Runnable() {

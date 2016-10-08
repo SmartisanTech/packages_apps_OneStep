@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="#5a000000"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/content_view_title_color"
+        android:textSize="13.5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_weight="1"/>
+    <Button
+        android:id="@+id/clear"
+        android:background="@drawable/clear"
+        android:layout_width="36dp"
+        android:layout_height="40dp"/>
+</LinearLayout>

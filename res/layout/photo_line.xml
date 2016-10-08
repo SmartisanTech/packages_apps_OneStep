@@ -11,7 +11,7 @@
         android:gravity="left|center_vertical"
         android:textSize="10dp"
         android:textColor="@color/content_view_interval_time_color"
-        android:background="#26000000"
+        android:background="@color/content_view_interval_background_color"
         android:visibility="gone"
         android:paddingLeft="15dp"/>
 

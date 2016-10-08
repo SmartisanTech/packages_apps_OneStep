@@ -84,6 +84,8 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
         mAdapter = new RecentPhotoAdapter(mContext, this);
         mListView.setAdapter(mAdapter);
         mClear.setOnClickListener(mClearListener);
+
+        updateUI();
     }
 
     private ClearListener mClearListener = new ClearListener(new Runnable() {
