@@ -45,6 +45,23 @@
     <string name="bookmark_empty_hint">你可以在各應用中，通過點擊"分享-添加到書簽"，或複製連結將其中的文章圖片等添加到書簽</string>
     <string name="share_component_name">添加收藏</string>
     <string name="bookmark_source">來自:</string>
-    <string name="contact_added">已新增</string>
+
+    <string name="date_label_today">今天</string>
+    <string name="date_label_yesterday">昨天</string>
+    <string name="date_label_last_week">過去 7 天</string>
+    <string name="date_label_last_month">一個月內</string>
+    <string name="date_label_earlier">更早</string>
     <string name="load_more">顯示更多</string>
+
+    <string name="add_item_to_sidebar">添加邊欄內容</string>
+    <string name="add_contact_to_sidebar">添加邊欄聯絡人快捷方式</string>
+    <string name="add_app_to_sidebar">添加邊欄應用快捷方式</string>
+    <string name="add_share_to_sidebar">添加拖拽分享快捷方式</string>
+    <string name="switch_previous_app">切換上一個應用</string>
+    <string name="switch_previous_app_hint">開啟後，你可以通過點擊邊欄上的“切換按鈕”快速切換上一個應用</string>
+    <string name="contact_added">已新增</string>
+    <string name="add_at_most_contact_number">最多可添加 %d 個聯絡人快捷方式</string>
+    <string name="add_at_most_app_number">最多可添加 %d 個應用快捷方式</string>
+    <string name="add_at_most_share_number">最多可添加 %d 個分享快捷方式</string>
+    <string name="hint_sort_by_long_press">長按側邊欄上的圖示可以調整它們的順序</string>
 </resources>

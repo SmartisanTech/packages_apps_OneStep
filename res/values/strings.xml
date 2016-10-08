@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">Sidebar</string>
+    <string name="app_name">One Step</string>
     <string name="topbar_photo">Images</string>
     <string name="topbar_file">Files</string>
     <string name="topbar_clipboard">Clipboard</string>
@@ -48,14 +48,20 @@
 
     <string name="date_label_today">Today</string>
     <string name="date_label_yesterday">Yesterday</string>
-    <string name="date_label_last_week">Last 7 Days</string>
-    <string name="date_label_last_month">Last 30 Days</string>
-    <string name="date_label_earlier">Earlier</string>
+    <string name="date_label_last_week">Past 7 Days</string>
+    <string name="date_label_last_month">Within a Month</string>
+    <string name="date_label_earlier">Older</string>
     <string name="load_more">Show More</string>
-    <string name="add_app_to_sidebar">Add App To Sidebar</string>
-    <string name="add_share_to_sidebar">Add Share To Sidebar</string>
+
+    <string name="add_item_to_sidebar">Add Springboard Content</string>
+    <string name="add_contact_to_sidebar">Add Contact Shortcut</string>
+    <string name="add_app_to_sidebar">Add App Shortcut</string>
+    <string name="add_share_to_sidebar">Add Sharing Shortcut</string>
+    <string name="switch_previous_app">Switch to Last App</string>
+    <string name="switch_previous_app_hint">Once launched, you can tap the "Switch" button on the Springboard to jump back to the last app.</string>
     <string name="contact_added">Added</string>
-    <string name="add_at_most_contact_number">最多可添加%d个联系人快捷方式</string>
-    <string name="add_at_most_app_number">最多可添加%d个应用快捷方式</string>
-    <string name="add_at_most_share_number">最多可添加%d个分享快捷方式</string>
+    <string name="add_at_most_contact_number">You can have up to %d contact shortcuts.</string>
+    <string name="add_at_most_app_number">You can have up to %d app shortcuts.</string>
+    <string name="add_at_most_share_number">You can have up to %d sharing shortcuts.</string>
+    <string name="hint_sort_by_long_press">You can rearrange Springboard icons by first pressing and holding one of them.</string>
 </resources>

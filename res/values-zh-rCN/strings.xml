@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name">神奇拖拽</string>
     <string name="topbar_photo">近期图片</string>
     <string name="topbar_file">近期文件</string>
     <string name="topbar_clipboard">粘贴板</string>
@@ -49,14 +48,20 @@
 
     <string name="date_label_today">今天</string>
     <string name="date_label_yesterday">昨天</string>
-    <string name="date_label_last_week">过去七天</string>
-    <string name="date_label_last_month">最近一个月</string>
+    <string name="date_label_last_week">过去 7 天</string>
+    <string name="date_label_last_month">一个月内</string>
     <string name="date_label_earlier">更早</string>
     <string name="load_more">显示更多</string>
-    <string name="add_app_to_sidebar">添加侧栏应用</string>
-    <string name="add_share_to_sidebar">设置拖拽分享项</string>
+
+    <string name="add_item_to_sidebar">添加边栏内容</string>
+    <string name="add_contact_to_sidebar">添加边栏联系人快捷方式</string>
+    <string name="add_app_to_sidebar">添加边栏应用快捷方式</string>
+    <string name="add_share_to_sidebar">添加拖拽分享快捷方式</string>
+    <string name="switch_previous_app">切换上一个应用</string>
+    <string name="switch_previous_app_hint">开启后，你可以通过点击边栏上的“切换按钮”快速切换上一个应用</string>
     <string name="contact_added">已添加</string>
-    <string name="add_at_most_contact_number">最多可添加%d个联系人快捷方式</string>
-    <string name="add_at_most_app_number">最多可添加%d个应用快捷方式</string>
-    <string name="add_at_most_share_number">最多可添加%d个分享快捷方式</string>
+    <string name="add_at_most_contact_number">最多可添加 %d 个联系人快捷方式</string>
+    <string name="add_at_most_app_number">最多可添加 %d 个应用快捷方式</string>
+    <string name="add_at_most_share_number">最多可添加 %d 个分享快捷方式</string>
+    <string name="hint_sort_by_long_press">长按侧边栏上的图标可以调整它们的顺序</string>
 </resources>

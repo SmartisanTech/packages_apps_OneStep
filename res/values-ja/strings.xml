@@ -9,7 +9,6 @@
     <string name="title_file">最近のファイル</string>
     <string name="title_clipboard">最近のクリップボードテキスト</string>
     <string name="title_bookmark">最近のブックマーク</string>
-    <string name="add_contact_shortcut">連絡先ショートカット作成</string>
     <string name="add_application_shortcut">アプリショートカット作成</string>
     <string name="add_contact_dingding">Dingding連絡先</string>
     <string name="add_contact_wechat">WeChar連絡先</string>
