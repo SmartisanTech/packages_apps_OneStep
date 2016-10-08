@@ -23,4 +23,18 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
     </style>
+    <style name="SettingItemTitleStyle">
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">0.1</item>
+        <item name="android:shadowColor">#2dffffff</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:maxWidth">307dp</item>
+        <item name="android:textColor">#80000000</item>
+        <item name="android:textSize">13.5dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">30dp</item>
+        <item name="android:layout_marginTop">7dp</item>
+        <item name="android:layout_marginBottom">1dp</item>
+    </style>
 </resources>

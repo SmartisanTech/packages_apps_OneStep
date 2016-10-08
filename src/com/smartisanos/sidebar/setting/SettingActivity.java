@@ -28,10 +28,7 @@ public class SettingActivity extends BaseActivity {
 
     private Title mTitle;
     private SettingItemSwitch mSidebarSwitch;
-    private SettingItemText mAddApp, mAddShare;
-
-    private final int[] mAddContactId = new int[] { R.id.add_contact_1,
-            R.id.add_contact_2, R.id.add_contact_3, R.id.add_contact_4 };
+    private SettingItemText mAddContact, mAddApp, mAddShare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +58,17 @@ public class SettingActivity extends BaseActivity {
                     }
                 });
 
+        mAddContact = (SettingItemText) findViewById(R.id.add_contact);
+        mAddContact.setTitle(R.string.add_contact_to_sidebar);
+        mAddContact.setIconResource(R.drawable.icon_add_contact);
+        mAddContact.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                startAddContactActivity();
+            }
+        });
+
         mAddApp = (SettingItemText) findViewById(R.id.add_app);
         mAddApp.setTitle(R.string.add_app_to_sidebar);
         mAddApp.setIconResource(R.drawable.icon_add_app);
@@ -88,7 +96,6 @@ public class SettingActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         setEnable(isSidebarEnable());
-        updateAddContactGroup();
     }
 
     private boolean isSidebarEnable() {
@@ -96,41 +103,19 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void setEnable(boolean enable) {
-        for (int i = 0; i < mAddContactId.length; ++i) {
-            SettingItemText itemText = (SettingItemText) findViewById(mAddContactId[i]);
-            //itemText.setEnable(enable);
-            itemText.setEnabled(enable);
-        }
+        mAddContact.setEnabled(enable);
         mAddApp.setEnabled(enable);
         mAddShare.setEnabled(enable);
     }
 
-    private void updateAddContactGroup() {
-        List<AddContactItem> list = AddContactManager.getInstance(this).getList();
-        for (int i = 0; i < mAddContactId.length; ++i) {
-            SettingItemText itemText = (SettingItemText) findViewById(mAddContactId[i]);
-            if (i < list.size()) {
-                itemText.setVisibility(View.VISIBLE);
-                itemText.setTitle(list.get(i).labelId);
-                itemText.setIconResource(list.get(i).iconId);
-                itemText.setOnClickListener(list.get(i).mListener);
-                itemText.setArrowVisible(false);
-                if (list.size() == 1) {
-                    // this should never happen !
-                    itemText.setBackgroundResource(R.drawable.selector_setting_sub_item_bg_single);
-                } else {
-                    if (i == 0) {
-                        itemText.setBackgroundResource(R.drawable.selector_setting_sub_item_bg_top);
-                    } else if (i == list.size() - 1) {
-                        itemText.setBackgroundResource(R.drawable.selector_setting_sub_item_bg_bottom);
-                    } else {
-                        itemText.setBackgroundResource(R.drawable.selector_setting_sub_item_bg_middle);
-                    }
-                }
-            } else {
-                itemText.setVisibility(View.GONE);
-            }
-        }
+    private void startAddContactActivity() {
+        Intent intent = new Intent();
+        intent.setClassName("com.smartisanos.sidebar",
+                "com.smartisanos.sidebar.setting.AddContactActivity");
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra(smartisanos.widget.Title.EXTRA_BACK_BTN_TEXT,
+                getResources().getString(R.string.back_text));
+        startActivity(intent,false);
     }
 
     private void startAddApplicationActivity() {

@@ -216,6 +216,12 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".setting.AddContactActivity"
+            android:theme="@style/SettingTheme"
+            android:screenOrientation="portrait"
+            android:excludeFromRecents="true" >
+        </activity>
+        <activity
             android:name=".setting.AddApplicationActivity"
             android:theme="@style/SettingTheme"
             android:screenOrientation="portrait"

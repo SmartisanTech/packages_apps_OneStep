@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:smartisanos="http://schemas.android.com/apk/res/smartisanos"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/setting_background">
+
+    <smartisanos.widget.Title
+        android:id="@+id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        smartisanos:title="@string/add_contact_to_sidebar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar"
+        android:scrollbars="none"
+        android:overScrollMode="always" >
+        <LinearLayout
+            android:id="@+id/add_contact_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/setting_global_marginTop">
+            <smartisanos.widget.SettingItemText
+                android:id="@+id/add_contact_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <smartisanos.widget.SettingItemText
+                android:id="@+id/add_contact_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <smartisanos.widget.SettingItemText
+                android:id="@+id/add_contact_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <smartisanos.widget.SettingItemText
+                android:id="@+id/add_contact_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/title_bar_shadow"/>
+</RelativeLayout>
