@@ -58,7 +58,7 @@ public class DingDingContact extends ContactItem {
         }
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
             intent.setType(mimeType);
-            intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText());
+            intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText().toString());
         } else if (ClipDescription.compareMimeTypes(mimeType, "image/*")) {
             intent.setDataAndType(event.getClipData().getItemAt(0).getUri(), mimeType);
         } else {

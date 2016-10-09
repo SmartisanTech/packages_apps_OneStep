@@ -66,7 +66,7 @@ public class MailContact extends ContactItem {
         intent.setComponent(COMP_NAME);
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
             intent.setAction(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText());
+            intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText().toString());
         } else {
             if (event.getClipData().getItemCount() > 1) {
                 intent.setAction(Intent.ACTION_SEND_MULTIPLE);

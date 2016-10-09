@@ -192,7 +192,7 @@ public class ResolveInfoGroup extends SidebarItem {
                     | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
                     | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             intent.setType(mimeType);
-            intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText());
+            intent.putExtra(Intent.EXTRA_TEXT, event.getClipData().getItemAt(0).getText().toString());
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
             if (infos != null) {
                 for (ComponentName name : mNames) {
