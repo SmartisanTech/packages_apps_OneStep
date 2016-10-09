@@ -334,6 +334,10 @@ public class SidebarController {
         }
     }
 
+    public void setSwitchAppAvailable(boolean available) {
+        mSideView.setSwitchAppAvailable(available);
+    }
+
     private final ISidebar.Stub mBinder = new ISidebar.Stub() {
         @Override
         public void onEnterSidebarModeStart(final int sidebarMode) throws RemoteException {

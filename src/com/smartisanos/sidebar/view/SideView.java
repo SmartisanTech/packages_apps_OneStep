@@ -8,11 +8,9 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
 import android.view.DragEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -57,6 +55,9 @@ public class SideView extends RelativeLayout {
     private LinearLayout mSideViewContentDragged;
 
     private DimSpaceView mDimView;
+
+    private boolean mSwitchAppAvailable = false;
+    private SwitchAppView mSwitchAppView;
 
     public SideView(Context context) {
         this(context, null);
@@ -154,9 +155,13 @@ public class SideView extends RelativeLayout {
         mContactListFake.setAdapter(new ContactListAdapter(mContext));
 
         //resolve
+        mSwitchAppAvailable = Utils.isSwitchAppAvailable(mContext);
+        mSwitchAppView = (SwitchAppView) findViewById(R.id.switch_app);
+        mSwitchAppView.setOnClickListener(mSwitchAppListener);
+        mSwitchAppView.setVisibility(mSwitchAppAvailable ? View.VISIBLE : View.GONE);
+
         mAppList = (SidebarListView) findViewById(R.id.applist);
         mAppList.setSideView(this);
-        mAppList.addHeaderView(LayoutInflater.from(mContext).inflate(R.layout.switch_app, null));
         mAppAdapter = new AppListAdapter(mContext, mAppList);
         mAppList.setAdapter(mAppAdapter);
         mAppList.setOnItemClickListener(mAppItemOnClickListener);
@@ -176,6 +181,13 @@ public class SideView extends RelativeLayout {
                 return true;
             }
         });
+    }
+
+    public void setSwitchAppAvailable(boolean available) {
+        if(mSwitchAppAvailable != available) {
+            mSwitchAppAvailable = available;
+            mSwitchAppView.setVisibility(mSwitchAppAvailable ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void requestStatus(SidebarStatus status) {
@@ -315,6 +327,16 @@ public class SideView extends RelativeLayout {
     }
 
     @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        if (mAppAdapter.getCount() + mContactAdapter.getCount() <= 0) {
+            mSwitchAppView.setDividerVisibility(View.GONE);
+        } else {
+            mSwitchAppView.setDividerVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     public boolean dispatchDragEvent(DragEvent event) {
         int action = event.getAction();
         switch (action) {
@@ -352,21 +374,22 @@ public class SideView extends RelativeLayout {
         mResolveAdapter.notifyDataSetChanged();
     }
 
+    private View.OnClickListener mSwitchAppListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Utils.dismissAllDialog(mContext);
+            Utils.launchPreviousApp(mContext);
+        }
+    };
+
     private AdapterView.OnItemClickListener mAppItemOnClickListener = new AdapterView.OnItemClickListener() {
 
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view,int position, long id) {
-            if (position == 0) {
-                // applist has one headview-,-
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            if (position < mAppAdapter.getCount()) {
+                AppItem ai = (AppItem) mAppAdapter.getItem(position);
                 Utils.dismissAllDialog(mContext);
-                Utils.launchPreviousApp(mContext);
-            } else {
-                position--;
-                if (position < mAppAdapter.getCount()) {
-                    AppItem ai = (AppItem) mAppAdapter.getItem(position);
-                    Utils.dismissAllDialog(mContext);
-                    ai.openUI(mContext);
-                }
+                ai.openUI(mContext);
             }
         }
     };

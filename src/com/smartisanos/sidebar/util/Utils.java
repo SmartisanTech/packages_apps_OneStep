@@ -17,6 +17,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
@@ -376,6 +377,17 @@ public class Utils {
         } catch (ActivityNotFoundException e) {
             // NA
         }
+    }
+
+    public static boolean isSwitchAppAvailable(Context context) {
+        return context.getSharedPreferences("switchApp", 0).getBoolean("on",false);
+    }
+
+    public static void setSwitchAppAvailable(Context context, boolean on) {
+        SharedPreferences sp = context.getSharedPreferences("switchApp", 0);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean("on", on);
+        editor.commit();
     }
 
     public static final class Interval {

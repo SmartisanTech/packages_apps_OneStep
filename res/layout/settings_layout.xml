@@ -57,6 +57,14 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/selector_setting_sub_item_bg_bottom"/>
             </LinearLayout>
+
+            <smartisanos.widget.SettingItemSwitch
+                android:id="@+id/switch_for_switch_app"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/setting_global_marginTop"
+                android:background="@drawable/selector_setting_sub_item_bg_single"
+                smartisanos:title="@string/switch_previous_app" />
         </LinearLayout>
     </ScrollView>
     <include layout="@layout/title_bar_shadow"/>

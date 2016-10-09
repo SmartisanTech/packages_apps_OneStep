@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.smartisanos.sidebar.view.SwitchAppView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
+    android:id="@+id/switch_app"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/sidebar_list_item_padding_top"
-    android:paddingBottom="3dp">
+    android:orientation="vertical">
     <View
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginTop="@dimen/sidebar_list_item_padding_top"
+        android:layout_marginBottom="3dp"
         android:background="@drawable/previous_app_icon"/>
-</FrameLayout>
+    <ImageView
+        android:id="@+id/divider"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/divider"/>
+</com.smartisanos.sidebar.view.SwitchAppView>

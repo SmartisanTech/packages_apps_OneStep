@@ -38,6 +38,8 @@
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+            <include layout="@layout/switch_app"/>
+
             <com.smartisanos.sidebar.view.SidebarListView
                 android:id="@+id/ongoinglist"
                 android:layout_width="match_parent"

@@ -19,7 +19,9 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.AddContactManager;
+import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.AddContactManager.AddContactItem;
 
 public class SettingActivity extends BaseActivity {
@@ -90,6 +92,18 @@ public class SettingActivity extends BaseActivity {
                 startAddResolveInfoGroupActivtiy();
             }
         });
+
+        mSidebarSwitch = (SettingItemSwitch) findViewById(R.id.switch_for_switch_app);
+        mSidebarSwitch.setChecked(Utils.isSwitchAppAvailable(getApplicationContext()));
+        mSidebarSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView,
+                            boolean isChecked) {
+                        Utils.setSwitchAppAvailable(getApplicationContext(), isChecked);
+                        SidebarController.getInstance(getApplicationContext()).setSwitchAppAvailable(isChecked);
+                    }
+                });
+
     }
 
     @Override
