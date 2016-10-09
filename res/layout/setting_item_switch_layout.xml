@@ -31,7 +31,7 @@
         android:layout_centerVertical="true"
         android:singleLine="true"
         android:textColor="@color/setting_item_text_color"
-        android:textSize="18dp" />
+        android:textSize="18sp" />
     <smartisanos.widget.SwitchEx
         android:id="@+id/item_switch"
         android:layout_width="wrap_content"
