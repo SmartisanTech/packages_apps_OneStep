@@ -1,38 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.smartisanos.sidebar.setting.AppPickerSubView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="116dp"
-    android:layout_height="132dp">
+    android:layout_width="102.6dp"
+    android:layout_height="118.56dp">
     <View
         android:id="@+id/background_view"
-        android:layout_width="95.75dp"
-        android:layout_height="111.72dp"
-        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/app_select_bg"/>
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="54.72dp"
-        android:layout_height="54.72dp"
+        android:layout_width="54.7dp"
+        android:layout_height="54.7dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30.79dp"
-        android:adjustViewBounds="true"/>
+        android:layout_marginTop="25.1dp"/>
     <TextView
         android:id="@+id/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="98dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:paddingBottom="20.5dp"
+        android:paddingBottom="16dp"
+        android:paddingLeft="6.8dp"
+        android:paddingRight="6.8dp"
         android:gravity="center"
         android:singleLine="true"
         android:textColor="#9a000000"
         android:textSize="11.4dp"/>
     <ImageView
         android:id="@+id/selected"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="34.2dp"
+        android:layout_height="34.2dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/icon_normal"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:src="@drawable/checked"
-        android:visibility="invisible"/>
+        android:layout_alignParentTop="true"/>
 </com.smartisanos.sidebar.setting.AppPickerSubView>

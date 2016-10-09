@@ -55,12 +55,11 @@ public class AppPickerSubView extends RelativeLayout {
     public void setSelected(boolean selected) {
         if (mSelected != selected) {
             mSelected = selected;
-            mSelectedView.setVisibility(mSelected ? View.VISIBLE : View.INVISIBLE);
-            if (mSelected) {
-                mBackgroundView.setBackgroundResource(R.drawable.app_select_bg_selected);
-            } else {
-                mBackgroundView.setBackgroundResource(R.drawable.app_select_bg);
-            }
+            mSelectedView.setImageResource(mSelected ? R.drawable.icon_selected
+                    : R.drawable.icon_normal);
+            mBackgroundView
+                    .setBackgroundResource(mSelected ? R.drawable.app_select_bg_selected
+                            : R.drawable.app_select_bg);
         }
     }
 

@@ -1,38 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.smartisanos.sidebar.setting.AppPickerSubView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="102dp"
-    android:layout_height="116dp">
+    android:layout_width="90dp"
+    android:layout_height="104dp">
     <View
         android:id="@+id/background_view"
-        android:layout_width="84dp"
-        android:layout_height="98dp"
-        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/app_select_bg"/>
     <ImageView
         android:id="@+id/icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="27dp"
-        android:adjustViewBounds="true"/>
+        android:layout_marginTop="22dp"/>
     <TextView
         android:id="@+id/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="86dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:paddingBottom="18dp"
+        android:paddingBottom="14dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
         android:gravity="center"
         android:singleLine="true"
         android:textColor="#9a000000"
         android:textSize="10dp"/>
     <ImageView
         android:id="@+id/selected"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/icon_normal"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:src="@drawable/checked"
-        android:visibility="invisible"/>
+        android:layout_alignParentTop="true"/>
 </com.smartisanos.sidebar.setting.AppPickerSubView>

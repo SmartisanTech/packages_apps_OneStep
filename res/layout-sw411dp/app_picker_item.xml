@@ -2,38 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
     <View
         android:id="@+id/space_top"
         android:layout_width="match_parent"
-        android:layout_height="14dp"/>
+        android:layout_height="22.8dp"/>
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="3dp"
+        android:gravity="center_horizontal"
+        android:paddingBottom="17dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <include
             layout="@layout/app_picker_sub_item"
-            android:id="@+id/app_picker_sub_view_1"
-            android:layout_centerVertical="true"/>
+            android:id="@+id/app_picker_sub_view_1"/>
         <View
-            android:layout_width="3dp"
+            android:layout_width="17dp"
             android:layout_height="match_parent"/>
         <include
             layout="@layout/app_picker_sub_item"
-            android:id="@+id/app_picker_sub_view_2"
-            android:layout_centerVertical="true"/>
+            android:id="@+id/app_picker_sub_view_2"/>
         <View
-            android:layout_width="3dp"
+            android:layout_width="17dp"
             android:layout_height="match_parent"/>
         <include
             layout="@layout/app_picker_sub_item"
-            android:id="@+id/app_picker_sub_view_3"
-            android:layout_centerVertical="true"/>
-        </LinearLayout>
-    <View
-        android:id="@+id/space_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="14dp"/>
+            android:id="@+id/app_picker_sub_view_3"/>
+    </LinearLayout>
 </LinearLayout>
