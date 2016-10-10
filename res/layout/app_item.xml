@@ -6,7 +6,6 @@
     android:paddingTop="@dimen/sidebar_list_item_padding_top"
     android:paddingBottom="3dp">
     <RelativeLayout
-        android:background="@drawable/icon_background"
         android:layout_width="48dp"
         android:layout_height="48dp">
         <ImageView

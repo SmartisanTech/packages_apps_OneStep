@@ -3,7 +3,7 @@
     xmlns:sidebar="http://schemas.android.com/apk/res/com.smartisanos.sidebar"
     android:descendantFocusability="afterDescendants"
     android:fitsSystemWindows="true"
-    android:background="#4c000000"
+    android:background="@color/dim_color"
     android:focusable="true" >
     <include layout="@layout/photo_view_group"
         android:visibility="invisible"/>

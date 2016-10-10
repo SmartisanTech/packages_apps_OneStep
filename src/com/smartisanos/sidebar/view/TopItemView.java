@@ -27,8 +27,9 @@ public class TopItemView extends FrameLayout implements ITopItem {
     private ImageView mIcon;
     private View mBackDimView;
     private View mTopDimView;
+    private boolean mDim = false;
 
-    private int mTextResId, mIconResId;
+    private int mTextResId, mIconResId, mIconDimResId;
 
     private int mIconContentPaddingTop = 0;
 
@@ -67,21 +68,24 @@ public class TopItemView extends FrameLayout implements ITopItem {
         mTextView.setText(mTextResId);
     }
 
-    public void setIconBackground(int resId) {
+    public void setIconBackground(int resId, int dimResId) {
         mIconResId = resId;
+        mIconDimResId = dimResId;
         mIcon.setBackgroundResource(mIconResId);
     }
 
     public AnimTimeLine dim(){
-        setClickable(false);
-        mBackDimView.setVisibility(View.GONE);
         Anim anim = new Anim(mTopDimView, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
         AnimTimeLine timeLine = new AnimTimeLine();
         timeLine.addAnim(anim);
         timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
+                setClickable(false);
                 mTopDimView.setVisibility(View.VISIBLE);
+                mBackDimView.setVisibility(View.GONE);
+                mDim = true;
+                updateView();
             }
             @Override
             public void onComplete(int type) {
@@ -92,7 +96,6 @@ public class TopItemView extends FrameLayout implements ITopItem {
 
     public AnimTimeLine highlight() {
         AnimTimeLine timeLine = new AnimTimeLine();
-        mTopDimView.setVisibility(View.GONE);
         Anim scaleAnim = new Anim(mContentGroup, Anim.SCALE, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(1, 1), new Vector3f(1.05f, 1.05f));
         Anim alphaAnim = new Anim(mBackDimView, Anim.TRANSPARENT, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(0, 0, 1));
 
@@ -101,7 +104,10 @@ public class TopItemView extends FrameLayout implements ITopItem {
         timeLine.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
+                mTopDimView.setVisibility(View.GONE);
                 mBackDimView.setVisibility(View.VISIBLE);
+                mDim = false;
+                updateView();
             }
             @Override
             public void onComplete(int type) {
@@ -111,7 +117,6 @@ public class TopItemView extends FrameLayout implements ITopItem {
     }
 
     public AnimTimeLine resume() {
-        setClickable(true);
         AnimTimeLine timeLine = new AnimTimeLine();
         if (mBackDimView.getVisibility() != View.GONE) {
             Anim scaleAnim = new Anim(mContentGroup, Anim.SCALE, ANIM_DURA, Anim.CUBIC_OUT, new Vector3f(1.05f, 1.05f), new Vector3f(1, 1));
@@ -122,6 +127,9 @@ public class TopItemView extends FrameLayout implements ITopItem {
             removeHighLightAnim.setAnimListener(new AnimListener() {
                 @Override
                 public void onStart() {
+                    setClickable(true);
+                    mDim = false;
+                    updateView();
                 }
 
                 @Override
@@ -138,6 +146,9 @@ public class TopItemView extends FrameLayout implements ITopItem {
             alphaAnim.setListener(new AnimListener() {
                 @Override
                 public void onStart() {
+                    setClickable(true);
+                    mDim = false;
+                    updateView();
                 }
                 @Override
                 public void onComplete(int type) {
@@ -181,8 +192,12 @@ public class TopItemView extends FrameLayout implements ITopItem {
         if (mTextResId != 0) {
             mTextView.setText(mTextResId);
         }
-        if (mIconResId != 0) {
+        if (!mDim) {
             mIcon.setBackgroundResource(mIconResId);
+            mTextView.setTextColor(mContext.getColor(R.color.topbar_text_color));
+        } else {
+            mIcon.setBackgroundResource(mIconDimResId);
+            mTextView.setTextColor(mContext.getColor(R.color.topbar_text_dim_color));
         }
     }
 

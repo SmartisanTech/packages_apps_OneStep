@@ -173,11 +173,7 @@ public class SidebarController {
 
     public void setEnabled(boolean enabled) {
         mSidebarRoot.setEnabled(enabled);
-        if(enabled) {
-            mTopView.resumeToNormal();
-        } else {
-            mTopView.dimAll();
-        }
+        mTopView.setEnabled(enabled);
     }
 
     private void AddWindows() {

@@ -41,6 +41,7 @@ public class TopView extends FrameLayout {
 
     private SidebarController mController;
 
+    private DimSpaceView mDisableView;
     private DimSpaceView mLeft, mRight;
     private TopItemView mPhotos, mFile, mClipboard;
 
@@ -84,20 +85,21 @@ public class TopView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        mDisableView = (DimSpaceView) findViewById(R.id.topbar_disable_view);
         mLeft = (DimSpaceView) findViewById(R.id.top_dim_view_left);
         mRight = (DimSpaceView) findViewById(R.id.top_dim_view_right);
 
         mPhotos = (TopItemView) findViewById(R.id.photo);
         mPhotos.setText(R.string.topbar_photo);
-        mPhotos.setIconBackground(R.drawable.topbar_photo);
+        mPhotos.setIconBackground(R.drawable.topbar_photo, R.drawable.topbar_photo_dim);
 
         mFile = (TopItemView) findViewById(R.id.file);
         mFile.setText(R.string.topbar_file);
-        mFile.setIconBackground(R.drawable.topbar_file);
+        mFile.setIconBackground(R.drawable.topbar_file, R.drawable.topbar_file_dim);
 
         mClipboard = (TopItemView) findViewById(R.id.clipboard);
         mClipboard.setText(R.string.topbar_clipboard);
-        mClipboard.setIconBackground(R.drawable.topbar_clipboard);
+        mClipboard.setIconBackground(R.drawable.topbar_clipboard, R.drawable.topbar_clipboard_dim);
 
         mViewToType = new HashMap<ITopItem, ContentType>();
         mViewToType.put(mLeft, ContentType.NONE);
@@ -366,6 +368,15 @@ public class TopView extends FrameLayout {
                 mEnterAnimTimeLine.cancel();
             }
             doAnimWhenExit();
+        }
+    }
+
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (enabled) {
+            mDisableView.resume().start();
+        } else {
+            mDisableView.dim().start();
         }
     }
 }
