@@ -194,10 +194,10 @@ public class TopItemView extends FrameLayout implements ITopItem {
         }
         if (!mDim) {
             mIcon.setBackgroundResource(mIconResId);
-            mTextView.setTextColor(mContext.getColor(R.color.topbar_text_color));
+            mTextView.setTextColor(mContext.getResources().getColor(R.color.topbar_text_color));
         } else {
             mIcon.setBackgroundResource(mIconDimResId);
-            mTextView.setTextColor(mContext.getColor(R.color.topbar_text_dim_color));
+            mTextView.setTextColor(mContext.getResources().getColor(R.color.topbar_text_dim_color));
         }
     }
 
