@@ -45,6 +45,23 @@
     <string name="bookmark_empty_hint">Вы можете в приложениях кликать"Поделиться-Добавить в закладку" или копировать ссылку чтобы добавить статьи или фото в закладку</string>
     <string name="share_component_name">Добавить в избранное</string>
     <string name="bookmark_source">Из:</string>
-    <string name="contact_added">Добавить</string>
+
+    <string name="date_label_today">Сейгодня</string>
+    <string name="date_label_yesterday">Вчера</string>
+    <string name="date_label_last_week">Последние семь дней</string>
+    <string name="date_label_last_month">За месяц</string>
+    <string name="date_label_earlier">Ранее</string>
     <string name="load_more">Более</string>
+
+    <string name="add_item_to_sidebar">Добавить боковой отдел</string>
+    <string name="add_contact_to_sidebar">Добавить контакты</string>
+    <string name="add_app_to_sidebar">Добавить приложение</string>
+    <string name="add_share_to_sidebar">Добавить разделение</string>
+    <string name="switch_previous_app">Переключить к прошлому</string>
+    <string name="switch_previous_app_hint">После включение вы можете кликать на боковом отделе “Переключение” чтобы переключить к предыдущему приложению</string>
+    <string name="contact_added">Добавить</string>
+    <string name="add_at_most_contact_number">Максимално добавить %d ярлыков</string>
+    <string name="add_at_most_app_number">Максимално добавить %d ярлыков для приложений</string>
+    <string name="add_at_most_share_number">Максимално добавить %d ярлыков для разделения</string>
+    <string name="hint_sort_by_long_press">Долго нажмите чтобы менять их порядок</string>
 </resources>

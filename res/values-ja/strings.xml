@@ -45,6 +45,23 @@
     <string name="bookmark_empty_hint">各アプリで「シェア-ブックマークに追加」をタップするか、リンクコピーで文章や画像をブックマークに追加できます</string>
     <string name="share_component_name">ブックマークに追加</string>
     <string name="bookmark_source">ソース:</string>
-    <string name="contact_added">追加されました</string>
+
+    <string name="date_label_today">今日</string>
+    <string name="date_label_yesterday">昨日</string>
+    <string name="date_label_last_week">過去７日</string>
+    <string name="date_label_last_month">１カ月以内</string>
+    <string name="date_label_earlier">更に前</string>
     <string name="load_more">さらに表示</string>
+
+    <string name="add_item_to_sidebar">ステータスバーメニューを追加</string>
+    <string name="add_contact_to_sidebar">ステータスバーに連絡先のクイックアクセスを追加</string>
+    <string name="add_app_to_sidebar">ステータスバーにアプリのクイックアクセスを追加</string>
+    <string name="add_share_to_sidebar">ドラッグ＆シェアのクイックアクセスを追加</string>
+    <string name="switch_previous_app">前のアプリに切り替え</string>
+    <string name="switch_previous_app_hint">起動後、ステータスバーの「切り替えボタン」で前のアプリに切り替えることができます</string>
+    <string name="contact_added">追加されました</string>
+    <string name="add_at_most_contact_number">最大%d件の連絡先を追加できます</string>
+    <string name="add_at_most_app_number">最大%d個のアプリを追加できます</string>
+    <string name="add_at_most_share_number">最大%d個のシェアを追加できます</string>
+    <string name="hint_sort_by_long_press">长按侧边栏上的图标可以调整它们的顺序</string>
 </resources>
