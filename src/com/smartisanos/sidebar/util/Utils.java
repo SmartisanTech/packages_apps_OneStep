@@ -400,6 +400,17 @@ public class Utils {
         public static boolean getValue(Context context, String key) {
             return context.getSharedPreferences(CONFIG_NAME, 0).getBoolean(key, false);
         }
+
+        public static void setIntValue(Context context, String key, int value) {
+            SharedPreferences sp = context.getSharedPreferences(CONFIG_NAME, 0);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putInt(key, value);
+            editor.commit();
+        }
+
+        public static int getIntValue(Context context, String key) {
+            return context.getSharedPreferences(CONFIG_NAME, 0).getInt(key, 0);
+        }
     }
 
     public static final class Interval {
