@@ -380,14 +380,26 @@ public class Utils {
     }
 
     public static boolean isSwitchAppAvailable(Context context) {
-        return context.getSharedPreferences("switchApp", 0).getBoolean("on",false);
+        return Config.getValue(context, "switch_app");
     }
 
-    public static void setSwitchAppAvailable(Context context, boolean on) {
-        SharedPreferences sp = context.getSharedPreferences("switchApp", 0);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putBoolean("on", on);
-        editor.commit();
+    public static void setSwitchAppAvailable(Context context, boolean available) {
+        Config.setValue(context, "switch_app", available);
+    }
+
+    public static final class Config {
+        private static final String CONFIG_NAME = "config";
+
+        public static void setValue(Context context, String key, boolean value) {
+            SharedPreferences sp = context.getSharedPreferences(CONFIG_NAME, 0);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean(key, value);
+            editor.commit();
+        }
+
+        public static boolean getValue(Context context, String key) {
+            return context.getSharedPreferences(CONFIG_NAME, 0).getBoolean(key, false);
+        }
     }
 
     public static final class Interval {

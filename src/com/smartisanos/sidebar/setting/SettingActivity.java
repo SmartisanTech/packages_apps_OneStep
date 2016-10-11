@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -52,10 +54,7 @@ public class SettingActivity extends BaseActivity {
                                 Settings.Global.SIDE_BAR_MODE, isChecked ? 1 : 0);
                         setEnable(isChecked);
                         if(isChecked) {
-                            boolean left = Settings.Global.getInt(
-                                    getContentResolver(), Settings.Global.ONE_HAND_MODE, 1) == 0;
-                            SidebarUtils.requestEnterSidebarMode(left ? BIT_SIDEBAR_IN_LEFT_TOP_MODE
-                                            : BIT_SIDEBAR_IN_RIGHT_TOP_MODE);
+                            enterSidebarMode();
                         }
                     }
                 });
@@ -103,13 +102,28 @@ public class SettingActivity extends BaseActivity {
                         SidebarController.getInstance(getApplicationContext()).setSwitchAppAvailable(isChecked);
                     }
                 });
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         setEnable(isSidebarEnable());
+        if (!Utils.Config.getValue(getApplicationContext(),"enter_sidebar_mode")) {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    enterSidebarMode();
+                    Utils.Config.setValue(getApplicationContext(),"enter_sidebar_mode", true);
+                }
+            }, 500);// waiting for window-animation finished !
+        }
+    }
+
+    private void enterSidebarMode() {
+        boolean left = Settings.Global.getInt(
+                getContentResolver(), Settings.Global.ONE_HAND_MODE, 1) == 0;
+        SidebarUtils.requestEnterSidebarMode(left ? BIT_SIDEBAR_IN_LEFT_TOP_MODE
+                        : BIT_SIDEBAR_IN_RIGHT_TOP_MODE);
     }
 
     private boolean isSidebarEnable() {
