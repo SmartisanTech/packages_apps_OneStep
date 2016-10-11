@@ -65,6 +65,10 @@
                 android:layout_marginTop="@dimen/setting_global_marginTop"
                 android:background="@drawable/selector_setting_sub_item_bg_single"
                 smartisanos:title="@string/switch_previous_app" />
+             <smartisanos.widget.TipsView
+                 android:id="@+id/switch_app_tip"
+                 style="@style/SettingItemTipsStyle"
+                 android:text="@string/switch_previous_app_hint"/>
         </LinearLayout>
     </ScrollView>
     <include layout="@layout/title_bar_shadow"/>
