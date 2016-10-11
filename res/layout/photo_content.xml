@@ -17,6 +17,10 @@
         android:id="@+id/content_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:overScrollMode="always"
         android:divider="@null"
         android:listSelector="@android:color/transparent"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/recent_photo_padding_bottom"/>
 </LinearLayout>

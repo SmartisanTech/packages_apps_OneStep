@@ -11,9 +11,10 @@
         android:gravity="left|center_vertical"
         android:textSize="10dp"
         android:textColor="@color/content_view_interval_time_color"
-        android:background="@color/content_view_interval_background_color"
+        android:background="@drawable/content_view_title_divider"
         android:visibility="gone"
-        android:paddingLeft="15dp"/>
+        android:paddingLeft="15dp"
+        android:layout_marginBottom="@dimen/recent_photo_padding_bottom"/>
 
     <LinearLayout
         android:orientation="horizontal"

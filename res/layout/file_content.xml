@@ -17,5 +17,6 @@
         android:id="@+id/recentfile_listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:overScrollMode="always"
         android:divider="@drawable/list_view_divider"/>
 </LinearLayout>

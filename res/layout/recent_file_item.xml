@@ -6,7 +6,7 @@
         android:layout_height="24dp"
         android:layout_width="match_parent"
         android:gravity="left|center_vertical"
-        android:background="@color/content_view_interval_background_color"
+        android:background="@drawable/content_view_title_divider"
         android:textSize="10dp"
         android:textColor="@color/content_view_interval_time_color"
         android:paddingLeft="15dp"/>
