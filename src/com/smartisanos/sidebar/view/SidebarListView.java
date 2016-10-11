@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
@@ -22,6 +23,9 @@ import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SidebarListView extends ListView {
     private static final LOG log = LOG.getInstance(SidebarListView.class);
@@ -349,5 +353,26 @@ public class SidebarListView extends ListView {
             toY += view.getHeight();
         }
         moveAnimTimeLine.start();
+    }
+
+    public List<View> shownViewList(int contentViewY) {
+        List<View> views = new ArrayList<View>();
+        int listTop = getTop();
+        int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            View view = getChildAt(i);
+            if (view == null) {
+                continue;
+            }
+//            if (mFootView != null && mFootView == view) {
+//                continue;
+//            }
+            int top = listTop + view.getTop();
+            int bottom = listTop + view.getBottom();
+            if (top + contentViewY <= Constants.WindowHeight && bottom + contentViewY >= 0) {
+                views.add(view);
+            }
+        }
+        return views;
     }
 }

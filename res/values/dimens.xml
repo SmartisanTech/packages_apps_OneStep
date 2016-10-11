@@ -25,10 +25,11 @@
     <dimen name="item_block_gap">5dip</dimen>
     <dimen name="setting_global_marginTop">9dp</dimen>
     <dimen name="setting_global_marginBottom">9dp</dimen>
-    
+
     <dimen name="icon_settings_icon_margin_left">20dip</dimen>
     <dimen name="icon_settings_author_margin_left">6dip</dimen>
     <dimen name="icon_settings_author_margin_right">27dip</dimen>
 
     <dimen name="sidebar_list_item_padding_top">3dp</dimen>
+    <dimen name="sidebar_list_anim_padding">8dp</dimen>
 </resources>

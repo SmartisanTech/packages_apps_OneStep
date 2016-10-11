@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <View
+        android:id="@+id/view_icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="@dimen/sidebar_list_item_padding_top"

@@ -32,6 +32,9 @@ import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.util.anim.AnimTimeLine;
 import com.smartisanos.sidebar.util.anim.Vector3f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SideView extends RelativeLayout {
     private static final LOG log = LOG.getInstance(SideView.class);
 
@@ -192,11 +195,11 @@ public class SideView extends RelativeLayout {
 
     public void requestStatus(SidebarStatus status) {
         if(status == SidebarStatus.NORMAL) {
-            mSideViewContentDragged.setVisibility(GONE);
-            mSideViewContentNormal.setVisibility(VISIBLE);
+            //show mSideViewContentNormal
+            onDragEnd(null);
         } else {
-            mSideViewContentDragged.setVisibility(VISIBLE);
-            mSideViewContentNormal.setVisibility(GONE);
+            //show mSideViewContentDragged
+            onDragStart(null);
         }
     }
 
@@ -237,28 +240,52 @@ public class SideView extends RelativeLayout {
         if (mSwitchContentAnim != null) {
             mSwitchContentAnim.cancel();
         }
+        int deltaWidth = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_list_anim_padding);
         boolean leftMode = (SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
-        int outTo = leftMode ? -getWidth() : getWidth();
-        Anim moveOut = new Anim(mSideViewContentNormal, Anim.MOVE, 200, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(outTo, 0));
-        moveOut.setListener(new AnimListener() {
-            @Override
-            public void onStart() {
-            }
-
-            @Override
-            public void onComplete(int type) {
-                mSideViewContentNormal.setVisibility(GONE);
-            }
-        });
-        mOngoingListFake.onDragStart(event);
-        mContactListFake.onDragStart(event);
-        mShareList.onDragStart(event);
-        mSideViewContentDragged.setTranslationX(outTo);
-        Anim moveIn = new Anim(mSideViewContentDragged, Anim.MOVE, 200, Anim.CUBIC_OUT, new Vector3f(outTo, 0), new Vector3f());
-        moveIn.setDelay(150);
+        int width = getWidth() + deltaWidth;
+        int outTo = leftMode ? -width : width;
         mSwitchContentAnim = new AnimTimeLine();
-        mSwitchContentAnim.addAnim(moveOut);
-        mSwitchContentAnim.addAnim(moveIn);
+        int[] contentLoc = new int[2];
+        mSideViewContentNormal.getLocationOnScreen(contentLoc);
+        int time = 300;
+        final List<View> disappearViews = new ArrayList<View>();
+        Anim hideSwitchAppViewDivider = null;
+        if (mSwitchAppView.getVisibility() == VISIBLE) {
+            disappearViews.add(mSwitchAppView.getIconView());
+            Vector3f alphaFrom = new Vector3f(0, 0, 1);
+            Vector3f alphaTo   = new Vector3f(0, 0, 0);
+            hideSwitchAppViewDivider = new Anim(mSwitchAppView.getDivider(), Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+        }
+        disappearViews.addAll(mOngoingList.shownViewList(contentLoc[1]));
+        disappearViews.addAll(mContactList.shownViewList(contentLoc[1]));
+        disappearViews.addAll(mAppList.shownViewList(contentLoc[1]));
+        if (disappearViews.size() > 0) {
+            Vector3f scaleFrom = new Vector3f(1, 1);
+            Vector3f scaleTo   = new Vector3f(0.2f, 0.2f);
+            Vector3f alphaFrom = new Vector3f(0, 0, 1);
+            Vector3f alphaTo   = new Vector3f(0, 0, 0);
+            int count = disappearViews.size();
+            for (int i = 0; i < count; i++) {
+                View view = disappearViews.get(i);
+                Anim scale = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, scaleFrom, scaleTo);
+                Anim alpha = new Anim(view, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+                mSwitchContentAnim.addAnim(scale);
+                mSwitchContentAnim.addAnim(alpha);
+            }
+        }
+
+        if (event != null) {
+            mOngoingListFake.onDragStart(event);
+            mContactListFake.onDragStart(event);
+            mShareList.onDragStart(event);
+        }
+        mSideViewContentDragged.setTranslationX(outTo);
+        Anim inAnim = new Anim(mSideViewContentDragged, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(outTo, 0), new Vector3f());
+        inAnim.setDelay(time / 4);
+        if (hideSwitchAppViewDivider != null) {
+            mSwitchContentAnim.addAnim(hideSwitchAppViewDivider);
+        }
+        mSwitchContentAnim.addAnim(inAnim);
         mSwitchContentAnim.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
@@ -268,6 +295,16 @@ public class SideView extends RelativeLayout {
             @Override
             public void onComplete(int type) {
                 if (mSwitchContentAnim != null) {
+                    int count = disappearViews.size();
+                    for (int i = 0; i < count; i++) {
+                        View view = disappearViews.get(i);
+                        view.setAlpha(1);
+                        view.setScaleX(1);
+                        view.setScaleY(1);
+                    }
+                    if (mSwitchAppView.getVisibility() == VISIBLE) {
+                        mSwitchAppView.getDivider().setAlpha(1);
+                    }
                     mSideViewContentNormal.setVisibility(GONE);
                     mSideViewContentDragged.setVisibility(VISIBLE);
                     mSideViewContentDragged.setTranslationX(0);
@@ -282,42 +319,64 @@ public class SideView extends RelativeLayout {
         if (mSwitchContentAnim != null) {
             mSwitchContentAnim.cancel();
         }
+        int deltaWidth = mContext.getResources().getDimensionPixelSize(R.dimen.sidebar_list_anim_padding);
         boolean leftMode = (SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
-        int outTo = leftMode ? -getWidth() : getWidth();
-        Anim moveOut = new Anim(mSideViewContentDragged, Anim.MOVE, 200, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(outTo, 0));
-        moveOut.setListener(new AnimListener() {
-            @Override
-            public void onStart() {
-
-            }
-
-            @Override
-            public void onComplete(int type) {
-                mSideViewContentDragged.setVisibility(GONE);
-                mSideViewContentNormal.setVisibility(VISIBLE);
-                mOngoingListFake.onDragEnd();
-                mContactListFake.onDragEnd();
-                mShareList.onDragEnd();
-            }
-        });
-        mSideViewContentNormal.setTranslationX(outTo);
-        Anim moveIn = new Anim(mSideViewContentNormal, Anim.MOVE, 200, Anim.CUBIC_OUT, new Vector3f(outTo, 0), new Vector3f());
-        moveIn.setDelay(150);
-
+        int width = getWidth() + deltaWidth;
+        int outTo = leftMode ? -width : width;
+        int time = 300;
+        int[] contentLoc = new int[2];
+        mSideViewContentNormal.getLocationOnScreen(contentLoc);
+        final List<View> disappearViews = new ArrayList<View>();
+        if (mSwitchAppView.getVisibility() == VISIBLE) {
+            disappearViews.add(mSwitchAppView.getIconView());
+        }
+        disappearViews.addAll(mOngoingList.shownViewList(contentLoc[1]));
+        disappearViews.addAll(mContactList.shownViewList(contentLoc[1]));
+        disappearViews.addAll(mAppList.shownViewList(contentLoc[1]));
         mSwitchContentAnim = new AnimTimeLine();
-        mSwitchContentAnim.addAnim(moveOut);
-        mSwitchContentAnim.addAnim(moveIn);
+        int subViewCount = disappearViews.size();
+        if (subViewCount > 0) {
+            AnimTimeLine timeLine = new AnimTimeLine();
+            Vector3f scaleFrom = new Vector3f(0.2f, 0.2f);
+            Vector3f scaleTo   = new Vector3f(1, 1);
+            Vector3f alphaFrom = new Vector3f(0, 0, 0);
+            Vector3f alphaTo   = new Vector3f(0, 0, 1);
+            for (int i = 0; i < subViewCount; i++) {
+                View view = disappearViews.get(i);
+                Anim scale = new Anim(view, Anim.SCALE, time, Anim.CUBIC_OUT, scaleFrom, scaleTo);
+                Anim alpha = new Anim(view, Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+                timeLine.addAnim(scale);
+                timeLine.addAnim(alpha);
+            }
+            timeLine.setDelay(time / 4);
+            mSwitchContentAnim.addTimeLine(timeLine);
+        }
+
+        Anim outAnim = new Anim(mSideViewContentDragged, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(), new Vector3f(outTo, 0));
+        mSwitchContentAnim.addAnim(outAnim);
         mSwitchContentAnim.setAnimListener(new AnimListener() {
             @Override
             public void onStart() {
+                mSideViewContentNormal.setVisibility(VISIBLE);
             }
 
             @Override
             public void onComplete(int type) {
                 if (mSwitchContentAnim != null) {
-                    mSideViewContentNormal.setTranslationX(0);
-                    mSideViewContentDragged.setTranslationX(0);
+                    int count = disappearViews.size();
+                    for (int i = 0; i < count; i++) {
+                        View view = disappearViews.get(i);
+                        view.setAlpha(1);
+                        view.setScaleX(1);
+                        view.setScaleY(1);
+                    }
+
+                    mOngoingListFake.onDragEnd();
+                    mContactListFake.onDragEnd();
+                    mShareList.onDragEnd();
+
                     mSideViewContentNormal.setVisibility(VISIBLE);
+                    mSideViewContentDragged.setTranslationX(0);
                     mSideViewContentDragged.setVisibility(GONE);
                     mSwitchContentAnim = null;
                 }
