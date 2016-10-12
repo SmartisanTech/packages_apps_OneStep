@@ -15,6 +15,7 @@ import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
+import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
@@ -71,6 +72,7 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
                     Utils.dismissAllDialog(mContext);
+                    Tracker.onClick(Tracker.EVENT_OPEN_PIC, "0");
                 }catch (ActivityNotFoundException e) {
                     // NA
                 }
@@ -110,6 +112,7 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
                     RecentPhotoViewGroup.this.setVisibility(View.GONE);
                     RecentPhotoManager.getInstance(mContext).clear();
                     mAdapter.clearCache();
+                    Tracker.onClick(Tracker.EVENT_MAKESURE_CLEAN, "0");
                 }
             });
             timeLine.start();
@@ -179,6 +182,7 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
             });
             timeLine.start();
         }
+        Tracker.onClick(Tracker.EVENT_TOPBAR, "0");
     }
 
     public void dismiss(boolean anim) {

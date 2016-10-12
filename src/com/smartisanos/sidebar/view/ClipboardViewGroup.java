@@ -12,6 +12,7 @@ import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentClipManager;
+import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
@@ -97,6 +98,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                     ClipboardViewGroup.this.setAlpha(1);
                     RecentClipManager.getInstance(mContext).clear();
                     ClipboardViewGroup.this.setVisibility(View.GONE);
+                    Tracker.onClick(Tracker.EVENT_MAKESURE_CLEAN, "2");
                 }
             });
             timeLine.start();
@@ -169,6 +171,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
             });
             timeLine.start();
         }
+        Tracker.onClick(Tracker.EVENT_TOPBAR, "2");
     }
 
     public void dismiss(boolean anim) {

@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.util.FileInfo;
+import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.Utils;
 
 import android.content.Context;
@@ -73,6 +74,7 @@ public class RecentFileItemView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 Utils.openFile(mContext, info);
+                Tracker.onClick(Tracker.EVENT_OPEN_DOC);
             }
         });
         setOnLongClickListener(new View.OnLongClickListener() {

@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 import smartisanos.app.MenuDialog;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.util.Tracker;
 
 public class ClearListener implements View.OnClickListener {
     private Runnable action;
@@ -35,6 +36,20 @@ public class ClearListener implements View.OnClickListener {
         }
         if (!mDialog.isShowing()) {
             mDialog.show();
+        }
+        switch (mTitleResId) {
+            case R.string.title_confirm_delete_history_photo : {
+                Tracker.onClick(Tracker.EVENT_CLEAN, "0");
+                break;
+            }
+            case R.string.title_confirm_delete_history_file : {
+                Tracker.onClick(Tracker.EVENT_CLEAN, "1");
+                break;
+            }
+            case R.string.title_confirm_delete_history_clipboard : {
+                Tracker.onClick(Tracker.EVENT_CLEAN, "2");
+                break;
+            }
         }
     }
 

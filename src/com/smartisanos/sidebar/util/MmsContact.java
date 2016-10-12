@@ -98,6 +98,7 @@ public class MmsContact extends ContactItem {
             intent.putExtra("need_finish", true);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
+            Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "2");
             return true;
         } catch (ActivityNotFoundException e) {
             // NA

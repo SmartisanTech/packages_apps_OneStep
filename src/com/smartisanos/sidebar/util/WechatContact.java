@@ -95,6 +95,7 @@ public class WechatContact extends ContactItem {
 
         try {
             LaunchApp.start(mContext, intent, true, PKG_NAME, mUid);
+            Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "0");
             return true;
         } catch (ActivityNotFoundException e) {
             // NA

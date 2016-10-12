@@ -25,12 +25,14 @@ import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.util.AppItem;
 import com.smartisanos.sidebar.util.AppManager;
 import com.smartisanos.sidebar.util.Constants;
+import com.smartisanos.sidebar.util.ContactManager;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.OngoingManager;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
 import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
+import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 import com.smartisanos.sidebar.view.ContentView;
@@ -152,6 +154,8 @@ public class SidebarController {
     }
 
     private void start(){
+        Tracker.onClick(Tracker.EVENT_ONLAUNCH, null);
+
         updateTopViewWindowBySidebarMode();
         updateContentViewWindowBySidebarMode();
         updateSideViewWindowBySidebarMode();
@@ -172,6 +176,10 @@ public class SidebarController {
         dismissContent(false);
         RecentPhotoManager.getInstance(mContext).stopObserver();
         RecentFileManager.getInstance(mContext).stopFileObserver();
+
+        mSideView.reportToTracker();
+        ContactManager.getInstance(mContext).reportToTracker();
+        Tracker.flush();
     }
 
     public void setEnabled(boolean enabled) {

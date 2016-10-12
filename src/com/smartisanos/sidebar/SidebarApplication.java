@@ -14,6 +14,7 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.MailContactsHelper;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.ThreadVerify;
+import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.UserPackage;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
 
@@ -47,11 +48,13 @@ public class SidebarApplication extends Application {
         dateFilter.addAction(Intent.ACTION_TIME_CHANGED);
         dateFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
         registerReceiver(mDateTimeReceiver, dateFilter);
+        Tracker.init(this);
     }
 
     @Override
     public void onTerminate() {
         super.onTerminate();
+        Tracker.flush();
         UserPackage.unregisterCallback(this);
         myself = null;
         RecentFileManager.getInstance(getApplicationContext()).stopFileObserver();

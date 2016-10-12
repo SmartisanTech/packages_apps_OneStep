@@ -95,6 +95,7 @@ public class MailContact extends ContactItem {
 
         try {
             mContext.startActivity(intent);
+            Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "3");
             return true;
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();

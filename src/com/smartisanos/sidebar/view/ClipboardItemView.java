@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.util.FileInfo;
+import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.Utils;
 
 import android.content.Context;
@@ -72,9 +73,10 @@ public class ClipboardItemView extends LinearLayout {
         setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              Utils.copyText(mContext, item.mContent, false);
-              Utils.resumeSidebar(mContext);
-              Toast.makeText(mContext, mContext.getResources().getString(R.string.text_copied), Toast.LENGTH_SHORT, WindowManager.LayoutParams.TYPE_SYSTEM_ERROR).show();
+                Utils.copyText(mContext, item.mContent, false);
+                Utils.resumeSidebar(mContext);
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.text_copied), Toast.LENGTH_SHORT, WindowManager.LayoutParams.TYPE_SYSTEM_ERROR).show();
+                Tracker.onClick(Tracker.EVENT_COPY);
             }
         });
 

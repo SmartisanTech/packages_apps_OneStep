@@ -268,4 +268,40 @@ public class ContactManager extends DataManager{
             }
         }
     }
+
+    public void reportToTracker() {
+        int countWechat = 0;
+        int countDingDing = 0;
+        int countMms = 0;
+        int countEmail = 0;
+        synchronized (mContacts) {
+            for (ContactItem item : mContacts) {
+                if (item instanceof WechatContact) {
+                    countWechat++;
+                } else if (item instanceof DingDingContact) {
+                    countDingDing++;
+                } else if (item instanceof MmsContact) {
+                    countMms++;
+                } else if (item instanceof MailContact) {
+                    countEmail++;
+                }
+            }
+        }
+        if (countWechat > 0) {
+            Tracker.onAttach(Tracker.STATUS_APPNAME, "wechat_contacts",
+                    countWechat + "");
+        }
+        if (countDingDing > 0) {
+            Tracker.onAttach(Tracker.STATUS_APPNAME, "dingding_contacts",
+                    countDingDing + "");
+        }
+        if (countMms > 0) {
+            Tracker.onAttach(Tracker.STATUS_APPNAME, "message_contacts",
+                    countMms + "");
+        }
+        if (countEmail > 0) {
+            Tracker.onAttach(Tracker.STATUS_APPNAME, "email_contacts",
+                    countEmail + "");
+        }
+    }
 }

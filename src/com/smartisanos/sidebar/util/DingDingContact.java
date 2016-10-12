@@ -83,6 +83,7 @@ public class DingDingContact extends ContactItem {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         try {
             LaunchApp.start(mContext, intent, true, PKG_NAME, systemUid);
+            Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "1");
             return true;
         } catch (ActivityNotFoundException e) {
             // NA

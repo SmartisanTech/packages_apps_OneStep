@@ -26,6 +26,7 @@ import com.smartisanos.sidebar.util.AppItem;
 import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
+import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
@@ -128,6 +129,7 @@ public class SideView extends RelativeLayout {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setPackage(mContext.getPackageName());// ourself
                 mContext.startActivity(intent);
+                Tracker.onClick(Tracker.EVENT_SET);
             }
         });
 
@@ -449,6 +451,7 @@ public class SideView extends RelativeLayout {
         public void onClick(View v) {
             Utils.dismissAllDialog(mContext);
             Utils.launchPreviousApp(mContext);
+            Tracker.onClick(Tracker.EVENT_CLICK_CHANGE);
         }
     };
 
@@ -460,6 +463,7 @@ public class SideView extends RelativeLayout {
                 AppItem ai = (AppItem) mAppAdapter.getItem(position);
                 Utils.dismissAllDialog(mContext);
                 ai.openUI(mContext);
+                Tracker.onEvent(Tracker.EVENT_CLICK_APP, null, 0, ai.getPackageName());
             }
         }
     };
@@ -518,6 +522,21 @@ public class SideView extends RelativeLayout {
             mDimView.resume().start();
         } else {
             mDimView.dim().start();
+        }
+    }
+
+    public void reportToTracker() {
+        if (mAppAdapter != null) {
+            int count = mAppAdapter.getCount();
+            if (count != 0) {
+                Tracker.onAttach(Tracker.STATUS_APPNAME, "app_num", count + "");
+            }
+        }
+        if (mResolveAdapter != null) {
+            int count = mResolveAdapter.getCount();
+            if (count != 0) {
+                Tracker.onAttach(Tracker.STATUS_APPNAME, "share_num", count + "");
+            }
         }
     }
 }

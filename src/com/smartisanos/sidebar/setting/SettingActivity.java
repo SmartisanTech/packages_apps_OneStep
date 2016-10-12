@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.AddContactManager;
+import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.AddContactManager.AddContactItem;
 
@@ -63,6 +64,7 @@ public class SettingActivity extends BaseActivity {
                         if(isChecked) {
                             enterSidebarMode();
                         }
+                        Tracker.onStatusDataChanged(Tracker.EVENT_SWITCH, null, isChecked ? "1" : "0");
                     }
                 });
 

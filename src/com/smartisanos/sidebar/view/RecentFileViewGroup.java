@@ -5,6 +5,7 @@ import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.IEmpty;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentFileManager;
+import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
@@ -92,6 +93,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
                     RecentFileViewGroup.this.setAlpha(1);
                     RecentFileViewGroup.this.setVisibility(View.GONE);
                     RecentFileManager.getInstance(mContext).clear();
+                    Tracker.onClick(Tracker.EVENT_MAKESURE_CLEAN, "1");
                 }
             });
             timeLine.start();
@@ -169,6 +171,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
             });
             timeLine.start();
         }
+        Tracker.onClick(Tracker.EVENT_TOPBAR, "1");
     }
 
     public void dismiss(boolean anim) {

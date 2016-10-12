@@ -20,6 +20,7 @@ import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.ImageInfo;
 import com.smartisanos.sidebar.util.ImageLoader;
+import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.Utils;
 
 import java.io.File;
@@ -104,6 +105,7 @@ public class PhotoLineSubView extends FrameLayout {
             @Override
             public void onClick(View v) {
                 Utils.openPhotoWithGallery(v.getContext(), imageInfo);
+                Tracker.onClick(Tracker.EVENT_OPEN_PIC, "1");
             }
         });
 
