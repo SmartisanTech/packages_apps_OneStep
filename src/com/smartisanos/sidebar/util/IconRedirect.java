@@ -2,6 +2,7 @@ package com.smartisanos.sidebar.util;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import com.smartisanos.sidebar.R;
@@ -21,6 +22,9 @@ public class IconRedirect {
     public static Drawable getRedirectIcon(String pkg, String cmp, Context context) {
         if (context == null || pkg == null || cmp == null) {
             return null;
+        }
+        if (Constants.CALENDAR_PACKAGE.equals(pkg)) {
+            return new BitmapDrawable(CalendarIcon.getCalendarIconBitmap());
         }
         try {
             for (Component component : REDIRECT_ARR) {

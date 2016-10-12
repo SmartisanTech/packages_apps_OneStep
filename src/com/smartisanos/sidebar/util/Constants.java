@@ -11,6 +11,8 @@ import com.smartisanos.sidebar.R;
 public class Constants {
     private static final LOG log = LOG.getInstance(Constants.class);
 
+    public static final String CALENDAR_PACKAGE = "com.android.calendar";
+
     public static int WindowWidth;
     public static int WindowHeight;
 

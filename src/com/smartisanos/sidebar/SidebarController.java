@@ -22,11 +22,14 @@ import android.widget.FrameLayout;
 
 import com.android.internal.sidebar.ISidebar;
 import com.android.internal.sidebar.ISidebarService;
+import com.smartisanos.sidebar.util.AppItem;
 import com.smartisanos.sidebar.util.AppManager;
+import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.OngoingManager;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.RecentPhotoManager;
+import com.smartisanos.sidebar.util.ResolveInfoGroup;
 import com.smartisanos.sidebar.util.ResolveInfoManager;
 import com.smartisanos.sidebar.util.Utils;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
@@ -336,6 +339,21 @@ public class SidebarController {
 
     public void setSwitchAppAvailable(boolean available) {
         mSideView.setSwitchAppAvailable(available);
+    }
+
+    public void refreshCalendarView() {
+        for (AppItem item : AppManager.getInstance(mContext).getAddedAppItem()) {
+            if (Constants.CALENDAR_PACKAGE.equals(item.getPackageName())) {
+                item.clearAvatarCache();
+            }
+        }
+
+        for (ResolveInfoGroup info : ResolveInfoManager.getInstance(mContext).getAddedResolveInfoGroup()) {
+            if (Constants.CALENDAR_PACKAGE.equals(info.getPackageName())) {
+                info.clearAvatarCache();
+            }
+        }
+        getSideView().notifyDataSetChanged();
     }
 
     private final ISidebar.Stub mBinder = new ISidebar.Stub() {

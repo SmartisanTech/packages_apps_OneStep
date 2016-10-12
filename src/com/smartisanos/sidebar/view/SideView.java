@@ -186,6 +186,11 @@ public class SideView extends RelativeLayout {
         });
     }
 
+    public void notifyDataSetChanged() {
+        mAppAdapter.notifyDataSetChanged();
+        mResolveAdapter.notifyDataSetChanged();
+    }
+
     public void setSwitchAppAvailable(boolean available) {
         if(mSwitchAppAvailable != available) {
             mSwitchAppAvailable = available;

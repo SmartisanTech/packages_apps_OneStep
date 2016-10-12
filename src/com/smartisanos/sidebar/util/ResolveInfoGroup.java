@@ -74,6 +74,13 @@ public class ResolveInfoGroup extends SidebarItem {
         return ret;
     }
 
+    public void clearAvatarCache() {
+        if (mAvatar != null) {
+            mAvatar.clear();
+            mAvatar = null;
+        }
+    }
+
     private Drawable loadIcon() {
         if (size() > 0) {
             ComponentName name = mNames.get(0);

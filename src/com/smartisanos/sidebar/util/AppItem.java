@@ -58,11 +58,22 @@ public class AppItem extends SidebarItem {
         }
         ResolveInfo ri = getResolveInfo();
         if (ri != null) {
-            Drawable ret = ri.loadIcon(mContext.getPackageManager());
+            Drawable ret = IconRedirect.getRedirectIcon(mName.getPackageName(), mName.getClassName(), mContext);
+            if (ret != null) {
+                return ret;
+            }
+            ret = ri.loadIcon(mContext.getPackageManager());
             mAvatar = new SoftReference<Drawable>(ret);
             return ret;
         }
         return null;
+    }
+
+    public void clearAvatarCache() {
+        if(mAvatar != null) {
+            mAvatar.clear();
+            mAvatar = null;
+        }
     }
 
     @Override
