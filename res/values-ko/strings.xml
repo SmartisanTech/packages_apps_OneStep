@@ -56,7 +56,7 @@
     <string name="add_item_to_sidebar">원스텝 내용 추가</string>
     <string name="add_contact_to_sidebar">원스텝 연락처 단축키 추가</string>
     <string name="add_app_to_sidebar">원스텝 어플 단축키 추가</string>
-    <string name="add_share_to_sidebar">원스텝 드래그 공유 단축키 추가</string>
+    <string name="add_share_to_sidebar">드래그 공유 단축키 추가</string>
     <string name="switch_previous_app">이전 어플로 전환</string>
     <string name="switch_previous_app_hint">시작 후，원스텝의 "전환 버튼”을 통해 이전 어플로 빠른 전환</string>
     <string name="contact_added">추가됨</string>

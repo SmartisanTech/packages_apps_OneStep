@@ -3,7 +3,7 @@
 
     <string name="topbar_photo">画像</string>
     <string name="topbar_file">ファイル</string>
-    <string name="topbar_clipboard">クリップボード</string>
+    <string name="topbar_clipboard">ボード</string>
     <string name="topbar_bookmark">ブックマーク</string>
     <string name="title_photo">最近の画像</string>
     <string name="title_file">最近のファイル</string>
@@ -63,5 +63,5 @@
     <string name="add_at_most_contact_number">最大%d件の連絡先を追加できます</string>
     <string name="add_at_most_app_number">最大%d個のアプリを追加できます</string>
     <string name="add_at_most_share_number">最大%d個のシェアを追加できます</string>
-    <string name="hint_sort_by_long_press">长按侧边栏上的图标可以调整它们的顺序</string>
+    <string name="hint_sort_by_long_press">両側アイコンを長く押すと順序調整は可能</string>
 </resources>
