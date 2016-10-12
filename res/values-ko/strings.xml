@@ -30,7 +30,7 @@
     <string name="text_copied">복귀 하였습니다</string>
     <string name="photo_empty_text">사진 기록이 없습니다</string>
     <string name="photo_empty_hint">최근 열어본 사진은 이곳에 나타납니다</string>
-    <string name="file_empty_text">文件记录为空파일 기록이 없습니다</string>
+    <string name="file_empty_text">파일 기록이 없습니다</string>
     <string name="file_empty_hint">최근 열어본 파일은 이곳에 나타납니다</string>
     <string name="clipboard_empty_text">클립보드가 비었습니다</string>
     <string name="clipboard_empty_hint">최근 자르거나 복사한 문자는 이곳에 나타납니다</string>
