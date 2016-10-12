@@ -2,6 +2,7 @@ package com.smartisanos.sidebar.view;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.DragEvent;
@@ -14,6 +15,7 @@ import android.widget.ListView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
+import com.smartisanos.sidebar.util.BitmapUtils;
 import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.SidebarItem;
@@ -115,7 +117,8 @@ public class SidebarListView extends ListView {
                         + ", count -> " + SidebarListView.this.getAdapter().getCount());
             }
             mDragPosition = position;
-            Drawable icon = mDraggedItem.getAvatar();
+            //Drawable icon = mDraggedItem.getAvatar();
+            Drawable icon = new BitmapDrawable(mContext.getResources(), BitmapUtils.drawableToBitmap(mDraggedItem.getAvatar()));
             SidebarController.getInstance(mContext).getSidebarRootView().startDrag(icon, view, viewLoc);
             mSideView.setDraggedList(SidebarListView.this);
             view.setVisibility(View.INVISIBLE);
