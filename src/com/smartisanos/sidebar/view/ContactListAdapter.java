@@ -183,7 +183,7 @@ public class ContactListAdapter extends SidebarAdapter {
         holder.restore();
         boolean isLeftMode = SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT;
         holder.setItem(item, mDragEvent != null, isLeftMode);
-        Utils.setAlwaysCanAcceptDrag(holder.view, true);
+        Utils.setAlwaysCanAcceptDrag(holder.view, mDragEvent != null);
         holder.view.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
@@ -191,7 +191,7 @@ public class ContactListAdapter extends SidebarAdapter {
                 final int action = event.getAction();
                 switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    return true;
+                    return mDragEvent != null;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     FloatText.getInstance(mContext).show(holder.view, holder.mItem.getDisplayName());
                     vh.view.animate().scaleX(SCALE_SIZE).scaleY(SCALE_SIZE)

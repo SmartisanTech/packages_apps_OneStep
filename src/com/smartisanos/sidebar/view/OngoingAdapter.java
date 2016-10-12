@@ -67,14 +67,14 @@ public class OngoingAdapter extends SidebarAdapter {
         ViewHolder vh = (ViewHolder) ret.getTag();
         vh.item = mAccpetableList.get(position);
         vh.updateUI();
-        Utils.setAlwaysCanAcceptDrag(ret, true);
+        Utils.setAlwaysCanAcceptDrag(ret, mDragEvent != null);
         ret.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
                 final int action = event.getAction();
                 switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    return true;
+                    return mDragEvent != null;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     v.animate().scaleX(SCALE_SIZE).scaleY(SCALE_SIZE)
                     .setInterpolator(new AccelerateDecelerateInterpolator())

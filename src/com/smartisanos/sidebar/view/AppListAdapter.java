@@ -204,7 +204,6 @@ public class AppListAdapter extends SidebarAdapter {
         }
         holder.restore();
         holder.setInfo(ai);
-        //Utils.setAlwaysCanAcceptDrag(holder.view, true);
         return holder.view;
     }
 
