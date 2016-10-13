@@ -372,13 +372,17 @@ public class SidebarRootView extends FrameLayout {
                     dropDrag();
                     mTrash.trashDisappearWithAnim(null);
                 }
+                if (mDragView != null) {
+                    // we need action_update to stop scroll !
+                    mSideView.dragObjectMove(event, eventTime);
+                }
                 break;
             }
             case MotionEvent.ACTION_MOVE : {
                 if (ENABLE_TOUCH_LOG) log.error("ACTION_MOVE");
                 if (mDragView != null) {
                     mDragView.move(x, y);
-                    mSideView.dragObjectMove(x, y, eventTime);
+                    mSideView.dragObjectMove(event, eventTime);
                     mTrash.dragObjectMoveTo(x, y);
                 }
                 break;

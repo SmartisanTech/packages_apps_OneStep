@@ -358,23 +358,15 @@ public class SidebarListView extends ListView {
         moveAnimTimeLine.start();
     }
 
-    public List<View> shownViewList(int contentViewY) {
+    public List<View> getViewList() {
         List<View> views = new ArrayList<View>();
-        int listTop = getTop();
         int count = getChildCount();
         for (int i = 0; i < count; i++) {
             View view = getChildAt(i);
             if (view == null) {
                 continue;
             }
-//            if (mFootView != null && mFootView == view) {
-//                continue;
-//            }
-            int top = listTop + view.getTop();
-            int bottom = listTop + view.getBottom();
-            if (top + contentViewY <= Constants.WindowHeight && bottom + contentViewY >= 0) {
-                views.add(view);
-            }
+            views.add(view);
         }
         return views;
     }

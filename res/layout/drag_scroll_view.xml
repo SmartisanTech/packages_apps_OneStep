@@ -1,22 +1,21 @@
-<com.smartisanos.sidebar.view.DragScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:smartisanos="http://schemas.android.com/apk/res/smartisanos"
-    android:id="@+id/sideview_scroll_list"
-    android:scrollbars="none"
-    android:overScrollMode="always"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <FrameLayout
-        android:paddingTop="4dp"
-        android:paddingBottom="96dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+    <com.smartisanos.sidebar.view.DragScrollView
+        android:id="@+id/sideview_scroll_list_dragged"
+        android:visibility="gone"
+        android:scrollbars="none"
+        android:overScrollMode="always"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
         <LinearLayout
             android:id="@+id/side_view_dragged"
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            >
+            android:paddingTop="4dp"
+            android:paddingBottom="96dp">
             <com.smartisanos.sidebar.view.SidebarListView
                 android:id="@+id/ongoinglist_fake"
                 android:layout_width="match_parent"
@@ -33,9 +32,18 @@
                 android:layout_height="wrap_content"
                 />
         </LinearLayout>
+    </com.smartisanos.sidebar.view.DragScrollView>
+    <com.smartisanos.sidebar.view.DragScrollView
+        android:id="@+id/sideview_scroll_list_normal"
+        android:scrollbars="none"
+        android:overScrollMode="always"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
         <LinearLayout
             android:id="@+id/side_view_normal"
             android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="96dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <include layout="@layout/switch_app"/>
@@ -53,5 +61,5 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
-    </FrameLayout>
-</com.smartisanos.sidebar.view.DragScrollView>
+    </com.smartisanos.sidebar.view.DragScrollView>
+</FrameLayout>

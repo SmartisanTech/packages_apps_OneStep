@@ -5,6 +5,7 @@ import com.smartisanos.sidebar.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.widget.ScrollView;
 
 public class DragScrollView extends ScrollView {
@@ -22,6 +23,10 @@ public class DragScrollView extends ScrollView {
     public DragScrollView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mScrollController = new ScrollController(this);
+    }
+
+    public void scrollByMotionEvent(MotionEvent event) {
+        mScrollController.scrollByMotionEvent(event);
     }
 
     @Override
@@ -62,6 +67,32 @@ public class DragScrollView extends ScrollView {
 
         private void setRate(float rate) {
             mRate = 1.0f + getInterpolation(rate) * 3;
+        }
+
+        public boolean scrollByMotionEvent(MotionEvent event) {
+            int action = event.getAction();
+            float rawX = event.getRawX();
+            if (action == MotionEvent.ACTION_MOVE
+                    && (rawX > getLocationOnScreen()[0] && rawX < getLocationOnScreen()[0]
+                            + getWidth())) {
+                float y = event.getRawY() - getLocationOnScreen()[1];
+                if (y < mTopArea && !isScrollUp()) {
+                    setEvent(null);
+                    setRate((mTopArea - y) * 1.0f / mTopArea);
+                    scroll(DIRECTION_DOWN);
+                    return true;
+                } else if (y > mView.getHeight() - mBottomArea
+                        && !isScrollBottom()) {
+                    setEvent(null);
+                    setRate(1 - (mView.getHeight() - y) * 1.0f / mBottomArea);
+                    scroll(DIRECTION_UP);
+                    return true;
+                }
+            }
+            setEvent(null);
+            setRate(0.0f);
+            scroll(DIRECTION_NONE);
+            return false;
         }
 
         public boolean onDragEvent(DragEvent event){
