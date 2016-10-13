@@ -263,12 +263,11 @@ public class SideView extends RelativeLayout {
         mSwitchContentAnim = new AnimTimeLine();
         int time = 300;
         final List<View> disappearViews = new ArrayList<View>();
-        Anim hideSwitchAppViewDivider = null;
         if (mSwitchAppView.getVisibility() == VISIBLE) {
             disappearViews.add(mSwitchAppView.getIconView());
             Vector3f alphaFrom = new Vector3f(0, 0, 1);
             Vector3f alphaTo   = new Vector3f(0, 0, 0);
-            hideSwitchAppViewDivider = new Anim(mSwitchAppView.getDivider(), Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo);
+            mSwitchContentAnim.addAnim(new Anim(mSwitchAppView.getDivider(), Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo));
         }
         disappearViews.addAll(mOngoingList.getViewList());
         disappearViews.addAll(mContactList.getViewList());
@@ -296,9 +295,6 @@ public class SideView extends RelativeLayout {
         mScrollViewDragged.setTranslationX(outTo);
         Anim inAnim = new Anim(mScrollViewDragged, Anim.MOVE, time, Anim.CUBIC_OUT, new Vector3f(outTo, 0), new Vector3f());
         inAnim.setDelay(time / 4);
-        if (hideSwitchAppViewDivider != null) {
-            mSwitchContentAnim.addAnim(hideSwitchAppViewDivider);
-        }
         mSwitchContentAnim.addAnim(inAnim);
         mSwitchContentAnim.setAnimListener(new AnimListener() {
             @Override
@@ -337,15 +333,18 @@ public class SideView extends RelativeLayout {
         boolean leftMode = (SidebarController.getInstance(mContext).getSidebarMode() == SidebarMode.MODE_LEFT);
         int width = getWidth() + deltaWidth;
         int outTo = leftMode ? -width : width;
+        mSwitchContentAnim = new AnimTimeLine();
         int time = 300;
         final List<View> disappearViews = new ArrayList<View>();
         if (mSwitchAppView.getVisibility() == VISIBLE) {
             disappearViews.add(mSwitchAppView.getIconView());
+            Vector3f alphaFrom = new Vector3f(0, 0, 0);
+            Vector3f alphaTo   = new Vector3f(0, 0, 1);
+            mSwitchContentAnim.addAnim(new Anim(mSwitchAppView.getDivider(), Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo));
         }
         disappearViews.addAll(mOngoingList.getViewList());
         disappearViews.addAll(mContactList.getViewList());
         disappearViews.addAll(mAppList.getViewList());
-        mSwitchContentAnim = new AnimTimeLine();
         int subViewCount = disappearViews.size();
         if (subViewCount > 0) {
             AnimTimeLine timeLine = new AnimTimeLine();
