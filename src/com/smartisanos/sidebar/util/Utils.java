@@ -345,6 +345,7 @@ public class Utils {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
             dismissAllDialog(context);
+            Tracker.onClick(Tracker.EVENT_OPEN_PIC, "0");
         } catch (ActivityNotFoundException e) {
             // NA
         }

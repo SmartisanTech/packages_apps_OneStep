@@ -64,18 +64,7 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
         mEmptyView.setButton(R.string.open_gallery, R.drawable.photo_blank_button, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try{
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.setPackage("com.android.gallery3d");
-                    intent.putExtra("package_name", "com.smartisanos.sidebar");
-                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
-                    Utils.dismissAllDialog(mContext);
-                    Tracker.onClick(Tracker.EVENT_OPEN_PIC, "0");
-                }catch (ActivityNotFoundException e) {
-                    // NA
-                }
+                Utils.openGallery(v.getContext());
             }
         });
 
