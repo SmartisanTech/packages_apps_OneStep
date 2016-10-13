@@ -140,6 +140,7 @@ public class ResolveInfoGroup extends SidebarItem {
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
+            sharingIntent.setPackage(getPackageName());
             List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(sharingIntent, 0);
             if (infos != null) {
                 for (ComponentName name : mNames) {
