@@ -70,7 +70,7 @@ public class MmsContact extends ContactItem {
         String mimeType = event.getClipDescription().getMimeType(0);
         if (ClipDescription.MIMETYPE_TEXT_PLAIN.equals(mimeType)) {
             intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + mPhoneNumber));
-            intent.putExtra("sms_body", event.getClipData().getItemAt(0).getText());
+            intent.putExtra("sms_body", event.getClipData().getItemAt(0).getText().toString());
         } else if (ClipDescription.compareMimeTypes(mimeType, "image/*")) {
             intent = new Intent(Intent.ACTION_SEND);
             intent.putExtra("address", mPhoneNumber);

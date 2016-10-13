@@ -65,7 +65,7 @@ public class WechatContact extends ContactItem {
         try {
             intent = Intent.parseUri(mIntent, 0);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("wechat_text", event.getClipData().getItemAt(0).getText());
+            intent.putExtra("wechat_text", event.getClipData().getItemAt(0).getText().toString());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
