@@ -64,4 +64,5 @@
     <string name="add_at_most_app_number">最多可添加 %d 个应用快捷方式</string>
     <string name="add_at_most_share_number">最多可添加 %d 个分享快捷方式</string>
     <string name="hint_sort_by_long_press">长按侧边栏上的图标可以调整它们的顺序</string>
+    <string name="introduction_text">功能介绍</string>
 </resources>

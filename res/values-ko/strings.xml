@@ -64,4 +64,5 @@
     <string name="add_at_most_app_number">최대 %d개의 어플 단축키 추가 가능</string>
     <string name="add_at_most_share_number">최대 %d개의 공유 단축키 추가 가능</string>
     <string name="hint_sort_by_long_press">사이드 버튼을 길게 눌러 아이콘의 순서를 조정 할 수 있습니다</string>
+    <string name="introduction_text">기능 소개</string>
 </resources>

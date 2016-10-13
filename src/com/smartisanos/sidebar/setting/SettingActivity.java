@@ -11,14 +11,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.TextView;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
@@ -33,6 +37,8 @@ public class SettingActivity extends BaseActivity {
     private Title mTitle;
     private SettingItemSwitch mSidebarSwitch;
     private SettingItemText mAddContact, mAddApp, mAddShare;
+
+    private TextView mIntroText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +108,27 @@ public class SettingActivity extends BaseActivity {
                         SidebarController.getInstance(getApplicationContext()).setSwitchAppAvailable(isChecked);
                     }
                 });
+
+        mIntroText = (TextView) findViewById(R.id.introduction_link);
+        mIntroText.getPaint().setFlags(Paint. UNDERLINE_TEXT_FLAG );
+        mIntroText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse("http://www.smartisan.com/pr/#/video/onestep-Introduction");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
+
+        getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+              getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+              int minHeight = findViewById(R.id.settings).getHeight() -  mTitle.getHeight();
+              findViewById(R.id.setting_content).setMinimumHeight(minHeight);
+            }
+        });
     }
 
     @Override

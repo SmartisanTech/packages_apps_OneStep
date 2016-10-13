@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:smartisanos="http://schemas.android.com/apk/res/smartisanos"
+    android:id="@+id/settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/setting_background">
@@ -19,8 +20,9 @@
         android:scrollbars="none"
         android:overScrollMode="always" >
         <LinearLayout
+            android:id="@+id/setting_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
             <smartisanos.widget.SettingItemSwitch
                 android:id="@+id/sidebar_switch"
@@ -69,6 +71,17 @@
                  android:id="@+id/switch_app_tip"
                  style="@style/SettingItemTipsStyle"
                  android:text="@string/switch_previous_app_hint"/>
+             <TextView
+                 android:id="@+id/introduction_link"
+                 android:layout_width="wrap_content"
+                 android:layout_height="0dp"
+                 android:layout_weight="1"
+                 android:text="@string/introduction_text"
+                 android:textSize="13sp"
+                 android:textColor="#5079d9"
+                 android:layout_gravity="center_horizontal"
+                 android:paddingBottom="20dp"
+                 android:gravity="bottom"/>
         </LinearLayout>
     </ScrollView>
     <include layout="@layout/title_bar_shadow"/>

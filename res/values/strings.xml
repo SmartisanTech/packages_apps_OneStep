@@ -64,4 +64,5 @@
     <string name="add_at_most_app_number">You can have up to %d app shortcuts.</string>
     <string name="add_at_most_share_number">You can have up to %d sharing shortcuts.</string>
     <string name="hint_sort_by_long_press">You can rearrange Springboard icons by first pressing and holding one of them.</string>
+    <string name="introduction_text">Introduction</string>
 </resources>

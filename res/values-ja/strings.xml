@@ -64,4 +64,5 @@
     <string name="add_at_most_app_number">最大%d個のアプリを追加できます</string>
     <string name="add_at_most_share_number">最大%d個のシェアを追加できます</string>
     <string name="hint_sort_by_long_press">両側アイコンを長く押すと順序調整は可能</string>
+    <string name="introduction_text">機能紹介</string>
 </resources>

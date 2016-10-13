@@ -64,4 +64,5 @@
     <string name="add_at_most_app_number">Максимално добавить %d ярлыков для приложений</string>
     <string name="add_at_most_share_number">Максимално добавить %d ярлыков для разделения</string>
     <string name="hint_sort_by_long_press">Долго нажмите чтобы менять их порядок</string>
+    <string name="introduction_text">О функции</string>
 </resources>
