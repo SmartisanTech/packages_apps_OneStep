@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.CompoundButton;
@@ -129,11 +130,16 @@ public class SettingActivity extends BaseActivity {
               findViewById(R.id.setting_content).setMinimumHeight(minHeight);
             }
         });
+        tryEnterSidebarMode();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        tryEnterSidebarMode();
+    }
+
+    private void tryEnterSidebarMode() {
         if (isSidebarEnable()) {
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
@@ -143,7 +149,6 @@ public class SettingActivity extends BaseActivity {
             }, 500);// waiting for window-animation finished !
         }
     }
-
 
     @Override
     protected void onResume() {
