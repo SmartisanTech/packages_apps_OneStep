@@ -105,18 +105,23 @@ public class SettingActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        setEnable(isSidebarEnable());
-        if (!Utils.Config.getValue(getApplicationContext(),"enter_sidebar_mode")) {
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (isSidebarEnable()) {
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     enterSidebarMode();
-                    Utils.Config.setValue(getApplicationContext(),"enter_sidebar_mode", true);
                 }
             }, 500);// waiting for window-animation finished !
         }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setEnable(isSidebarEnable());
     }
 
     private void enterSidebarMode() {
