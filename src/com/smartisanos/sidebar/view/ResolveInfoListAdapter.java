@@ -93,15 +93,6 @@ public class ResolveInfoListAdapter extends SidebarAdapter {
     }
 
     @Override
-    public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
-        SideView sideView = SidebarController.getInstance(mContext).getSideView();
-        if (sideView != null) {
-            sideView.refreshDivider();
-        }
-    }
-
-    @Override
     public void onDragStart(DragEvent event) {
         if (mDragEvent != null) {
             mDragEvent.recycle();

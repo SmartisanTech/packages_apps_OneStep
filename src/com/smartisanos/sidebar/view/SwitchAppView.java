@@ -5,12 +5,10 @@ import com.smartisanos.sidebar.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class SwitchAppView extends LinearLayout {
 
-    private View mDivider;
     private View mIconView;
 
     public SwitchAppView(Context context) {
@@ -33,19 +31,10 @@ public class SwitchAppView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mDivider = findViewById(R.id.divider);
         mIconView = findViewById(R.id.view_icon);
     }
 
     public View getIconView() {
         return mIconView;
-    }
-
-    public View getDivider() {
-        return mDivider;
-    }
-
-    public void setDividerVisibility(int visibility) {
-        mDivider.setVisibility(visibility);
     }
 }

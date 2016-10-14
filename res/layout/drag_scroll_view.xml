@@ -14,8 +14,11 @@
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="4dp"
             android:paddingBottom="96dp">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:focusableInTouchMode="true"/>
             <com.smartisanos.sidebar.view.SidebarListView
                 android:id="@+id/ongoinglist_fake"
                 android:layout_width="match_parent"
@@ -42,10 +45,14 @@
         <LinearLayout
             android:id="@+id/side_view_normal"
             android:orientation="vertical"
-            android:paddingTop="4dp"
             android:paddingBottom="96dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:focusableInTouchMode="true"/>
+
             <include layout="@layout/switch_app"/>
 
             <com.smartisanos.sidebar.view.SidebarListView

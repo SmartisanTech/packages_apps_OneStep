@@ -3,7 +3,6 @@ package com.smartisanos.sidebar.view;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.AttributeSet;
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 
 import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.R;
@@ -23,7 +21,6 @@ import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.SidebarStatus;
 import com.smartisanos.sidebar.util.AppItem;
-import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.ContactItem;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.Tracker;
@@ -47,6 +44,7 @@ public class SideView extends RelativeLayout {
     private SidebarListView mOngoingList, mContactList, mAppList;
     private SidebarListView mOngoingListFake, mContactListFake, mShareList;
 
+    private OngoingAdapter mOngoingAdapter;
     private AppListAdapter mAppAdapter;
     private ResolveInfoListAdapter mResolveAdapter;
     private DragScrollView mScrollViewNormal, mScrollViewDragged;
@@ -138,7 +136,7 @@ public class SideView extends RelativeLayout {
 //        //ongoing
         mOngoingList = (SidebarListView) findViewById(R.id.ongoinglist);
         mOngoingList.setSideView(this);
-        mOngoingList.setAdapter(new OngoingAdapter(mContext));
+        mOngoingList.setAdapter(mOngoingAdapter = new OngoingAdapter(mContext));
 
         mOngoingListFake = (SidebarListView) findViewById(R.id.ongoinglist_fake);
         mOngoingListFake.setSideView(this);
@@ -233,21 +231,28 @@ public class SideView extends RelativeLayout {
         return null;
     }
 
-    public void refreshDivider() {
-        if (mContactList != null) {
-            mContactList.requestLayout();
-        }
-        if (mContactListFake != null) {
-            mContactListFake.requestLayout();
-        }
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        refreshDivider();
     }
 
-    public boolean someListIsEmpty() {
-        if (mContactList != null && mContactList.getAdapter() != null && mContactList.getAdapter().getCount() > 0
-                && mAppList != null && mAppList.getAdapter() != null && mAppList.getAdapter().getCount() > 0) {
-            return false;
-        }
-        return true;
+    private void refreshDivider() {
+        // for normal
+        int now = mSwitchAppView.getVisibility() == View.VISIBLE ? 1 : 0;
+        mOngoingList.setNeedFootView(now > 0);
+        now += mOngoingList.getChildCount();
+        mContactList.setNeedFootView(now > 0);
+        now += mContactList.getChildCount();
+        mAppList.setNeedFootView(now > 0);
+
+        // for fake
+        now = 0;
+        mOngoingListFake.setNeedFootView(now > 0);
+        now += mOngoingListFake.getChildCount();
+        mContactListFake.setNeedFootView(now > 0);
+        now += mContactListFake.getChildCount();
+        mShareList.setNeedFootView(now > 0);
     }
 
     private AnimTimeLine mSwitchContentAnim;
@@ -265,9 +270,6 @@ public class SideView extends RelativeLayout {
         final List<View> disappearViews = new ArrayList<View>();
         if (mSwitchAppView.getVisibility() == VISIBLE) {
             disappearViews.add(mSwitchAppView.getIconView());
-            Vector3f alphaFrom = new Vector3f(0, 0, 1);
-            Vector3f alphaTo   = new Vector3f(0, 0, 0);
-            mSwitchContentAnim.addAnim(new Anim(mSwitchAppView.getDivider(), Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo));
         }
         disappearViews.addAll(mOngoingList.getViewList());
         disappearViews.addAll(mContactList.getViewList());
@@ -312,9 +314,6 @@ public class SideView extends RelativeLayout {
                         view.setScaleX(1);
                         view.setScaleY(1);
                     }
-                    if (mSwitchAppView.getVisibility() == VISIBLE) {
-                        mSwitchAppView.getDivider().setAlpha(1);
-                    }
                     mScrollViewNormal.setVisibility(GONE);
                     mScrollViewDragged.setVisibility(VISIBLE);
                     mScrollViewDragged.setTranslationX(0);
@@ -338,9 +337,6 @@ public class SideView extends RelativeLayout {
         final List<View> disappearViews = new ArrayList<View>();
         if (mSwitchAppView.getVisibility() == VISIBLE) {
             disappearViews.add(mSwitchAppView.getIconView());
-            Vector3f alphaFrom = new Vector3f(0, 0, 0);
-            Vector3f alphaTo   = new Vector3f(0, 0, 1);
-            mSwitchContentAnim.addAnim(new Anim(mSwitchAppView.getDivider(), Anim.TRANSPARENT, time, Anim.CUBIC_OUT, alphaFrom, alphaTo));
         }
         disappearViews.addAll(mOngoingList.getViewList());
         disappearViews.addAll(mContactList.getViewList());
@@ -398,16 +394,6 @@ public class SideView extends RelativeLayout {
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-        if (mAppAdapter.getCount() + mContactAdapter.getCount() <= 0) {
-            mSwitchAppView.setDividerVisibility(View.GONE);
-        } else {
-            mSwitchAppView.setDividerVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
     public boolean dispatchDragEvent(DragEvent event) {
         int action = event.getAction();
         switch (action) {
@@ -458,8 +444,9 @@ public class SideView extends RelativeLayout {
 
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            if (position < mAppAdapter.getCount()) {
-                AppItem ai = (AppItem) mAppAdapter.getItem(position);
+            Object obj = adapterView.getAdapter().getItem(position);
+            if (obj != null && obj instanceof AppItem) {
+                AppItem ai = (AppItem) obj;
                 Utils.dismissAllDialog(mContext);
                 ai.openUI(mContext);
                 Tracker.onEvent(Tracker.EVENT_CLICK_APP, null, 0, ai.getPackageName());
@@ -474,9 +461,12 @@ public class SideView extends RelativeLayout {
             if (view == null || view.getTag() == null) {
                 return;
             }
-            ContactItem ci = (ContactItem) mContactAdapter.getItem(position);
-            Utils.dismissAllDialog(mContext);
-            ci.openUI(mContext);
+            Object obj = adapterView.getAdapter().getItem(position);
+            if (obj != null && obj instanceof ContactItem) {
+                ContactItem ci = (ContactItem) obj;
+                Utils.dismissAllDialog(mContext);
+                ci.openUI(mContext);
+            }
         }
     };
 

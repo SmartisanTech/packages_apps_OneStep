@@ -16,7 +16,6 @@ import android.widget.ListView;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.util.BitmapUtils;
-import com.smartisanos.sidebar.util.Constants;
 import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.SidebarItem;
 import com.smartisanos.sidebar.util.Utils;
@@ -32,8 +31,8 @@ import java.util.List;
 public class SidebarListView extends ListView {
     private static final LOG log = LOG.getInstance(SidebarListView.class);
 
-    private boolean mNeedFootView = false;
-    private View mFootView;
+    private boolean mNeedDivider = true;
+    private View mDivider;
 
     private SideView mSideView;
     private SidebarAdapter mAdapter;
@@ -71,7 +70,7 @@ public class SidebarListView extends ListView {
     public SidebarListView(Context context, AttributeSet attrs,
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        mFootView = LayoutInflater.from(context).inflate(R.layout.sidebar_view_divider, null);
+        mDivider = LayoutInflater.from(context).inflate(R.layout.sidebar_view_divider, null);
         setOnItemLongClickListener(mOnLongClickListener);
     }
 
@@ -186,8 +185,8 @@ public class SidebarListView extends ListView {
     }
 
     public void setNeedFootView(boolean needFootView) {
-        if (needFootView != mNeedFootView) {
-            mNeedFootView = needFootView;
+        if (needFootView != mNeedDivider) {
+            mNeedDivider = needFootView;
             requestLayout();
         }
     }
@@ -195,25 +194,26 @@ public class SidebarListView extends ListView {
     @Override
     public void requestLayout() {
         super.requestLayout();
-        if(mFootView == null){
+        if (mDivider == null) {
             // this means the construcor is going on !
             return;
         }
 
-        boolean isEmpty = false;
-        if (mSideView != null) {
-            isEmpty = mSideView.someListIsEmpty();
+        ListAdapter adapter = this.getAdapter();
+        if (adapter != null && adapter.getCount() == getHeaderViewsCount()) {
+            // we are empty actually..
+            removeHeaderView(mDivider);
+            return;
         }
-        if (!isEmpty && mNeedFootView && (getAdapter() != null && !getAdapter().isEmpty())) {
-            if (getFooterViewsCount() == 0) {
-                addFooterView(mFootView);
+        if (mNeedDivider) {
+            if (getHeaderViewsCount() == 0) {
+                addHeaderView(mDivider);
             }
         } else {
-            if (getFooterViewsCount() > 0) {
-                removeFooterView(mFootView);
+            if (getHeaderViewsCount() > 0) {
+                removeHeaderView(mDivider);
             }
         }
-
     }
 
     @Override
