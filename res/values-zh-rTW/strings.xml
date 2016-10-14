@@ -58,7 +58,7 @@
     <string name="add_app_to_sidebar">添加邊欄應用快捷方式</string>
     <string name="add_share_to_sidebar">添加拖拽分享快捷方式</string>
     <string name="switch_previous_app">切換上一個應用</string>
-    <string name="switch_previous_app_hint">開啟後，你可以通過點擊邊欄上的“切換按鈕”快速切換上一個應用</string>
+    <string name="switch_previous_app_hint">開啟後，您可以通過點擊邊欄上的“切換按鈕”快速切換上一個應用</string>
     <string name="contact_added">已新增</string>
     <string name="add_at_most_contact_number">最多可添加 %d 個聯絡人快捷方式</string>
     <string name="add_at_most_app_number">最多可添加 %d 個應用快捷方式</string>
