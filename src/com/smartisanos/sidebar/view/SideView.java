@@ -159,7 +159,6 @@ public class SideView extends RelativeLayout {
         //resolve
         mSwitchAppAvailable = Utils.isSwitchAppAvailable(mContext);
         mSwitchAppView = (SwitchAppView) findViewById(R.id.switch_app);
-        mSwitchAppView.setOnClickListener(mSwitchAppListener);
         mSwitchAppView.setVisibility(mSwitchAppAvailable ? View.VISIBLE : View.GONE);
 
         mAppList = (SidebarListView) findViewById(R.id.applist);
@@ -430,15 +429,6 @@ public class SideView extends RelativeLayout {
         updateUIBySidebarMode();
         mResolveAdapter.notifyDataSetChanged();
     }
-
-    private View.OnClickListener mSwitchAppListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Utils.dismissAllDialog(mContext);
-            Utils.launchPreviousApp(mContext);
-            Tracker.onClick(Tracker.EVENT_CLICK_CHANGE);
-        }
-    };
 
     private AdapterView.OnItemClickListener mAppItemOnClickListener = new AdapterView.OnItemClickListener() {
 

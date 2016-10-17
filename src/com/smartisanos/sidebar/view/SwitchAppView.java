@@ -1,6 +1,8 @@
 package com.smartisanos.sidebar.view;
 
 import com.smartisanos.sidebar.R;
+import com.smartisanos.sidebar.util.Tracker;
+import com.smartisanos.sidebar.util.Utils;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -26,6 +28,8 @@ public class SwitchAppView extends LinearLayout {
     public SwitchAppView(Context context, AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        setOnClickListener(mSwitchAppListener);
+        setOnFocusChangeListener(mFocusChangeListener);
     }
 
     @Override
@@ -37,4 +41,22 @@ public class SwitchAppView extends LinearLayout {
     public View getIconView() {
         return mIconView;
     }
+
+    private View.OnClickListener mSwitchAppListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Utils.dismissAllDialog(mContext);
+            Utils.launchPreviousApp(mContext);
+            Tracker.onClick(Tracker.EVENT_CLICK_CHANGE);
+        }
+    };
+
+    private View.OnFocusChangeListener mFocusChangeListener = new View.OnFocusChangeListener(){
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if(hasFocus) {
+                v.performClick();
+            }
+        }
+    };
 }
