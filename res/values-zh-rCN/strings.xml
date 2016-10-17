@@ -3,7 +3,7 @@
 
     <string name="topbar_photo">近期图片</string>
     <string name="topbar_file">近期文件</string>
-    <string name="topbar_clipboard">粘贴板</string>
+    <string name="topbar_clipboard">剪贴板</string>
     <string name="topbar_bookmark">收藏</string>
     <string name="title_photo">近期的图片</string>
     <string name="title_file">近期的文件</string>
@@ -17,7 +17,7 @@
     <string name="open_gallery">打开相册</string>
     <string name="title_confirm_delete_history_photo">清空记录后不会删除图片</string>
     <string name="title_confirm_delete_history_file">清空记录后不会删除文件</string>
-    <string name="title_confirm_delete_history_clipboard">清空粘贴板内容将无法恢复</string>
+    <string name="title_confirm_delete_history_clipboard">清空剪贴板内容将无法恢复</string>
     <string name="title_confirm_delete_bookmark">清空收藏内容将无法恢复</string>
     <string name="clear">清空</string>
     <string name="add_wechat_hint">打开微信通讯录，点击你要添加的好友，进入好友详细资料界面，点击右上角图标，选择“添加到桌面”。移除桌面联系人时，侧边栏联系人不会消失</string>
@@ -32,7 +32,7 @@
     <string name="photo_empty_hint">近期的图片将会出现在这里</string>
     <string name="file_empty_text">文件记录为空</string>
     <string name="file_empty_hint">近期的文件将会出现在这里</string>
-    <string name="clipboard_empty_text">粘贴板为空</string>
+    <string name="clipboard_empty_text">剪贴板为空</string>
     <string name="clipboard_empty_hint">近期复制或剪切过的文字将会出现在这里</string>
 
     <!-- pending event -->
@@ -64,5 +64,5 @@
     <string name="add_at_most_app_number">最多可添加 %d 个应用快捷方式</string>
     <string name="add_at_most_share_number">最多可添加 %d 个分享快捷方式</string>
     <string name="hint_sort_by_long_press">长按侧边栏上的图标可以调整它们的顺序</string>
-    <string name="introduction_text">功能介绍</string>
+    <string name="introduction_text">操作简介</string>
 </resources>
