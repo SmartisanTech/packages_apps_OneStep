@@ -39,6 +39,7 @@ public class SidebarListView extends ListView {
 
     private SidebarItem mDraggedItem;
     private int mDragPosition = -1;
+    private int mUnDragNumber = 0;
 
     private AnimTimeLine mDatasetChangeTimeLine;
     private AnimListener mListener = new AnimListener() {
@@ -101,7 +102,7 @@ public class SidebarListView extends ListView {
     private AdapterView.OnItemLongClickListener mOnLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            if (position < getHeaderViewsCount()
+            if (position < getHeaderViewsCount() + mUnDragNumber
                     || position >= getChildCount() - getFooterViewsCount()) {
                 return false;
             }
@@ -288,10 +289,14 @@ public class SidebarListView extends ListView {
         }
     };
 
+    public void setUnDragNumber(int unDragNumber) {
+        mUnDragNumber = unDragNumber;
+    }
+
     private void pointToNewPositionWithAnim(int position) {
         int headViewCount = getHeaderViewsCount();
         int count = getCount() - getFooterViewsCount() - headViewCount;
-        if (position < this.getHeaderViewsCount()
+        if (position < this.getHeaderViewsCount() + mUnDragNumber
                 || position >= this.getChildCount() - this.getFooterViewsCount()
                 || mDragPosition == position) {
             return ;

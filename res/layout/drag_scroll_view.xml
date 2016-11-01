@@ -52,9 +52,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="4dp"
                 android:focusableInTouchMode="true"/>
-
-            <include layout="@layout/switch_app"/>
-
             <com.smartisanos.sidebar.view.SidebarListView
                 android:id="@+id/ongoinglist"
                 android:layout_width="match_parent"

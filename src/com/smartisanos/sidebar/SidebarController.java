@@ -345,10 +345,6 @@ public class SidebarController {
         }
     }
 
-    public void setSwitchAppAvailable(boolean available) {
-        mSideView.setSwitchAppAvailable(available);
-    }
-
     public void refreshCalendarView() {
         for (AppItem item : AppManager.getInstance(mContext).getAddedAppItem()) {
             if (Constants.CALENDAR_PACKAGE.equals(item.getPackageName())) {

@@ -13,5 +13,11 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_centerInParent="true"/>
+        <View
+            android:id="@+id/switch_app"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/previous_app_icon"/>
     </RelativeLayout>
 </FrameLayout>

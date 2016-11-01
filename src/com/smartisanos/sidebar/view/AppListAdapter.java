@@ -34,6 +34,7 @@ public class AppListAdapter extends SidebarAdapter {
     public AppListAdapter(Context context, SidebarListView listview) {
         mContext = context;
         mListView = listview;
+        mListView.setUnDragNumber(1);
         mManager = AppManager.getInstance(context);
         mAppItems = mManager.getAddedAppItem();
         mManager.addListener(resolveInfoUpdateListener);
@@ -104,12 +105,15 @@ public class AppListAdapter extends SidebarAdapter {
 
     @Override
     public int getCount() {
-        return mAppItems.size();
+        return mAppItems.size() + 1;
     }
 
     @Override
     public Object getItem(int position) {
-        return mAppItems.get(position);
+        if (position == 0) {
+            return null;
+        }
+        return mAppItems.get(position - 1);
     }
 
     @Override
@@ -119,6 +123,7 @@ public class AppListAdapter extends SidebarAdapter {
 
     @Override
     public void moveItemPostion(Object object, int index) {
+        index --;
         AppItem item = (AppItem)object;
         if (index < 0) {
             index = 0;
@@ -147,11 +152,11 @@ public class AppListAdapter extends SidebarAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        AppItem ai = mAppItems.get(position);
         if (convertView == null) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.app_item, null);
+            View switchApp = view.findViewById(R.id.switch_app);
             ImageView iconImage = (ImageView) view.findViewById(R.id.avatar_image_view);
-            view.setOnTouchListener(new View.OnTouchListener() {
+            iconImage.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(final View view, MotionEvent motionEvent) {
                     if (view == null || motionEvent == null) {
@@ -188,37 +193,39 @@ public class AppListAdapter extends SidebarAdapter {
 
             holder = new ViewHolder();
             holder.view = view;
+            holder.switchApp = switchApp;
             holder.iconImageView = iconImage;
             view.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.restore();
-        holder.setInfo(ai);
-        return holder.view;
-    }
-
-    public int objectIndex(AppItem data) {
-        if (mAppItems == null) {
-            return -1;
+        if (position == 0) {
+            holder.showSwitchApp();
+        } else {
+            holder.setInfo(mAppItems.get(position - 1));
         }
-        return mAppItems.indexOf(data);
+        return holder.view;
     }
 
     public static class ViewHolder {
         public View view;
+        public View switchApp;
         public ImageView iconImageView;
-        public AppItem ai;
+
+        public void showSwitchApp() {
+            iconImageView.setVisibility(View.GONE);
+            switchApp.setVisibility(View.VISIBLE);
+        }
 
         public void setInfo(AppItem ai) {
-            this.ai = ai;
+            iconImageView.setVisibility(View.VISIBLE);
+            switchApp.setVisibility(View.GONE);
             iconImageView.setImageDrawable(ai.getAvatar());
         }
 
-        public void restore(){
-            if (view.getVisibility() == View.INVISIBLE) {
-                view.setVisibility(View.VISIBLE);
-            }
+        public void restore() {
+            view.setVisibility(View.VISIBLE);
             view.setTranslationY(0);
         }
     }

@@ -58,9 +58,6 @@ public class SideView extends RelativeLayout {
 
     private DimSpaceView mDimView;
 
-    private boolean mSwitchAppAvailable = false;
-    private SwitchAppView mSwitchAppView;
-
     public SideView(Context context) {
         this(context, null);
     }
@@ -156,11 +153,6 @@ public class SideView extends RelativeLayout {
         mContactListFake.setNeedFootView(true);
         mContactListFake.setAdapter(new ContactListAdapter(mContext));
 
-        //resolve
-        mSwitchAppAvailable = Utils.isSwitchAppAvailable(mContext);
-        mSwitchAppView = (SwitchAppView) findViewById(R.id.switch_app);
-        mSwitchAppView.setVisibility(mSwitchAppAvailable ? View.VISIBLE : View.GONE);
-
         mAppList = (SidebarListView) findViewById(R.id.applist);
         mAppList.setSideView(this);
         mAppAdapter = new AppListAdapter(mContext, mAppList);
@@ -199,13 +191,6 @@ public class SideView extends RelativeLayout {
         mResolveAdapter.notifyDataSetChanged();
     }
 
-    public void setSwitchAppAvailable(boolean available) {
-        if(mSwitchAppAvailable != available) {
-            mSwitchAppAvailable = available;
-            mSwitchAppView.setVisibility(mSwitchAppAvailable ? View.VISIBLE : View.GONE);
-        }
-    }
-
     public void requestStatus(SidebarStatus status) {
         if(status == SidebarStatus.NORMAL) {
             //show mSideViewContentNormal
@@ -238,7 +223,7 @@ public class SideView extends RelativeLayout {
 
     private void refreshDivider() {
         // for normal
-        int now = mSwitchAppView.getVisibility() == View.VISIBLE ? 1 : 0;
+        int now = 0;
         mOngoingList.setNeedFootView(now > 0);
         now += mOngoingList.getChildCount();
         mContactList.setNeedFootView(now > 0);
@@ -267,9 +252,6 @@ public class SideView extends RelativeLayout {
         mSwitchContentAnim = new AnimTimeLine();
         int time = 300;
         final List<View> disappearViews = new ArrayList<View>();
-        if (mSwitchAppView.getVisibility() == VISIBLE) {
-            disappearViews.add(mSwitchAppView.getIconView());
-        }
         disappearViews.addAll(mOngoingList.getViewList());
         disappearViews.addAll(mContactList.getViewList());
         disappearViews.addAll(mAppList.getViewList());
@@ -334,9 +316,6 @@ public class SideView extends RelativeLayout {
         mSwitchContentAnim = new AnimTimeLine();
         int time = 300;
         final List<View> disappearViews = new ArrayList<View>();
-        if (mSwitchAppView.getVisibility() == VISIBLE) {
-            disappearViews.add(mSwitchAppView.getIconView());
-        }
         disappearViews.addAll(mOngoingList.getViewList());
         disappearViews.addAll(mContactList.getViewList());
         disappearViews.addAll(mAppList.getViewList());
@@ -440,6 +419,15 @@ public class SideView extends RelativeLayout {
                 Utils.dismissAllDialog(mContext);
                 ai.openUI(mContext);
                 Tracker.onEvent(Tracker.EVENT_CLICK_APP, null, 0, ai.getPackageName());
+            } else {
+                if (position < mAppList.getHeaderViewsCount()) {
+                    //this is divider
+                    return;
+                }
+                log.info("launch previous app!");
+                Utils.dismissAllDialog(mContext);
+                Utils.launchPreviousApp(mContext);
+                Tracker.onClick(Tracker.EVENT_CLICK_CHANGE);
             }
         }
     };

@@ -60,28 +60,17 @@
                     android:background="@drawable/selector_setting_sub_item_bg_bottom"/>
             </LinearLayout>
 
-            <smartisanos.widget.SettingItemSwitch
-                android:id="@+id/switch_for_switch_app"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/setting_global_marginTop"
-                android:background="@drawable/selector_setting_sub_item_bg_single"
-                smartisanos:title="@string/switch_previous_app" />
-             <smartisanos.widget.TipsView
-                 android:id="@+id/switch_app_tip"
-                 style="@style/SettingItemTipsStyle"
-                 android:text="@string/switch_previous_app_hint"/>
-             <TextView
-                 android:id="@+id/introduction_link"
-                 android:layout_width="wrap_content"
-                 android:layout_height="0dp"
-                 android:layout_weight="1"
-                 android:text="@string/introduction_text"
-                 android:textSize="13sp"
-                 android:textColor="#5079d9"
-                 android:layout_gravity="center_horizontal"
-                 android:paddingBottom="20dp"
-                 android:gravity="bottom"/>
+            <TextView
+                android:id="@+id/introduction_link"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@string/introduction_text"
+                android:textSize="13sp"
+                android:textColor="#5079d9"
+                android:layout_gravity="center_horizontal"
+                android:paddingBottom="20dp"
+                android:gravity="bottom"/>
         </LinearLayout>
     </ScrollView>
     <include layout="@layout/title_bar_shadow"/>
