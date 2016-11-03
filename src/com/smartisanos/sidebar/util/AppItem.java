@@ -1,5 +1,9 @@
 package com.smartisanos.sidebar.util;
 
+import java.lang.ref.SoftReference;
+import java.util.Comparator;
+import java.util.List;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -7,10 +11,6 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.DragEvent;
-
-import java.lang.ref.SoftReference;
-import java.util.Comparator;
-import java.util.List;
 
 public class AppItem extends SidebarItem {
 
@@ -59,9 +59,10 @@ public class AppItem extends SidebarItem {
         ResolveInfo ri = getResolveInfo();
         if (ri != null) {
             Drawable ret = IconRedirect.getRedirectIcon(mName.getPackageName(), mName.getClassName(), mContext);
-            if (ret == null) {
-                ret = ri.loadIcon(mContext.getPackageManager());
+            if (ret != null) {
+                return ret;
             }
+            ret = ri.loadIcon(mContext.getPackageManager());
             mAvatar = new SoftReference<Drawable>(ret);
             return ret;
         }

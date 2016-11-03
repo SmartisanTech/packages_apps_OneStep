@@ -1,8 +1,10 @@
 package com.smartisanos.sidebar.setting;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,22 +15,14 @@ import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.util.AppItem;
 import com.smartisanos.sidebar.util.AppManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class AddApplicationAdapter extends BaseAdapter {
 
     private List<ViewItem> mItems = new ArrayList<ViewItem>();
     private Context mContext;
-    private Handler mLoadIconHandler;
-    private Handler mMainHandler;
+
     public AddApplicationAdapter(Context context) {
         mContext = context;
         refreshData();
-        HandlerThread thread = new HandlerThread("loadIcon");
-        thread.start();
-        mLoadIconHandler = new Handler(thread.getLooper());
-        mMainHandler = new Handler(Looper.getMainLooper());
     }
 
     private AppManager.RecentUpdateListener mUpdateListener = new AppManager.RecentUpdateListener() {
@@ -109,6 +103,7 @@ public final class AddApplicationAdapter extends BaseAdapter {
             if (pos < mItems.size()) {
                 final ViewItem ai = mItems.get(pos);
                 apsv.setVisibility(View.VISIBLE);
+                apsv.setImageDrawable(ai.appItem.getAvatar());
                 apsv.setText(ai.appItem.getDisplayName());
                 apsv.setSelected(ai.selected);
                 apsv.setOnClickListener(new View.OnClickListener() {
@@ -124,22 +119,6 @@ public final class AddApplicationAdapter extends BaseAdapter {
                             mItems.get(pos).selected = false;
                             apsv.setSelected(false);
                         }
-                    }
-                });
-                apsv.setTag(ai.appItem);
-                mLoadIconHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ai.appItem.getAvatar();
-                        mMainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (apsv.getTag() == ai.appItem) {
-                                    apsv.setImageDrawable(ai.appItem.getAvatar());
-                                    apsv.setTag(null);
-                                }
-                            }
-                        });
                     }
                 });
             } else {
@@ -181,7 +160,8 @@ public final class AddApplicationAdapter extends BaseAdapter {
         AppPickerSubView[] subViews = new AppPickerSubView[3];
 
         public void updateSpace(int postion, int all) {
-            spaceViewTop.setVisibility(postion == 0 ? View.VISIBLE : View.GONE);
+            spaceViewTop.setVisibility(postion == 0 ? View.VISIBLE
+                    : View.GONE);
         }
     }
 
