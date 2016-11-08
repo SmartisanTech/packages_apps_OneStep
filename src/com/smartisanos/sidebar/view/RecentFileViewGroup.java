@@ -93,7 +93,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
                     RecentFileViewGroup.this.setAlpha(1);
                     RecentFileViewGroup.this.setVisibility(View.GONE);
                     RecentFileManager.getInstance(mContext).clear();
-                    Tracker.onClick(Tracker.EVENT_MAKESURE_CLEAN, "1");
+                    Tracker.onClick(Tracker.EVENT_MAKESURE_CLEAN, "source", "1");
                 }
             });
             timeLine.start();
@@ -121,6 +121,7 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
     }
 
     public void show(boolean anim) {
+        Tracker.onClick(Tracker.EVENT_TOPBAR, "type", "1");
         RecentFileManager.getInstance(mContext).startSearchFile();
         mRecentFileList.setSelectionAfterHeaderView();
         mRecentFileList.requestLayout();
@@ -171,7 +172,6 @@ public class RecentFileViewGroup extends RoundCornerFrameLayout implements IEmpt
             });
             timeLine.start();
         }
-        Tracker.onClick(Tracker.EVENT_TOPBAR, "1");
     }
 
     public void dismiss(boolean anim) {

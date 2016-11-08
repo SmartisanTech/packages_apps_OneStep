@@ -64,7 +64,7 @@ public class SettingActivity extends BaseActivity {
                         if(isChecked) {
                             enterSidebarMode();
                         }
-                        Tracker.onStatusDataChanged(Tracker.EVENT_SWITCH, null, isChecked ? "1" : "0");
+                        Tracker.onClick(Tracker.EVENT_SWITCH, "status", isChecked ? "1" : "0");
                     }
                 });
 
@@ -131,7 +131,9 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void tryEnterSidebarMode() {
-        if (isSidebarEnable()) {
+        if (isSidebarEnable() && !SidebarUtils.isSidebarShowing(this.getApplicationContext())) {
+            // this means we enter one step mode due to user click on laucher
+            Tracker.onClick(Tracker.EVENT_ONLAUNCH);
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {

@@ -105,7 +105,7 @@ public class PhotoLineSubView extends FrameLayout {
             @Override
             public void onClick(View v) {
                 Utils.openPhotoWithGallery(v.getContext(), imageInfo);
-                Tracker.onClick(Tracker.EVENT_OPEN_PIC, "1");
+                Tracker.onClick(Tracker.EVENT_OPEN_PIC, "type", "1");
             }
         });
 

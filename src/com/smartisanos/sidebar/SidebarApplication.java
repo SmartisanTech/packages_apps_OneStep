@@ -33,6 +33,7 @@ public class SidebarApplication extends Application {
     public void onCreate() {
         super.onCreate();
         myself = this;
+        Tracker.init(this);
         Constants.init(this);
         UserPackage.registerCallback(this);
         AnimStatusManager.getInstance().reset();
@@ -48,7 +49,6 @@ public class SidebarApplication extends Application {
         dateFilter.addAction(Intent.ACTION_TIME_CHANGED);
         dateFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
         registerReceiver(mDateTimeReceiver, dateFilter);
-        Tracker.init(this);
     }
 
     @Override

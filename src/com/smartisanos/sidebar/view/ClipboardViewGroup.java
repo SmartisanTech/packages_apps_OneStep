@@ -98,7 +98,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
                     ClipboardViewGroup.this.setAlpha(1);
                     RecentClipManager.getInstance(mContext).clear();
                     ClipboardViewGroup.this.setVisibility(View.GONE);
-                    Tracker.onClick(Tracker.EVENT_MAKESURE_CLEAN, "2");
+                    Tracker.onClick(Tracker.EVENT_MAKESURE_CLEAN, "source", "2");
                 }
             });
             timeLine.start();
@@ -122,6 +122,7 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
     }
 
     public void show(boolean anim) {
+        Tracker.onClick(Tracker.EVENT_TOPBAR, "type", "2");
         mClipList.setSelectionAfterHeaderView();
         mClipList.requestLayout();
         post(new Runnable() {
@@ -171,7 +172,6 @@ public class ClipboardViewGroup extends RoundCornerFrameLayout implements IEmpty
             });
             timeLine.start();
         }
-        Tracker.onClick(Tracker.EVENT_TOPBAR, "2");
     }
 
     public void dismiss(boolean anim) {

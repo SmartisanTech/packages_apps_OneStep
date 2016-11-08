@@ -2,13 +2,13 @@ package com.smartisanos.sidebar.view;
 
 import android.content.res.Configuration;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
-
-import smartisanos.app.MenuDialog;
+import android.view.WindowManager;
 
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.util.Tracker;
+
+import smartisanos.app.MenuDialog;
 
 public class ClearListener implements View.OnClickListener {
     private Runnable action;
@@ -39,15 +39,15 @@ public class ClearListener implements View.OnClickListener {
         }
         switch (mTitleResId) {
             case R.string.title_confirm_delete_history_photo : {
-                Tracker.onClick(Tracker.EVENT_CLEAN, "0");
+                Tracker.onClick(Tracker.EVENT_CLEAN, "source", "0");
                 break;
             }
             case R.string.title_confirm_delete_history_file : {
-                Tracker.onClick(Tracker.EVENT_CLEAN, "1");
+                Tracker.onClick(Tracker.EVENT_CLEAN, "source", "1");
                 break;
             }
             case R.string.title_confirm_delete_history_clipboard : {
-                Tracker.onClick(Tracker.EVENT_CLEAN, "2");
+                Tracker.onClick(Tracker.EVENT_CLEAN, "source", "2");
                 break;
             }
         }

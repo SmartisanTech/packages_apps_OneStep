@@ -58,6 +58,7 @@ public class MmsContact extends ContactItem {
 
     @Override
     public boolean handleDragEvent(Context context, DragEvent event) {
+        Tracker.dragSuccess(3, PKG_NAME);
         boolean sret = super.handleDragEvent(context, event);
         if(sret){
             return true;
@@ -93,12 +94,12 @@ public class MmsContact extends ContactItem {
 
     @Override
     public boolean openUI(Context context) {
+        Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "contacts_type", "2");
         try {
             Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + mPhoneNumber));
             intent.putExtra("need_finish", true);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
-            Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "2");
             return true;
         } catch (ActivityNotFoundException e) {
             // NA

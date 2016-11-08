@@ -1,8 +1,5 @@
 package com.smartisanos.sidebar.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ActivityNotFoundException;
 import android.content.ClipDescription;
 import android.content.ContentValues;
@@ -17,6 +14,9 @@ import android.text.TextUtils;
 import android.view.DragEvent;
 
 import com.smartisanos.sidebar.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DingDingContact extends ContactItem {
     public static final String PKG_NAME = "com.alibaba.android.rimet";
@@ -39,6 +39,7 @@ public class DingDingContact extends ContactItem {
 
     @Override
     public boolean handleDragEvent(Context context, DragEvent event) {
+        Tracker.dragSuccess(2, PKG_NAME);
         boolean sret = super.handleDragEvent(context, event);
         if(sret){
             return true;
@@ -77,13 +78,13 @@ public class DingDingContact extends ContactItem {
 
     @Override
     public boolean openUI(Context context) {
+        Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "contacts_type", "1");
         Intent intent = new Intent("com.alibaba.android.rimet.ShortCutChat");
         intent.putExtra("user_id_string", encodedUid);
         intent.putExtra("send_user_id", sendUserId);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         try {
             LaunchApp.start(mContext, intent, true, PKG_NAME, systemUid);
-            Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "1");
             return true;
         } catch (ActivityNotFoundException e) {
             // NA

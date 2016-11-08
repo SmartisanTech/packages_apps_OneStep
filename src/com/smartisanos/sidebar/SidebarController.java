@@ -154,8 +154,6 @@ public class SidebarController {
     }
 
     private void start(){
-        Tracker.onClick(Tracker.EVENT_ONLAUNCH, null);
-
         updateTopViewWindowBySidebarMode();
         updateContentViewWindowBySidebarMode();
         updateSideViewWindowBySidebarMode();
@@ -178,7 +176,6 @@ public class SidebarController {
         RecentFileManager.getInstance(mContext).stopFileObserver();
 
         mSideView.reportToTracker();
-        ContactManager.getInstance(mContext).reportToTracker();
         Tracker.flush();
     }
 

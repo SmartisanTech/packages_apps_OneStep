@@ -54,6 +54,7 @@ public class WechatContact extends ContactItem {
 
     @Override
     public boolean handleDragEvent(Context context, DragEvent event) {
+        Tracker.dragSuccess(1, PKG_NAME);
         boolean sret = super.handleDragEvent(context, event);
         if(sret){
             return true;
@@ -85,6 +86,7 @@ public class WechatContact extends ContactItem {
 
     @Override
     public boolean openUI(Context context) {
+        Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "contacts_type", "0");
         Intent intent = null;
         try {
             intent = Intent.parseUri(mIntent, 0);
@@ -95,7 +97,6 @@ public class WechatContact extends ContactItem {
 
         try {
             LaunchApp.start(mContext, intent, true, PKG_NAME, mUid);
-            Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "0");
             return true;
         } catch (ActivityNotFoundException e) {
             // NA

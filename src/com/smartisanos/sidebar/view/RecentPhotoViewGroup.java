@@ -101,7 +101,7 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
                     RecentPhotoViewGroup.this.setVisibility(View.GONE);
                     RecentPhotoManager.getInstance(mContext).clear();
                     mAdapter.clearCache();
-                    Tracker.onClick(Tracker.EVENT_MAKESURE_CLEAN, "0");
+                    Tracker.onClick(Tracker.EVENT_MAKESURE_CLEAN, "source", "0");
                 }
             });
             timeLine.start();
@@ -129,6 +129,7 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
     }
 
     public void show(boolean anim) {
+        Tracker.onClick(Tracker.EVENT_TOPBAR, "type", "0");
         mListView.setSelectionAfterHeaderView();
         mListView.requestLayout();
         setVisibility(View.VISIBLE);
@@ -171,7 +172,6 @@ public class RecentPhotoViewGroup extends RoundCornerFrameLayout implements IEmp
             });
             timeLine.start();
         }
-        Tracker.onClick(Tracker.EVENT_TOPBAR, "0");
     }
 
     public void dismiss(boolean anim) {

@@ -22,9 +22,14 @@ import com.smartisanos.sidebar.SidebarMode;
 import com.smartisanos.sidebar.SidebarStatus;
 import com.smartisanos.sidebar.util.AppItem;
 import com.smartisanos.sidebar.util.ContactItem;
+import com.smartisanos.sidebar.util.ContactManager;
+import com.smartisanos.sidebar.util.DingDingContact;
 import com.smartisanos.sidebar.util.LOG;
+import com.smartisanos.sidebar.util.MailContact;
+import com.smartisanos.sidebar.util.MmsContact;
 import com.smartisanos.sidebar.util.Tracker;
 import com.smartisanos.sidebar.util.Utils;
+import com.smartisanos.sidebar.util.WechatContact;
 import com.smartisanos.sidebar.util.anim.Anim;
 import com.smartisanos.sidebar.util.anim.AnimListener;
 import com.smartisanos.sidebar.util.anim.AnimStatusManager;
@@ -418,7 +423,7 @@ public class SideView extends RelativeLayout {
                 AppItem ai = (AppItem) obj;
                 Utils.dismissAllDialog(mContext);
                 ai.openUI(mContext);
-                Tracker.onEvent(Tracker.EVENT_CLICK_APP, null, 0, ai.getPackageName());
+                Tracker.onClick(Tracker.EVENT_CLICK_APP, "package", ai.getPackageName());
             } else {
                 if (position < mAppList.getHeaderViewsCount()) {
                     //this is divider
@@ -493,17 +498,35 @@ public class SideView extends RelativeLayout {
     }
 
     public void reportToTracker() {
+        int countWechat = 0;
+        int countDingDing = 0;
+        int countMms = 0;
+        int countEmail = 0;
+        for (ContactItem item : ContactManager.getInstance(mContext).getContactList()) {
+            if (item instanceof WechatContact) {
+                countWechat++;
+            } else if (item instanceof DingDingContact) {
+                countDingDing++;
+            } else if (item instanceof MmsContact) {
+                countMms++;
+            } else if (item instanceof MailContact) {
+                countEmail++;
+            }
+        }
+        int appNum = 0;
         if (mAppAdapter != null) {
-            int count = mAppAdapter.getCount();
-            if (count != 0) {
-                Tracker.onAttach(Tracker.STATUS_APPNAME, "app_num", count + "");
-            }
+            appNum = mAppAdapter.getCount();
         }
+        int shareNum = 0;
         if (mResolveAdapter != null) {
-            int count = mResolveAdapter.getCount();
-            if (count != 0) {
-                Tracker.onAttach(Tracker.STATUS_APPNAME, "share_num", count + "");
-            }
+            shareNum = mResolveAdapter.getCount();
         }
+        Tracker.reportStatus(Tracker.STATUS_APPNAME,
+                "wechat_contacts", countWechat + "",
+                "dingding_contacts", countDingDing + "",
+                "message_contacts", countMms + "",
+                "email_contacts", countEmail + "",
+                "app_num", appNum + "",
+                "share_num", shareNum + "");
     }
 }

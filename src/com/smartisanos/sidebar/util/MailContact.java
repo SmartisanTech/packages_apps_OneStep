@@ -48,6 +48,7 @@ public class MailContact extends ContactItem {
 
     @Override
     public boolean handleDragEvent(Context context, DragEvent event) {
+        Tracker.dragSuccess(4, PKG_NAME);
         boolean sret = super.handleDragEvent(context, event);
         if(sret){
             return true;
@@ -88,6 +89,7 @@ public class MailContact extends ContactItem {
 
     @Override
     public boolean openUI(Context context) {
+        Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "contacts_type", "3");
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setData(Uri.parse("mailto:" + mMailAddress));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -95,7 +97,6 @@ public class MailContact extends ContactItem {
 
         try {
             mContext.startActivity(intent);
-            Tracker.onClick(Tracker.EVENT_CLICK_CONTACTS, "3");
             return true;
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();

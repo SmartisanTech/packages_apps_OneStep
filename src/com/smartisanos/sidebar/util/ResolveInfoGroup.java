@@ -176,6 +176,7 @@ public class ResolveInfoGroup extends SidebarItem {
     }
 
     public boolean handleDragEvent(Context context, DragEvent event){
+        Tracker.dragSuccess(0, getPackageName());
         boolean isPending = PendingDragEventTask.tryPending(context, event, this);
         if(isPending){
             return true;
