@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-
+    <string name="app_name">壹步</string>
     <string name="topbar_photo">近期圖片</string>
     <string name="topbar_file">近期文件</string>
     <string name="topbar_clipboard">剪貼板</string>
