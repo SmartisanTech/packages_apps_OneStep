@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.onestep.OneStepManager;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
@@ -41,15 +43,18 @@ public class SettingActivity extends BaseActivity {
     private SettingItemText mAddContact, mAddApp, mAddShare;
 
     private TextView mIntroText;
-
+    private OneStepManager mOneStepManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Drawable drawable = getDrawable(smartisanos.R.drawable.common_bg);
+        Log.v("533"," drawble.... "+smartisanos.R.drawable.common_bg);
+        Log.v("533"," 1111drawble.... "+smartisanos.R.drawable.win_background);
         setContentView(R.layout.settings_layout);
 
         // recyle window background bitmap to release memory
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
+        mOneStepManager = (OneStepManager) getSystemService(Context.ONE_STEP_SERVICE);
         mTitle = (Title) findViewById(R.id.title_bar);
         mTitle.getBackButton().setVisibility(View.INVISIBLE);
         mSidebarSwitch = (SettingItemSwitch) findViewById(R.id.sidebar_switch);
@@ -131,7 +136,7 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void tryEnterSidebarMode() {
-        if (isSidebarEnable() && !SidebarUtils.isSidebarShowing(this.getApplicationContext())) {
+        if (isSidebarEnable() && !mOneStepManager.isInOneStepMode()) {
             // this means we enter one step mode due to user click on laucher
             Tracker.onClick(Tracker.EVENT_ONLAUNCH);
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -150,9 +155,8 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void enterSidebarMode() {
-        boolean left = Settings.Global.getInt(
-                getContentResolver(), Settings.Global.ONE_HAND_MODE, 1) == 0;
-        SidebarUtils.requestEnterSidebarMode(left ? BIT_SIDEBAR_IN_LEFT_TOP_MODE
+        boolean left = false;
+        mOneStepManager.requestEnterOneStepMode(left ? BIT_SIDEBAR_IN_LEFT_TOP_MODE
                         : BIT_SIDEBAR_IN_RIGHT_TOP_MODE);
     }
 

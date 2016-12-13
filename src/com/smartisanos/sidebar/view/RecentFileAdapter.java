@@ -27,8 +27,6 @@ import com.smartisanos.sidebar.util.LOG;
 import com.smartisanos.sidebar.util.RecentFileManager;
 import com.smartisanos.sidebar.util.Utils;
 
-import smartisanos.util.SidebarUtils;
-
 public class RecentFileAdapter extends BaseAdapter {
     private static final LOG log = LOG.getInstance(RecentFileAdapter.class);
 

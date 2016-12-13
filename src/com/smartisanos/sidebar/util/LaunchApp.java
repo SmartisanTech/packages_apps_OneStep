@@ -50,16 +50,16 @@ public class LaunchApp {
     }
 
     private static boolean isAppInDoppelgangerStatus(Context context, String pkg) {
-        if (pkg != null && context != null) {
-            try {
-                PackageInfo info = AppGlobals.getPackageManager().getPackageInfo(pkg, 0, UserHandle.USER_DOPPELGANGER);
-                if (info != null) {
-                    return true;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        if (pkg != null && context != null) {
+//            try {
+//                PackageInfo info = AppGlobals.getPackageManager().getPackageInfo(pkg, 0, UserHandle.USER_DOPPELGANGER);
+//                if (info != null) {
+//                    return true;
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
         return false;
     }
 }

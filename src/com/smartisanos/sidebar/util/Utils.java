@@ -306,15 +306,15 @@ public class Utils {
     }
 
     public static int getUidFromIntent(Intent intent) {
-        int callingUid = intent.getIntExtra("extra_uid", Binder.getCallingUid());
-        if (UserHandle.getUserId(callingUid) == UserPackage.USER_DOPPELGANGER) {
-            return UserPackage.USER_DOPPELGANGER;
-        }
+//        int callingUid = intent.getIntExtra("extra_uid", Binder.getCallingUid());
+//        if (UserHandle.getUserId(callingUid) == UserPackage.USER_DOPPELGANGER) {
+//            return UserPackage.USER_DOPPELGANGER;
+//        }
         return 0;
     }
 
     public static boolean isDoppelgangerIntent(Intent intent) {
-        return getUidFromIntent(intent) == UserPackage.USER_DOPPELGANGER;
+        return false;
     }
 
     public static void launchPreviousApp(Context context) {

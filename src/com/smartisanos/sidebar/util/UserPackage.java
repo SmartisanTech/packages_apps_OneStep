@@ -7,7 +7,7 @@ import android.os.UserHandle;
 public class UserPackage {
     private static final LOG log = LOG.getInstance(UserPackage.class);
 
-    public static final int USER_DOPPELGANGER = UserHandle.USER_DOPPELGANGER;
+//    public static final int USER_DOPPELGANGER = UserHandle.USER_DOPPELGANGER;
     public static final int USER_OWNER = UserHandle.USER_OWNER;
 
     private static Context mContext;
@@ -41,11 +41,11 @@ public class UserPackage {
         public void onPackageRemoved(String packageName, UserHandle user) {
             int userId = user.getIdentifier();
             log.error("onPackageRemoved ["+packageName+"], userId ["+userId+"]");
-            if (userId == USER_DOPPELGANGER) {
-                if (packageName != null) {
-                    ContactManager.getInstance(mContext).removeDoppelgangerShortcut(packageName);
-                }
-            }
+//            if (userId == USER_DOPPELGANGER) {
+//                if (packageName != null) {
+//                    ContactManager.getInstance(mContext).removeDoppelgangerShortcut(packageName);
+//                }
+//            }
         }
 
         public void onPackageAdded(String packageName, UserHandle user) {

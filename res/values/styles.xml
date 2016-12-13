@@ -7,7 +7,6 @@
         <item name="android:windowIsTranslucent">false</item>
         <item name="android:windowEnableSplitTouch">false</item>
         <item name="android:splitMotionEvents">false</item>
-        <item name="*android:windowColorStatusBar">true</item>
     </style>
     <style name="ListViewGeneralStyle">
         <item name="android:divider">@null</item>

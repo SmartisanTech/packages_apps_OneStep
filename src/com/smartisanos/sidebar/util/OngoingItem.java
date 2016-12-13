@@ -183,7 +183,7 @@ public class OngoingItem extends SidebarItem {
             realIntent.putExtra(Intent.EXTRA_INTENT, extraIntent);
         }
         //smartisan intent, processed more quickly
-        realIntent.addFlags(Intent.FLAG_RECEIVER_SM_USER_AWARE);
+//        realIntent.addFlags(Intent.FLAG_RECEIVER_SM_USER_AWARE);
         context.sendBroadcast(realIntent);
     }
 }

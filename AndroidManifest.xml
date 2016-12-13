@@ -5,7 +5,7 @@
 
     <uses-sdk android:minSdkVersion="19" />
 
-    <uses-permission android:name="android.permission.SIDEBAR_SERVICE" />
+    <uses-permission android:name="android.permission.ONE_STEP_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

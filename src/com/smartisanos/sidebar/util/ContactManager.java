@@ -229,40 +229,40 @@ public class ContactManager extends DataManager{
                     break;
                 }
                 case MSG_REMOVE_DOPPELGANGER : {
-                    String pkg = (String) msg.obj;
-                    if (pkg == null) {
-                        break;
-                    }
-                    List<ContactItem> removeList = new ArrayList<ContactItem>();
-                    if (pkg.equals(ShortcutReceiver.WECHAT)) {
-                        WechatContact.removeDoppelgangerShortcut(mContext);
-                        for (ContactItem item : mContacts) {
-                            if (item instanceof WechatContact) {
-                                WechatContact contact = (WechatContact) item;
-                                if (contact.getUserId() == UserPackage.USER_DOPPELGANGER) {
-                                    removeList.add(item);
-                                }
-                            }
-                        }
-                    } else if (pkg.equals(DingDingContact.PKG_NAME)) {
-                        DingDingContact.removeDoppelgangerShortcut(mContext);
-                        for (ContactItem item : mContacts) {
-                            if (item instanceof DingDingContact) {
-                                DingDingContact contact = (DingDingContact) item;
-                                if (contact.systemUid == UserPackage.USER_DOPPELGANGER) {
-                                    removeList.add(item);
-                                }
-                            }
-                        }
-                    }
-                    if (removeList.size() > 0) {
-                        synchronized(mContacts) {
-                            for (ContactItem item : removeList) {
-                                mContacts.remove(item);
-                            }
-                        }
-                    }
-                    notifyListener();
+//                    String pkg = (String) msg.obj;
+//                    if (pkg == null) {
+//                        break;
+//                    }
+//                    List<ContactItem> removeList = new ArrayList<ContactItem>();
+//                    if (pkg.equals(ShortcutReceiver.WECHAT)) {
+//                        WechatContact.removeDoppelgangerShortcut(mContext);
+//                        for (ContactItem item : mContacts) {
+//                            if (item instanceof WechatContact) {
+//                                WechatContact contact = (WechatContact) item;
+//                                if (contact.getUserId() == UserPackage.USER_DOPPELGANGER) {
+//                                    removeList.add(item);
+//                                }
+//                            }
+//                        }
+//                    } else if (pkg.equals(DingDingContact.PKG_NAME)) {
+//                        DingDingContact.removeDoppelgangerShortcut(mContext);
+//                        for (ContactItem item : mContacts) {
+//                            if (item instanceof DingDingContact) {
+//                                DingDingContact contact = (DingDingContact) item;
+//                                if (contact.systemUid == UserPackage.USER_DOPPELGANGER) {
+//                                    removeList.add(item);
+//                                }
+//                            }
+//                        }
+//                    }
+//                    if (removeList.size() > 0) {
+//                        synchronized(mContacts) {
+//                            for (ContactItem item : removeList) {
+//                                mContacts.remove(item);
+//                            }
+//                        }
+//                    }
+//                    notifyListener();
                     break;
                 }
             }

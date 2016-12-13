@@ -44,7 +44,7 @@ public class HolographicOutlineHelper {
         // other types of partial transparency when defining the shape of the object
         Bitmap glowShape = srcDst.extractAlpha(mAlphaClipPaint, mTempOffset);
 
-        BlurMaskFilter outerBlurMaskFilter = new BlurMaskFilter(SCALE * radius, BlurMaskFilter.Blur.NORMAL, BlurMaskFilter.Quality.HIGH_QUALITY);
+        BlurMaskFilter outerBlurMaskFilter = new BlurMaskFilter(SCALE * radius, BlurMaskFilter.Blur.NORMAL);
         mBlurPaint.setMaskFilter(outerBlurMaskFilter);
         int[] outerBlurOffset = new int[2];
         Bitmap thickOuterBlur = glowShape.extractAlpha(mBlurPaint, outerBlurOffset);

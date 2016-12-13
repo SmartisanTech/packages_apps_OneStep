@@ -10,12 +10,12 @@ import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.onestep.OneStepManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.R;
 import com.smartisanos.sidebar.SidebarController;
 import com.smartisanos.sidebar.SidebarMode;
@@ -63,6 +63,8 @@ public class SideView extends RelativeLayout {
 
     private DimSpaceView mDimView;
 
+    private OneStepManager mOneStepManager;
+
     public SideView(Context context) {
         this(context, null);
     }
@@ -97,6 +99,7 @@ public class SideView extends RelativeLayout {
         mExit = (ImageView) findViewById(R.id.exit);
         mLeftShadow = findViewById(R.id.left_shadow);
         mRightShadow = findViewById(R.id.right_shadow);
+        mOneStepManager = (OneStepManager)mContext.getSystemService(Context.ONE_STEP_SERVICE);
         updateUIBySidebarMode();
         mExit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,14 +111,7 @@ public class SideView extends RelativeLayout {
                 if (asm.isEnterAnimOngoing() || asm.isExitAnimOngoing()) {
                     return;
                 }
-                ISidebarService sidebarService = ISidebarService.Stub.asInterface(ServiceManager.getService(Context.SIDEBAR_SERVICE));
-                if (sidebarService != null) {
-                    try {
-                        sidebarService.resetWindow();
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
+                mOneStepManager.resetWindow();
             }
         });
 

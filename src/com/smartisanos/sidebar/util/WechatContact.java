@@ -105,8 +105,8 @@ public class WechatContact extends ContactItem {
     }
 
     public static void removeDoppelgangerShortcut(Context context) {
-        String where = DatabaseHelper.UID + "=" + UserPackage.USER_DOPPELGANGER;
-        DatabaseHelper.getInstance(context).remove(where);
+//        String where = DatabaseHelper.UID + "=" + UserPackage.USER_DOPPELGANGER;
+//        DatabaseHelper.getInstance(context).remove(where);
     }
 
     @Override

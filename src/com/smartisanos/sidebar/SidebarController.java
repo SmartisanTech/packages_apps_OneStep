@@ -18,10 +18,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.onestep.IOneStep;
+import android.view.onestep.IOneStepStateObserver;
+import android.view.onestep.OneStepManager;
 import android.widget.FrameLayout;
 
-import com.android.internal.sidebar.ISidebar;
-import com.android.internal.sidebar.ISidebarService;
 import com.smartisanos.sidebar.util.AppItem;
 import com.smartisanos.sidebar.util.AppManager;
 import com.smartisanos.sidebar.util.Constants;
@@ -49,6 +50,7 @@ public class SidebarController {
     private Context mContext;
     private Handler mHandler;
     private WindowManager mWindowManager;
+    private OneStepManager mOneStepManager;
 
     private SidebarRootView mSidebarRoot;
     private SideView mSideView;
@@ -80,6 +82,7 @@ public class SidebarController {
         mContext = context;
         mHandler = new Handler(Looper.getMainLooper());
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        mOneStepManager = (OneStepManager) mContext.getSystemService(Context.ONE_STEP_SERVICE);
         Point pt = new Point();
         mWindowManager.getDefaultDisplay().getSize(pt);
         mScreenWidth = pt.x;
@@ -94,14 +97,20 @@ public class SidebarController {
 
     public void init() {
         AddWindows();
-        ISidebarService sidebarService = ISidebarService.Stub.asInterface(ServiceManager.getService(Context.SIDEBAR_SERVICE));
-        if (sidebarService != null) {
-            try {
-                sidebarService.registerSidebar(mBinder);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        mOneStepManager.bindOneStepUI(mUIBinder);
+        mOneStepManager.registerStateObserver(new OneStepManager.OneStepStateObserver() {
+
+            @Override
+            public void onExitOneStepMode() {
+                stop();
             }
-        }
+
+            @Override
+            public void onEnterOneStepMode(int state) {
+                setSidebarMode(state);
+                start();
+            }
+        } , mHandler);
 
         AnimStatusManager.getInstance().addAnimFlagStatusChangedListener(
                 AnimStatusManager.ENTER_ANIM_FLAG, new AnimStatusManager.AnimFlagStatusChangedListener() {
@@ -357,47 +366,7 @@ public class SidebarController {
         getSideView().notifyDataSetChanged();
     }
 
-    private final ISidebar.Stub mBinder = new ISidebar.Stub() {
-        @Override
-        public void onEnterSidebarModeStart(final int sidebarMode) throws RemoteException {
-            mHandler.post(new Runnable(){
-                @Override
-                public void run() {
-                    setSidebarMode(sidebarMode);
-                    start();
-                }
-            });
-        }
-
-        @Override
-        public void onEnterSidebarModeEnd() throws RemoteException {
-            // NA
-        }
-
-        @Override
-        public void onExitSidebarModeStart() throws RemoteException {
-            mHandler.post(new Runnable(){
-                @Override
-                public void run() {
-                    stop();
-                }
-            });
-        }
-
-        @Override
-        public void onExitSidebarModeEnd() throws RemoteException {
-            // NA
-        }
-
-        @Override
-        public void resumeSidebar() throws RemoteException {
-            mHandler.post(new Runnable(){
-                @Override
-                public void run() {
-                    Utils.resumeSidebar(mContext);
-                }
-            });
-        }
+    private final IOneStep.Stub mUIBinder = new IOneStep.Stub() {
 
         @Override
         public void updateOngoing(ComponentName name, int token,
@@ -411,6 +380,16 @@ public class SidebarController {
                 @Override
                 public void run() {
                     SidebarController.this.setEnabled(enabled);
+                }
+            });
+        }
+
+        @Override
+        public void resumeOneStep() throws RemoteException {
+            mHandler.post(new Runnable(){
+                @Override
+                public void run() {
+                    Utils.resumeSidebar(mContext);
                 }
             });
         }
