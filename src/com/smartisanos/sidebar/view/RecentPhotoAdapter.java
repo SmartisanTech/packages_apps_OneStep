@@ -28,7 +28,6 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import smartisanos.util.SidebarUtils;
 
 public class RecentPhotoAdapter extends BaseAdapter {
     private static final LOG log = LOG.getInstance(RecentPhotoAdapter.class);

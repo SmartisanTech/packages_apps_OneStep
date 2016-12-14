@@ -14,12 +14,12 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.onestep.OneStepDragUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import smartisanos.util.SidebarUtils;
 
 public class ClipboardItemView extends LinearLayout {
     private TextView mDateText;
@@ -83,7 +83,7 @@ public class ClipboardItemView extends LinearLayout {
         setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                SidebarUtils.dragText(v, mContext, item.mContent);
+                OneStepDragUtils.dragText(v, mContext, item.mContent);
                 return true;
             }
         });

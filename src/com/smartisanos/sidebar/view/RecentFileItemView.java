@@ -12,11 +12,11 @@ import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.onestep.OneStepDragUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import smartisanos.util.SidebarUtils;
 
 public class RecentFileItemView extends LinearLayout {
     private TextView mDateText;
@@ -80,7 +80,7 @@ public class RecentFileItemView extends LinearLayout {
         setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                SidebarUtils.dragFile(v, mContext, new File(info.filePath), info.mimeType);
+                OneStepDragUtils.dragFile(v, mContext, new File(info.filePath), info.mimeType);
                 return true;
             }
         });

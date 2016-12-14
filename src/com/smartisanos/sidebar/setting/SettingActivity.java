@@ -2,7 +2,6 @@ package com.smartisanos.sidebar.setting;
 
 import java.util.List;
 
-import smartisanos.util.SidebarUtils;
 import smartisanos.widget.SettingItemSwitch;
 import smartisanos.widget.SettingItemText;
 import smartisanos.widget.Title;

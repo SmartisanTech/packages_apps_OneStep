@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.onestep.OneStepDragUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -25,7 +26,6 @@ import com.smartisanos.sidebar.util.Utils;
 
 import java.io.File;
 
-import smartisanos.util.SidebarUtils;
 
 public class PhotoLineSubView extends FrameLayout {
     private static final int IMAGE_COLOR = Color.parseColor("#9a404040");
@@ -112,7 +112,7 @@ public class PhotoLineSubView extends FrameLayout {
         photoImageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                SidebarUtils.dragImage(v, mContext, new File(imageInfo.filePath), imageInfo.mimeType);
+                OneStepDragUtils.dragImage(v, mContext, new File(imageInfo.filePath), imageInfo.mimeType);
                 return true;
             }
         });
