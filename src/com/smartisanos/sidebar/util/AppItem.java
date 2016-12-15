@@ -4,6 +4,7 @@ import java.lang.ref.SoftReference;
 import java.util.Comparator;
 import java.util.List;
 
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -94,11 +95,15 @@ public class AppItem extends SidebarItem {
 
     @Override
     public boolean openUI(Context context) {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        intent.setComponent(mName);
-        mContext.startActivity(intent);
+        try {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            intent.setComponent(mName);
+            mContext.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            LOG.e("The Activity is not exist.");
+        }
         return true;
     }
 
