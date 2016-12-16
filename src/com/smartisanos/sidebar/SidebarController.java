@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.SystemProperties;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +94,18 @@ public class SidebarController {
         mTopViewHeight = (int) (mScreenHeight * (1.0f - mRate));
         mContentViewWidth = mScreenWidth - mSideViewWidth;
         mContentViewHeight = mScreenHeight - mTopViewHeight;
+        boolean hasNavigationBar = mContext.getResources().getBoolean(com.android.internal.R.bool.config_showNavigationBar);
+        // Allow a system property to override this. Used by the emulator.
+        // See also hasNavigationBar().
+        String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
+        if ("1".equals(navBarOverride)) {
+            hasNavigationBar = false;
+        } else if ("0".equals(navBarOverride)) {
+            hasNavigationBar = true;
+        }
+        if (hasNavigationBar) {
+            mContentViewHeight += mContext.getResources().getDimensionPixelSize(com.android.internal.R.dimen.navigation_bar_height);
+        }
     }
 
     public void init() {
