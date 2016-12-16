@@ -75,7 +75,7 @@ public class ClipboardItemView extends LinearLayout {
             public void onClick(View v) {
                 Utils.copyText(mContext, item.mContent, false);
                 Utils.resumeSidebar(mContext);
-                Toast.makeText(mContext, mContext.getResources().getString(R.string.text_copied), Toast.LENGTH_SHORT, WindowManager.LayoutParams.TYPE_SYSTEM_ERROR).show();
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.text_copied), Toast.LENGTH_SHORT).show();
                 Tracker.onClick(Tracker.EVENT_COPY);
             }
         });

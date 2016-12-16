@@ -46,9 +46,6 @@ public class SettingActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Drawable drawable = getDrawable(smartisanos.R.drawable.common_bg);
-        Log.v("533"," drawble.... "+smartisanos.R.drawable.common_bg);
-        Log.v("533"," 1111drawble.... "+smartisanos.R.drawable.win_background);
         setContentView(R.layout.settings_layout);
 
         // recyle window background bitmap to release memory
